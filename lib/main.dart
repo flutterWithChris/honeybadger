@@ -22,6 +22,13 @@ class MyApp extends StatelessWidget {
         title: 'Flutter Demo',
         debugShowCheckedModeBanner: false,
         theme: ThemeData(
+          dialogTheme: const DialogTheme(elevation: 0.3),
+          inputDecorationTheme: InputDecorationTheme(
+            filled: true,
+            border: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(8),
+                borderSide: BorderSide.none),
+          ),
           // This is the theme of your application.
           //
           // TRY THIS: Try running your application with "flutter run". You'll see
