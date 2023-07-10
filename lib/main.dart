@@ -1,7 +1,10 @@
+import 'package:flex_color_scheme/flex_color_scheme.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:honeybadger/core/router/app_router.dart';
 import 'package:honeybadger/onboarding/bloc/onboarding_bloc.dart';
+import 'package:honeybadger/profile/model/user.dart';
 
 void main() {
   runApp(const MyApp());
@@ -14,39 +17,164 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
-      create: (context) => OnboardingBloc(),
+      create: (context) => OnboardingBloc()..add(StartOnboarding(User())),
       child: MaterialApp.router(
         routeInformationParser: goRouter.routeInformationParser,
         routerDelegate: goRouter.routerDelegate,
         routeInformationProvider: goRouter.routeInformationProvider,
         title: 'Flutter Demo',
         debugShowCheckedModeBanner: false,
-        theme: ThemeData(
-          dialogTheme: const DialogTheme(elevation: 0.3),
-          inputDecorationTheme: InputDecorationTheme(
-            filled: true,
-            border: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(8),
-                borderSide: BorderSide.none),
+        // Theme config for FlexColorScheme version 7.1.x. Make sure you use
+// same or higher package version, but still same major version. If you
+// use a lower package version, some properties may not be supported.
+// In that case remove them after copying this theme to your app.
+        theme: FlexThemeData.light(
+          scheme: FlexScheme.flutterDash,
+          surfaceMode: FlexSurfaceMode.highBackgroundLowScaffold,
+          blendLevel: 1,
+          appBarStyle: FlexAppBarStyle.background,
+          bottomAppBarElevation: 2.0,
+          subThemesData: const FlexSubThemesData(
+            blendOnLevel: 6,
+            blendOnColors: false,
+            useTextTheme: true,
+            useM2StyleDividerInM3: true,
+            adaptiveRemoveElevationTint:
+                FlexAdaptive.excludeWebAndroidFuchsia(),
+            adaptiveElevationShadowsBack:
+                FlexAdaptive.excludeWebAndroidFuchsia(),
+            adaptiveAppBarScrollUnderOff:
+                FlexAdaptive.excludeWebAndroidFuchsia(),
+            defaultRadiusAdaptive: 10.0,
+            adaptiveRadius: FlexAdaptive.excludeWebAndroidFuchsia(),
+            elevatedButtonSchemeColor: SchemeColor.onPrimaryContainer,
+            elevatedButtonSecondarySchemeColor: SchemeColor.primaryContainer,
+            outlinedButtonOutlineSchemeColor: SchemeColor.primary,
+            toggleButtonsBorderSchemeColor: SchemeColor.primary,
+            segmentedButtonSchemeColor: SchemeColor.primary,
+            segmentedButtonBorderSchemeColor: SchemeColor.primary,
+            unselectedToggleIsColored: true,
+            sliderValueTinted: true,
+            inputDecoratorSchemeColor: SchemeColor.primary,
+            inputDecoratorBackgroundAlpha: 19,
+            inputDecoratorUnfocusedHasBorder: false,
+            inputDecoratorFocusedBorderWidth: 1.0,
+            inputDecoratorPrefixIconSchemeColor: SchemeColor.primary,
+            fabUseShape: true,
+            fabAlwaysCircular: true,
+            fabSchemeColor: SchemeColor.tertiary,
+            cardRadius: 14.0,
+            popupMenuRadius: 6.0,
+            popupMenuElevation: 3.0,
+            dialogRadius: 18.0,
+            datePickerDialogRadius: 18.0,
+            timePickerDialogRadius: 18.0,
+            appBarScrolledUnderElevation: 1.0,
+            drawerElevation: 1.0,
+            drawerIndicatorSchemeColor: SchemeColor.primary,
+            bottomSheetRadius: 18.0,
+            bottomSheetElevation: 2.0,
+            bottomSheetModalElevation: 4.0,
+            bottomNavigationBarMutedUnselectedLabel: false,
+            bottomNavigationBarMutedUnselectedIcon: false,
+            menuRadius: 6.0,
+            menuElevation: 3.0,
+            menuBarRadius: 0.0,
+            menuBarElevation: 1.0,
+            menuBarShadowColor: Color(0x00000000),
+            navigationBarSelectedLabelSchemeColor: SchemeColor.primary,
+            navigationBarMutedUnselectedLabel: false,
+            navigationBarSelectedIconSchemeColor: SchemeColor.onPrimary,
+            navigationBarMutedUnselectedIcon: false,
+            navigationBarIndicatorSchemeColor: SchemeColor.primary,
+            navigationBarIndicatorOpacity: 1.00,
+            navigationBarElevation: 1.0,
+            navigationRailSelectedLabelSchemeColor: SchemeColor.primary,
+            navigationRailMutedUnselectedLabel: false,
+            navigationRailSelectedIconSchemeColor: SchemeColor.onPrimary,
+            navigationRailMutedUnselectedIcon: false,
+            navigationRailIndicatorSchemeColor: SchemeColor.primary,
+            navigationRailIndicatorOpacity: 1.00,
+            navigationRailBackgroundSchemeColor: SchemeColor.surface,
           ),
-          // This is the theme of your application.
-          //
-          // TRY THIS: Try running your application with "flutter run". You'll see
-          // the application has a blue toolbar. Then, without quitting the app,
-          // try changing the seedColor in the colorScheme below to Colors.green
-          // and then invoke "hot reload" (save your changes or press the "hot
-          // reload" button in a Flutter-supported IDE, or press "r" if you used
-          // the command line to start the app).
-          //
-          // Notice that the counter didn't reset back to zero; the application
-          // state is not lost during the reload. To reset the state, use hot
-          // restart instead.
-          //
-          // This works for code too, not just values: Most code changes can be
-          // tested with just a hot reload.
-          colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
+          visualDensity: FlexColorScheme.comfortablePlatformDensity,
           useMaterial3: true,
+          // To use the Playground font, add GoogleFonts package and uncomment
+          // fontFamily: GoogleFonts.notoSans().fontFamily,
         ),
+        darkTheme: FlexThemeData.dark(
+          scheme: FlexScheme.flutterDash,
+          surfaceMode: FlexSurfaceMode.highBackgroundLowScaffold,
+          blendLevel: 2,
+          appBarStyle: FlexAppBarStyle.background,
+          bottomAppBarElevation: 2.0,
+          subThemesData: const FlexSubThemesData(
+            blendOnLevel: 8,
+            useTextTheme: true,
+            useM2StyleDividerInM3: true,
+            adaptiveElevationShadowsBack: FlexAdaptive.all(),
+            adaptiveAppBarScrollUnderOff:
+                FlexAdaptive.excludeWebAndroidFuchsia(),
+            defaultRadiusAdaptive: 10.0,
+            adaptiveRadius: FlexAdaptive.excludeWebAndroidFuchsia(),
+            elevatedButtonSchemeColor: SchemeColor.onPrimaryContainer,
+            elevatedButtonSecondarySchemeColor: SchemeColor.primaryContainer,
+            outlinedButtonOutlineSchemeColor: SchemeColor.primary,
+            toggleButtonsBorderSchemeColor: SchemeColor.primary,
+            segmentedButtonSchemeColor: SchemeColor.primary,
+            segmentedButtonBorderSchemeColor: SchemeColor.primary,
+            unselectedToggleIsColored: true,
+            sliderValueTinted: true,
+            inputDecoratorSchemeColor: SchemeColor.primary,
+            inputDecoratorBackgroundAlpha: 22,
+            inputDecoratorUnfocusedHasBorder: false,
+            inputDecoratorFocusedBorderWidth: 1.0,
+            inputDecoratorPrefixIconSchemeColor: SchemeColor.primary,
+            fabUseShape: true,
+            fabAlwaysCircular: true,
+            fabSchemeColor: SchemeColor.tertiary,
+            cardRadius: 14.0,
+            popupMenuRadius: 6.0,
+            popupMenuElevation: 3.0,
+            dialogRadius: 18.0,
+            datePickerDialogRadius: 18.0,
+            timePickerDialogRadius: 18.0,
+            appBarScrolledUnderElevation: 3.0,
+            drawerElevation: 1.0,
+            drawerIndicatorSchemeColor: SchemeColor.primary,
+            bottomSheetRadius: 18.0,
+            bottomSheetElevation: 2.0,
+            bottomSheetModalElevation: 4.0,
+            bottomNavigationBarMutedUnselectedLabel: false,
+            bottomNavigationBarMutedUnselectedIcon: false,
+            menuRadius: 6.0,
+            menuElevation: 3.0,
+            menuBarRadius: 0.0,
+            menuBarElevation: 1.0,
+            menuBarShadowColor: Color(0x00000000),
+            navigationBarSelectedLabelSchemeColor: SchemeColor.primary,
+            navigationBarMutedUnselectedLabel: false,
+            navigationBarSelectedIconSchemeColor: SchemeColor.onPrimary,
+            navigationBarMutedUnselectedIcon: false,
+            navigationBarIndicatorSchemeColor: SchemeColor.primary,
+            navigationBarIndicatorOpacity: 1.00,
+            navigationBarElevation: 1.0,
+            navigationRailSelectedLabelSchemeColor: SchemeColor.primary,
+            navigationRailMutedUnselectedLabel: false,
+            navigationRailSelectedIconSchemeColor: SchemeColor.onPrimary,
+            navigationRailMutedUnselectedIcon: false,
+            navigationRailIndicatorSchemeColor: SchemeColor.primary,
+            navigationRailIndicatorOpacity: 1.00,
+            navigationRailBackgroundSchemeColor: SchemeColor.surface,
+          ),
+          visualDensity: FlexColorScheme.comfortablePlatformDensity,
+          useMaterial3: true,
+          // To use the Playground font, add GoogleFonts package and uncomment
+          fontFamily: GoogleFonts.dmSans().fontFamily,
+        ),
+// If you do not have a themeMode switch, uncomment this line
+// to let the device system mode control the theme mode:
+// themeMode: ThemeMode.system,
       ),
     );
   }

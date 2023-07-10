@@ -3,7 +3,7 @@ part of 'onboarding_bloc.dart';
 enum OnboardingStatus { initial, loading, loaded, failure }
 
 @immutable
-class OnboardingState {
+class OnboardingState extends Equatable {
   final OnboardingStatus status;
   final User? user;
   const OnboardingState({required this.status, this.user});
@@ -33,4 +33,8 @@ class OnboardingState {
       user: user ?? this.user,
     );
   }
+
+  @override
+  // TODO: implement props
+  List<Object?> get props => [status, user];
 }

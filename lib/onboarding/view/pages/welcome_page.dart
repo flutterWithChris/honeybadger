@@ -123,25 +123,33 @@ class _WelcomePageState extends State<WelcomePage> {
                                     shape: RoundedRectangleBorder(
                                         borderRadius:
                                             BorderRadius.circular(8.0)),
-                                    color: Colors.white,
+                                    //color: Colors.white,
                                     elevation: 2.0,
                                     constraints:
                                         const BoxConstraints(maxWidth: 400.0),
                                     itemBuilder: (context) => [
-                                          const PopupMenuItem(
+                                          PopupMenuItem(
                                             value: 'Freelancer',
-                                            child: Text('Freelancer'),
+                                            child: Text('Freelancer',
+                                                style: Theme.of(context)
+                                                    .textTheme
+                                                    .displaySmall),
                                           ),
-                                          const PopupMenuItem(
+                                          PopupMenuItem(
                                             value: 'Client',
-                                            child: Text('Client'),
+                                            child: Text('Client',
+                                                style: Theme.of(context)
+                                                    .textTheme
+                                                    .displaySmall),
                                           ),
                                         ],
                                     child: Container(
                                       decoration: BoxDecoration(
                                         borderRadius:
                                             BorderRadius.circular(10.0),
-                                        color: Colors.grey[200],
+                                        color: Theme.of(context)
+                                            .colorScheme
+                                            .primaryContainer,
                                       ),
                                       child: Padding(
                                         padding: const EdgeInsets.symmetric(
@@ -181,6 +189,7 @@ class _WelcomePageState extends State<WelcomePage> {
                                         .textTheme
                                         .headlineMedium
                                         ?.copyWith(
+                                          color: Colors.white,
                                           fontWeight: FontWeight.bold,
                                         )),
                               )),
