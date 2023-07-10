@@ -1,7 +1,6 @@
 import 'package:flex_color_scheme/flex_color_scheme.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:honeybadger/core/router/app_router.dart';
 import 'package:honeybadger/onboarding/bloc/onboarding_bloc.dart';
 import 'package:honeybadger/profile/model/user.dart';
@@ -24,7 +23,7 @@ class MyApp extends StatelessWidget {
         routeInformationProvider: goRouter.routeInformationProvider,
         title: 'Flutter Demo',
         debugShowCheckedModeBanner: false,
-        // Theme config for FlexColorScheme version 7.1.x. Make sure you use
+// Theme config for FlexColorScheme version 7.1.x. Make sure you use
 // same or higher package version, but still same major version. If you
 // use a lower package version, some properties may not be supported.
 // In that case remove them after copying this theme to your app.
@@ -34,19 +33,20 @@ class MyApp extends StatelessWidget {
           blendLevel: 1,
           appBarStyle: FlexAppBarStyle.background,
           bottomAppBarElevation: 2.0,
-          subThemesData: const FlexSubThemesData(
+          subThemesData: FlexSubThemesData(
+            buttonMinSize: const Size(200, 40),
+            filledButtonTextStyle: MaterialStatePropertyAll(
+                Theme.of(context).textTheme.titleMedium),
             blendOnLevel: 6,
             blendOnColors: false,
             useTextTheme: true,
             useM2StyleDividerInM3: true,
-            adaptiveRemoveElevationTint:
-                FlexAdaptive.excludeWebAndroidFuchsia(),
             adaptiveElevationShadowsBack:
-                FlexAdaptive.excludeWebAndroidFuchsia(),
+                const FlexAdaptive.excludeWebAndroidFuchsia(),
             adaptiveAppBarScrollUnderOff:
-                FlexAdaptive.excludeWebAndroidFuchsia(),
+                const FlexAdaptive.excludeWebAndroidFuchsia(),
             defaultRadiusAdaptive: 10.0,
-            adaptiveRadius: FlexAdaptive.excludeWebAndroidFuchsia(),
+            adaptiveRadius: const FlexAdaptive.all(),
             elevatedButtonSchemeColor: SchemeColor.onPrimaryContainer,
             elevatedButtonSecondarySchemeColor: SchemeColor.primaryContainer,
             outlinedButtonOutlineSchemeColor: SchemeColor.primary,
@@ -81,7 +81,7 @@ class MyApp extends StatelessWidget {
             menuElevation: 3.0,
             menuBarRadius: 0.0,
             menuBarElevation: 1.0,
-            menuBarShadowColor: Color(0x00000000),
+            menuBarShadowColor: const Color(0x00000000),
             navigationBarSelectedLabelSchemeColor: SchemeColor.primary,
             navigationBarMutedUnselectedLabel: false,
             navigationBarSelectedIconSchemeColor: SchemeColor.onPrimary,
@@ -97,6 +97,7 @@ class MyApp extends StatelessWidget {
             navigationRailIndicatorOpacity: 1.00,
             navigationRailBackgroundSchemeColor: SchemeColor.surface,
           ),
+          useMaterial3ErrorColors: true,
           visualDensity: FlexColorScheme.comfortablePlatformDensity,
           useMaterial3: true,
           // To use the Playground font, add GoogleFonts package and uncomment
@@ -109,6 +110,7 @@ class MyApp extends StatelessWidget {
           appBarStyle: FlexAppBarStyle.background,
           bottomAppBarElevation: 2.0,
           subThemesData: const FlexSubThemesData(
+            buttonMinSize: Size(200, 40),
             blendOnLevel: 8,
             useTextTheme: true,
             useM2StyleDividerInM3: true,
@@ -116,7 +118,7 @@ class MyApp extends StatelessWidget {
             adaptiveAppBarScrollUnderOff:
                 FlexAdaptive.excludeWebAndroidFuchsia(),
             defaultRadiusAdaptive: 10.0,
-            adaptiveRadius: FlexAdaptive.excludeWebAndroidFuchsia(),
+            adaptiveRadius: FlexAdaptive.all(),
             elevatedButtonSchemeColor: SchemeColor.onPrimaryContainer,
             elevatedButtonSecondarySchemeColor: SchemeColor.primaryContainer,
             outlinedButtonOutlineSchemeColor: SchemeColor.primary,
@@ -167,10 +169,11 @@ class MyApp extends StatelessWidget {
             navigationRailIndicatorOpacity: 1.00,
             navigationRailBackgroundSchemeColor: SchemeColor.surface,
           ),
+          useMaterial3ErrorColors: true,
           visualDensity: FlexColorScheme.comfortablePlatformDensity,
           useMaterial3: true,
           // To use the Playground font, add GoogleFonts package and uncomment
-          fontFamily: GoogleFonts.dmSans().fontFamily,
+          // fontFamily: GoogleFonts.notoSans().fontFamily,
         ),
 // If you do not have a themeMode switch, uncomment this line
 // to let the device system mode control the theme mode:

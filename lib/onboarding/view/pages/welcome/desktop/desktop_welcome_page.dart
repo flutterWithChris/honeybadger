@@ -1,148 +1,187 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_gutter/flutter_gutter.dart';
+import 'package:go_router/go_router.dart';
+import 'package:honeybadger/core/presentation/system/main_sliver_app_bar.dart';
+import 'package:honeybadger/onboarding/bloc/onboarding_bloc.dart';
+import 'package:honeybadger/profile/model/user.dart';
 
-import '../../../../core/presentation/system/mobile_sliver_app_bar.dart';
-import '../../../../profile/model/user.dart';
-import '../../../bloc/onboarding_bloc.dart';
-
-class MobileWelcomePage extends StatefulWidget {
-  final PageController? pageController;
-  const MobileWelcomePage({this.pageController, super.key});
+class DesktopWelcomePage extends StatefulWidget {
+  const DesktopWelcomePage({super.key});
 
   @override
-  State<MobileWelcomePage> createState() => _MobileWelcomePageState();
+  State<DesktopWelcomePage> createState() => _DesktopWelcomePageState();
 }
 
-class _MobileWelcomePageState extends State<MobileWelcomePage> {
+class _DesktopWelcomePageState extends State<DesktopWelcomePage> {
   UserType _userType = UserType.freelancer;
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       body: Row(
         children: [
+          // Flexible(
+          //     child: NavigationDrawer(
+          //   selectedIndex: 0,
+          //   children: [
+          //     DrawerHeader(
+          //       child: Padding(
+          //         padding: const EdgeInsets.all(16.0),
+          //         child: Row(
+          //           //   spacing: 12.0,
+
+          //           children: [
+          //             Flexible(
+          //                 child: FittedBox(
+          //               child: Icon(Icons.pets,
+          //                   size: 30.0, color: Colors.grey[800]),
+          //             )),
+          //             const GutterSmall(),
+          //             Flexible(
+          //               flex: 6,
+          //               child: FittedBox(
+          //                 child: Text('Honeybadger',
+          //                     style:
+          //                         Theme.of(context).textTheme.titleLarge),
+          //               ),
+          //             ),
+          //           ],
+          //         ),
+          //       ),
+          //     ),
+          //     ListTile(
+          //       title: const Wrap(
+          //         spacing: 12.0,
+          //         crossAxisAlignment: WrapCrossAlignment.center,
+          //         children: [
+          //           Icon(Icons.search_rounded, size: 16),
+          //           Text('Search'),
+          //         ],
+          //       ),
+          //       onTap: () {},
+          //     ),
+          //     ListTile(
+          //       title: const Wrap(
+          //         spacing: 12.0,
+          //         crossAxisAlignment: WrapCrossAlignment.center,
+          //         children: [
+          //           Icon(Icons.home_rounded, size: 16),
+          //           Text('Home'),
+          //         ],
+          //       ),
+          //       onTap: () {},
+          //     ),
+          //     ListTile(
+          //       title: const Text('Contact'),
+          //       onTap: () {},
+          //     ),
+          //   ],
+          // )),
           Expanded(
             flex: 5,
             child: CustomScrollView(
               slivers: [
-                const MobileSliverAppBar(),
+                const MainSliverAppBar(),
                 SliverFillRemaining(
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      Flexible(
-                        child: Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 16.0),
-                          child: Text(
-                              'A platform built for the future of work.',
-                              textAlign: TextAlign.center,
-                              style: Theme.of(context)
-                                  .textTheme
-                                  .headlineLarge
-                                  ?.copyWith(fontWeight: FontWeight.bold)),
-                        ),
-                      ),
+                      Text('A platform built for the future of work.',
+                          textAlign: TextAlign.center,
+                          style: Theme.of(context)
+                              .textTheme
+                              .displayLarge
+                              ?.copyWith(fontWeight: FontWeight.bold)),
                       const Gutter(),
                       const SizedBox(
                         height: 10.0,
                       ),
-                      Flexible(
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Flexible(
-                                child: FittedBox(
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Flexible(
                               child: Text('I am a',
                                   style: Theme.of(context)
                                       .textTheme
-                                      .headlineLarge),
-                            )),
-                            const Gutter(),
-                            Flexible(
-                              child: FittedBox(
-                                child: PopupMenuButton(
-                                    onSelected: (value) {
-                                      setState(() {
-                                        if (value == 'Freelancer') {
-                                          _userType = UserType.freelancer;
-                                        } else if (value == 'Client') {
-                                          _userType = UserType.client;
-                                        }
-                                      });
-                                    },
-                                    shape: RoundedRectangleBorder(
-                                        borderRadius:
-                                            BorderRadius.circular(8.0)),
-                                    //color: Colors.white,
-                                    elevation: 2.0,
-                                    constraints:
-                                        const BoxConstraints(maxWidth: 400.0),
-                                    itemBuilder: (context) => [
-                                          PopupMenuItem(
-                                            value: 'Freelancer',
-                                            child: Text('Freelancer',
-                                                style: Theme.of(context)
-                                                    .textTheme
-                                                    .headlineMedium),
-                                          ),
-                                          PopupMenuItem(
-                                            value: 'Client',
-                                            child: Text('Client',
-                                                style: Theme.of(context)
-                                                    .textTheme
-                                                    .headlineMedium),
-                                          ),
-                                        ],
-                                    child: Container(
-                                      decoration: BoxDecoration(
-                                        borderRadius:
-                                            BorderRadius.circular(10.0),
-                                        color: Theme.of(context)
-                                            .colorScheme
-                                            .primaryContainer,
+                                      .displayLarge)),
+                          const Gutter(),
+                          Flexible(
+                            child: PopupMenuButton(
+                                onSelected: (value) {
+                                  setState(() {
+                                    if (value == 'Freelancer') {
+                                      _userType = UserType.freelancer;
+                                    } else if (value == 'Client') {
+                                      _userType = UserType.client;
+                                    }
+                                  });
+                                },
+                                shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(8.0)),
+                                //color: Colors.white,
+                                elevation: 2.0,
+                                constraints:
+                                    const BoxConstraints(maxWidth: 400.0),
+                                itemBuilder: (context) => [
+                                      PopupMenuItem(
+                                        value: 'Freelancer',
+                                        child: Text('Freelancer',
+                                            style: Theme.of(context)
+                                                .textTheme
+                                                .displaySmall),
                                       ),
-                                      child: Padding(
-                                        padding: const EdgeInsets.symmetric(
-                                            horizontal: 16.0, vertical: 8.0),
-                                        child: Row(
-                                          mainAxisSize: MainAxisSize.min,
-                                          children: [
-                                            Text(
-                                                _userType == UserType.freelancer
-                                                    ? 'Freelancer'
-                                                    : 'Client',
-                                                style: Theme.of(context)
-                                                    .textTheme
-                                                    .displaySmall),
-                                            const Gutter(),
-                                            const Icon(Icons.arrow_drop_down,
-                                                size: 40.0),
-                                          ],
-                                        ),
+                                      PopupMenuItem(
+                                        value: 'Client',
+                                        child: Text('Client',
+                                            style: Theme.of(context)
+                                                .textTheme
+                                                .displaySmall),
                                       ),
-                                    )),
-                              ),
-                            )
-                          ],
-                        ),
+                                    ],
+                                child: Container(
+                                  decoration: BoxDecoration(
+                                    borderRadius: BorderRadius.circular(10.0),
+                                    color: Theme.of(context)
+                                        .colorScheme
+                                        .primaryContainer,
+                                  ),
+                                  child: Padding(
+                                    padding: const EdgeInsets.symmetric(
+                                        horizontal: 16.0, vertical: 8.0),
+                                    child: Row(
+                                      mainAxisSize: MainAxisSize.min,
+                                      children: [
+                                        Text(
+                                            _userType == UserType.freelancer
+                                                ? 'Freelancer'
+                                                : 'Client',
+                                            style: Theme.of(context)
+                                                .textTheme
+                                                .displayLarge),
+                                        const Gutter(),
+                                        const Icon(Icons.arrow_drop_down,
+                                            size: 40.0),
+                                      ],
+                                    ),
+                                  ),
+                                )),
+                          )
+                        ],
                       ),
                       const GutterLarge(),
                       FilledButton.tonal(
-                          onPressed: () async {
-                            print('Get Started Clicked');
+                          onPressed: () {
                             context.read<OnboardingBloc>().add(
                                 StartOnboarding(User(userType: _userType)));
-                            await widget.pageController?.nextPage(
-                                duration: const Duration(milliseconds: 500),
-                                curve: Curves.ease);
+                            context.go('/onboarding', extra: _userType);
                           },
                           child: Padding(
                             padding: const EdgeInsets.symmetric(
-                                horizontal: 16.0, vertical: 8.0),
+                                horizontal: 32.0, vertical: 16.0),
                             child: Text('Get Started',
                                 style: Theme.of(context)
                                     .textTheme
-                                    .titleLarge
+                                    .headlineMedium
                                     ?.copyWith(
                                       color: Colors.white,
                                       fontWeight: FontWeight.bold,

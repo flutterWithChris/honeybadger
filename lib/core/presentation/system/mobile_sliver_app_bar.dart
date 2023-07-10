@@ -8,16 +8,19 @@ class MobileSliverAppBar extends StatelessWidget {
     return SliverAppBar(
       floating: true,
       pinned: true,
-      //expandedHeight: 80,
       centerTitle: true,
+      leadingWidth: 40,
+      leading: const CircleAvatar(
+        child: Icon(Icons.person),
+      ),
       title: Padding(
-        padding: const EdgeInsets.only(left: 48.0),
+        padding: const EdgeInsets.only(left: 0.0),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Wrap(
               alignment: WrapAlignment.center,
-              spacing: 12.0,
+              spacing: 8.0,
               crossAxisAlignment: WrapCrossAlignment.center,
               children: [
                 Icon(Icons.hive_outlined, size: 30.0, color: Colors.blue[600]),

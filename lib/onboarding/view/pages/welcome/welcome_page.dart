@@ -1,10 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:honeybadger/core/constants.dart';
-import 'package:honeybadger/onboarding/view/pages/desktop/desktop_welcome_page.dart';
-import 'package:honeybadger/onboarding/view/pages/mobile/mobile_welcome_page.dart';
-import 'package:honeybadger/onboarding/view/pages/tablet/tablet_welcome_page.dart';
-
-import '../../../profile/model/user.dart';
+import 'package:honeybadger/onboarding/view/pages/welcome/desktop/desktop_welcome_page.dart';
+import 'package:honeybadger/onboarding/view/pages/welcome/mobile/mobile_welcome_page.dart';
+import 'package:honeybadger/onboarding/view/pages/welcome/tablet/tablet_welcome_page.dart';
 
 class WelcomePage extends StatefulWidget {
   final PageController? pageController;
@@ -15,7 +13,6 @@ class WelcomePage extends StatefulWidget {
 }
 
 class _WelcomePageState extends State<WelcomePage> {
-  final UserType _userType = UserType.freelancer;
   @override
   Widget build(BuildContext context) {
     return LayoutBuilder(builder: (context, constraints) {

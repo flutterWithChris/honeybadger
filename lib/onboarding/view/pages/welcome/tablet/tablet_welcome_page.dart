@@ -4,7 +4,7 @@ import 'package:flutter_gutter/flutter_gutter.dart';
 import 'package:go_router/go_router.dart';
 import 'package:honeybadger/onboarding/bloc/onboarding_bloc.dart';
 
-import '../../../../profile/model/user.dart';
+import '../../../../../profile/model/user.dart';
 
 class TabletWelcomePage extends StatefulWidget {
   const TabletWelcomePage({super.key});

@@ -30,27 +30,36 @@ class SignupPage extends StatelessWidget {
                   style: Theme.of(context).textTheme.headlineLarge,
                 ),
                 const Gutter(),
-                Wrap(
-                  spacing: 12.0,
-                  crossAxisAlignment: WrapCrossAlignment.center,
-                  children: [
-                    FilledButton.tonal(
-                      onPressed: () {},
-                      child: const Icon(FontAwesomeIcons.google, size: 20.0),
-                    ),
-                    FilledButton.tonal(
-                      style: ElevatedButton.styleFrom(
-                        foregroundColor: Colors.white,
-                        backgroundColor: Colors.black87,
+                Theme(
+                  data: Theme.of(context).copyWith(
+                      filledButtonTheme: FilledButtonThemeData(
+                          style: ButtonStyle(
+                    minimumSize:
+                        MaterialStateProperty.all(const Size(48.0, 40.0)),
+                  ))),
+                  child: Wrap(
+                    direction: Axis.horizontal,
+                    spacing: 12.0,
+                    crossAxisAlignment: WrapCrossAlignment.center,
+                    children: [
+                      FilledButton.tonal(
+                        onPressed: () {},
+                        child: const Icon(FontAwesomeIcons.google, size: 20.0),
                       ),
-                      onPressed: () {},
-                      child: const Icon(FontAwesomeIcons.apple, size: 20.0),
-                    ),
-                    FilledButton(
-                      onPressed: () {},
-                      child: const Icon(FontAwesomeIcons.github, size: 20.0),
-                    ),
-                  ],
+                      FilledButton.tonal(
+                        style: ElevatedButton.styleFrom(
+                          foregroundColor: Colors.white,
+                          backgroundColor: Colors.black87,
+                        ),
+                        onPressed: () {},
+                        child: const Icon(FontAwesomeIcons.apple, size: 20.0),
+                      ),
+                      FilledButton(
+                        onPressed: () {},
+                        child: const Icon(FontAwesomeIcons.github, size: 20.0),
+                      ),
+                    ],
+                  ),
                 ),
                 const GutterTiny(),
                 const Text('or',
