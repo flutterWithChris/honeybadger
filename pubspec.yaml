@@ -46,6 +46,8 @@ dependencies:
   material_design_icons_flutter: ^7.0.7296
   shared_preferences: ^2.2.0
   intl: ^0.18.1
+  cached_network_image: ^3.2.3
+  jiffy: ^6.2.1
 
 dev_dependencies:
   flutter_test:

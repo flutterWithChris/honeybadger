@@ -1,3 +1,5 @@
+import 'package:honeybadger/profile/review.dart';
+
 enum UserType { freelancer, client }
 
 class User {
@@ -6,6 +8,9 @@ class User {
   String? lastName;
   String? email;
   String? password;
+  double? rating;
+  int? ratingCount;
+  List<Review>? reviews;
   String? phoneNumber;
   String? address;
   String? title;
@@ -28,6 +33,9 @@ class User {
     this.lastName,
     this.email,
     this.password,
+    this.rating,
+    this.ratingCount,
+    this.reviews,
     this.phoneNumber,
     this.address,
     this.title,
@@ -51,6 +59,14 @@ class User {
     lastName = json['lastName'];
     email = json['email'];
     password = json['password'];
+    rating = json['rating'];
+    ratingCount = json['ratingCount'];
+    if (json['reviews'] != null) {
+      reviews = [];
+      json['reviews'].forEach((v) {
+        reviews?.add(Review.fromJson(v));
+      });
+    }
     phoneNumber = json['phoneNumber'];
     address = json['address'];
     title = json['title'];
@@ -77,6 +93,9 @@ class User {
       'lastName': lastName,
       'email': email,
       'password': password,
+      'rating': rating,
+      'ratingCount': ratingCount,
+      'reviews': reviews?.map((e) => e.toJson()).toList(),
       'phoneNumber': phoneNumber,
       'address': address,
       'title': title,
@@ -102,6 +121,9 @@ class User {
     String? lastName,
     String? email,
     String? password,
+    double? rating,
+    int? ratingCount,
+    List<Review>? reviews,
     String? phoneNumber,
     String? address,
     String? title,
@@ -124,6 +146,9 @@ class User {
       lastName: lastName ?? this.lastName,
       email: email ?? this.email,
       password: password ?? this.password,
+      rating: rating ?? this.rating,
+      ratingCount: ratingCount ?? this.ratingCount,
+      reviews: reviews ?? this.reviews,
       phoneNumber: phoneNumber ?? this.phoneNumber,
       address: address ?? this.address,
       title: title ?? this.title,

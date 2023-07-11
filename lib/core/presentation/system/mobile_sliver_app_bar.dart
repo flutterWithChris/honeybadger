@@ -10,9 +10,9 @@ class MobileSliverAppBar extends StatelessWidget {
       pinned: true,
       centerTitle: true,
       leadingWidth: 40,
-      leading: const CircleAvatar(
-        child: Icon(Icons.person),
-      ),
+      // leading: const CircleAvatar(
+      //   child: Icon(Icons.person),
+      // ),
       title: Padding(
         padding: const EdgeInsets.only(left: 0.0),
         child: Row(

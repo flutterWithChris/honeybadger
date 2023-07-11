@@ -1,4 +1,6 @@
 import 'package:go_router/go_router.dart';
+import 'package:honeybadger/jobs/model/job.dart';
+import 'package:honeybadger/jobs/view/job_page/job_page.dart';
 import 'package:honeybadger/onboarding/view/onboarding_page.dart';
 import 'package:honeybadger/onboarding/view/pages/welcome/welcome_page.dart';
 import 'package:honeybadger/profile/model/user.dart';
@@ -7,7 +9,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 GoRouter goRouter = GoRouter(
   debugLogDiagnostics: true,
-  initialLocation: '/onboarding',
+  initialLocation: '/search',
   redirect: (context, state) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     bool onboarded = prefs.getBool('onboarded') ?? false;
@@ -38,6 +40,10 @@ GoRouter goRouter = GoRouter(
       path: '/search',
       name: 'search',
       builder: (context, state) => const SearchPage(),
-    )
+    ),
+    GoRoute(
+        path: '/job/:id',
+        name: 'job',
+        builder: (context, state) => JobPage(job: state.extra as Job)),
   ],
 );
