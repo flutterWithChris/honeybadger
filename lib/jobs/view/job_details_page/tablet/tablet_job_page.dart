@@ -2,9 +2,9 @@ import 'package:flutter/material.dart';
 
 import '../../../model/job.dart';
 
-class TabletJobPage extends StatelessWidget {
+class TabletJobDetailsPage extends StatelessWidget {
   final Job job;
-  const TabletJobPage({required this.job, super.key});
+  const TabletJobDetailsPage({required this.job, super.key});
 
   @override
   Widget build(BuildContext context) {

@@ -40,33 +40,49 @@ class JobCard extends StatelessWidget {
                 children: [
                   Flexible(
                     flex: 3,
-                    child: Text(job.title!,
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                        style:
-                            Theme.of(context).textTheme.titleMedium?.copyWith(
-                                  fontWeight: FontWeight.bold,
-                                )),
+                    child: Hero(
+                      tag: '${job.id}-title',
+                      child: Material(
+                        color: Colors.transparent,
+                        child: Text(job.title!,
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                            style: Theme.of(context)
+                                .textTheme
+                                .titleMedium
+                                ?.copyWith(
+                                    //fontWeight: FontWeight.bold,
+                                    )),
+                      ),
+                    ),
                   ),
                   Expanded(
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.end,
                       children: [
-                        Chip(
-                          backgroundColor:
-                              Theme.of(context).colorScheme.primaryContainer,
-                          visualDensity: VisualDensity.compact,
-                          padding: EdgeInsets.zero,
-                          side: BorderSide.none,
-                          label: Text(numberFormat.format(job.budget),
-                              maxLines: 1,
-                              overflow: TextOverflow.ellipsis,
-                              style: Theme.of(context)
-                                  .textTheme
-                                  .titleSmall
-                                  ?.copyWith(
-                                    fontWeight: FontWeight.bold,
-                                  )),
+                        Hero(
+                          tag: '${job.id}-budget',
+                          child: Material(
+                            color: Colors.transparent,
+                            type: MaterialType.transparency,
+                            child: Chip(
+                              backgroundColor: Theme.of(context)
+                                  .colorScheme
+                                  .primaryContainer,
+                              visualDensity: VisualDensity.compact,
+                              padding: EdgeInsets.zero,
+                              side: BorderSide.none,
+                              label: Text(numberFormat.format(job.budget),
+                                  maxLines: 1,
+                                  overflow: TextOverflow.ellipsis,
+                                  style: Theme.of(context)
+                                      .textTheme
+                                      .titleSmall
+                                      ?.copyWith(
+                                        fontWeight: FontWeight.bold,
+                                      )),
+                            ),
+                          ),
                         ),
                       ],
                     ),
@@ -77,18 +93,31 @@ class JobCard extends StatelessWidget {
               Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(
-                    job.category!.name!,
-                    maxLines: 1,
-                    style: const TextStyle(
-                      fontStyle: FontStyle.italic,
+                  Hero(
+                    tag: '${job.id}-category',
+                    child: Material(
+                      color: Colors.transparent,
+                      child: Text(
+                        job.category!.name!,
+                        maxLines: 1,
+                        style: const TextStyle(
+                          fontStyle: FontStyle.italic,
+                        ),
+                      ),
                     ),
                   ),
                   const GutterTiny(),
-                  Text(
-                    job.description!,
-                    maxLines: 2,
-                    overflow: TextOverflow.ellipsis,
+                  Hero(
+                    tag: '${job.id}-description',
+                    child: Material(
+                      color: Colors.transparent,
+                      type: MaterialType.transparency,
+                      child: Text(
+                        job.description!,
+                        maxLines: 2,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ),
                   ),
                 ],
               ),

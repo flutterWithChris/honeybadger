@@ -1,6 +1,11 @@
+import 'package:animations/animations.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_animate/flutter_animate.dart';
 import 'package:go_router/go_router.dart';
 import 'package:honeybadger/jobs/model/job.dart';
-import 'package:honeybadger/jobs/view/job_page/job_page.dart';
+import 'package:honeybadger/jobs/view/job_details_page/job_page.dart';
+import 'package:honeybadger/jobs/view/jobs_page/jobs_page.dart';
+import 'package:honeybadger/message/view/messages_page.dart';
 import 'package:honeybadger/onboarding/view/onboarding_page.dart';
 import 'package:honeybadger/onboarding/view/pages/welcome/welcome_page.dart';
 import 'package:honeybadger/profile/model/user.dart';
@@ -9,6 +14,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 GoRouter goRouter = GoRouter(
   debugLogDiagnostics: true,
+  observers: [HeroController()],
   initialLocation: '/search',
   redirect: (context, state) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
@@ -44,6 +50,29 @@ GoRouter goRouter = GoRouter(
     GoRoute(
         path: '/job/:id',
         name: 'job',
-        builder: (context, state) => JobPage(job: state.extra as Job)),
+        pageBuilder: (context, state) => CustomTransitionPage(
+              transitionDuration: 400.ms,
+              reverseTransitionDuration: 400.ms,
+              child: JobDetailsPage(job: state.extra as Job),
+              transitionsBuilder:
+                  (context, animation, secondaryAnimation, child) {
+                return SharedAxisTransition(
+                  animation: animation,
+                  secondaryAnimation: secondaryAnimation,
+                  transitionType: SharedAxisTransitionType.scaled,
+                  child: child,
+                );
+              },
+            )),
+    GoRoute(
+      path: '/jobs',
+      name: 'jobs',
+      builder: (context, state) => const JobsPage(),
+    ),
+    GoRoute(
+      path: '/messages',
+      name: 'messages',
+      builder: (context, state) => const MessagesPage(),
+    )
   ],
 );

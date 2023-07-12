@@ -10,9 +10,9 @@ import 'package:material_design_icons_flutter/material_design_icons_flutter.dart
 
 import '../../../model/job.dart';
 
-class MobileJobPage extends StatelessWidget {
+class MobileJobDetailsPage extends StatelessWidget {
   final Job job;
-  const MobileJobPage({required this.job, super.key});
+  const MobileJobDetailsPage({required this.job, super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -32,11 +32,26 @@ class MobileJobPage extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(job.category!.name!,
-                      style: Theme.of(context).textTheme.bodyMedium),
+                  Hero(
+                    tag: '${job.id}-category',
+                    child: Material(
+                      color: Colors.transparent,
+                      child: Text(job.category!.name!,
+                          style: Theme.of(context)
+                              .textTheme
+                              .bodyMedium
+                              ?.copyWith(fontStyle: FontStyle.italic)),
+                    ),
+                  ),
                   const GutterSmall(),
-                  Text(job.title!,
-                      style: Theme.of(context).textTheme.headlineMedium),
+                  Hero(
+                    tag: '${job.id}-title',
+                    child: Material(
+                      color: Colors.transparent,
+                      child: Text(job.title!,
+                          style: Theme.of(context).textTheme.headlineSmall),
+                    ),
+                  ),
                   const GutterSmall(),
 
                   Row(
@@ -118,22 +133,29 @@ class MobileJobPage extends StatelessWidget {
                           ],
                         ),
                       ),
-                      Chip(
-                        visualDensity: VisualDensity.compact,
-                        padding: EdgeInsets.zero,
-                        side: BorderSide.none,
-                        elevation: 1,
-                        backgroundColor:
-                            Theme.of(context).colorScheme.primaryContainer,
-                        label: Text(numberFormat.format(job.budget),
-                            maxLines: 1,
-                            overflow: TextOverflow.ellipsis,
-                            style: Theme.of(context)
-                                .textTheme
-                                .titleSmall
-                                ?.copyWith(
-                                  fontWeight: FontWeight.bold,
-                                )),
+                      Hero(
+                        tag: '${job.id}-budget',
+                        child: Material(
+                          color: Colors.transparent,
+                          type: MaterialType.transparency,
+                          child: Chip(
+                            visualDensity: VisualDensity.compact,
+                            padding: EdgeInsets.zero,
+                            side: BorderSide.none,
+                            elevation: 1,
+                            backgroundColor:
+                                Theme.of(context).colorScheme.primaryContainer,
+                            label: Text(numberFormat.format(job.budget),
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                                style: Theme.of(context)
+                                    .textTheme
+                                    .titleSmall
+                                    ?.copyWith(
+                                      fontWeight: FontWeight.bold,
+                                    )),
+                          ),
+                        ),
                       ),
                       Chip(
                         elevation: 1.0,
@@ -166,8 +188,15 @@ class MobileJobPage extends StatelessWidget {
                     child: Padding(
                       padding: const EdgeInsets.symmetric(
                           horizontal: 16.0, vertical: 16.0),
-                      child: Text(job.description!,
-                          style: Theme.of(context).textTheme.bodyLarge),
+                      child: Hero(
+                        tag: '${job.id}-description',
+                        child: Material(
+                          color: Colors.transparent,
+                          type: MaterialType.transparency,
+                          child: Text(job.description!,
+                              style: Theme.of(context).textTheme.bodyMedium),
+                        ),
+                      ),
                     ),
                   ),
                   const Gutter(),

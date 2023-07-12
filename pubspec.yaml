@@ -48,6 +48,8 @@ dependencies:
   intl: ^0.18.1
   cached_network_image: ^3.2.3
   jiffy: ^6.2.1
+  animations: ^2.0.7
+  flutter_animate: ^4.2.0
 
 dev_dependencies:
   flutter_test:
