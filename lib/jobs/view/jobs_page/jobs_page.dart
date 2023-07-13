@@ -26,19 +26,22 @@ class JobsPage extends StatelessWidget {
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     Icon(FontAwesomeIcons.earthAmericas,
-                        size: 72.0, color: Colors.grey[600]),
+                        size: 72.0,
+                        color: Theme.of(context).brightness == Brightness.light
+                            ? Colors.grey[500]
+                            : Colors.grey[600]),
                     const Gutter(),
                     Text('A world of opportunities..',
                         style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                              color: Colors.grey[600],
-                            )),
+                            color:
+                                Theme.of(context).brightness == Brightness.light
+                                    ? Colors.grey[500]
+                                    : Colors.grey[600])),
                     const Gutter(),
-                    FilledButton.tonal(
+                    FilledButton(
+                        // style: FilledButton.styleFrom(
+                        //     foregroundColor: Colors.white),
                         onPressed: () => context.go('/search  '),
-                        style: OutlinedButton.styleFrom(
-                            //   foregroundColor: Colors.grey[600],
-                            //side: BorderSide(color: Colors.grey[600]!),
-                            ),
                         child: const Text(' Search Jobs'))
                   ],
                 )),

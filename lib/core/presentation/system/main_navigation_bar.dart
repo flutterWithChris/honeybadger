@@ -33,6 +33,9 @@ class _MainBottomNavBarState extends State<MainBottomNavBar> {
               context.go('/messages');
               break;
             case 3:
+              context.go('/payments');
+              break;
+            case 4:
               context.go('/profile');
               break;
           }

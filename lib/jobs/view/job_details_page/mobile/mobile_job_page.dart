@@ -10,10 +10,16 @@ import 'package:material_design_icons_flutter/material_design_icons_flutter.dart
 
 import '../../../model/job.dart';
 
-class MobileJobDetailsPage extends StatelessWidget {
+class MobileJobDetailsPage extends StatefulWidget {
   final Job job;
   const MobileJobDetailsPage({required this.job, super.key});
 
+  @override
+  State<MobileJobDetailsPage> createState() => _MobileJobDetailsPageState();
+}
+
+class _MobileJobDetailsPageState extends State<MobileJobDetailsPage> {
+  bool _writingProposal = false;
   @override
   Widget build(BuildContext context) {
     final NumberFormat numberFormat = NumberFormat.simpleCurrency(
@@ -33,10 +39,10 @@ class MobileJobDetailsPage extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Hero(
-                    tag: '${job.id}-category',
+                    tag: '${widget.job.id}-category',
                     child: Material(
                       color: Colors.transparent,
-                      child: Text(job.category!.name!,
+                      child: Text(widget.job.category!.name!,
                           style: Theme.of(context)
                               .textTheme
                               .bodyMedium
@@ -45,10 +51,10 @@ class MobileJobDetailsPage extends StatelessWidget {
                   ),
                   const GutterSmall(),
                   Hero(
-                    tag: '${job.id}-title',
+                    tag: '${widget.job.id}-title',
                     child: Material(
                       color: Colors.transparent,
-                      child: Text(job.title!,
+                      child: Text(widget.job.title!,
                           style: Theme.of(context).textTheme.headlineSmall),
                     ),
                   ),
@@ -56,14 +62,14 @@ class MobileJobDetailsPage extends StatelessWidget {
 
                   Row(
                     children: [
-                      job.startDate != null
+                      widget.job.startDate != null
                           ? Text.rich(
                               TextSpan(
                                   text: 'Start:  ',
                                   children: [
                                     TextSpan(
                                         text: Jiffy.parseFromDateTime(
-                                                job.startDate!)
+                                                widget.job.startDate!)
                                             .yMMMMd,
                                         style: const TextStyle(
                                             fontWeight: FontWeight.normal))
@@ -84,14 +90,14 @@ class MobileJobDetailsPage extends StatelessWidget {
                                       TextStyle(fontWeight: FontWeight.bold)),
                             ),
                       const GutterSmall(),
-                      job.endDate != null
+                      widget.job.endDate != null
                           ? Text.rich(
                               TextSpan(
                                   text: 'End:  ',
                                   children: [
                                     TextSpan(
                                         text: Jiffy.parseFromDateTime(
-                                                job.endDate!)
+                                                widget.job.endDate!)
                                             .yMMMMd,
                                         style: const TextStyle(
                                             fontWeight: FontWeight.normal))
@@ -128,13 +134,15 @@ class MobileJobDetailsPage extends StatelessWidget {
                           children: [
                             Icon(MdiIcons.cashLock, size: 16.0),
                             const GutterSmall(),
-                            Text(parseEnumName(job.paymentType.toString()),
+                            Text(
+                                parseEnumName(
+                                    widget.job.paymentType.toString()),
                                 style: Theme.of(context).textTheme.bodyMedium),
                           ],
                         ),
                       ),
                       Hero(
-                        tag: '${job.id}-budget',
+                        tag: '${widget.job.id}-budget',
                         child: Material(
                           color: Colors.transparent,
                           type: MaterialType.transparency,
@@ -145,7 +153,7 @@ class MobileJobDetailsPage extends StatelessWidget {
                             elevation: 1,
                             backgroundColor:
                                 Theme.of(context).colorScheme.primaryContainer,
-                            label: Text(numberFormat.format(job.budget),
+                            label: Text(numberFormat.format(widget.job.budget),
                                 maxLines: 1,
                                 overflow: TextOverflow.ellipsis,
                                 style: Theme.of(context)
@@ -169,12 +177,13 @@ class MobileJobDetailsPage extends StatelessWidget {
                             crossAxisAlignment: WrapCrossAlignment.center,
                             children: [
                               CircleAvatar(
-                                backgroundColor: job.status == JobStatus.open
-                                    ? Colors.green[400]
-                                    : Colors.red,
+                                backgroundColor:
+                                    widget.job.status == JobStatus.open
+                                        ? Colors.green[400]
+                                        : Colors.red,
                                 radius: 4,
                               ),
-                              Text(parseEnumName(job.status.toString()),
+                              Text(parseEnumName(widget.job.status.toString()),
                                   style: Theme.of(context).textTheme.bodyLarge),
                             ]),
                       )
@@ -189,25 +198,128 @@ class MobileJobDetailsPage extends StatelessWidget {
                       padding: const EdgeInsets.symmetric(
                           horizontal: 16.0, vertical: 16.0),
                       child: Hero(
-                        tag: '${job.id}-description',
+                        tag: '${widget.job.id}-description',
                         child: Material(
                           color: Colors.transparent,
                           type: MaterialType.transparency,
-                          child: Text(job.description!,
+                          child: Text(widget.job.description!,
                               style: Theme.of(context).textTheme.bodyMedium),
                         ),
                       ),
                     ),
                   ),
-                  const Gutter(),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      FilledButton.icon(
-                          onPressed: () {},
-                          icon: Icon(MdiIcons.lightningBolt),
-                          label: const Text('Create Proposal')),
-                    ],
+                  const GutterSmall(),
+                  AnimatedSwitcher(
+                    duration: const Duration(milliseconds: 400),
+                    child: _writingProposal
+                        ? Expanded(
+                            child: Column(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                Flexible(
+                                  child: ExpansionTile(
+                                    tilePadding: EdgeInsets.zero,
+                                    expandedAlignment: Alignment.center,
+                                    backgroundColor:
+                                        Theme.of(context).colorScheme.surface,
+                                    title: Row(
+                                      mainAxisSize: MainAxisSize.min,
+                                      children: [
+                                        Icon(MdiIcons.timelineOutline,
+                                            size: 24.0),
+                                        const Gutter(),
+                                        Text('Milestones',
+                                            style: Theme.of(context)
+                                                .textTheme
+                                                .titleLarge),
+                                      ],
+                                    ),
+                                    children: [
+                                      Padding(
+                                        padding: const EdgeInsets.only(
+                                            left: 16.0,
+                                            bottom: 16.0,
+                                            right: 16.0),
+                                        child: Row(
+                                          children: [
+                                            Wrap(
+                                              spacing: 8.0,
+                                              crossAxisAlignment:
+                                                  WrapCrossAlignment.center,
+                                              alignment: WrapAlignment.start,
+                                              children: [
+                                                for (String skill
+                                                    in widget.job.skills!)
+                                                  Chip(
+                                                    padding: EdgeInsets.zero,
+                                                    label: Text(skill),
+                                                  ),
+                                              ],
+                                            ),
+                                          ],
+                                        ),
+                                      )
+                                    ],
+                                  ),
+                                ),
+                                const GutterSmall(),
+                                const Flexible(
+                                  child: TextField(
+                                      minLines: 3,
+                                      maxLines: 5,
+                                      decoration: InputDecoration(
+                                          label: Text('Proposal'),
+                                          hintText: 'Enter your proposal..')),
+                                ),
+                                const GutterSmall(),
+                                Row(
+                                  mainAxisAlignment: MainAxisAlignment.end,
+                                  children: [
+                                    Icon(MdiIcons.contentSaveCheck,
+                                        size: 14.0,
+                                        color: Theme.of(context)
+                                            .colorScheme
+                                            .secondary),
+                                    const GutterTiny(),
+                                    Text('Draft Auto-Saved',
+                                        style: Theme.of(context)
+                                            .textTheme
+                                            .bodySmall),
+                                  ],
+                                ),
+                                const GutterSmall(),
+                                Flexible(
+                                  child: FilledButton.icon(
+                                      onPressed: () {
+                                        setState(() {
+                                          _writingProposal = false;
+                                        });
+                                      },
+                                      icon: Icon(MdiIcons.sendCircleOutline),
+                                      label: const Text('Send Proposal')),
+                                ),
+                              ],
+                            ),
+                          )
+                        : Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.center,
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                Flexible(
+                                  child: FilledButton.icon(
+                                    onPressed: () {
+                                      setState(() {
+                                        _writingProposal = true;
+                                      });
+                                    },
+                                    icon: Icon(MdiIcons.lightningBolt),
+                                    label: const Text('Create Proposal'),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
                   ),
                   const Gutter(),
                   ExpansionTile(
@@ -220,11 +332,11 @@ class MobileJobDetailsPage extends StatelessWidget {
                           padding: const EdgeInsets.only(right: 16.0),
                           child: CircleAvatar(
                               radius: 14,
-                              child: job.client!.photoUrl == null ||
-                                      job.client!.photoUrl!.isEmpty
+                              child: widget.job.client!.photoUrl == null ||
+                                      widget.job.client!.photoUrl!.isEmpty
                                   ? const Icon(Icons.person, size: 20)
                                   : CachedNetworkImage(
-                                      imageUrl: job.client!.photoUrl!)),
+                                      imageUrl: widget.job.client!.photoUrl!)),
                         ),
                         Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
@@ -233,13 +345,13 @@ class MobileJobDetailsPage extends StatelessWidget {
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
                                 Text(
-                                  job.client!.firstName!,
+                                  widget.job.client!.firstName!,
                                   style: Theme.of(context).textTheme.titleLarge,
                                 ),
                                 const GutterSmall(),
                                 const Text('-'),
                                 const GutterSmall(),
-                                if (job.client!.rating != null)
+                                if (widget.job.client!.rating != null)
                                   Row(
                                     mainAxisSize: MainAxisSize.min,
                                     mainAxisAlignment: MainAxisAlignment.end,
@@ -252,11 +364,11 @@ class MobileJobDetailsPage extends StatelessWidget {
                                       const GutterTiny(),
                                       Text.rich(TextSpan(
                                           text:
-                                              '${job.client!.rating.toString()} ',
+                                              '${widget.job.client!.rating.toString()} ',
                                           children: [
                                             TextSpan(
                                                 text:
-                                                    '(${job.client!.ratingCount.toString()})',
+                                                    '(${widget.job.client!.ratingCount.toString()})',
                                                 style: Theme.of(context)
                                                     .textTheme
                                                     .bodySmall)
@@ -270,7 +382,7 @@ class MobileJobDetailsPage extends StatelessWidget {
                                 Icon(MdiIcons.mapMarkerOutline, size: 14.0),
                                 const GutterTiny(),
                                 Text(
-                                    '${job.client!.city!}, ${job.client!.state!}',
+                                    '${widget.job.client!.city!}, ${widget.job.client!.state!}',
                                     style:
                                         Theme.of(context).textTheme.bodyMedium),
                               ],
@@ -306,8 +418,9 @@ class MobileJobDetailsPage extends StatelessWidget {
                               crossAxisAlignment: WrapCrossAlignment.center,
                               alignment: WrapAlignment.start,
                               children: [
-                                for (String skill in job.skills!)
+                                for (String skill in widget.job.skills!)
                                   Chip(
+                                    padding: EdgeInsets.zero,
                                     label: Text(skill),
                                   ),
                               ],
@@ -317,7 +430,7 @@ class MobileJobDetailsPage extends StatelessWidget {
                       )
                     ],
                   ),
-                  if (job.tags != null && job.tags!.isNotEmpty)
+                  if (widget.job.tags != null && widget.job.tags!.isNotEmpty)
                     ExpansionTile(
                       tilePadding: EdgeInsets.zero,
                       expandedAlignment: Alignment.center,
@@ -340,8 +453,9 @@ class MobileJobDetailsPage extends StatelessWidget {
                             alignment: WrapAlignment.start,
                             runAlignment: WrapAlignment.start,
                             children: [
-                              for (String tag in job.tags!)
+                              for (String tag in widget.job.tags!)
                                 Chip(
+                                  padding: EdgeInsets.zero,
                                   label: Text(tag),
                                 ),
                             ],

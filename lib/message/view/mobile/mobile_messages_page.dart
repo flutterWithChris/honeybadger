@@ -47,13 +47,19 @@ class MobileMessagesPage extends StatelessWidget {
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       Icon(MdiIcons.lightbulbOnOutline,
-                          size: 72.0, color: Colors.grey[600]),
+                          size: 72.0,
+                          color:
+                              Theme.of(context).brightness == Brightness.light
+                                  ? Colors.grey[500]
+                                  : Colors.grey[600]),
                       const Gutter(),
                       Text(
                         'Empty Inbox, Full Potential.',
                         style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                              color: Colors.grey[600],
-                            ),
+                            color:
+                                Theme.of(context).brightness == Brightness.light
+                                    ? Colors.grey[500]
+                                    : Colors.grey[600]),
                       ),
                     ],
                   ),

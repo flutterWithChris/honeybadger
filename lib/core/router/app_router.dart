@@ -8,7 +8,10 @@ import 'package:honeybadger/jobs/view/jobs_page/jobs_page.dart';
 import 'package:honeybadger/message/view/messages_page.dart';
 import 'package:honeybadger/onboarding/view/onboarding_page.dart';
 import 'package:honeybadger/onboarding/view/pages/welcome/welcome_page.dart';
+import 'package:honeybadger/payments/view/payments_page.dart';
 import 'package:honeybadger/profile/model/user.dart';
+import 'package:honeybadger/profile/view/profile_page.dart';
+import 'package:honeybadger/proposals/create/view/create_proposal_page.dart';
 import 'package:honeybadger/search/view/search_page.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -63,7 +66,16 @@ GoRouter goRouter = GoRouter(
                   child: child,
                 );
               },
-            )),
+            ),
+        routes: [
+          GoRoute(
+            path: 'create-proposal',
+            name: 'create-proposal',
+            builder: (context, state) => CreateProposalPage(
+              job: state.extra as Job,
+            ),
+          ),
+        ]),
     GoRoute(
       path: '/jobs',
       name: 'jobs',
@@ -73,6 +85,15 @@ GoRouter goRouter = GoRouter(
       path: '/messages',
       name: 'messages',
       builder: (context, state) => const MessagesPage(),
-    )
+    ),
+    GoRoute(
+      path: '/payments',
+      name: 'payments',
+      builder: (context, state) => const PaymentsPage(),
+    ),
+    GoRoute(
+        path: '/profile',
+        name: 'profile',
+        builder: (context, state) => const ProfilePage())
   ],
 );

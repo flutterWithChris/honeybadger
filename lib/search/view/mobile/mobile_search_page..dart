@@ -264,7 +264,7 @@ class _MobileSearchPageState extends State<MobileSearchPage> {
               [
                 Padding(
                   padding: const EdgeInsets.symmetric(
-                      horizontal: 8.0, vertical: 8.0),
+                      horizontal: 8.0, vertical: 4.0),
                   child: JobCard(
                     job: Job(
                       id: '1',
@@ -301,7 +301,7 @@ class _MobileSearchPageState extends State<MobileSearchPage> {
                 ),
                 Padding(
                   padding: const EdgeInsets.symmetric(
-                      horizontal: 8.0, vertical: 8.0),
+                      horizontal: 8.0, vertical: 4.0),
                   child: JobCard(
                     job: Job(
                       id: '2',
@@ -338,7 +338,7 @@ class _MobileSearchPageState extends State<MobileSearchPage> {
                 ),
                 Padding(
                   padding: const EdgeInsets.symmetric(
-                      horizontal: 8.0, vertical: 8.0),
+                      horizontal: 8.0, vertical: 4.0),
                   child: JobCard(
                     job: Job(
                       id: '3',
@@ -375,7 +375,7 @@ class _MobileSearchPageState extends State<MobileSearchPage> {
                 ),
                 Padding(
                   padding: const EdgeInsets.symmetric(
-                      horizontal: 8.0, vertical: 8.0),
+                      horizontal: 8.0, vertical: 4.0),
                   child: JobCard(
                     job: Job(
                       id: '4',
@@ -412,7 +412,7 @@ class _MobileSearchPageState extends State<MobileSearchPage> {
                 ),
                 Padding(
                   padding: const EdgeInsets.symmetric(
-                      horizontal: 8.0, vertical: 8.0),
+                      horizontal: 8.0, vertical: 4.0),
                   child: JobCard(
                     job: Job(
                       id: '5',
