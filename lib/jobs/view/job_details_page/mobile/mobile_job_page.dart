@@ -240,20 +240,51 @@ class _MobileJobDetailsPageState extends State<MobileJobDetailsPage> {
                                             left: 16.0,
                                             bottom: 16.0,
                                             right: 16.0),
-                                        child: Row(
+                                        child: Column(
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.start,
+                                          mainAxisSize: MainAxisSize.min,
                                           children: [
-                                            Wrap(
-                                              spacing: 8.0,
-                                              crossAxisAlignment:
-                                                  WrapCrossAlignment.center,
-                                              alignment: WrapAlignment.start,
+                                            // FilledButton(
+                                            //     style: FilledButton.styleFrom(
+                                            //         minimumSize:
+                                            //             const Size(160, 32),
+                                            //         fixedSize:
+                                            //             const Size(100, 32)),
+                                            //     onPressed: () {},
+                                            //     child: const Text(
+                                            //         'Add Milestone')),
+                                            // const Text('Milestone 1'),
+                                            const Gutter(),
+                                            Row(
+                                              mainAxisSize: MainAxisSize.min,
                                               children: [
-                                                for (String skill
-                                                    in widget.job.skills!)
-                                                  Chip(
-                                                    padding: EdgeInsets.zero,
-                                                    label: Text(skill),
+                                                Flexible(
+                                                  child: IconButton(
+                                                      style: ButtonStyle(
+                                                          padding: MaterialStateProperty
+                                                              .all<EdgeInsets>(
+                                                                  EdgeInsets
+                                                                      .zero)),
+                                                      onPressed: () {},
+                                                      icon: Icon(
+                                                          MdiIcons.plusCircle)),
+                                                ),
+                                                const GutterSmall(),
+                                                const Expanded(
+                                                  flex: 2,
+                                                  child: TextField(
+                                                    decoration: InputDecoration(
+                                                        hintText:
+                                                            'Milestone name..'),
                                                   ),
+                                                ),
+                                                const GutterSmall(),
+                                                const Expanded(
+                                                    child: TextField(
+                                                  decoration: InputDecoration(
+                                                      hintText: 'Budget..'),
+                                                ))
                                               ],
                                             ),
                                           ],

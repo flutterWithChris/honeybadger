@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_gutter/flutter_gutter.dart';
-import 'package:go_router/go_router.dart';
 import 'package:honeybadger/core/presentation/system/main_sliver_app_bar.dart';
 import 'package:honeybadger/onboarding/bloc/onboarding_bloc.dart';
 import 'package:honeybadger/profile/model/user.dart';
 
 class DesktopWelcomePage extends StatefulWidget {
-  const DesktopWelcomePage({super.key});
+  final PageController? pageController;
+  const DesktopWelcomePage({this.pageController, super.key});
 
   @override
   State<DesktopWelcomePage> createState() => _DesktopWelcomePageState();
@@ -170,10 +170,12 @@ class _DesktopWelcomePageState extends State<DesktopWelcomePage> {
                       ),
                       const GutterLarge(),
                       FilledButton.tonal(
-                          onPressed: () {
+                          onPressed: () async {
                             context.read<OnboardingBloc>().add(
                                 StartOnboarding(User(userType: _userType)));
-                            context.go('/onboarding', extra: _userType);
+                            await widget.pageController?.nextPage(
+                                duration: const Duration(milliseconds: 500),
+                                curve: Curves.ease);
                           },
                           child: Padding(
                             padding: const EdgeInsets.symmetric(

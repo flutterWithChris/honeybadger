@@ -1,3 +1,4 @@
+import 'package:honeybadger/profile/model/portfolio_project.dart';
 import 'package:honeybadger/profile/review.dart';
 
 enum UserType { freelancer, client }
@@ -17,6 +18,8 @@ class User {
   List<String>? skills;
   double? hourlyRate;
   UserType? userType;
+  List<PortfolioProject>? portfolioProjects;
+
   String? city;
   String? state;
   String? zip;
@@ -42,6 +45,7 @@ class User {
     this.skills,
     this.hourlyRate,
     this.userType = UserType.freelancer,
+    this.portfolioProjects,
     this.city,
     this.state,
     this.zip,
@@ -75,6 +79,11 @@ class User {
     userType = json['userType'] == 'freelancer'
         ? UserType.freelancer
         : UserType.client;
+    portfolioProjects = json['portfolioProjects'] != null
+        ? (json['portfolioProjects'] as List)
+            .map((e) => PortfolioProject.fromJson(e))
+            .toList()
+        : null;
     city = json['city'];
     state = json['state'];
     zip = json['zip'];
@@ -102,6 +111,7 @@ class User {
       'skills': skills,
       'hourlyRate': hourlyRate,
       'userType': userType == UserType.freelancer ? 'freelancer' : 'client',
+      'portfolioProjects': portfolioProjects?.map((e) => e.toJson()).toList(),
       'city': city,
       'state': state,
       'zip': zip,
@@ -130,6 +140,7 @@ class User {
     List<String>? skills,
     double? hourlyRate,
     UserType? userType,
+    List<PortfolioProject>? portfolioProjects,
     String? city,
     String? state,
     String? zip,
@@ -155,6 +166,7 @@ class User {
       skills: skills ?? this.skills,
       hourlyRate: hourlyRate ?? this.hourlyRate,
       userType: userType ?? this.userType,
+      portfolioProjects: portfolioProjects ?? this.portfolioProjects,
       city: city ?? this.city,
       state: state ?? this.state,
       zip: zip ?? this.zip,

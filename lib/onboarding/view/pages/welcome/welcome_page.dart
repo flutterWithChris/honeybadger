@@ -17,7 +17,7 @@ class _WelcomePageState extends State<WelcomePage> {
   Widget build(BuildContext context) {
     return LayoutBuilder(builder: (context, constraints) {
       if (constraints.maxWidth > desktopWidthConstraint) {
-        return const DesktopWelcomePage();
+        return DesktopWelcomePage(pageController: widget.pageController);
       } else if (constraints.maxWidth > tabletWidthConstraint) {
         return const TabletWelcomePage();
       } else {
