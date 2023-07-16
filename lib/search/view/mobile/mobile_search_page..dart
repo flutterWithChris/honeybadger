@@ -1,4 +1,6 @@
+import 'package:animations/animations.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_gutter/flutter_gutter.dart';
 import 'package:go_router/go_router.dart';
 import 'package:honeybadger/core/constants.dart';
@@ -75,178 +77,264 @@ class _MobileSearchPageState extends State<MobileSearchPage> {
                     crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
                       // Hourly / Fixes Popup Menu
-                      PopupMenuButton(
-                        //  icon: Icon(MdiIcons.filterVariant),
-                        onSelected: (value) {
-                          setState(() {
-                            paymentType = value;
-                          });
+                      PageTransitionSwitcher(
+                        duration: 400.ms,
+                        // reverse: true,
+                        transitionBuilder:
+                            (child, primaryAnimation, secondaryAnimation) {
+                          return SharedAxisTransition(
+                            animation: primaryAnimation,
+                            secondaryAnimation: secondaryAnimation,
+                            transitionType: SharedAxisTransitionType.vertical,
+                            child: child,
+                          );
                         },
-                        child: Chip(
-                          label: Row(
-                            children: [
-                              Icon(MdiIcons.currencyUsd, size: 16.0),
-                              const GutterTiny(),
-                              Text(parseEnumName(paymentType.toString())),
-                            ],
-                          ),
-                          visualDensity: VisualDensity.compact,
-                          padding: EdgeInsets.zero,
-                          // side: BorderSide.none,
-                        ),
-                        itemBuilder: (context) => [
-                          const PopupMenuItem(
-                            value: PaymentType.hourly,
-                            child: Text('Hourly'),
-                          ),
-                          const PopupMenuItem(
-                            value: PaymentType.fixedPrice,
-                            child: Text('Fixed Price'),
-                          ),
-                        ],
+                        child: paymentType == PaymentType.hourly
+                            ? PopupMenuButton(
+                              padding: EdgeInsets.zero,
+                                key: const ValueKey('hourlyPopupMenu'),
+                                //  icon: Icon(MdiIcons.filterVariant),
+                                onSelected: (value) {
+                                  setState(() {
+                                    paymentType = value;
+                                  });
+                                },
+                                child: Chip(
+                                  label: Row(
+                                    children: [
+                                      paymentType == PaymentType.hourly
+                                          ? Icon(MdiIcons.clockTimeFourOutline,
+                                              size: 14.0)
+                                          : Icon(
+                                              MdiIcons.cashLock,
+                                              size: 14.0,
+                                              color: Theme.of(context)
+                                                  .iconTheme
+                                                  .color,
+                                            ),
+                                      const GutterTiny(),
+                                      Text(parseEnumName(
+                                          paymentType.toString())),
+                                    ],
+                                  ),
+                                  visualDensity: VisualDensity.compact,
+                                  padding: EdgeInsets.zero,
+                                  // side: BorderSide.none,
+                                ),
+                                itemBuilder: (context) => [
+                                  const PopupMenuItem(
+                                    value: PaymentType.hourly,
+                                    child: Text('Hourly'),
+                                  ),
+                                  const PopupMenuItem(
+                                    value: PaymentType.fixedPrice,
+                                    child: Text('Fixed Price'),
+                                  ),
+                                ],
+                              )
+                            : PopupMenuButton(
+                                                            padding: EdgeInsets.zero,
+
+                                key: const ValueKey('fixedPopupMenu'),
+                                //  icon: Icon(MdiIcons.filterVariant),
+                                onSelected: (value) {
+                                  setState(() {
+                                    paymentType = value;
+                                  });
+                                },
+                                child: Chip(
+                                  label: Row(
+                                    children: [
+                                      paymentType == PaymentType.hourly
+                                          ? Icon(MdiIcons.clockTimeFourOutline,
+                                              size: 14.0)
+                                          : Icon(
+                                              MdiIcons.cashLock,
+                                              size: 14.0,
+                                              color: Theme.of(context)
+                                                  .iconTheme
+                                                  .color,
+                                            ),
+                                      const GutterTiny(),
+                                      Text(parseEnumName(
+                                          paymentType.toString())),
+                                    ],
+                                  ),
+                                  visualDensity: VisualDensity.compact,
+                                  padding: EdgeInsets.zero,
+                                  // side: BorderSide.none,
+                                ),
+                                itemBuilder: (context) => [
+                                  const PopupMenuItem(
+                                    value: PaymentType.hourly,
+                                    child: Text('Hourly'),
+                                  ),
+                                  const PopupMenuItem(
+                                    value: PaymentType.fixedPrice,
+                                    child: Text('Fixed Price'),
+                                  ),
+                                ],
+                              ),
                       ),
                       const Gutter(),
-                      paymentType == PaymentType.hourly
-                          ? PopupMenuButton(
-                              elevation: 0.3,
-                              //  icon: Icon(MdiIcons.filterVariant),
-                              onOpened: () {
-                                _minHourlyRateController.text =
-                                    hourlyRateRange[0].toStringAsFixed(0);
-                                _maxHourlyRateController.text =
-                                    hourlyRateRange[1].toStringAsFixed(0);
-                              },
-                              onSelected: (value) {
-                                setState(() {
-                                  paymentType = value;
-                                });
-                              },
-                              child: Chip(
-                                label: Row(
-                                  children: [
-                                    Text(
-                                        '\$${hourlyRateRange[0].toStringAsFixed(0)} - \$${hourlyRateRange[1].toStringAsFixed(0)}/hr.'),
-                                  ],
-                                ),
-                                visualDensity: VisualDensity.compact,
-                                padding: EdgeInsets.zero,
-                                // side: BorderSide.none,
-                              ),
-                              itemBuilder: (context) => [
-                                PopupMenuItem(
-                                  padding: const EdgeInsets.symmetric(
-                                      horizontal: 8.0, vertical: 4.0),
-                                  value: PaymentType.hourly,
-                                  child: TextField(
-                                    controller: _minHourlyRateController,
-                                    autofocus: true,
-                                    decoration: const InputDecoration(
-                                        prefixText: '\$',
-                                        filled: true,
-                                        border: OutlineInputBorder(),
-                                        labelText: 'Min.'),
+
+                      PageTransitionSwitcher(
+                        duration: 400.ms,
+                        // reverse: true,
+                        transitionBuilder:
+                            (child, primaryAnimation, secondaryAnimation) {
+                          return SharedAxisTransition(
+                            animation: primaryAnimation,
+                            secondaryAnimation: secondaryAnimation,
+                            transitionType: SharedAxisTransitionType.vertical,
+                            child: child,
+                          );
+                        },
+                        child: paymentType == PaymentType.hourly
+                            ? PopupMenuButton(
+                                key: const ValueKey('hourly'),
+                                elevation: 0.3,
+                                //  icon: Icon(MdiIcons.filterVariant),
+                                onOpened: () {
+                                  _minHourlyRateController.text =
+                                      hourlyRateRange[0].toStringAsFixed(0);
+                                  _maxHourlyRateController.text =
+                                      hourlyRateRange[1].toStringAsFixed(0);
+                                },
+                                onSelected: (value) {
+                                  setState(() {
+                                    paymentType = value;
+                                  });
+                                },
+                                child: Chip(
+                                  label: Row(
+                                    children: [
+                                      Text(
+                                          '\$${hourlyRateRange[0].toStringAsFixed(0)} - \$${hourlyRateRange[1].toStringAsFixed(0)}/hr.'),
+                                    ],
                                   ),
+                                  visualDensity: VisualDensity.compact,
+                                  padding: EdgeInsets.zero,
+                                  // side: BorderSide.none,
                                 ),
-                                PopupMenuItem(
-                                  padding: const EdgeInsets.symmetric(
-                                      horizontal: 8.0, vertical: 4.0),
-                                  value: PaymentType.hourly,
-                                  child: TextField(
-                                    controller: _maxHourlyRateController,
-                                    decoration: const InputDecoration(
-                                        prefixText: '\$',
-                                        filled: true,
-                                        border: OutlineInputBorder(),
-                                        labelText: 'Max.'),
-                                  ),
-                                ),
-                                PopupMenuItem(
-                                    child: Row(
-                                  mainAxisAlignment: MainAxisAlignment.end,
-                                  children: [
-                                    FilledButton(
-                                      style: FilledButton.styleFrom(
-                                          alignment: Alignment.center,
-                                          minimumSize: const Size(80, 32)),
-                                      onPressed: () {
-                                        context.pop();
-                                      },
-                                      child: const Text('Apply'),
+                                itemBuilder: (context) => [
+                                  PopupMenuItem(
+                                    padding: const EdgeInsets.symmetric(
+                                        horizontal: 8.0, vertical: 4.0),
+                                    value: PaymentType.hourly,
+                                    child: TextField(
+                                      controller: _minHourlyRateController,
+                                      autofocus: true,
+                                      decoration: const InputDecoration(
+                                          prefixText: '\$',
+                                          filled: true,
+                                          border: OutlineInputBorder(),
+                                          labelText: 'Min.'),
                                     ),
-                                  ],
-                                )),
-                              ],
-                            )
-                          : PopupMenuButton(
-                              elevation: 0.3,
-                              //  icon: Icon(MdiIcons.filterVariant),
-                              onOpened: () {
-                                _minFixedPriceController.text =
-                                    fixedPriceRange[0].toString();
-                                _maxFixedPriceController.text =
-                                    fixedPriceRange[1].toString();
-                              },
-                              onSelected: (value) {
-                                setState(() {
-                                  paymentType = value;
-                                });
-                              },
-                              child: Chip(
-                                label: Row(
-                                  children: [
-                                    Text(
-                                        '${convertIntToMoney(fixedPriceRange[0])} - ${convertIntToMoney(fixedPriceRange[1])}'),
-                                  ],
-                                ),
-                                visualDensity: VisualDensity.compact,
-                                padding: EdgeInsets.zero,
-                                // side: BorderSide.none,
-                              ),
-                              itemBuilder: (context) => [
-                                PopupMenuItem(
-                                  padding: const EdgeInsets.symmetric(
-                                      horizontal: 8.0, vertical: 4.0),
-                                  value: PaymentType.hourly,
-                                  child: TextField(
-                                    controller: _minFixedPriceController,
-                                    autofocus: true,
-                                    decoration: const InputDecoration(
-                                        prefixText: '\$',
-                                        filled: true,
-                                        border: OutlineInputBorder(),
-                                        labelText: 'Min.'),
                                   ),
-                                ),
-                                PopupMenuItem(
-                                  padding: const EdgeInsets.symmetric(
-                                      horizontal: 8.0, vertical: 4.0),
-                                  value: PaymentType.hourly,
-                                  child: TextField(
-                                    controller: _maxFixedPriceController,
-                                    decoration: const InputDecoration(
-                                        prefixText: '\$',
-                                        filled: true,
-                                        border: OutlineInputBorder(),
-                                        labelText: 'Max.'),
-                                  ),
-                                ),
-                                PopupMenuItem(
-                                    child: Row(
-                                  mainAxisAlignment: MainAxisAlignment.end,
-                                  children: [
-                                    FilledButton(
-                                      style: FilledButton.styleFrom(
-                                          alignment: Alignment.center,
-                                          minimumSize: const Size(80, 32)),
-                                      onPressed: () {
-                                        context.pop();
-                                      },
-                                      child: const Text('Apply'),
+                                  PopupMenuItem(
+                                    padding: const EdgeInsets.symmetric(
+                                        horizontal: 8.0, vertical: 4.0),
+                                    value: PaymentType.hourly,
+                                    child: TextField(
+                                      controller: _maxHourlyRateController,
+                                      decoration: const InputDecoration(
+                                          prefixText: '\$',
+                                          filled: true,
+                                          border: OutlineInputBorder(),
+                                          labelText: 'Max.'),
                                     ),
-                                  ],
-                                )),
-                              ],
-                            ),
+                                  ),
+                                  PopupMenuItem(
+                                      child: Row(
+                                    mainAxisAlignment: MainAxisAlignment.end,
+                                    children: [
+                                      FilledButton(
+                                        style: FilledButton.styleFrom(
+                                            alignment: Alignment.center,
+                                            minimumSize: const Size(80, 32)),
+                                        onPressed: () {
+                                          context.pop();
+                                        },
+                                        child: const Text('Apply'),
+                                      ),
+                                    ],
+                                  )),
+                                ],
+                              )
+                            : PopupMenuButton(
+                                key: const ValueKey('fixed'),
+                                elevation: 0.3,
+                                //  icon: Icon(MdiIcons.filterVariant),
+                                onOpened: () {
+                                  _minFixedPriceController.text =
+                                      fixedPriceRange[0].toString();
+                                  _maxFixedPriceController.text =
+                                      fixedPriceRange[1].toString();
+                                },
+                                onSelected: (value) {
+                                  setState(() {
+                                    paymentType = value;
+                                  });
+                                },
+                                child: Chip(
+                                  label: Row(
+                                    children: [
+                                      Text(
+                                          '${convertIntToMoney(fixedPriceRange[0])} - ${convertIntToMoney(fixedPriceRange[1])}'),
+                                    ],
+                                  ),
+                                  visualDensity: VisualDensity.compact,
+                                  padding: EdgeInsets.zero,
+                                  // side: BorderSide.none,
+                                ),
+                                itemBuilder: (context) => [
+                                  PopupMenuItem(
+                                    padding: const EdgeInsets.symmetric(
+                                        horizontal: 8.0, vertical: 4.0),
+                                    value: PaymentType.hourly,
+                                    child: TextField(
+                                      controller: _minFixedPriceController,
+                                      autofocus: true,
+                                      decoration: const InputDecoration(
+                                          prefixText: '\$',
+                                          filled: true,
+                                          border: OutlineInputBorder(),
+                                          labelText: 'Min.'),
+                                    ),
+                                  ),
+                                  PopupMenuItem(
+                                    padding: const EdgeInsets.symmetric(
+                                        horizontal: 8.0, vertical: 4.0),
+                                    value: PaymentType.hourly,
+                                    child: TextField(
+                                      controller: _maxFixedPriceController,
+                                      decoration: const InputDecoration(
+                                          prefixText: '\$',
+                                          filled: true,
+                                          border: OutlineInputBorder(),
+                                          labelText: 'Max.'),
+                                    ),
+                                  ),
+                                  PopupMenuItem(
+                                      child: Row(
+                                    mainAxisAlignment: MainAxisAlignment.end,
+                                    children: [
+                                      FilledButton(
+                                        style: FilledButton.styleFrom(
+                                            alignment: Alignment.center,
+                                            minimumSize: const Size(80, 32)),
+                                        onPressed: () {
+                                          context.pop();
+                                        },
+                                        child: const Text('Apply'),
+                                      ),
+                                    ],
+                                  )),
+                                ],
+                              ),
+                      ),
+                      const Gutter(),
                       TextButton(
                           style: TextButton.styleFrom(
                               padding: EdgeInsets.zero,

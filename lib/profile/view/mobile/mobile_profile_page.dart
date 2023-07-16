@@ -58,61 +58,67 @@ class MobileProfilePage extends StatelessWidget {
                         ),
                         const GutterTiny(),
                         Row(
+                          mainAxisSize: MainAxisSize.min,
                           children: [
-                            SizedBox(
-                              height: 42.0,
-                              child: FittedBox(
-                                child: Chip(
-                                  padding: const EdgeInsets.all(0.0),
-                                  label: Row(
-                                    children: [
-                                      Icon(
-                                        MdiIcons.mapMarker,
-                                        size: 14.0,
-                                        color:
-                                            Theme.of(context).iconTheme.color,
-                                      ),
-                                      const GutterSmall(),
-                                      Text(
-                                        '${user.state}',
-                                        style: Theme.of(context)
-                                            .textTheme
-                                            .bodySmall
-                                            ?.copyWith(
-                                                fontWeight: FontWeight.bold),
-                                      ),
-                                    ],
+                            Flexible(
+                              child: SizedBox(
+                                height: 30.0,
+                                child: FittedBox(
+                                  child: Chip(
+                                    padding: const EdgeInsets.all(0.0),
+                                    label: Row(
+                                      children: [
+                                        Icon(
+                                          MdiIcons.mapMarker,
+                                          size: 14.0,
+                                          color:
+                                              Theme.of(context).iconTheme.color,
+                                        ),
+                                        const GutterSmall(),
+                                        Text(
+                                          '${user.state}',
+                                          style: Theme.of(context)
+                                              .textTheme
+                                              .bodySmall
+                                              ?.copyWith(
+                                                  fontWeight: FontWeight.bold),
+                                        ),
+                                      ],
+                                    ),
                                   ),
                                 ),
                               ),
                             ),
                             const Gutter(),
-                            SizedBox(
-                              height: 42.0,
-                              child: FittedBox(
-                                child: Chip(
-                                  visualDensity: VisualDensity.compact,
-                                  padding: EdgeInsets.zero,
-                                  side: BorderSide.none,
-                                  backgroundColor:
-                                      Theme.of(context).colorScheme.tertiary,
-                                  label: Row(
-                                    mainAxisSize: MainAxisSize.min,
-                                    children: [
-                                      Icon(
-                                        MdiIcons.trophyAward,
-                                        size: 14.0,
-                                        color: Colors.white,
-                                      ),
-                                      const GutterTiny(),
-                                      Text('Top Rated',
-                                          style: Theme.of(context)
-                                              .textTheme
-                                              .bodySmall
-                                              ?.copyWith(
-                                                  color: Colors.white,
-                                                  fontWeight: FontWeight.bold)),
-                                    ],
+                            Flexible(
+                              child: SizedBox(
+                                height: 30.0,
+                                child: FittedBox(
+                                  child: Chip(
+                                    visualDensity: VisualDensity.compact,
+                                    padding: EdgeInsets.zero,
+                                    side: BorderSide.none,
+                                    backgroundColor:
+                                        Theme.of(context).colorScheme.tertiary,
+                                    label: Row(
+                                      mainAxisSize: MainAxisSize.min,
+                                      children: [
+                                        Icon(
+                                          MdiIcons.trophyAward,
+                                          size: 14.0,
+                                          color: Colors.white,
+                                        ),
+                                        const GutterTiny(),
+                                        Text('Top Rated',
+                                            style: Theme.of(context)
+                                                .textTheme
+                                                .bodySmall
+                                                ?.copyWith(
+                                                    color: Colors.white,
+                                                    fontWeight:
+                                                        FontWeight.bold)),
+                                      ],
+                                    ),
                                   ),
                                 ),
                               ),

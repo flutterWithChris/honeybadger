@@ -1,8 +1,10 @@
-import 'package:flex_color_scheme/flex_color_scheme.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_gutter/flutter_gutter.dart';
 import 'package:go_router/go_router.dart';
+import 'package:honeybadger/core/constants.dart';
 import 'package:honeybadger/jobs/model/job.dart';
+import 'package:honeybadger/proposals/bloc/proposal_bloc.dart';
 import 'package:intl/intl.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 
@@ -28,6 +30,7 @@ class JobCard extends StatelessWidget {
       // ),
       child: InkWell(
         onTap: () {
+          context.read<ProposalBloc>().add(LoadProposal(job.id!));
           context.push('/job/${job.id}', extra: job);
         },
         child: Padding(
@@ -136,8 +139,7 @@ class JobCard extends StatelessWidget {
                     children: [
                       Icon(MdiIcons.clockOutline, size: 14.0),
                       const GutterTiny(),
-                      Text(
-                          '${job.paymentType.toString().split('.').last.capitalize} ',
+                      Text('${parseEnumName(job.paymentType.toString())} ',
                           style: Theme.of(context).textTheme.bodySmall),
                     ],
                   ),

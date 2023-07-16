@@ -6,6 +6,9 @@ int desktopWidthConstraint = 1100;
 int tabletWidthConstraint = 500;
 int mobileWidthConstraint = 400;
 
+GlobalKey<ScaffoldMessengerState> scaffoldKey =
+    GlobalKey<ScaffoldMessengerState>();
+
 String parseEnumName(String enumString) {
   String nameCamelCase = enumString.split('.').last;
   String formattedString = nameCamelCase

@@ -1,11 +1,16 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_gutter/flutter_gutter.dart';
 import 'package:honeybadger/core/constants.dart';
 import 'package:honeybadger/core/presentation/system/main_navigation_bar.dart';
 import 'package:honeybadger/core/presentation/system/mobile_sliver_app_bar.dart';
+import 'package:honeybadger/jobs/model/milestone.dart';
+import 'package:honeybadger/jobs/model/proposal.dart';
+import 'package:honeybadger/proposals/bloc/proposal_bloc.dart';
 import 'package:intl/intl.dart';
 import 'package:jiffy/jiffy.dart';
+import 'package:loading_animation_widget/loading_animation_widget.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 
 import '../../../model/job.dart';
@@ -19,7 +24,7 @@ class MobileJobDetailsPage extends StatefulWidget {
 }
 
 class _MobileJobDetailsPageState extends State<MobileJobDetailsPage> {
-  bool _writingProposal = false;
+  final bool _writingProposal = false;
   @override
   Widget build(BuildContext context) {
     final NumberFormat numberFormat = NumberFormat.simpleCurrency(
@@ -209,149 +214,400 @@ class _MobileJobDetailsPageState extends State<MobileJobDetailsPage> {
                     ),
                   ),
                   const GutterSmall(),
-                  AnimatedSwitcher(
-                    duration: const Duration(milliseconds: 400),
-                    child: _writingProposal
-                        ? Expanded(
-                            child: Column(
-                              mainAxisSize: MainAxisSize.min,
-                              children: [
-                                Flexible(
-                                  child: ExpansionTile(
-                                    tilePadding: EdgeInsets.zero,
-                                    expandedAlignment: Alignment.center,
-                                    backgroundColor:
-                                        Theme.of(context).colorScheme.surface,
-                                    title: Row(
-                                      mainAxisSize: MainAxisSize.min,
-                                      children: [
-                                        Icon(MdiIcons.timelineOutline,
-                                            size: 24.0),
-                                        const Gutter(),
-                                        Text('Milestones',
-                                            style: Theme.of(context)
-                                                .textTheme
-                                                .titleLarge),
-                                      ],
-                                    ),
-                                    children: [
-                                      Padding(
-                                        padding: const EdgeInsets.only(
-                                            left: 16.0,
-                                            bottom: 16.0,
-                                            right: 16.0),
-                                        child: Column(
-                                          crossAxisAlignment:
-                                              CrossAxisAlignment.start,
-                                          mainAxisSize: MainAxisSize.min,
-                                          children: [
-                                            // FilledButton(
-                                            //     style: FilledButton.styleFrom(
-                                            //         minimumSize:
-                                            //             const Size(160, 32),
-                                            //         fixedSize:
-                                            //             const Size(100, 32)),
-                                            //     onPressed: () {},
-                                            //     child: const Text(
-                                            //         'Add Milestone')),
-                                            // const Text('Milestone 1'),
-                                            const Gutter(),
-                                            Row(
-                                              mainAxisSize: MainAxisSize.min,
-                                              children: [
-                                                Flexible(
-                                                  child: IconButton(
-                                                      style: ButtonStyle(
-                                                          padding: MaterialStateProperty
-                                                              .all<EdgeInsets>(
-                                                                  EdgeInsets
-                                                                      .zero)),
-                                                      onPressed: () {},
-                                                      icon: Icon(
-                                                          MdiIcons.plusCircle)),
-                                                ),
-                                                const GutterSmall(),
-                                                const Expanded(
-                                                  flex: 2,
-                                                  child: TextField(
-                                                    decoration: InputDecoration(
-                                                        hintText:
-                                                            'Milestone name..'),
-                                                  ),
-                                                ),
-                                                const GutterSmall(),
-                                                const Expanded(
-                                                    child: TextField(
-                                                  decoration: InputDecoration(
-                                                      hintText: 'Budget..'),
-                                                ))
-                                              ],
-                                            ),
-                                          ],
-                                        ),
-                                      )
-                                    ],
-                                  ),
-                                ),
-                                const GutterSmall(),
-                                const Flexible(
-                                  child: TextField(
-                                      minLines: 3,
-                                      maxLines: 5,
-                                      decoration: InputDecoration(
-                                          label: Text('Proposal'),
-                                          hintText: 'Enter your proposal..')),
-                                ),
-                                const GutterSmall(),
-                                Row(
-                                  mainAxisAlignment: MainAxisAlignment.end,
-                                  children: [
-                                    Icon(MdiIcons.contentSaveCheck,
-                                        size: 14.0,
+                  BlocBuilder<ProposalBloc, ProposalState>(
+                      builder: (context, state) {
+                    return AnimatedSwitcher(
+                        // transitionBuilder:
+                        //     (child, primaryAnimation, secondaryAnimation) {
+                        //   return SharedAxisTransition(
+                        //     animation: primaryAnimation,
+                        //     secondaryAnimation: secondaryAnimation,
+                        //     transitionType:
+                        //         SharedAxisTransitionType.vertical,
+                        //     child: child,
+                        //   );
+                        // },
+                        // height: state is ProposalStarted ? 280.0 : 60.0,
+                        duration: const Duration(milliseconds: 300),
+                        //  curve: Curves.easeInOutSine,
+                        child: state is ProposalLoading
+                            ? Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                crossAxisAlignment: CrossAxisAlignment.center,
+                                children: [
+                                  FilledButton.icon(
+                                    onPressed: () {
+                                      // setState(() {
+                                      //   _writingProposal = true;
+                                      // });
+                                    },
+                                    icon: LoadingAnimationWidget.beat(
                                         color: Theme.of(context)
                                             .colorScheme
-                                            .secondary),
-                                    const GutterTiny(),
-                                    Text('Draft Auto-Saved',
-                                        style: Theme.of(context)
-                                            .textTheme
-                                            .bodySmall),
-                                  ],
-                                ),
-                                const GutterSmall(),
-                                Flexible(
-                                  child: FilledButton.icon(
-                                      onPressed: () {
-                                        setState(() {
-                                          _writingProposal = false;
-                                        });
-                                      },
-                                      icon: Icon(MdiIcons.sendCircleOutline),
-                                      label: const Text('Send Proposal')),
-                                ),
-                              ],
-                            ),
-                          )
-                        : Expanded(
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.center,
-                              mainAxisSize: MainAxisSize.min,
-                              children: [
-                                Flexible(
-                                  child: FilledButton.icon(
-                                    onPressed: () {
-                                      setState(() {
-                                        _writingProposal = true;
-                                      });
-                                    },
-                                    icon: Icon(MdiIcons.lightningBolt),
-                                    label: const Text('Create Proposal'),
+                                            .onPrimary,
+                                        size: 14.0),
+                                    label: const Text('Loading Proposal'),
                                   ),
-                                ),
-                              ],
-                            ),
-                          ),
-                  ),
+                                ],
+                              )
+                            : state is ProposalStarted
+                                ? Column(
+                                    mainAxisSize: MainAxisSize.min,
+                                    children: [
+                                      widget.job.paymentType ==
+                                              PaymentType.fixedPrice
+                                          ? Flexible(
+                                              child: ExpansionTile(
+                                                tilePadding: EdgeInsets.zero,
+                                                expandedAlignment:
+                                                    Alignment.center,
+                                                backgroundColor:
+                                                    Theme.of(context)
+                                                        .colorScheme
+                                                        .surface,
+                                                title: Row(
+                                                  mainAxisSize:
+                                                      MainAxisSize.min,
+                                                  children: [
+                                                    Icon(
+                                                        MdiIcons
+                                                            .timelineOutline,
+                                                        size: 24.0),
+                                                    const Gutter(),
+                                                    Text('Milestones',
+                                                        style: Theme.of(context)
+                                                            .textTheme
+                                                            .titleLarge),
+                                                  ],
+                                                ),
+                                                children: [
+                                                  BlocBuilder<ProposalBloc,
+                                                      ProposalState>(
+                                                    builder: (context, state) {
+                                                      if (state
+                                                          is ProposalSaving) {
+                                                        return const Center(
+                                                            child:
+                                                                CircularProgressIndicator());
+                                                      }
+                                                      if (state
+                                                          is ProposalStarted) {
+                                                        List<Milestone>?
+                                                            milestones = state
+                                                                .proposal
+                                                                ?.milestones;
+                                                        if (milestones !=
+                                                                null &&
+                                                            milestones
+                                                                .isNotEmpty) {
+                                                          return Column(
+                                                            children: [
+                                                              for (Milestone milestone
+                                                                  in milestones)
+                                                                MilestoneEntry(
+                                                                  proposal: state
+                                                                      .proposal,
+                                                                  milestone:
+                                                                      milestone,
+                                                                ),
+                                                              Row(
+                                                                mainAxisAlignment:
+                                                                    MainAxisAlignment
+                                                                        .end,
+                                                                children: [
+                                                                  OutlinedButton.icon(
+                                                                      style: FilledButton.styleFrom(minimumSize: const Size(180, 34), fixedSize: const Size(180, 34)),
+                                                                      onPressed: () {
+                                                                        context
+                                                                            .read<ProposalBloc>()
+                                                                            .add(
+                                                                              AddMilestone(
+                                                                                Milestone(jobId: state.proposal!.jobId),
+                                                                              ),
+                                                                            );
+                                                                      },
+                                                                      icon: Icon(MdiIcons.plusCircle, size: 12.0),
+                                                                      label: const Text('Add Milestone')),
+                                                                ],
+                                                              ),
+                                                              const GutterLarge(),
+                                                            ],
+                                                          );
+                                                        } else {
+                                                          return Column(
+                                                            mainAxisSize:
+                                                                MainAxisSize
+                                                                    .min,
+                                                            children: [
+                                                              const GutterSmall(),
+                                                              Row(
+                                                                mainAxisAlignment:
+                                                                    MainAxisAlignment
+                                                                        .center,
+                                                                children: [
+                                                                  OutlinedButton.icon(
+                                                                      style: FilledButton.styleFrom(minimumSize: const Size(180, 34), fixedSize: const Size(180, 34)),
+                                                                      onPressed: () {
+                                                                        context
+                                                                            .read<ProposalBloc>()
+                                                                            .add(
+                                                                              AddMilestone(
+                                                                                Milestone(jobId: widget.job.id),
+                                                                              ),
+                                                                            );
+                                                                      },
+                                                                      icon: Icon(MdiIcons.plusCircle, size: 12.0),
+                                                                      label: const Text('Add Milestone')),
+                                                                ],
+                                                              ),
+                                                              const Gutter(),
+                                                            ],
+                                                          );
+                                                        }
+                                                      }
+                                                      return const Text(
+                                                          'Something went wrong.');
+                                                    },
+                                                  )
+                                                ],
+                                              ),
+                                            )
+                                          : const Flexible(
+                                              child: Row(
+                                                mainAxisSize: MainAxisSize.min,
+                                                children: [
+                                                  Expanded(
+                                                    child: SizedBox(
+                                                      width: 160.0,
+                                                      child: TextField(
+                                                        keyboardType:
+                                                            TextInputType
+                                                                .number,
+                                                        decoration:
+                                                            InputDecoration(
+                                                          label: Text(
+                                                              'Hourly Rate'),
+                                                          prefixText: '\$',
+                                                          suffixText: '/hr',
+                                                        ),
+                                                      ),
+                                                    ),
+                                                  ),
+                                                  Spacer(
+                                                    flex: 2,
+                                                  ),
+                                                ],
+                                              ),
+                                            ),
+                                      const GutterSmall(),
+                                      const Flexible(
+                                        child: TextField(
+                                            minLines: 3,
+                                            maxLines: 5,
+                                            decoration: InputDecoration(
+                                                label: Text('Proposal'),
+                                                hintText:
+                                                    'Enter your proposal..')),
+                                      ),
+                                      const GutterSmall(),
+                                      Row(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.end,
+                                        children: [
+                                          Icon(MdiIcons.contentSaveCheck,
+                                              size: 14.0,
+                                              color: Theme.of(context)
+                                                  .colorScheme
+                                                  .secondary),
+                                          const GutterTiny(),
+                                          Text('Draft Auto-Saved',
+                                              style: Theme.of(context)
+                                                  .textTheme
+                                                  .bodySmall),
+                                        ],
+                                      ),
+                                      const GutterSmall(),
+                                      Row(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.center,
+                                        children: [
+                                          Flexible(
+                                            child: IconButton(
+                                                onPressed: () async {
+                                                  if (state.proposal != null) {
+                                                    showDialog(
+                                                      context: context,
+                                                      builder: (context) {
+                                                        return Dialog(
+                                                          child: Padding(
+                                                            padding:
+                                                                const EdgeInsets
+                                                                    .all(24.0),
+                                                            child: Column(
+                                                                mainAxisAlignment:
+                                                                    MainAxisAlignment
+                                                                        .center,
+                                                                mainAxisSize:
+                                                                    MainAxisSize
+                                                                        .min,
+                                                                children: [
+                                                                  Text(
+                                                                      'Are you sure you want to delete this proposal?',
+                                                                      textAlign:
+                                                                          TextAlign
+                                                                              .center,
+                                                                      style: Theme.of(
+                                                                              context)
+                                                                          .textTheme
+                                                                          .titleLarge),
+                                                                  const Gutter(),
+                                                                  const Text(
+                                                                    'You will not be able to recover this proposal once it is deleted.',
+                                                                    textAlign:
+                                                                        TextAlign
+                                                                            .center,
+                                                                  ),
+                                                                  const Gutter(),
+                                                                  Row(
+                                                                    children: [
+                                                                      Expanded(
+                                                                        child: OutlinedButton(
+                                                                            onPressed: () {
+                                                                              Navigator.of(context).pop();
+                                                                            },
+                                                                            child: const Text('Cancel')),
+                                                                      ),
+                                                                      const Gutter(),
+                                                                      Expanded(
+                                                                        child: FilledButton.icon(
+                                                                            style: FilledButton.styleFrom(backgroundColor: Colors.redAccent),
+                                                                            onPressed: () {
+                                                                              context.read<ProposalBloc>().add(DeleteProposal(state.proposal));
+                                                                              Navigator.of(context).pop();
+                                                                            },
+                                                                            label: const Text('Delete'),
+                                                                            icon: const Icon(Icons.cancel_outlined, size: 18.0)),
+                                                                      ),
+                                                                    ],
+                                                                  )
+                                                                ]),
+                                                          ),
+                                                        );
+                                                      },
+                                                    );
+                                                  } else {
+                                                    context
+                                                        .read<ProposalBloc>()
+                                                        .add(
+                                                            const DeleteProposal(
+                                                                null));
+                                                  }
+                                                },
+                                                icon: const Icon(
+                                                    Icons.cancel_outlined)),
+                                          ),
+                                          const Gutter(),
+                                          Expanded(
+                                            flex: 4,
+                                            child: FilledButton.icon(
+                                                onPressed: () async {
+                                                  await showDialog(
+                                                    context: context,
+                                                    builder: (context) {
+                                                      return Dialog(
+                                                        child: Padding(
+                                                          padding:
+                                                              const EdgeInsets
+                                                                  .all(24.0),
+                                                          child: Column(
+                                                              mainAxisAlignment:
+                                                                  MainAxisAlignment
+                                                                      .center,
+                                                              mainAxisSize:
+                                                                  MainAxisSize
+                                                                      .min,
+                                                              children: [
+                                                                Text(
+                                                                    'Are you sure you want to send this proposal?',
+                                                                    textAlign:
+                                                                        TextAlign
+                                                                            .center,
+                                                                    style: Theme.of(
+                                                                            context)
+                                                                        .textTheme
+                                                                        .titleLarge),
+                                                                const Gutter(),
+                                                                const Text(
+                                                                  'You will not be able to edit this proposal once it is sent.',
+                                                                  textAlign:
+                                                                      TextAlign
+                                                                          .center,
+                                                                ),
+                                                                const Gutter(),
+                                                                Row(
+                                                                  children: [
+                                                                    Expanded(
+                                                                      child: OutlinedButton(
+                                                                          onPressed: () {
+                                                                            Navigator.of(context).pop();
+                                                                          },
+                                                                          child: const Text('Cancel')),
+                                                                    ),
+                                                                    const Gutter(),
+                                                                    Expanded(
+                                                                      child: FilledButton.icon(
+                                                                          onPressed: () {
+                                                                            context.read<ProposalBloc>().add(
+                                                                                  SendProposal(
+                                                                                    Proposal(
+                                                                                      jobId: widget.job.id,
+                                                                                      status: ProposalStatus.sent,
+                                                                                    ),
+                                                                                  ),
+                                                                                );
+                                                                            Navigator.of(context).pop();
+                                                                          },
+                                                                          icon: Icon(MdiIcons.sendCircleOutline, size: 20.0),
+                                                                          label: const Text('Send')),
+                                                                    ),
+                                                                  ],
+                                                                )
+                                                              ]),
+                                                        ),
+                                                      );
+                                                    },
+                                                  );
+                                                },
+                                                icon: Icon(
+                                                    MdiIcons.sendCircleOutline),
+                                                label: const Text(
+                                                    'Send Proposal')),
+                                          ),
+                                          const Spacer(),
+                                          //   const Flexible(child: SizedBox(width: 32.0))
+                                        ],
+                                      ),
+                                    ],
+                                  )
+                                :
+
+                                //  else
+                                Row(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.center,
+                                    children: [
+                                      FilledButton.icon(
+                                        onPressed: () {
+                                          context.read<ProposalBloc>().add(
+                                              StartProposal(widget.job.id!));
+                                        },
+                                        icon: Icon(MdiIcons.lightningBolt),
+                                        label: const Text('Create Proposal'),
+                                      ),
+                                    ],
+                                  ));
+                  }),
                   const Gutter(),
                   ExpansionTile(
                     tilePadding: EdgeInsets.zero,
@@ -498,6 +754,130 @@ class _MobileJobDetailsPageState extends State<MobileJobDetailsPage> {
               ),
             ),
           ])),
+        ],
+      ),
+    );
+  }
+}
+
+class MilestoneEntry extends StatelessWidget {
+  final Proposal? proposal;
+  final Milestone milestone;
+  const MilestoneEntry({
+    this.proposal,
+    required this.milestone,
+    super.key,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.only(left: 16.0, bottom: 16.0, right: 16.0),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          // FilledButton(
+          //     style: FilledButton.styleFrom(
+          //         minimumSize:
+          //             const Size(160, 32),
+          //         fixedSize:
+          //             const Size(100, 32)),
+          //     onPressed: () {},
+          //     child: const Text(
+          //         'Add Milestone')),
+
+          Material(
+            color: Colors.transparent,
+            type: MaterialType.transparency,
+            child: InkWell(
+              customBorder: RoundedRectangleBorder(
+                // side: const BorderSide(
+                //     color: Colors.blue,
+                //     width: 4.0),
+                borderRadius: BorderRadius.circular(8.0),
+              ),
+              focusColor: Colors.transparent,
+              hoverColor:
+                  Theme.of(context).colorScheme.primary.withOpacity(0.02),
+              onTap: () {},
+              child: Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Row(
+                  children: [
+                    Flexible(
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          // IconButton(
+                          //     padding: EdgeInsets.zero,
+                          //     onPressed: () {},
+                          //     icon: const Icon(Icons.drag_handle)),
+                          IconButton(
+                              hoverColor: Colors.red.withOpacity(0.6),
+                              padding: EdgeInsets.zero,
+                              onPressed: () {
+                                context
+                                    .read<ProposalBloc>()
+                                    .add(DeleteMilestone(milestone));
+                              },
+                              icon: const Icon(Icons.delete_outline)),
+                        ],
+                      ),
+                    ),
+                    const Gutter(),
+                    const Expanded(
+                      flex: 8,
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Expanded(
+                                flex: 2,
+                                child: TextField(
+                                  textCapitalization: TextCapitalization.words,
+                                  decoration:
+                                      InputDecoration(label: Text('Name')),
+                                ),
+                              ),
+                              GutterSmall(),
+                              Expanded(
+                                  child: TextField(
+                                keyboardType: TextInputType.number,
+                                decoration: InputDecoration(
+                                    prefixText: '\$', label: Text('Budget')),
+                              )),
+                            ],
+                          ),
+                          GutterSmall(),
+                          Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Flexible(
+                                child: TextField(
+                                  decoration: InputDecoration(
+                                      label: Text('Start Date')),
+                                ),
+                              ),
+                              GutterSmall(),
+                              Flexible(
+                                child: TextField(
+                                  decoration:
+                                      InputDecoration(label: Text('End Date')),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ),
         ],
       ),
     );
