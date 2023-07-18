@@ -31,6 +31,12 @@ String convertIntToMoney(int number) {
   }
 }
 
+// Convert double to curency format
+String convertDoubleToString(double number) {
+  NumberFormat formatter = NumberFormat.simpleCurrency(decimalDigits: 2);
+  return formatter.format(number);
+}
+
 Widget applySearchBarTheme(Widget searchbar, BuildContext context) {
   return Theme(
       data: ThemeData(

@@ -5,6 +5,7 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:honeybadger/core/constants.dart';
 import 'package:honeybadger/core/router/app_router.dart';
 import 'package:honeybadger/onboarding/bloc/onboarding_bloc.dart';
+import 'package:honeybadger/payments/bloc/payment_history_bloc.dart';
 import 'package:honeybadger/proposals/bloc/proposal_bloc.dart';
 import 'package:honeybadger/proposals/repo/proposal_repository.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
@@ -36,6 +37,10 @@ class MyApp extends StatelessWidget {
         providers: [
           BlocProvider<OnboardingBloc>(
             create: (context) => OnboardingBloc(),
+          ),
+          BlocProvider<PaymentHistoryBloc>(
+            create: (context) => PaymentHistoryBloc()
+              ..add(const FetchPaymentHistory(userId: 'userId')),
           ),
           BlocProvider<ProposalBloc>(
             create: (context) => ProposalBloc(

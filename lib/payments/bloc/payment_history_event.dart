@@ -6,3 +6,11 @@ abstract class PaymentHistoryEvent extends Equatable {
   @override
   List<Object> get props => [];
 }
+
+class FetchPaymentHistory extends PaymentHistoryEvent {
+  final String userId;
+  const FetchPaymentHistory({required this.userId});
+
+  @override
+  List<Object> get props => [userId];
+}
