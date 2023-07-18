@@ -15,6 +15,8 @@ class Proposal {
   final String? jobId;
   final DateTime? createdAt;
   final DateTime? updatedAt;
+  final DateTime? sentAt;
+  final DateTime? savedAt;
 
   Proposal({
     this.id,
@@ -29,6 +31,8 @@ class Proposal {
     this.jobId,
     this.createdAt,
     this.updatedAt,
+    this.sentAt,
+    this.savedAt,
   });
 
   //toJson
@@ -46,6 +50,8 @@ class Proposal {
       'jobId': jobId,
       'createdAt': createdAt,
       'updatedAt': updatedAt,
+      'sentAt': sentAt,
+      'savedAt': savedAt,
     };
   }
 
@@ -64,6 +70,8 @@ class Proposal {
       jobId: json['jobId'] as String?,
       createdAt: json['createdAt'] as DateTime?,
       updatedAt: json['updatedAt'] as DateTime?,
+      sentAt: json['sentAt'] as DateTime?,
+      savedAt: json['savedAt'] as DateTime?,
     );
   }
 
@@ -80,6 +88,8 @@ class Proposal {
     String? jobId,
     DateTime? createdAt,
     DateTime? updatedAt,
+    DateTime? sentAt,
+    DateTime? savedAt,
   }) {
     return Proposal(
       id: id ?? this.id,
@@ -94,6 +104,8 @@ class Proposal {
       jobId: jobId ?? this.jobId,
       createdAt: createdAt ?? this.createdAt,
       updatedAt: updatedAt ?? this.updatedAt,
+      sentAt: sentAt ?? this.sentAt,
+      savedAt: savedAt ?? this.savedAt,
     );
   }
 }

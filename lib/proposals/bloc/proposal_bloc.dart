@@ -24,10 +24,11 @@ class ProposalBloc extends Bloc<ProposalsEvent, ProposalState> {
     });
     on<AutoSaveProposal>((event, emit) async {
       try {
-        emit(ProposalSaving());
-        await Future.delayed(const Duration(milliseconds: 500));
+        final proposal = event.proposal.copyWith(savedAt: DateTime.now());
+        emit(ProposalSaving(proposal: proposal));
+        await Future.delayed(const Duration(milliseconds: 1000));
         // Proposal proposal =  await _proposalRepository.saveProposal(event.proposal);
-        emit(ProposalUpdated(event.proposal));
+        emit(ProposalStarted(proposal: proposal));
       } catch (e) {
         print(e);
         emit(ProposalsError());

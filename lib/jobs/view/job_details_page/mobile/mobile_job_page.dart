@@ -1,5 +1,9 @@
+import 'dart:async';
+
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_gutter/flutter_gutter.dart';
 import 'package:honeybadger/core/constants.dart';
@@ -25,6 +29,66 @@ class MobileJobDetailsPage extends StatefulWidget {
 
 class _MobileJobDetailsPageState extends State<MobileJobDetailsPage> {
   final bool _writingProposal = false;
+  Timer? _autosaveTimer;
+  late Timer _autosaveTimestampTimer;
+  DateTime? _lastSavedAt;
+  String? _lastSavedAtString;
+  final _proposalController = TextEditingController();
+
+  @override
+  void initState() {
+    // TODO: implement initState
+
+    // _autosaveTimestampTimer =
+    //     Timer.periodic(const Duration(minutes: 1), (timer) {
+    //   if (context.watch<ProposalBloc>().state is ProposalStarted &&
+    //       _lastSavedAt != null) {
+    //     setState(() {
+    //       _lastSavedAt = context.read<ProposalBloc>().state.proposal!.savedAt;
+    //       _lastSavedAtString = Jiffy.parseFromDateTime(_lastSavedAt!).fromNow();
+    //     });
+    //   }
+    // });
+    super.initState();
+  }
+
+  @override
+  void dispose() {
+    _autosaveTimer?.cancel();
+    _proposalController.dispose();
+    super.dispose();
+  }
+
+  void _startAutosaveTimer() {
+    _autosaveTimer ??= Timer(const Duration(seconds: 30), () {
+      _save();
+      _cancelAutosaveTimer();
+    });
+  }
+
+  void _cancelAutosaveTimer() {
+    _autosaveTimer?.cancel();
+    _autosaveTimer = null;
+  }
+
+  void _save() {
+    // Save the user's work here.
+    context.read<ProposalBloc>().add(
+          AutoSaveProposal(
+            context.read<ProposalBloc>().state.proposal!.copyWith(
+                  description: _proposalController.text,
+                ),
+          ),
+        );
+  }
+
+  void _setAutoSaveTimestamp() {
+    setState(() {
+      _lastSavedAt = context.read<ProposalBloc>().state.proposal!.savedAt;
+      _lastSavedAtString = Jiffy.parseFromDateTime(_lastSavedAt!).fromNow();
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     final NumberFormat numberFormat = NumberFormat.simpleCurrency(
@@ -213,7 +277,7 @@ class _MobileJobDetailsPageState extends State<MobileJobDetailsPage> {
                       ),
                     ),
                   ),
-                  const GutterSmall(),
+                  const Gutter(),
                   BlocBuilder<ProposalBloc, ProposalState>(
                       builder: (context, state) {
                     return AnimatedSwitcher(
@@ -250,7 +314,9 @@ class _MobileJobDetailsPageState extends State<MobileJobDetailsPage> {
                                   ),
                                 ],
                               )
-                            : state is ProposalStarted
+                            : state is ProposalStarted ||
+                                    state is ProposalSaving ||
+                                    state is ProposalSaved
                                 ? Column(
                                     mainAxisSize: MainAxisSize.min,
                                     children: [
@@ -284,14 +350,18 @@ class _MobileJobDetailsPageState extends State<MobileJobDetailsPage> {
                                                   BlocBuilder<ProposalBloc,
                                                       ProposalState>(
                                                     builder: (context, state) {
+                                                      // if (state
+                                                      //     is ProposalSaving) {
+                                                      //   return const Center(
+                                                      //       child:
+                                                      //           CircularProgressIndicator());
+                                                      // }
                                                       if (state
-                                                          is ProposalSaving) {
-                                                        return const Center(
-                                                            child:
-                                                                CircularProgressIndicator());
-                                                      }
-                                                      if (state
-                                                          is ProposalStarted) {
+                                                              is ProposalStarted ||
+                                                          state
+                                                              is ProposalSaving) {
+                                                        _lastSavedAt = state
+                                                            .proposal?.savedAt;
                                                         List<Milestone>?
                                                             milestones = state
                                                                 .proposal
@@ -400,31 +470,83 @@ class _MobileJobDetailsPageState extends State<MobileJobDetailsPage> {
                                               ),
                                             ),
                                       const GutterSmall(),
-                                      const Flexible(
+                                      Flexible(
                                         child: TextField(
-                                            minLines: 3,
-                                            maxLines: 5,
-                                            decoration: InputDecoration(
+                                            scrollPadding:
+                                                const EdgeInsets.only(
+                                                    bottom: 200),
+                                            onChanged: (value) {
+                                              // _cancelAutosaveTimer();
+                                              _startAutosaveTimer();
+                                            },
+                                            textCapitalization:
+                                                TextCapitalization.sentences,
+                                            minLines: 5,
+                                            maxLines: 7,
+                                            decoration: const InputDecoration(
                                                 label: Text('Proposal'),
                                                 hintText:
                                                     'Enter your proposal..')),
                                       ),
                                       const GutterSmall(),
-                                      Row(
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.end,
-                                        children: [
-                                          Icon(MdiIcons.contentSaveCheck,
-                                              size: 14.0,
-                                              color: Theme.of(context)
-                                                  .colorScheme
-                                                  .secondary),
-                                          const GutterTiny(),
-                                          Text('Draft Auto-Saved',
-                                              style: Theme.of(context)
-                                                  .textTheme
-                                                  .bodySmall),
-                                        ],
+                                      BlocConsumer<ProposalBloc, ProposalState>(
+                                        listener: (context, state) {
+                                          if (state is ProposalSaving) {
+                                            _setAutoSaveTimestamp();
+                                            Timer.periodic(
+                                                const Duration(minutes: 1),
+                                                (timer) {
+                                              _setAutoSaveTimestamp();
+                                            });
+                                          }
+                                        },
+                                        builder: (context, state) {
+                                          if (state is ProposalSaving) {
+                                            return Row(
+                                              mainAxisAlignment:
+                                                  MainAxisAlignment.end,
+                                              children: [
+                                                const CupertinoActivityIndicator(
+                                                  radius: 6.0,
+                                                ),
+                                                // LoadingAnimationWidget.beat(
+                                                //     color: Theme.of(context)
+                                                //         .iconTheme
+                                                //         .color!,
+                                                //     size: 12.0),
+                                                const GutterTiny(),
+                                                Text('Auto-Saving...',
+                                                    style: Theme.of(context)
+                                                        .textTheme
+                                                        .bodySmall),
+                                              ],
+                                            );
+                                          }
+                                          if (state is ProposalStarted) {
+                                            if (state.proposal?.savedAt !=
+                                                null) {
+                                              return Row(
+                                                mainAxisAlignment:
+                                                    MainAxisAlignment.end,
+                                                children: [
+                                                  Icon(
+                                                      MdiIcons.contentSaveCheck,
+                                                      size: 14.0,
+                                                      color: Theme.of(context)
+                                                          .colorScheme
+                                                          .secondary),
+                                                  const GutterTiny(),
+                                                  Text(
+                                                      'Auto-Saved · ${_lastSavedAtString!}',
+                                                      style: Theme.of(context)
+                                                          .textTheme
+                                                          .bodySmall),
+                                                ],
+                                              );
+                                            }
+                                          }
+                                          return const SizedBox();
+                                        },
                                       ),
                                       const GutterSmall(),
                                       Row(
@@ -485,8 +607,8 @@ class _MobileJobDetailsPageState extends State<MobileJobDetailsPage> {
                                                                               context.read<ProposalBloc>().add(DeleteProposal(state.proposal));
                                                                               Navigator.of(context).pop();
                                                                             },
-                                                                            label: const Text('Delete'),
-                                                                            icon: const Icon(Icons.cancel_outlined, size: 18.0)),
+                                                                            label: const Text('Delete', style: TextStyle(color: Colors.white)),
+                                                                            icon: const Icon(Icons.cancel_outlined, size: 16.0, color: Colors.white)),
                                                                       ),
                                                                     ],
                                                                   )
@@ -771,114 +893,121 @@ class MilestoneEntry extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.only(left: 16.0, bottom: 16.0, right: 16.0),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          // FilledButton(
-          //     style: FilledButton.styleFrom(
-          //         minimumSize:
-          //             const Size(160, 32),
-          //         fixedSize:
-          //             const Size(100, 32)),
-          //     onPressed: () {},
-          //     child: const Text(
-          //         'Add Milestone')),
+    return Animate(
+      effects: const [
+        SlideEffect(
+            begin: Offset(-0.5, 0.0), duration: Duration(milliseconds: 200))
+      ],
+      child: Padding(
+        padding: const EdgeInsets.only(left: 16.0, bottom: 16.0, right: 16.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            // FilledButton(
+            //     style: FilledButton.styleFrom(
+            //         minimumSize:
+            //             const Size(160, 32),
+            //         fixedSize:
+            //             const Size(100, 32)),
+            //     onPressed: () {},
+            //     child: const Text(
+            //         'Add Milestone')),
 
-          Material(
-            color: Colors.transparent,
-            type: MaterialType.transparency,
-            child: InkWell(
-              customBorder: RoundedRectangleBorder(
-                // side: const BorderSide(
-                //     color: Colors.blue,
-                //     width: 4.0),
-                borderRadius: BorderRadius.circular(8.0),
-              ),
-              focusColor: Colors.transparent,
-              hoverColor:
-                  Theme.of(context).colorScheme.primary.withOpacity(0.02),
-              onTap: () {},
-              child: Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: Row(
-                  children: [
-                    Flexible(
-                      child: Column(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          // IconButton(
-                          //     padding: EdgeInsets.zero,
-                          //     onPressed: () {},
-                          //     icon: const Icon(Icons.drag_handle)),
-                          IconButton(
-                              hoverColor: Colors.red.withOpacity(0.6),
-                              padding: EdgeInsets.zero,
-                              onPressed: () {
-                                context
-                                    .read<ProposalBloc>()
-                                    .add(DeleteMilestone(milestone));
-                              },
-                              icon: const Icon(Icons.delete_outline)),
-                        ],
+            Material(
+              color: Colors.transparent,
+              type: MaterialType.transparency,
+              child: InkWell(
+                customBorder: RoundedRectangleBorder(
+                  // side: const BorderSide(
+                  //     color: Colors.blue,
+                  //     width: 4.0),
+                  borderRadius: BorderRadius.circular(8.0),
+                ),
+                focusColor: Colors.transparent,
+                hoverColor:
+                    Theme.of(context).colorScheme.primary.withOpacity(0.02),
+                onTap: () {},
+                child: Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Row(
+                    children: [
+                      Flexible(
+                        child: Column(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            // IconButton(
+                            //     padding: EdgeInsets.zero,
+                            //     onPressed: () {},
+                            //     icon: const Icon(Icons.drag_handle)),
+                            IconButton(
+                                hoverColor: Colors.red.withOpacity(0.6),
+                                padding: EdgeInsets.zero,
+                                onPressed: () {
+                                  context
+                                      .read<ProposalBloc>()
+                                      .add(DeleteMilestone(milestone));
+                                },
+                                icon: const Icon(Icons.delete_outline)),
+                          ],
+                        ),
                       ),
-                    ),
-                    const Gutter(),
-                    const Expanded(
-                      flex: 8,
-                      child: Column(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          Row(
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              Expanded(
-                                flex: 2,
-                                child: TextField(
-                                  textCapitalization: TextCapitalization.words,
-                                  decoration:
-                                      InputDecoration(label: Text('Name')),
-                                ),
-                              ),
-                              GutterSmall(),
-                              Expanded(
+                      const Gutter(),
+                      const Expanded(
+                        flex: 8,
+                        child: Column(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                Expanded(
+                                  flex: 2,
                                   child: TextField(
-                                keyboardType: TextInputType.number,
-                                decoration: InputDecoration(
-                                    prefixText: '\$', label: Text('Budget')),
-                              )),
-                            ],
-                          ),
-                          GutterSmall(),
-                          Row(
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              Flexible(
-                                child: TextField(
+                                    textCapitalization:
+                                        TextCapitalization.words,
+                                    decoration:
+                                        InputDecoration(label: Text('Name')),
+                                  ),
+                                ),
+                                GutterSmall(),
+                                Expanded(
+                                    child: TextField(
+                                  keyboardType: TextInputType.number,
                                   decoration: InputDecoration(
-                                      label: Text('Start Date')),
+                                      prefixText: '\$', label: Text('Budget')),
+                                )),
+                              ],
+                            ),
+                            GutterSmall(),
+                            Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                Flexible(
+                                  child: TextField(
+                                    decoration: InputDecoration(
+                                        label: Text('Start Date')),
+                                  ),
                                 ),
-                              ),
-                              GutterSmall(),
-                              Flexible(
-                                child: TextField(
-                                  decoration:
-                                      InputDecoration(label: Text('End Date')),
+                                GutterSmall(),
+                                Flexible(
+                                  child: TextField(
+                                    decoration: InputDecoration(
+                                        label: Text('End Date')),
+                                  ),
                                 ),
-                              ),
-                            ],
-                          ),
-                        ],
+                              ],
+                            ),
+                          ],
+                        ),
                       ),
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
               ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }

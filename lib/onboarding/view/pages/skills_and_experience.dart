@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_gutter/flutter_gutter.dart';
 import 'package:honeybadger/core/constants.dart';
+import 'package:image_picker/image_picker.dart';
 
 class SkillsAndExperiencePage extends StatelessWidget {
   final PageController pageController;
@@ -494,7 +495,10 @@ class AddProjectDialog extends StatelessWidget {
                       border: Border.all(color: Colors.grey),
                       borderRadius: BorderRadius.circular(8)),
                   child: InkWell(
-                    onTap: () {},
+                    onTap: () async {
+                      final ImagePicker picker = ImagePicker();
+                      final List<XFile> image = await picker.pickMultiImage();
+                    },
                     child: Center(
                       child: Row(
                         mainAxisSize: MainAxisSize.min,

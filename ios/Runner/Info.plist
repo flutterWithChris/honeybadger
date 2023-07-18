@@ -47,5 +47,11 @@
 	<true/>
 	<key>UIApplicationSupportsIndirectInputEvents</key>
 	<true/>
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>Needs access for profile, portfolio, & sharing photos.</string>
+	<key>NSCameraUsageDescription</key>
+	<string>Needs access for profile, portfolio, & sharing photos.</string>
+	<key>NSMicrophoneUsageDescription</key>
+	<string>Needs access for voice messages.</string>
 </dict>
 </plist>

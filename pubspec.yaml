@@ -54,6 +54,7 @@ dependencies:
   mockito: ^5.4.2
   flutter_dotenv: ^5.1.0
   loading_animation_widget: ^1.2.0+4
+  image_picker: ^1.0.1
 
 dev_dependencies:
   flutter_test:
