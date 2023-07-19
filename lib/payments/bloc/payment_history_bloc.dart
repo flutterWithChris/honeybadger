@@ -1,5 +1,6 @@
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
+import 'package:honeybadger/globals.dart';
 import 'package:honeybadger/payments/model/payment.dart';
 
 part 'payment_history_event.dart';
@@ -14,46 +15,46 @@ class PaymentHistoryBloc
       List<Payment> payments = [];
       payments = [
         Payment(
-            id: '1',
+            id: generateUniqueId(),
             status: PaymentStatus.paid,
             type: PaymentType.fixed,
-            payerId: '1',
+            payerId: generateUniqueId(),
             payerName: 'John Doe',
-            payeeId: '2',
+            payeeId: generateUniqueId(),
             payeeName: 'Jane Doe',
             paymentDate: '2023-07-15',
             amount: 2500.0,
             hours: null,
             currency: 'USD',
             description: 'Payment for work done on project.',
-            milestoneId: null,
+            milestoneId: generateUniqueId(),
             milestoneTitle: 'Backend Complete',
-            projectId: '1',
+            projectId: generateUniqueId(),
             projectTitle: 'Mobile app development'),
         Payment(
-            id: '2',
+            id: generateUniqueId(),
             status: PaymentStatus.pending,
             type: PaymentType.fixed,
-            payerId: '1',
+            payerId: generateUniqueId(),
             payerName: 'John Doe',
-            payeeId: '2',
+            payeeId: generateUniqueId(),
             payeeName: 'Jane Doe',
             paymentDate: '2023-07-01',
             amount: 2500.0,
-            hours: 10.0,
+            hours: null,
             currency: 'USD',
             description: 'Payment for work done on project.',
-            milestoneId: null,
+            milestoneId: generateUniqueId(),
             milestoneTitle: 'UI Complete',
-            projectId: '154',
+            projectId: generateUniqueId(),
             projectTitle: 'Mobile app development'),
         Payment(
-            id: '3',
+            id: generateUniqueId(),
             status: PaymentStatus.failed,
             type: PaymentType.hourly,
-            payerId: '1',
+            payerId: generateUniqueId(),
             payerName: 'John Doe',
-            payeeId: '2',
+            payeeId: generateUniqueId(),
             payeeName: 'Jane Doe',
             paymentDate: '2023-06-15',
             amount: 700.0,
@@ -62,7 +63,7 @@ class PaymentHistoryBloc
             description: 'Payment for work done on project.',
             milestoneId: null,
             milestoneTitle: null,
-            projectId: '154',
+            projectId: generateUniqueId(),
             projectTitle: 'Veterinarian App'),
       ];
       payments.isEmpty

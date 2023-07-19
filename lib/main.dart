@@ -141,6 +141,7 @@ class MyApp extends StatelessWidget {
             appBarStyle: FlexAppBarStyle.background,
             bottomAppBarElevation: 2.0,
             subThemesData: const FlexSubThemesData(
+              cardElevation: 0.4,
               buttonMinSize: Size(200, 40),
               blendOnLevel: 8,
               useTextTheme: true,

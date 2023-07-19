@@ -8,6 +8,8 @@ import 'package:honeybadger/jobs/view/jobs_page/jobs_page.dart';
 import 'package:honeybadger/message/view/messages_page.dart';
 import 'package:honeybadger/onboarding/view/onboarding_page.dart';
 import 'package:honeybadger/onboarding/view/pages/welcome/welcome_page.dart';
+import 'package:honeybadger/payments/details/payment_details.dart';
+import 'package:honeybadger/payments/model/payment.dart';
 import 'package:honeybadger/payments/view/payments_page.dart';
 import 'package:honeybadger/profile/model/user.dart';
 import 'package:honeybadger/profile/view/profile_page.dart';
@@ -87,10 +89,16 @@ GoRouter goRouter = GoRouter(
       builder: (context, state) => const MessagesPage(),
     ),
     GoRoute(
-      path: '/payments',
-      name: 'payments',
-      builder: (context, state) => const PaymentsPage(),
-    ),
+        path: '/payments',
+        name: 'payments',
+        builder: (context, state) => const PaymentsPage(),
+        routes: [
+          GoRoute(
+              path: 'details/:id',
+              name: 'details',
+              builder: (context, state) =>
+                  PaymentDetailsPage(payment: state.extra as Payment)),
+        ]),
     GoRoute(
         path: '/profile',
         name: 'profile',
