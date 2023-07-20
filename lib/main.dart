@@ -53,14 +53,15 @@ class MyApp extends StatelessWidget {
             create: (context) => PaymentHistoryBloc()
               ..add(const FetchPaymentHistory(userId: 'userId')),
           ),
-          BlocProvider<ProposalBloc>(
-            create: (context) => ProposalBloc(
-                proposalRepository: context.read<ProposalRepository>()),
-          ),
           BlocProvider<MessagesBloc>(
             create: (context) => MessagesBloc(
               messageRepository: context.read<MessageRepository>(),
             )..add(LoadMessages()),
+          ),
+          BlocProvider<ProposalBloc>(
+            create: (context) => ProposalBloc(
+                messagesBloc: context.read<MessagesBloc>(),
+                proposalRepository: context.read<ProposalRepository>()),
           ),
         ],
         child: MaterialApp.router(
@@ -68,6 +69,7 @@ class MyApp extends StatelessWidget {
           routeInformationParser: goRouter.routeInformationParser,
           routerDelegate: goRouter.routerDelegate,
           routeInformationProvider: goRouter.routeInformationProvider,
+
           title: 'Honeybadger ',
           builder: (context, child) => StreamChat(
               client: StreamChatClient(

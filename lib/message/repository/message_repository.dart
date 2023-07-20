@@ -42,4 +42,14 @@ class MessageRepository {
       print(e);
     }
   }
+
+  /// Send a message
+  Future<SendMessageResponse> sendMessage(Message message) async {
+    try {
+      return await client.sendMessage(message, '', 'messages');
+    } catch (e) {
+      print(e);
+      rethrow;
+    }
+  }
 }

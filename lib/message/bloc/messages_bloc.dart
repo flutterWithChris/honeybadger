@@ -2,6 +2,8 @@ import 'dart:async';
 
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
+import 'package:flutter/material.dart';
+import 'package:honeybadger/core/constants.dart';
 import 'package:honeybadger/message/repository/message_repository.dart';
 import 'package:stream_chat_flutter/stream_chat_flutter.dart';
 
@@ -51,6 +53,21 @@ class MessagesBloc extends Bloc<MessagesEvent, MessagesState> {
             streamChannelListController, streamMessageSearchListController));
       } catch (e) {
         print(e);
+        emit(MessagesError(e.toString()));
+      }
+    });
+    on<SendMessage>((event, emit) async {
+      try {
+        emit(MessageSending());
+        await _messageRepository.sendMessage(event.message);
+      } catch (e) {
+        scaffoldKey.currentState!.showSnackBar(const SnackBar(
+          content: Text(
+            'Error Sending Message!',
+            style: TextStyle(color: Colors.white),
+          ),
+          backgroundColor: Colors.red,
+        ));
         emit(MessagesError(e.toString()));
       }
     });
