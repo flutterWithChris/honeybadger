@@ -16,6 +16,7 @@ import 'package:honeybadger/profile/view/profile_page.dart';
 import 'package:honeybadger/proposals/create/view/create_proposal_page.dart';
 import 'package:honeybadger/search/view/search_page.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:stream_chat_flutter/stream_chat_flutter.dart';
 
 GoRouter goRouter = GoRouter(
   debugLogDiagnostics: true,
@@ -86,7 +87,8 @@ GoRouter goRouter = GoRouter(
     GoRoute(
       path: '/messages',
       name: 'messages',
-      builder: (context, state) => const MessagesPage(),
+      builder: (context, state) => StreamChat(
+          client: StreamChat.of(context).client, child: const MessagesPage()),
     ),
     GoRoute(
         path: '/payments',

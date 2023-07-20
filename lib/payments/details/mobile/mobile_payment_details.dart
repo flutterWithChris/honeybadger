@@ -38,11 +38,81 @@ class MobilePaymentDetailsPage extends StatelessWidget {
               const Gutter(),
               Card(
                   child: Padding(
-                padding: const EdgeInsets.all(16.0),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 16.0,
+                  vertical: 8.0,
+                ),
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.start,
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
+                    Row(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Row(
+                          children: [
+                            Text(
+                              'From: ',
+                              style: Theme.of(context)
+                                  .textTheme
+                                  .bodyMedium
+                                  ?.copyWith(fontWeight: FontWeight.bold),
+                            ),
+                            Chip(
+                                shape: const StadiumBorder(),
+                                backgroundColor:
+                                    Theme.of(context).scaffoldBackgroundColor,
+                                visualDensity: VisualDensity.compact,
+                                side: BorderSide.none,
+                                avatar: const CircleAvatar(
+                                  radius: 10.0,
+                                  child: Icon(Icons.person, size: 10.0),
+                                ),
+                                label: Text(payment.payeeName!)),
+                          ],
+                        ),
+                        Chip(
+                          shape: const StadiumBorder(),
+                          backgroundColor: payment.status! == PaymentStatus.paid
+                              ? Colors.green[500]
+                              : payment.status! == PaymentStatus.pending
+                                  ? Theme.of(context)
+                                      .colorScheme
+                                      .tertiaryContainer
+                                  : Colors.red[500],
+                          visualDensity: VisualDensity.compact,
+                          side: BorderSide.none,
+                          avatar: payment.status == PaymentStatus.paid
+                              ? Icon(
+                                  MdiIcons.checkBold,
+                                  size: 14.0,
+                                  color: Colors.white,
+                                )
+                              : payment.status == PaymentStatus.pending
+                                  ? const Icon(
+                                      Icons.pending,
+                                      size: 14.0,
+                                      color: Colors.white,
+                                    )
+                                  : const Icon(
+                                      Icons.close,
+                                      size: 14.0,
+                                      color: Colors.white,
+                                    ),
+                          label: Text(
+                            parseEnumName(payment.status.toString()),
+                            style: Theme.of(context)
+                                .textTheme
+                                .bodyMedium
+                                ?.copyWith(
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.white,
+                                ),
+                          ),
+                        )
+                      ],
+                    ),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
@@ -76,56 +146,53 @@ class MobilePaymentDetailsPage extends StatelessWidget {
                         )
                       ],
                     ),
+                    //  const GutterTiny(),
                     Row(
-                      crossAxisAlignment: CrossAxisAlignment.start,
+                      crossAxisAlignment: CrossAxisAlignment.center,
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         Row(
                           children: [
-                            Text(
-                              'From: ',
-                              style: Theme.of(context)
-                                  .textTheme
-                                  .bodyMedium
-                                  ?.copyWith(fontWeight: FontWeight.bold),
-                            ),
                             Chip(
                                 shape: const StadiumBorder(),
                                 backgroundColor:
                                     Theme.of(context).scaffoldBackgroundColor,
                                 visualDensity: VisualDensity.compact,
                                 side: BorderSide.none,
-                                avatar: const CircleAvatar(
-                                  radius: 10.0,
-                                  child: Icon(Icons.person, size: 10.0),
-                                ),
-                                label: Text(payment.payeeName!)),
+                                avatar: payment.type == PaymentType.hourly
+                                    ? const Icon(Icons.timer, size: 14.0)
+                                    : payment.type == PaymentType.fixed
+                                        ? const Icon(Icons.attach_money,
+                                            size: 14.0)
+                                        : const Icon(Icons.money_off,
+                                            size: 14.0),
+                                label: Text(
+                                    parseEnumName(payment.type.toString()))),
                           ],
                         ),
-                        Chip(
-                          shape: const StadiumBorder(),
-                          backgroundColor: payment.status! == PaymentStatus.paid
-                              ? Colors.green[600]
-                              : payment.status! == PaymentStatus.pending
-                                  ? Theme.of(context)
-                                      .colorScheme
-                                      .tertiaryContainer
-                                  : Colors.red[700],
-                          visualDensity: VisualDensity.compact,
-                          side: BorderSide.none,
-                          avatar: payment.status == PaymentStatus.paid
-                              ? Icon(MdiIcons.checkBold, size: 14.0)
-                              : payment.status == PaymentStatus.pending
-                                  ? const Icon(Icons.pending, size: 14.0)
-                                  : const Icon(Icons.close, size: 14.0),
-                          label: Text(
-                            parseEnumName(payment.status.toString()),
-                            style: Theme.of(context)
-                                .textTheme
-                                .bodyMedium
-                                ?.copyWith(fontWeight: FontWeight.bold),
-                          ),
-                        )
+                        payment.type == PaymentType.fixed
+                            ? Text.rich(
+                                TextSpan(
+                                    text: 'Milestone: ',
+                                    children: <TextSpan>[
+                                      TextSpan(
+                                          text: payment.milestoneTitle,
+                                          style: Theme.of(context)
+                                              .textTheme
+                                              .bodyMedium),
+                                    ],
+                                    style: const TextStyle(
+                                        fontWeight: FontWeight.bold)),
+                              )
+                            : Text.rich(
+                                TextSpan(
+                                    text: '${payment.hours} hrs.',
+                                    style: Theme.of(context)
+                                        .textTheme
+                                        .bodyMedium
+                                        ?.copyWith(
+                                            fontWeight: FontWeight.bold)),
+                              ),
                       ],
                     ),
                   ],
@@ -134,6 +201,24 @@ class MobilePaymentDetailsPage extends StatelessWidget {
               const Gutter(),
               Text('Project Details',
                   style: Theme.of(context).textTheme.headlineSmall),
+              const Gutter(),
+              Card(
+                  child: Padding(
+                padding: const EdgeInsets.all(16.0),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      payment.projectTitle!,
+                      style: Theme.of(context)
+                          .textTheme
+                          .titleLarge
+                          ?.copyWith(fontWeight: FontWeight.bold),
+                    ),
+                  ],
+                ),
+              )),
             ])),
           ),
         ],
