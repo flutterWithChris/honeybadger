@@ -14,7 +14,6 @@ class MessagesInitial extends MessagesState {}
 class MessagesLoading extends MessagesState {}
 
 class MessagesLoaded extends MessagesState {
-  fin
   final StreamChannelListController streamChannelListController;
   final StreamMessageSearchListController streamMessageSearchListController;
 
@@ -32,12 +31,12 @@ class MessageSent extends MessagesState {}
 
 class MessagesError extends MessagesState {
   @override
-  final String message;
+  final String errorMessage;
 
-  const MessagesError(this.message);
+  const MessagesError(this.errorMessage);
 
   @override
-  List<Object> get props => [message];
+  List<Object> get props => [errorMessage];
 }
 
 class MessagesEmpty extends MessagesState {}
