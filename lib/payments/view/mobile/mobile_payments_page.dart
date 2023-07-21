@@ -5,7 +5,7 @@ import 'package:go_router/go_router.dart';
 import 'package:honeybadger/core/constants.dart';
 import 'package:honeybadger/core/presentation/system/main_navigation_bar.dart';
 import 'package:honeybadger/core/presentation/system/mobile_sliver_app_bar.dart';
-import 'package:honeybadger/payments/bloc/payment_history_bloc.dart';
+import 'package:honeybadger/payments/bloc/history/payment_history_bloc.dart';
 import 'package:honeybadger/payments/details/mobile/mobile_payment_details.dart';
 import 'package:honeybadger/payments/model/payment.dart';
 import 'package:jiffy/jiffy.dart';

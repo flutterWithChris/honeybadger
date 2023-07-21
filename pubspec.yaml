@@ -61,6 +61,7 @@ dependencies:
   flutter_slidable: ^3.0.0
   refresh: ^1.0.1
   list_ext: ^1.0.6
+  flutter_stripe: ^9.3.0
 
 dev_dependencies:
   flutter_test:

@@ -7,7 +7,9 @@ import 'package:honeybadger/core/router/app_router.dart';
 import 'package:honeybadger/message/bloc/messages_bloc.dart';
 import 'package:honeybadger/message/repository/message_repository.dart';
 import 'package:honeybadger/onboarding/bloc/onboarding_bloc.dart';
-import 'package:honeybadger/payments/bloc/payment_history_bloc.dart';
+import 'package:honeybadger/payments/bloc/history/payment_history_bloc.dart';
+import 'package:honeybadger/payments/bloc/payments_bloc.dart';
+import 'package:honeybadger/payments/repository/payments_repository.dart';
 import 'package:honeybadger/profile/bloc/profile_bloc.dart';
 import 'package:honeybadger/proposals/bloc/proposal_bloc.dart';
 import 'package:honeybadger/proposals/repo/proposal_repository.dart';
@@ -44,6 +46,9 @@ class MyApp extends StatelessWidget {
         RepositoryProvider<MessageRepository>(
           create: (context) => MessageRepository(),
         ),
+        RepositoryProvider<PaymentsRepository>(
+          create: (context) => PaymentsRepository()..initializeStripe(),
+        ),
       ],
       child: MultiBlocProvider(
         providers: [
@@ -67,6 +72,13 @@ class MyApp extends StatelessWidget {
                 messagesBloc: context.read<MessagesBloc>(),
                 proposalRepository: context.read<ProposalRepository>()),
           ),
+          BlocProvider(
+            create: (context) => PaymentsBloc(
+                paymentsRepository: context.read<PaymentsRepository>())
+              ..add(
+                LoadPayments(),
+              ),
+          )
         ],
         child: MaterialApp.router(
           scaffoldMessengerKey: scaffoldKey,
