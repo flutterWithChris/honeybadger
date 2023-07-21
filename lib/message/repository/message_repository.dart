@@ -52,4 +52,16 @@ class MessageRepository {
       rethrow;
     }
   }
+
+  // Create a Channel for List of Members
+  Future<ChannelState> createChannel(List<String> members) async {
+    try {
+      return await client.channel('messaging', extraData: {
+        'members': members,
+      }).create();
+    } catch (e) {
+      print(e);
+      rethrow;
+    }
+  }
 }

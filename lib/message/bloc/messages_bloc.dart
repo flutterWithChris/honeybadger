@@ -13,7 +13,7 @@ part 'messages_state.dart';
 class MessagesBloc extends Bloc<MessagesEvent, MessagesState> {
   final MessageRepository _messageRepository;
   late final StreamChannelListController streamChannelListController;
-  late final StreamMessageSearchListController
+  late final StreamMessageSearchListController?
       streamMessageSearchListController;
   MessagesBloc({required MessageRepository messageRepository})
       : _messageRepository = messageRepository,
@@ -60,6 +60,29 @@ class MessagesBloc extends Bloc<MessagesEvent, MessagesState> {
       try {
         emit(MessageSending());
         await _messageRepository.sendMessage(event.message);
+        emit(MessageSent());
+        await Future.delayed(const Duration(seconds: 1));
+        emit(MessagesLoaded(
+            streamChannelListController, streamMessageSearchListController));
+      } catch (e) {
+        scaffoldKey.currentState!.showSnackBar(const SnackBar(
+          content: Text(
+            'Error Sending Message!',
+            style: TextStyle(color: Colors.white),
+          ),
+          backgroundColor: Colors.red,
+        ));
+        emit(MessagesError(e.toString()));
+      }
+    });
+    on<CreateConversation>((event, emit) async {
+      try {
+        emit(MessageSending());
+        await _messageRepository.createChannel(event.members);
+        emit(MessageSent());
+        await Future.delayed(const Duration(seconds: 1));
+        emit(MessagesLoaded(
+            streamChannelListController, streamMessageSearchListController));
       } catch (e) {
         scaffoldKey.currentState!.showSnackBar(const SnackBar(
           content: Text(

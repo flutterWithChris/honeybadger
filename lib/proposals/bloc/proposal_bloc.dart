@@ -2,8 +2,8 @@ import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:flutter/material.dart';
 import 'package:honeybadger/core/constants.dart';
-import 'package:honeybadger/jobs/model/milestone.dart';
-import 'package:honeybadger/jobs/model/proposal.dart';
+import 'package:honeybadger/proposals/model/milestone.dart';
+import 'package:honeybadger/proposals/model/proposal.dart';
 import 'package:honeybadger/message/bloc/messages_bloc.dart';
 import 'package:honeybadger/proposals/repo/proposal_repository.dart';
 import 'package:stream_chat_flutter/stream_chat_flutter.dart';
@@ -42,11 +42,12 @@ class ProposalBloc extends Bloc<ProposalsEvent, ProposalState> {
       }
     });
     on<SendProposal>((event, emit) async {
-      if (state is ProposalLoaded) {
+      if (state is ProposalStarted) {
         try {
           final newProposal = event.proposal;
           await Future.delayed(const Duration(seconds: 1));
           await _proposalRepository.sendProposal(newProposal);
+          // _messagesBloc.add(event)
           _messagesBloc.add(
             SendMessage(
                 message: Message(

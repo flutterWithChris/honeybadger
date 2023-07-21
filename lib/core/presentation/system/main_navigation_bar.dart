@@ -47,9 +47,9 @@ class _MainBottomNavBarState extends State<MainBottomNavBar> {
             label: 'Home',
           ),
           NavigationDestination(
-            icon: Icon(MdiIcons.briefcaseOutline),
-            selectedIcon: Icon(MdiIcons.briefcase),
-            label: 'Jobs',
+            icon: Icon(MdiIcons.folderOutline),
+            selectedIcon: Icon(MdiIcons.folder),
+            label: 'Projects',
           ),
           NavigationDestination(
             icon: Badge(

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:honeybadger/core/constants.dart';
-import 'package:honeybadger/jobs/model/proposal.dart';
+import 'package:honeybadger/proposals/model/proposal.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 class ProposalRepository {

@@ -17,3 +17,10 @@ class SendMessage extends MessagesEvent {
   @override
   List<Object?> get props => [message];
 }
+
+class CreateConversation extends MessagesEvent {
+  final List<String> members;
+  const CreateConversation({required this.members});
+  @override
+  List<Object?> get props => [members];
+}

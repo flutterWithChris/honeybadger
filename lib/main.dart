@@ -8,6 +8,7 @@ import 'package:honeybadger/message/bloc/messages_bloc.dart';
 import 'package:honeybadger/message/repository/message_repository.dart';
 import 'package:honeybadger/onboarding/bloc/onboarding_bloc.dart';
 import 'package:honeybadger/payments/bloc/payment_history_bloc.dart';
+import 'package:honeybadger/profile/bloc/profile_bloc.dart';
 import 'package:honeybadger/proposals/bloc/proposal_bloc.dart';
 import 'package:honeybadger/proposals/repo/proposal_repository.dart';
 import 'package:stream_chat_flutter/stream_chat_flutter.dart';
@@ -49,6 +50,9 @@ class MyApp extends StatelessWidget {
           BlocProvider<OnboardingBloc>(
             create: (context) => OnboardingBloc(),
           ),
+          BlocProvider(
+              lazy: false,
+              create: (context) => ProfileBloc()..add(LoadProfile())),
           BlocProvider<PaymentHistoryBloc>(
             create: (context) => PaymentHistoryBloc()
               ..add(const FetchPaymentHistory(userId: 'userId')),

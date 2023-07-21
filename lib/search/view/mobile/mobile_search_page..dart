@@ -91,7 +91,7 @@ class _MobileSearchPageState extends State<MobileSearchPage> {
                         },
                         child: paymentType == PaymentType.hourly
                             ? PopupMenuButton(
-                              padding: EdgeInsets.zero,
+                                padding: EdgeInsets.zero,
                                 key: const ValueKey('hourlyPopupMenu'),
                                 //  icon: Icon(MdiIcons.filterVariant),
                                 onSelected: (value) {
@@ -133,7 +133,7 @@ class _MobileSearchPageState extends State<MobileSearchPage> {
                                 ],
                               )
                             : PopupMenuButton(
-                                                            padding: EdgeInsets.zero,
+                                padding: EdgeInsets.zero,
 
                                 key: const ValueKey('fixedPopupMenu'),
                                 //  icon: Icon(MdiIcons.filterVariant),
@@ -357,7 +357,7 @@ class _MobileSearchPageState extends State<MobileSearchPage> {
                     job: Job(
                       id: '1',
                       client: User(
-                          id: '5',
+                          id: 'honeybadger',
                           firstName: 'John',
                           lastName: 'Doe',
                           city: 'San Francisco',

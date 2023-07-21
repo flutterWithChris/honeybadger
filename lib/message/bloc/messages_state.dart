@@ -15,7 +15,7 @@ class MessagesLoading extends MessagesState {}
 
 class MessagesLoaded extends MessagesState {
   final StreamChannelListController streamChannelListController;
-  final StreamMessageSearchListController streamMessageSearchListController;
+  final StreamMessageSearchListController? streamMessageSearchListController;
 
   const MessagesLoaded(
       this.streamChannelListController, this.streamMessageSearchListController);
