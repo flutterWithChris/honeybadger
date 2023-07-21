@@ -11,7 +11,9 @@ class Proposal {
   final double? budgetHourly;
   final List<Milestone>? milestones;
   final String? clientId;
+  final String? clientName;
   final String? freelancerId;
+  final String? freelancerName;
   final String? jobId;
   final DateTime? createdAt;
   final DateTime? updatedAt;
@@ -27,7 +29,9 @@ class Proposal {
     this.budgetHourly,
     this.milestones,
     this.clientId,
+    this.clientName,
     this.freelancerId,
+    this.freelancerName,
     this.jobId,
     this.createdAt,
     this.updatedAt,
@@ -46,7 +50,9 @@ class Proposal {
       'budgetHourly': budgetHourly,
       'milestones': milestones,
       'clientId': clientId,
+      'clientName': clientName,
       'freelancerId': freelancerId,
+      'freelancerName': freelancerName,
       'jobId': jobId,
       'createdAt': createdAt,
       'updatedAt': updatedAt,
@@ -66,7 +72,9 @@ class Proposal {
       budgetHourly: json['budgetHourly'] as double?,
       milestones: json['milestones'] as List<Milestone>?,
       clientId: json['clientId'] as String?,
+      clientName: json['clientName'] as String?,
       freelancerId: json['freelancerId'] as String?,
+      freelancerName: json['freelancerName'] as String?,
       jobId: json['jobId'] as String?,
       createdAt: json['createdAt'] as DateTime?,
       updatedAt: json['updatedAt'] as DateTime?,
@@ -84,7 +92,9 @@ class Proposal {
     double? budgetHourly,
     List<Milestone>? milestones,
     String? clientId,
+    String? clientName,
     String? freelancerId,
+    String? freelancerName,
     String? jobId,
     DateTime? createdAt,
     DateTime? updatedAt,
@@ -100,7 +110,9 @@ class Proposal {
       budgetHourly: budgetHourly ?? this.budgetHourly,
       milestones: milestones ?? this.milestones,
       clientId: clientId ?? this.clientId,
+      clientName: clientName ?? this.clientName,
       freelancerId: freelancerId ?? this.freelancerId,
+      freelancerName: freelancerName ?? this.freelancerName,
       jobId: jobId ?? this.jobId,
       createdAt: createdAt ?? this.createdAt,
       updatedAt: updatedAt ?? this.updatedAt,

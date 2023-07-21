@@ -1,7 +1,7 @@
 import 'package:honeybadger/jobs/model/job_category.dart';
 import 'package:honeybadger/profile/model/user.dart';
 
-import 'milestone.dart';
+import '../../proposals/model/milestone.dart';
 
 enum PaymentType { hourly, fixedPrice }
 

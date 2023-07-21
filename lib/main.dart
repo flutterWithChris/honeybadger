@@ -4,10 +4,14 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:honeybadger/core/constants.dart';
 import 'package:honeybadger/core/router/app_router.dart';
+import 'package:honeybadger/message/bloc/messages_bloc.dart';
+import 'package:honeybadger/message/repository/message_repository.dart';
 import 'package:honeybadger/onboarding/bloc/onboarding_bloc.dart';
 import 'package:honeybadger/payments/bloc/payment_history_bloc.dart';
+import 'package:honeybadger/profile/bloc/profile_bloc.dart';
 import 'package:honeybadger/proposals/bloc/proposal_bloc.dart';
 import 'package:honeybadger/proposals/repo/proposal_repository.dart';
+import 'package:stream_chat_flutter/stream_chat_flutter.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 void main() async {
@@ -18,6 +22,11 @@ void main() async {
     anonKey: dotenv.env['SB_PUB_MAG']!,
     debug: true,
   );
+  StreamChatClient client = StreamChatClient(
+    dotenv.get('STREAM_API_KEY'),
+    logLevel: Level.INFO,
+  );
+
   runApp(const MyApp());
 }
 
@@ -32,18 +41,30 @@ class MyApp extends StatelessWidget {
         RepositoryProvider<ProposalRepository>(
           create: (context) => ProposalRepository(),
         ),
+        RepositoryProvider<MessageRepository>(
+          create: (context) => MessageRepository(),
+        ),
       ],
       child: MultiBlocProvider(
         providers: [
           BlocProvider<OnboardingBloc>(
             create: (context) => OnboardingBloc(),
           ),
+          BlocProvider(
+              lazy: false,
+              create: (context) => ProfileBloc()..add(LoadProfile())),
           BlocProvider<PaymentHistoryBloc>(
             create: (context) => PaymentHistoryBloc()
               ..add(const FetchPaymentHistory(userId: 'userId')),
           ),
+          BlocProvider<MessagesBloc>(
+            create: (context) => MessagesBloc(
+              messageRepository: context.read<MessageRepository>(),
+            )..add(LoadMessages()),
+          ),
           BlocProvider<ProposalBloc>(
             create: (context) => ProposalBloc(
+                messagesBloc: context.read<MessagesBloc>(),
                 proposalRepository: context.read<ProposalRepository>()),
           ),
         ],
@@ -52,7 +73,14 @@ class MyApp extends StatelessWidget {
           routeInformationParser: goRouter.routeInformationParser,
           routerDelegate: goRouter.routerDelegate,
           routeInformationProvider: goRouter.routeInformationProvider,
-          title: 'Flutter Demo',
+
+          title: 'Honeybadger ',
+          builder: (context, child) => StreamChat(
+              client: StreamChatClient(
+                dotenv.env['STREAM_API_KEY']!,
+                logLevel: Level.INFO,
+              ),
+              child: child),
           debugShowCheckedModeBanner: false,
           // Theme config for FlexColorScheme version 7.1.x. Make sure you use
           // same or higher package version, but still same major version. If you
@@ -65,6 +93,8 @@ class MyApp extends StatelessWidget {
             appBarStyle: FlexAppBarStyle.background,
             bottomAppBarElevation: 2.0,
             subThemesData: FlexSubThemesData(
+              cardElevation: 0.618,
+              defaultRadius: 16.0,
               buttonMinSize: const Size(200, 40),
               filledButtonTextStyle: MaterialStatePropertyAll(
                   Theme.of(context).textTheme.titleMedium),
@@ -94,7 +124,7 @@ class MyApp extends StatelessWidget {
               fabUseShape: true,
               fabAlwaysCircular: true,
               fabSchemeColor: SchemeColor.tertiary,
-              cardRadius: 14.0,
+              cardRadius: 16.0,
               popupMenuRadius: 6.0,
               popupMenuElevation: 3.0,
               dialogRadius: 18.0,
@@ -141,7 +171,7 @@ class MyApp extends StatelessWidget {
             appBarStyle: FlexAppBarStyle.background,
             bottomAppBarElevation: 2.0,
             subThemesData: const FlexSubThemesData(
-              cardElevation: 0.4,
+              cardElevation: 0.618,
               buttonMinSize: Size(200, 40),
               blendOnLevel: 8,
               useTextTheme: true,

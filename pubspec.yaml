@@ -56,6 +56,11 @@ dependencies:
   loading_animation_widget: ^1.2.0+4
   image_picker: ^1.0.1
   uuid: ^3.0.7
+  stream_chat_flutter: ^6.5.0
+  jose: ^0.3.3
+  flutter_slidable: ^3.0.0
+  refresh: ^1.0.1
+  list_ext: ^1.0.6
 
 dev_dependencies:
   flutter_test:
@@ -67,6 +72,9 @@ dev_dependencies:
   # package. See that file for information about deactivating specific lint
   # rules and activating additional ones.
   flutter_lints: ^2.0.0
+
+dependency_overrides:
+  http: any
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec

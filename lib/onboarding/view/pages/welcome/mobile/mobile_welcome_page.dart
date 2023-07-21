@@ -156,13 +156,13 @@ class _MobileWelcomePageState extends State<MobileWelcomePage> {
                   ),
                   SliverList(
                       delegate: SliverChildListDelegate([
-                    Text('Why Honeybadger?',
-                        textAlign: TextAlign.center,
-                        style: Theme.of(context)
-                            .textTheme
-                            .headlineMedium
-                            ?.copyWith(fontWeight: FontWeight.bold)),
-                    const GutterLarge(),
+                    // Text('Why Honeybadger?',
+                    //     textAlign: TextAlign.center,
+                    //     style: Theme.of(context)
+                    //         .textTheme
+                    //         .headlineMedium
+                    //         ?.copyWith(fontWeight: FontWeight.bold)),
+                    // const GutterLarge(),
                     Wrap(
                       alignment: WrapAlignment.center,
                       spacing: 12.0,
@@ -176,8 +176,7 @@ class _MobileWelcomePageState extends State<MobileWelcomePage> {
                             children: [
                               Row(
                                 children: [
-                                  const Icon(Icons.payments_outlined,
-                                      size: 40.0),
+                                  Icon(MdiIcons.cashMultiple, size: 36.0),
                                   const Gutter(),
                                   Flexible(
                                     child: Text(

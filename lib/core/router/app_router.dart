@@ -5,6 +5,7 @@ import 'package:go_router/go_router.dart';
 import 'package:honeybadger/jobs/model/job.dart';
 import 'package:honeybadger/jobs/view/job_details_page/job_page.dart';
 import 'package:honeybadger/jobs/view/jobs_page/jobs_page.dart';
+import 'package:honeybadger/message/channel_page.dart';
 import 'package:honeybadger/message/view/messages_page.dart';
 import 'package:honeybadger/onboarding/view/onboarding_page.dart';
 import 'package:honeybadger/onboarding/view/pages/welcome/welcome_page.dart';
@@ -16,6 +17,7 @@ import 'package:honeybadger/profile/view/profile_page.dart';
 import 'package:honeybadger/proposals/create/view/create_proposal_page.dart';
 import 'package:honeybadger/search/view/search_page.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:stream_chat_flutter/stream_chat_flutter.dart';
 
 GoRouter goRouter = GoRouter(
   debugLogDiagnostics: true,
@@ -23,7 +25,8 @@ GoRouter goRouter = GoRouter(
   initialLocation: '/search',
   redirect: (context, state) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    bool onboarded = prefs.getBool('onboarded') ?? false;
+    bool onboarded = false;
+    onboarded = prefs.getBool('onboarded') ?? false;
 
     if (onboarded == false) {
       return '/onboarding';
@@ -84,10 +87,18 @@ GoRouter goRouter = GoRouter(
       builder: (context, state) => const JobsPage(),
     ),
     GoRoute(
-      path: '/messages',
-      name: 'messages',
-      builder: (context, state) => const MessagesPage(),
-    ),
+        path: '/messages',
+        name: 'messages',
+        builder: (context, state) => StreamChat(
+            client: StreamChat.of(context).client, child: const MessagesPage()),
+        routes: [
+          GoRoute(
+            path: 'channel/:id',
+            name: 'channel',
+            builder: (context, state) => StreamChannel(
+                channel: state.extra as Channel, child: const ChannelPage()),
+          ),
+        ]),
     GoRoute(
         path: '/payments',
         name: 'payments',

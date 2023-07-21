@@ -53,5 +53,10 @@
 	<string>Needs access for profile, portfolio, & sharing photos.</string>
 	<key>NSMicrophoneUsageDescription</key>
 	<string>Needs access for voice messages.</string>
+	<key>NSAppTransportSecurity</key>
+	<dict>
+		<key>NSAllowsArbitraryLoads</key>
+		<true/>
+	</dict>
 </dict>
 </plist>
