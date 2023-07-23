@@ -1,8 +1,12 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flex_color_scheme/flex_color_scheme.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:honeybadger/auth/bloc/auth_bloc.dart';
+import 'package:honeybadger/auth/cubit/signup/signup_cubit.dart';
+import 'package:honeybadger/auth/repository/auth_repository.dart';
 import 'package:honeybadger/core/constants.dart';
 import 'package:honeybadger/core/router/app_router.dart';
 import 'package:honeybadger/firebase_options.dart';
@@ -27,6 +31,8 @@ void main() async {
     debug: true,
   );
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
+
+  await FirebaseAuth.instance.signOut();
   StreamChatClient client = StreamChatClient(
     dotenv.get('STREAM_API_KEY'),
     logLevel: Level.INFO,
@@ -43,6 +49,8 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MultiRepositoryProvider(
       providers: [
+        RepositoryProvider<AuthRepository>(
+            create: (context) => AuthRepository()),
         RepositoryProvider<ProposalRepository>(
           create: (context) => ProposalRepository(),
         ),
@@ -55,6 +63,14 @@ class MyApp extends StatelessWidget {
       ],
       child: MultiBlocProvider(
         providers: [
+          BlocProvider<AuthBloc>(
+            create: (context) => AuthBloc(
+              authRepository: context.read<AuthRepository>(),
+            ),
+          ),
+          BlocProvider(
+              create: (context) =>
+                  SignupCubit(authRepository: context.read<AuthRepository>())),
           BlocProvider<OnboardingBloc>(
             create: (context) => OnboardingBloc(),
           ),
@@ -109,7 +125,7 @@ class MyApp extends StatelessWidget {
             bottomAppBarElevation: 2.0,
             subThemesData: FlexSubThemesData(
               cardElevation: 0.618,
-              defaultRadius: 16.0,
+              defaultRadius: 24.0,
               buttonMinSize: const Size(200, 40),
               filledButtonTextStyle: MaterialStatePropertyAll(
                   Theme.of(context).textTheme.titleMedium),
@@ -139,7 +155,7 @@ class MyApp extends StatelessWidget {
               fabUseShape: true,
               fabAlwaysCircular: true,
               fabSchemeColor: SchemeColor.tertiary,
-              cardRadius: 16.0,
+              cardRadius: 24.0,
               popupMenuRadius: 6.0,
               popupMenuElevation: 3.0,
               dialogRadius: 18.0,
@@ -187,6 +203,8 @@ class MyApp extends StatelessWidget {
             bottomAppBarElevation: 2.0,
             subThemesData: const FlexSubThemesData(
               cardElevation: 0.618,
+              defaultRadius: 24.0,
+              cardRadius: 24.0,
               buttonMinSize: Size(200, 40),
               blendOnLevel: 8,
               useTextTheme: true,
@@ -212,7 +230,6 @@ class MyApp extends StatelessWidget {
               fabUseShape: true,
               fabAlwaysCircular: true,
               fabSchemeColor: SchemeColor.tertiary,
-              cardRadius: 14.0,
               popupMenuRadius: 6.0,
               popupMenuElevation: 3.0,
               dialogRadius: 18.0,

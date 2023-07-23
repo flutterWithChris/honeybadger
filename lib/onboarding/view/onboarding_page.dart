@@ -118,6 +118,7 @@ class _OnboardingPageState extends State<OnboardingPage> {
                   pageController: _pageController,
                 ),
                 SignupPage(
+                  pageController: _pageController,
                   userType: widget.userType,
                 ),
                 ProfileSetup(
