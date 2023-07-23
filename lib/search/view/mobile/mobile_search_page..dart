@@ -357,7 +357,7 @@ class _MobileSearchPageState extends State<MobileSearchPage> {
                     job: Job(
                       id: '1',
                       client: User(
-                          id: 'honeybadger',
+                          id: 'ronswanson',
                           firstName: 'John',
                           lastName: 'Doe',
                           city: 'San Francisco',
@@ -370,7 +370,7 @@ class _MobileSearchPageState extends State<MobileSearchPage> {
                           'Create an app for a Veterinarian\'s office patients.',
                       description:
                           'Flutter Developer needed for a project. We are looking for someone who can work with us long term.\n\nCreating an app for a local veterinarian who\'d like a way for patients to check in and pay through their phone.',
-                      budget: 10000,
+                      budget: 12000,
                       duration: JobDuration.recurring,
                       skills: ['Flutter', 'Dart', 'Firebase'],
                       category: JobCategory(
@@ -404,15 +404,15 @@ class _MobileSearchPageState extends State<MobileSearchPage> {
                           ratingCount: 4,
                           rating: 4.5),
                       title:
-                          'Create an app for a Veterinarian\'s office patients.',
+                          'Graphic design work for a new mobile app we\'re working on.',
                       description:
-                          'Flutter Developer needed for a project. We are looking for someone who can work with us long term.\n\nCreating an app for a local veterinarian who\'d like a way for patients to check in and pay through their phone.',
-                      budget: 10000,
+                          'Needing a graphic designer to help us with a new mobile app we\'re working on. We\'re looking for someone who can work with us long term.\n\nCreating an app for a local veterinarian who\'d like a way for patients to check in and pay through their phone.',
+                      budget: 8000,
                       duration: JobDuration.recurring,
-                      skills: ['Flutter', 'Dart', 'Firebase'],
+                      skills: ['Illustrator', 'Photoshop', 'Adobe XD'],
                       category: JobCategory(
                         id: '1',
-                        name: 'Mobile App Development',
+                        name: 'Graphic Design',
                       ),
                       paymentType: PaymentType.fixedPrice,
                       visibility: JobVisibility.public,
@@ -440,16 +440,15 @@ class _MobileSearchPageState extends State<MobileSearchPage> {
                           email: '',
                           ratingCount: 4,
                           rating: 4.5),
-                      title:
-                          'Create an app for a Veterinarian\'s office patients.',
+                      title: 'Create a landing page with Framer.',
                       description:
-                          'Flutter Developer needed for a project. We are looking for someone who can work with us long term.\n\nCreating an app for a local veterinarian who\'d like a way for patients to check in and pay through their phone.',
+                          'Our company, , is looking for a Framer expert to help us create a landing page for our new product. Should include animations and be responsive. While also being SEO friendly.',
                       budget: 10000,
                       duration: JobDuration.recurring,
-                      skills: ['Flutter', 'Dart', 'Firebase'],
+                      skills: ['Framer', 'React', 'Javascript'],
                       category: JobCategory(
                         id: '1',
-                        name: 'Mobile App Development',
+                        name: 'Web Development',
                       ),
                       paymentType: PaymentType.fixedPrice,
                       visibility: JobVisibility.public,

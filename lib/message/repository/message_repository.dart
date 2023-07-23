@@ -44,9 +44,10 @@ class MessageRepository {
   }
 
   /// Send a message
-  Future<SendMessageResponse> sendMessage(Message message) async {
+  Future<SendMessageResponse> sendMessage(
+      Message message, String channelId) async {
     try {
-      return await client.sendMessage(message, '', 'messages');
+      return await client.sendMessage(message, channelId, 'messages');
     } catch (e) {
       print(e);
       rethrow;

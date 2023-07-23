@@ -26,7 +26,7 @@ GoRouter goRouter = GoRouter(
   redirect: (context, state) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     bool onboarded = false;
-    // onboarded = prefs.getBool('onboarded') ?? false;
+    onboarded = prefs.getBool('onboarded') ?? false;
 
     if (onboarded == false) {
       return '/onboarding';

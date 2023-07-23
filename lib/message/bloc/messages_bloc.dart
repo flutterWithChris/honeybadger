@@ -59,7 +59,15 @@ class MessagesBloc extends Bloc<MessagesEvent, MessagesState> {
     on<SendMessage>((event, emit) async {
       try {
         emit(MessageSending());
-        await _messageRepository.sendMessage(event.message);
+        List<String> memberIds =
+            event.message.mentionedUsers.map((user) => user.id).toList();
+        final ChannelState channelState =
+            await _messageRepository.createChannel([
+                  event.message.user!.id,
+                ] +
+                memberIds);
+        await _messageRepository.sendMessage(
+            event.message, channelState.channel!.id);
         emit(MessageSent());
         await Future.delayed(const Duration(seconds: 1));
         emit(MessagesLoaded(
@@ -77,16 +85,11 @@ class MessagesBloc extends Bloc<MessagesEvent, MessagesState> {
     });
     on<CreateConversation>((event, emit) async {
       try {
-        emit(MessageSending());
-        await _messageRepository.createChannel(event.members);
-        emit(MessageSent());
-        await Future.delayed(const Duration(seconds: 1));
-        emit(MessagesLoaded(
-            streamChannelListController, streamMessageSearchListController));
+        await _messageRepository.createChannel(event.memberIds);
       } catch (e) {
         scaffoldKey.currentState!.showSnackBar(const SnackBar(
           content: Text(
-            'Error Sending Message!',
+            'Error Creating Conversation!',
             style: TextStyle(color: Colors.white),
           ),
           backgroundColor: Colors.red,
