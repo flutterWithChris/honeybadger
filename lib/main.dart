@@ -1,3 +1,4 @@
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flex_color_scheme/flex_color_scheme.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -24,6 +25,7 @@ void main() async {
     anonKey: dotenv.env['SB_PUB_MAG']!,
     debug: true,
   );
+  await Firebase.initializeApp();
   StreamChatClient client = StreamChatClient(
     dotenv.get('STREAM_API_KEY'),
     logLevel: Level.INFO,
