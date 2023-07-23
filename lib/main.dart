@@ -5,6 +5,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:honeybadger/core/constants.dart';
 import 'package:honeybadger/core/router/app_router.dart';
+import 'package:honeybadger/firebase_options.dart';
 import 'package:honeybadger/message/bloc/messages_bloc.dart';
 import 'package:honeybadger/message/repository/message_repository.dart';
 import 'package:honeybadger/onboarding/bloc/onboarding_bloc.dart';
@@ -25,7 +26,7 @@ void main() async {
     anonKey: dotenv.env['SB_PUB_MAG']!,
     debug: true,
   );
-  await Firebase.initializeApp();
+  await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
   StreamChatClient client = StreamChatClient(
     dotenv.get('STREAM_API_KEY'),
     logLevel: Level.INFO,
