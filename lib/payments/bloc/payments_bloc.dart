@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
+import 'package:flutter/material.dart';
 import 'package:honeybadger/payments/repository/payments_repository.dart';
 import 'package:honeybadger/profile/model/user.dart';
 
@@ -19,7 +20,15 @@ class PaymentsBloc extends Bloc<PaymentsEvent, PaymentsState> {
   void _onSetupPaymentAccount(
       SetupPaymentAccount event, Emitter<PaymentsState> emit) async {
     emit(PaymentsLoading());
-    await _paymentsRepository.setupPaymentAccount();
+    await _paymentsRepository.setupPaymentAccount(
+      event.context,
+      email: event.user.email!,
+    );
+    // await _paymentsRepository.initPaymentSheet(
+    //   event.context,
+    //   email: event.user.email!,
+    //   amount: 100.0,
+    // );
     emit(PaymentsLoaded());
   }
 

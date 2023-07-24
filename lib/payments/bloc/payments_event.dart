@@ -11,5 +11,6 @@ class LoadPayments extends PaymentsEvent {}
 
 class SetupPaymentAccount extends PaymentsEvent {
   User user;
-  SetupPaymentAccount({required this.user});
+  BuildContext context;
+  SetupPaymentAccount({required this.user, required this.context});
 }

@@ -3,8 +3,10 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_gutter/flutter_gutter.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:honeybadger/core/constants.dart';
+import 'package:honeybadger/onboarding/bloc/onboarding_bloc.dart';
 import 'package:honeybadger/payments/bloc/payments_bloc.dart';
 import 'package:honeybadger/profile/bloc/profile_bloc.dart';
+import 'package:loading_animation_widget/loading_animation_widget.dart';
 
 class PaymentSetupPage extends StatelessWidget {
   final PageController pageController;
@@ -58,9 +60,10 @@ class PaymentSetupPage extends StatelessWidget {
                                 ),
                               );
                             },
-                            icon:
-                                const Icon(FontAwesomeIcons.stripeS, size: 16),
-                            label: const Text('Connect with Stripe')),
+                            icon: LoadingAnimationWidget.discreteCircle(
+                                color: Theme.of(context).colorScheme.onPrimary,
+                                size: 18.0),
+                            label: const Text('Loading...')),
                       );
                     }
                     if (state is PaymentsError) {
@@ -77,6 +80,7 @@ class PaymentSetupPage extends StatelessWidget {
                                 onPressed: () {
                                   context.read<PaymentsBloc>().add(
                                       SetupPaymentAccount(
+                                          context: context,
                                           user: context
                                               .read<ProfileBloc>()
                                               .state
@@ -99,8 +103,9 @@ class PaymentSetupPage extends StatelessWidget {
                             onPressed: () {
                               context.read<PaymentsBloc>().add(
                                   SetupPaymentAccount(
+                                      context: context,
                                       user: context
-                                          .read<ProfileBloc>()
+                                          .read<OnboardingBloc>()
                                           .state
                                           .user!));
                             },

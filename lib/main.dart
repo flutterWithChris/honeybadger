@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flex_color_scheme/flex_color_scheme.dart';
@@ -22,6 +24,7 @@ import 'package:honeybadger/proposals/bloc/proposal_bloc.dart';
 import 'package:honeybadger/proposals/repo/proposal_repository.dart';
 import 'package:stream_chat_flutter/stream_chat_flutter.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:uni_links/uni_links.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -42,8 +45,32 @@ void main() async {
   runApp(const MyApp());
 }
 
-class MyApp extends StatelessWidget {
+class MyApp extends StatefulWidget {
   const MyApp({super.key});
+
+  @override
+  State<MyApp> createState() => _MyAppState();
+}
+
+class _MyAppState extends State<MyApp> {
+  StreamSubscription? _sub;
+
+  @override
+  initState() {
+    super.initState();
+    initPlatformState();
+  }
+
+  initPlatformState() async {
+    _sub = uriLinkStream.listen((Uri? uri) {
+      if (!mounted) return;
+      print('got uri: $uri');
+      // Use the uri and warn the user, if it is not correct,
+      // or route the user to the correct page
+    }, onError: (err) {
+      // Handle exception by warning the user their action did not succeed
+    });
+  }
 
   // This widget is the root of your application.
   @override
@@ -280,6 +307,12 @@ class MyApp extends StatelessWidget {
         ),
       ),
     );
+  }
+
+  @override
+  void dispose() {
+    if (_sub != null) _sub?.cancel();
+    super.dispose();
   }
 }
 
