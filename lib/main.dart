@@ -62,14 +62,30 @@ class _MyAppState extends State<MyApp> {
   }
 
   initPlatformState() async {
-    _sub = uriLinkStream.listen((Uri? uri) {
-      if (!mounted) return;
-      print('got uri: $uri');
-      // Use the uri and warn the user, if it is not correct,
-      // or route the user to the correct page
-    }, onError: (err) {
-      // Handle exception by warning the user their action did not succeed
+    // Get the initial link (if the app was launched by a link)
+    getInitialLink().then((link) {
+      if (link != null) {
+        handleLink(link);
+      }
     });
+
+    // Handle links that come in while the app is open
+    linkStream.listen((link) {
+      if (link != null) {
+        handleLink(link);
+      }
+    });
+  }
+
+// Your handler function
+  void handleLink(String link) {
+    // Parse the link
+    var uri = Uri.parse(link);
+
+    // Use GoRouter to navigate to the path in the deep link
+    if (uri.path == 'return') {
+      goRouter.go('/onboarding');
+    }
   }
 
   // This widget is the root of your application.

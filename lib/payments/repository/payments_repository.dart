@@ -26,7 +26,6 @@ class PaymentsRepository {
   }
 
   /// Setup payemnt account for the user
-
   Future<void> setupPaymentAccount(BuildContext context,
       {required String email}) async {
     try {
