@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:honeybadger/profile/model/portfolio_project.dart';
 import 'package:honeybadger/profile/review.dart';
 
@@ -122,6 +123,73 @@ class User {
       'createdAt': createdAt?.toIso8601String(),
       'updatedAt': updatedAt?.toIso8601String(),
     };
+  }
+
+  User.fromDocument(DocumentSnapshot snap) {
+    id = snap.id;
+    firstName = snap['firstName'];
+    lastName = snap['lastName'];
+    email = snap['email'];
+    password = snap['password'];
+    rating = snap['rating'];
+    ratingCount = snap['ratingCount'];
+    if (snap['reviews'] != null) {
+      reviews = [];
+      snap['reviews'].forEach((v) {
+        reviews?.add(Review.fromJson(v));
+      });
+    }
+    phoneNumber = snap['phoneNumber'];
+    address = snap['address'];
+    title = snap['title'];
+    skills = snap['skills'].cast<String>();
+    hourlyRate = snap['hourlyRate'];
+    userType = snap['userType'] == 'freelancer'
+        ? UserType.freelancer
+        : UserType.client;
+    portfolioProjects = snap['portfolioProjects'] != null
+        ? (snap['portfolioProjects'] as List)
+            .map((e) => PortfolioProject.fromJson(e))
+            .toList()
+        : null;
+    city = snap['city'];
+    state = snap['state'];
+    zip = snap['zip'];
+    country = snap['country'];
+    photoUrl = snap['photoUrl'];
+    bio = snap['bio'];
+    stripeId = snap['stripeId'];
+    createdAt = snap['createdAt']?.toDate();
+    updatedAt = snap['updatedAt']?.toDate();
+  }
+
+  User toDocument() {
+    return User(
+      id: id,
+      firstName: firstName,
+      lastName: lastName,
+      email: email,
+      password: password,
+      rating: rating,
+      ratingCount: ratingCount,
+      reviews: reviews,
+      phoneNumber: phoneNumber,
+      address: address,
+      title: title,
+      skills: skills,
+      hourlyRate: hourlyRate,
+      userType: userType,
+      portfolioProjects: portfolioProjects,
+      city: city,
+      state: state,
+      zip: zip,
+      country: country,
+      photoUrl: photoUrl,
+      bio: bio,
+      stripeId: stripeId,
+      createdAt: createdAt,
+      updatedAt: updatedAt,
+    );
   }
 
   /// CopyWith

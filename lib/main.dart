@@ -17,6 +17,7 @@ import 'package:honeybadger/payments/bloc/history/payment_history_bloc.dart';
 import 'package:honeybadger/payments/bloc/payments_bloc.dart';
 import 'package:honeybadger/payments/repository/payments_repository.dart';
 import 'package:honeybadger/profile/bloc/profile_bloc.dart';
+import 'package:honeybadger/profile/repository/user_respository.dart';
 import 'package:honeybadger/proposals/bloc/proposal_bloc.dart';
 import 'package:honeybadger/proposals/repo/proposal_repository.dart';
 import 'package:stream_chat_flutter/stream_chat_flutter.dart';
@@ -51,6 +52,9 @@ class MyApp extends StatelessWidget {
       providers: [
         RepositoryProvider<AuthRepository>(
             create: (context) => AuthRepository()),
+        RepositoryProvider<UserRepository>(
+          create: (context) => UserRepository(),
+        ),
         RepositoryProvider<ProposalRepository>(
           create: (context) => ProposalRepository(),
         ),
@@ -72,7 +76,8 @@ class MyApp extends StatelessWidget {
               create: (context) =>
                   SignupCubit(authRepository: context.read<AuthRepository>())),
           BlocProvider<OnboardingBloc>(
-            create: (context) => OnboardingBloc(),
+            create: (context) =>
+                OnboardingBloc(userRepository: context.read<UserRepository>()),
           ),
           BlocProvider(
               lazy: false,

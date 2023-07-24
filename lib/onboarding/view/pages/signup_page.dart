@@ -21,14 +21,15 @@ class SignupPage extends StatelessWidget {
           return const Text('Error Onboarding!');
         } else if (onboardingState.status == OnboardingStatus.loading) {
           return const Center(child: CircularProgressIndicator());
-        } else if (onboardingState.status == OnboardingStatus.loaded) {
+        } else if (onboardingState.status == OnboardingStatus.loaded ||
+            onboardingState.status == OnboardingStatus.initial) {
           return Scaffold(
               body: BlocConsumer<SignupCubit, SignupState>(
             listener: (context, state) async {
               if (state.status == SignupStatus.success) {
                 context.read<OnboardingBloc>().add(StartOnboarding(User(
                       id: state.user!.uid,
-                      userType: onboardingState.user!.userType!,
+                      userType: context.read<OnboardingBloc>().userType,
                       email: state.user!.email,
                       firstName: state.user!.displayName?.split(' ')[0],
                       lastName: state.user!.displayName?.split(' ')[1],

@@ -1,9 +1,18 @@
+import 'package:cached_network_image/cached_network_image.dart';
+import 'package:email_validator/email_validator.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_gutter/flutter_gutter.dart';
+import 'package:flutter_typeahead/flutter_typeahead.dart';
 import 'package:honeybadger/onboarding/view/pages/signup_page.dart';
+import 'package:image_picker/image_picker.dart';
+import 'package:phone_number/phone_number.dart';
 
+import '../../../../../profile/model/user.dart';
 import '../../../../bloc/onboarding_bloc.dart';
+
+late OverlayEntry _overlayEntry;
 
 class MobileProfileSetup extends StatefulWidget {
   final PageController pageController;
@@ -14,189 +23,435 @@ class MobileProfileSetup extends StatefulWidget {
 }
 
 class _MobileProfileSetupState extends State<MobileProfileSetup> {
+  final TextEditingController firstNameController = TextEditingController();
+  final TextEditingController lastNameController = TextEditingController();
+  final TextEditingController emailController = TextEditingController();
+  final PhoneNumberEditingController phoneNumberController =
+      PhoneNumberEditingController(PhoneNumberUtil(), regionCode: 'US');
+  final TextEditingController titleController = TextEditingController();
+  final TextEditingController hourlyRateController = TextEditingController();
+  final TextEditingController addressController = TextEditingController();
+  final TextEditingController cityController = TextEditingController();
+  final TextEditingController stateController = TextEditingController();
+  final TextEditingController bioController = TextEditingController();
+  final GlobalKey<FormState> _profileFormKey = GlobalKey<FormState>();
+  @override
+  void initState() {
+    // TODO: implement initState
+    User user = context.read<OnboardingBloc>().state.user!;
+    firstNameController.text = user.firstName ?? '';
+    lastNameController.text = user.lastName ?? '';
+    emailController.text = user.email ?? '';
+    phoneNumberController.text = user.phoneNumber ?? '';
+    titleController.text = user.title ?? '';
+    hourlyRateController.text = user.hourlyRate?.toString() ?? '';
+    addressController.text = user.address ?? '';
+    cityController.text = user.city ?? '';
+    stateController.text = user.state ?? '';
+    bioController.text = user.bio ?? '';
+
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context) {
-    final TextEditingController firstNameController = TextEditingController();
-    final TextEditingController lastNameController = TextEditingController();
-    final TextEditingController emailController = TextEditingController();
-    final TextEditingController phoneNumberController = TextEditingController();
-    final TextEditingController titleController = TextEditingController();
-    final TextEditingController hourlyRateController = TextEditingController();
-    final TextEditingController addressController = TextEditingController();
-    final TextEditingController cityController = TextEditingController();
-    final TextEditingController stateController = TextEditingController();
-    final TextEditingController bioController = TextEditingController();
-    return ListView(
-        padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 16.0),
-        children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Text(
-                'Profile Setup',
-                style: Theme.of(context).textTheme.headlineLarge,
-              ),
-              const UserTypeInputChip(),
-            ],
-          ),
-          const Gutter(),
-          Flex(
-            direction: Axis.horizontal,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Flexible(
-                  child: Padding(
-                padding: const EdgeInsets.only(right: 16.0),
-                child: Stack(
-                  alignment: Alignment.bottomRight,
-                  children: [
-                    const CircleAvatar(radius: 34.0),
-                    CircleAvatar(
-                      radius: 16,
-                      backgroundColor: Theme.of(context).colorScheme.secondary,
-                      child: const Icon(
-                        Icons.camera_alt,
-                        color: Colors.white,
-                        size: 16,
-                      ),
-                    )
-                  ],
+    return Listener(
+      onPointerDown: (_) => FocusScope.of(context).unfocus(),
+      child: ListView(
+          padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 16.0),
+          children: [
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text(
+                  'Profile Setup',
+                  style: Theme.of(context).textTheme.headlineLarge,
                 ),
-              )),
-              const Gutter(),
-              Flexible(
-                flex: 3,
-                child: Column(
-                  children: [
-                    Row(
-                      children: [
-                        Flexible(
-                          child: TextField(
-                            controller: firstNameController,
-                            keyboardType: TextInputType.name,
-                            textCapitalization: TextCapitalization.words,
-                            decoration: const InputDecoration(
-                                label: Text('First Name')),
+                const UserTypeInputChip(),
+              ],
+            ),
+            const Gutter(),
+            Flex(
+              direction: Axis.horizontal,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Flexible(
+                    child: Padding(
+                  padding: const EdgeInsets.only(right: 16.0),
+                  child: Stack(
+                    clipBehavior: Clip.none,
+                    alignment: Alignment.bottomRight,
+                    children: [
+                      CircleAvatar(
+                          radius: 34.0,
+                          foregroundImage: CachedNetworkImageProvider(context
+                              .watch<OnboardingBloc>()
+                              .state
+                              .user!
+                              .photoUrl!),
+                          child: const Icon(Icons.person)),
+                      Positioned(
+                        right: -10,
+                        bottom: -8,
+                        child: CircleAvatar(
+                          radius: 16,
+                          backgroundColor: Theme.of(context)
+                              .colorScheme
+                              .secondary
+                              .withOpacity(0.8),
+                          child: InkWell(
+                            onTap: () async {
+                              await ImagePicker()
+                                  .pickImage(source: ImageSource.gallery)
+                                  .then((profilePicture) {
+                                if (profilePicture != null) {
+                                  context.read<OnboardingBloc>().add(
+                                      SetUserProfilePicture(
+                                          profilePicture,
+                                          context
+                                              .read<OnboardingBloc>()
+                                              .state
+                                              .user!));
+                                }
+                                return profilePicture;
+                              });
+                            },
+                            child: const Icon(
+                              Icons.camera_alt,
+                              color: Colors.white,
+                              size: 16,
+                            ),
                           ),
+                        ),
+                      )
+                    ],
+                  ),
+                )),
+                const Gutter(),
+                Flexible(
+                  flex: 3,
+                  child: Form(
+                    key: _profileFormKey,
+                    child: Column(
+                      children: [
+                        Row(
+                          children: [
+                            Flexible(
+                              child: TextFormField(
+                                validator: (value) {
+                                  if (value == null || value.isEmpty) {
+                                    return 'Please enter your first name.';
+                                  }
+                                  return null;
+                                },
+                                controller: firstNameController,
+                                keyboardType: TextInputType.name,
+                                textCapitalization: TextCapitalization.words,
+                                decoration: const InputDecoration(
+                                    label: Text('First Name')),
+                              ),
+                            ),
+                            const Gutter(),
+                            Flexible(
+                              child: TextFormField(
+                                validator: (value) {
+                                  if (value == null || value.isEmpty) {
+                                    return 'Please enter your last name.';
+                                  }
+                                  return null;
+                                },
+                                controller: lastNameController,
+                                textCapitalization: TextCapitalization.words,
+                                keyboardType: TextInputType.name,
+                                decoration: const InputDecoration(
+                                    label: Text('Last Name')),
+                              ),
+                            ),
+                          ],
                         ),
                         const Gutter(),
-                        Flexible(
-                          child: TextField(
-                            controller: lastNameController,
-                            textCapitalization: TextCapitalization.words,
-                            keyboardType: TextInputType.name,
-                            decoration:
-                                const InputDecoration(label: Text('Last Name')),
-                          ),
-                        ),
                       ],
                     ),
-                    const Gutter(),
-                  ],
+                  ),
                 ),
-              ),
-            ],
-          ),
-          TextField(
-            controller: emailController,
-            keyboardType: TextInputType.emailAddress,
-            decoration: const InputDecoration(label: Text('Email')),
-          ),
-          const Gutter(),
-          TextField(
-            controller: phoneNumberController,
-            keyboardType: TextInputType.phone,
-            decoration: const InputDecoration(label: Text('Phone Number')),
-          ),
-          const Gutter(),
-          Row(
-            children: [
-              Flexible(
-                child: SearchBar(
-                  controller: titleController,
-                  hintText: 'I am a...',
-                  padding: const MaterialStatePropertyAll(EdgeInsets.zero),
-                  side: const MaterialStatePropertyAll(BorderSide.none),
-                  shape: const MaterialStatePropertyAll(RoundedRectangleBorder(
-                      borderRadius: BorderRadius.all(Radius.circular(8)))),
-                  //backgroundColor: MaterialStatePropertyAll(Colors.transparent),
-                  shadowColor:
-                      const MaterialStatePropertyAll(Colors.transparent),
-                  // overlayColor: MaterialStatePropertyAll(Colors.transparent),
-                  surfaceTintColor:
-                      const MaterialStatePropertyAll(Colors.transparent),
+              ],
+            ),
+            TextFormField(
+              validator: (value) {
+                if (value == null || value.isEmpty) {
+                  return 'Please enter your email address.';
+                }
+                if (EmailValidator.validate(value) == false) {
+                  return 'Please enter a valid email address.';
+                }
+
+                return null;
+              },
+              controller: emailController,
+              keyboardType: TextInputType.emailAddress,
+              decoration: const InputDecoration(label: Text('Email')),
+            ),
+            const Gutter(),
+            Row(
+              children: [
+                Flexible(
+                  child: TypeAheadField(
+                    suggestionsBoxDecoration: SuggestionsBoxDecoration(
+                      borderRadius: BorderRadius.circular(16.0),
+                    ),
+                    textFieldConfiguration: TextFieldConfiguration(
+                        controller: titleController,
+                        textCapitalization: TextCapitalization.words,
+                        decoration:
+                            const InputDecoration(label: Text('Title'))),
+                    suggestionsCallback: (query) {
+                      return [
+                        'Mobile Developer',
+                        'Graphic Designer',
+                        'Software Engineer'
+                      ].where((suggestion) => suggestion.toLowerCase().contains(
+                          query.toLowerCase().trim().replaceAll(' ', '')));
+                    },
+                    itemBuilder: (context, suggestion) {
+                      return ListTile(
+                        title: Text(suggestion),
+                      );
+                    },
+                    noItemsFoundBuilder: (context) {
+                      /// Show 'No Results Found
+                      /// And chip with 'Add $suggestion'
+                      return Padding(
+                        padding: const EdgeInsets.symmetric(
+                            vertical: 16.0, horizontal: 8.0),
+                        child: Column(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            const Text(
+                              'No Results Found',
+                              style: TextStyle(fontWeight: FontWeight.bold),
+                            ),
+                            const GutterSmall(),
+                            OutlinedButton.icon(
+                              onPressed: () {
+                                titleController.text =
+                                    titleController.value.text.trim();
+                              },
+                              icon: const Icon(Icons.add_circle_rounded),
+                              label: Text(titleController.value.text.trim()),
+                            ),
+                          ],
+                        ),
+                      );
+                    },
+                    loadingBuilder: (context) => const ListTile(
+                      title: Text('Loading...'),
+                    ),
+                    onSuggestionSelected: (suggestion) {
+                      print('Suggetion selected: $suggestion');
+                      Future.delayed(const Duration(milliseconds: 100), () {
+                        setState(() {
+                          titleController.text = suggestion;
+                        });
+                      });
+                    },
+                  ),
                 ),
-              ),
-              const Gutter(),
-              Flexible(
-                  child: TextField(
-                controller: hourlyRateController,
-                keyboardType: TextInputType.number,
-                decoration: const InputDecoration(
-                    label: Text('Hourly Rate'),
-                    hintText: '40',
-                    prefixText: '\$',
-                    suffixText: '/hr'),
-              ))
-            ],
+                // const TitleSelection(),
+                const Gutter(),
+                Flexible(
+                    child: TextField(
+                  controller: hourlyRateController,
+                  keyboardType: TextInputType.number,
+                  decoration: const InputDecoration(
+                      label: Text('Hourly Rate'),
+                      hintText: '40',
+                      prefixText: '\$',
+                      suffixText: '/hr'),
+                ))
+              ],
+            ),
+            const Gutter(),
+            TextFormField(
+              validator: (value) {
+                if (value == null || value.isEmpty) {
+                  return 'Please enter your phone number.';
+                }
+                // if (PhoneNumberUtil().validate(value) == false) {
+                //   return 'Please enter a valid phone number.';
+                // }
+                return null;
+              },
+              controller: phoneNumberController,
+              keyboardType: TextInputType.phone,
+              decoration: const InputDecoration(label: Text('Phone Number')),
+            ),
+            const Gutter(),
+            TextField(
+                textCapitalization: TextCapitalization.words,
+                controller: addressController,
+                keyboardType: TextInputType.streetAddress,
+                decoration: const InputDecoration(label: Text('Address'))),
+            const Gutter(),
+            Row(
+              children: [
+                Flexible(
+                    child: TextField(
+                        controller: cityController,
+                        textCapitalization: TextCapitalization.words,
+                        decoration:
+                            const InputDecoration(label: Text('City')))),
+                const Gutter(),
+                Flexible(
+                    child: TextField(
+                        controller: stateController,
+                        textCapitalization: TextCapitalization.words,
+                        decoration:
+                            const InputDecoration(label: Text('State')))),
+              ],
+            ),
+            const Gutter(),
+            TextField(
+              controller: bioController,
+              textCapitalization: TextCapitalization.sentences,
+              minLines: 3,
+              maxLines: 5,
+              decoration: const InputDecoration(
+                  label: Text('Bio'),
+                  hintText:
+                      'Tell clients what you can do for them. Focus on the benefits of working with you & why that matters to them.'),
+            ),
+            const Gutter(),
+            FractionallySizedBox(
+                widthFactor: 0.618,
+                child: FilledButton.tonal(
+                    onPressed: () async {
+                      context.read<OnboardingBloc>().add(UpdateUser(
+                          context.read<OnboardingBloc>().state.user!.copyWith(
+                                firstName:
+                                    firstNameController.value.text.trim(),
+                                lastName: lastNameController.value.text.trim(),
+                                email: emailController.value.text.trim(),
+                                phoneNumber:
+                                    phoneNumberController.value.text.trim(),
+                                title: titleController.value.text.trim(),
+                                hourlyRate: double.parse(
+                                    hourlyRateController.value.text.trim()),
+                                address: addressController.value.text.trim(),
+                                city: cityController.value.text.trim(),
+                                state: stateController.value.text.trim(),
+                                bio: bioController.value.text.trim(),
+                              )));
+                      await widget.pageController.nextPage(
+                          duration: const Duration(milliseconds: 500),
+                          curve: Curves.ease);
+                    },
+                    child: const Text('Save Profile'))),
+          ]),
+    );
+  }
+}
+
+class TitleSelection extends StatefulWidget {
+  const TitleSelection({Key? key}) : super(key: key);
+
+  @override
+  _TitleSelectionState createState() => _TitleSelectionState();
+}
+
+class _TitleSelectionState extends State<TitleSelection> {
+  final titleKey = GlobalKey();
+  TextEditingController titleController = TextEditingController();
+  List<String> suggestions = [
+    'Mobile Developer',
+    'Graphic Designer',
+    'Software Engineer'
+  ];
+  List<String> visibleSuggestions = [];
+  late final FocusNode _focusNode;
+
+  @override
+  void initState() {
+    super.initState();
+    _focusNode = FocusNode();
+    _focusNode.addListener(_onFocusChange);
+
+    _overlayEntry = OverlayEntry(builder: (context) {
+      final renderBox =
+          titleKey.currentContext!.findRenderObject() as RenderBox;
+      final size = renderBox.size;
+      final offset = renderBox.localToGlobal(Offset.zero);
+
+      return Positioned(
+        left: offset.dx,
+        top: offset.dy + size.height,
+        width: size.width,
+        child: Material(
+          color: Theme.of(context).inputDecorationTheme.fillColor,
+          elevation: 4.0,
+          child: ListView(
+            padding: EdgeInsets.zero,
+            shrinkWrap: true,
+            children: visibleSuggestions
+                .map((suggestion) => ListTile(
+                      title: Text(suggestion),
+                      onTap: () {
+                        titleController.text = suggestion;
+                        visibleSuggestions = [];
+                        _overlayEntry.markNeedsBuild();
+                        _focusNode.unfocus(); // close keyboard
+                      },
+                    ))
+                .toList(),
           ),
-          const Gutter(),
-          TextField(
-              textCapitalization: TextCapitalization.words,
-              controller: addressController,
-              keyboardType: TextInputType.streetAddress,
-              decoration: const InputDecoration(label: Text('Address'))),
-          const Gutter(),
-          Row(
-            children: [
-              Flexible(
-                  child: TextField(
-                      controller: cityController,
-                      textCapitalization: TextCapitalization.words,
-                      decoration: const InputDecoration(label: Text('City')))),
-              const Gutter(),
-              Flexible(
-                  child: TextField(
-                      controller: stateController,
-                      textCapitalization: TextCapitalization.words,
-                      decoration: const InputDecoration(label: Text('State')))),
-            ],
-          ),
-          const Gutter(),
-          TextField(
-            controller: bioController,
-            textCapitalization: TextCapitalization.sentences,
-            minLines: 3,
-            maxLines: 5,
-            decoration: const InputDecoration(
-                label: Text('Bio'),
-                hintText:
-                    'Tell clients what you can do for them. Focus on the benefits of working with you & why that matters to them.'),
-          ),
-          const Gutter(),
-          FractionallySizedBox(
-              widthFactor: 0.618,
-              child: FilledButton.tonal(
-                  onPressed: () async {
-                    context.read<OnboardingBloc>().add(UpdateUser(
-                        context.read<OnboardingBloc>().state.user!.copyWith(
-                              firstName: firstNameController.value.text,
-                              lastName: lastNameController.value.text,
-                              email: emailController.value.text,
-                              phoneNumber: phoneNumberController.value.text,
-                              title: titleController.value.text,
-                              hourlyRate:
-                                  double.parse(hourlyRateController.value.text),
-                              address: addressController.value.text,
-                              city: cityController.value.text,
-                              state: stateController.value.text,
-                              bio: bioController.value.text,
-                            )));
-                    await widget.pageController.nextPage(
-                        duration: const Duration(milliseconds: 500),
-                        curve: Curves.ease);
-                  },
-                  child: const Text('Save Profile'))),
-        ]);
+        ).animate().slideY(
+              duration: 800.ms,
+              begin: 0.5,
+              end: 0,
+              curve: Curves.easeInOutCubic,
+            ),
+      );
+    });
+  }
+
+  void _onFocusChange() {
+    if (_focusNode.hasFocus) {
+      Overlay.of(context).insert(_overlayEntry);
+    } else {
+      _overlayEntry.remove();
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Flexible(
+      child: SearchBar(
+        key: titleKey,
+        controller: titleController,
+        hintText: 'I am a...',
+        focusNode: _focusNode,
+        padding: const MaterialStatePropertyAll(EdgeInsets.zero),
+        side: const MaterialStatePropertyAll(BorderSide.none),
+        shape: const MaterialStatePropertyAll(RoundedRectangleBorder(
+            borderRadius: BorderRadius.all(Radius.circular(8)))),
+        shadowColor: const MaterialStatePropertyAll(Colors.transparent),
+        surfaceTintColor: const MaterialStatePropertyAll(Colors.transparent),
+        onChanged: (query) {
+          setState(() {
+            visibleSuggestions = suggestions
+                .where((suggestion) =>
+                    suggestion.toLowerCase().contains(query.toLowerCase()))
+                .toList();
+          });
+          _overlayEntry.markNeedsBuild();
+        },
+      ),
+    );
+  }
+
+  @override
+  void dispose() {
+    _focusNode.removeListener(_onFocusChange);
+    _focusNode.dispose();
+    super.dispose();
   }
 }
