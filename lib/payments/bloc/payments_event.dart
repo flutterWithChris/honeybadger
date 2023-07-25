@@ -14,3 +14,11 @@ class SetupPaymentAccount extends PaymentsEvent {
   BuildContext context;
   SetupPaymentAccount({required this.user, required this.context});
 }
+
+class SendPayment extends PaymentsEvent {
+  User client;
+  User freelancer;
+  BuildContext context;
+  SendPayment(
+      {required this.client, required this.freelancer, required this.context});
+}

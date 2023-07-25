@@ -17,3 +17,5 @@ class PaymentsError extends PaymentsState {
   final String message;
   const PaymentsError({required this.message});
 }
+
+class PaymentSent extends PaymentsState {}

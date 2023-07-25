@@ -75,7 +75,9 @@ class PaymentsRepository {
 
   /// Initialize payment sheet
   Future<void> initPaymentSheet(context,
-      {required String email, required double amount}) async {
+      {required String email,
+      required double amount,
+      required String freelancerStripeId}) async {
     try {
       final response = await http.post(
           Uri.parse(
@@ -83,6 +85,7 @@ class PaymentsRepository {
           body: {
             'amount': (amount * 100).toString(),
             'email': email,
+            'freelancerStripeId': freelancerStripeId,
           });
 
       final jsonResponse = jsonDecode(response.body);

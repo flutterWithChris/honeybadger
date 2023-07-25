@@ -16,6 +16,7 @@ class PaymentsBloc extends Bloc<PaymentsEvent, PaymentsState> {
         super(PaymentsInitial()) {
     on<SetupPaymentAccount>(_onSetupPaymentAccount);
     on<LoadPayments>(_onLoadPayments);
+    on<SendPayment>(_onSendPayment);
   }
   void _onSetupPaymentAccount(
       SetupPaymentAccount event, Emitter<PaymentsState> emit) async {
@@ -24,12 +25,19 @@ class PaymentsBloc extends Bloc<PaymentsEvent, PaymentsState> {
       event.context,
       email: event.user.email!,
     );
-    // await _paymentsRepository.initPaymentSheet(
-    //   event.context,
-    //   email: event.user.email!,
-    //   amount: 100.0,
-    // );
+
     emit(PaymentsLoaded());
+  }
+
+  void _onSendPayment(SendPayment event, Emitter<PaymentsState> emit) async {
+    emit(PaymentsLoading());
+    await _paymentsRepository.initPaymentSheet(
+      event.context,
+      email: event.client.email!,
+      amount: 100.0,
+      freelancerStripeId: event.freelancer.stripeId!,
+    );
+    emit(PaymentSent());
   }
 
   void _onLoadPayments(LoadPayments event, Emitter<PaymentsState> emit) async {
