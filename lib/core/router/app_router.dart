@@ -7,6 +7,7 @@ import 'package:honeybadger/jobs/view/job_details_page/job_page.dart';
 import 'package:honeybadger/jobs/view/jobs_page/jobs_page.dart';
 import 'package:honeybadger/message/channel_page.dart';
 import 'package:honeybadger/message/view/messages_page.dart';
+import 'package:honeybadger/onboarding/stripe_confirmation.dart';
 import 'package:honeybadger/onboarding/view/onboarding_page.dart';
 import 'package:honeybadger/onboarding/view/pages/welcome/welcome_page.dart';
 import 'package:honeybadger/payments/details/payment_details.dart';
@@ -25,10 +26,13 @@ GoRouter goRouter = GoRouter(
   initialLocation: '/search',
   redirect: (context, state) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    bool onboarded = true;
+    bool onboarded = false;
     // onboarded = prefs.getBool('onboarded') ?? false;
 
     if (onboarded == false) {
+      if (state.location.contains('stripe-confirmation')) {
+        return null;
+      }
       return '/onboarding';
     }
 
@@ -113,6 +117,13 @@ GoRouter goRouter = GoRouter(
     GoRoute(
         path: '/profile',
         name: 'profile',
-        builder: (context, state) => const ProfilePage())
+        builder: (context, state) => const ProfilePage()),
+    GoRoute(
+      path: '/stripe-confirmation',
+      name: 'stripe-confirmation',
+      builder: (context, state) => StripeConfirmationPage(
+        stripeAccountId: state.queryParameters['account_id']!,
+      ),
+    )
   ],
 );

@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:flutter/material.dart';
+import 'package:honeybadger/payments/model/stripe_account.dart';
 import 'package:honeybadger/payments/repository/payments_repository.dart';
 import 'package:honeybadger/profile/model/user.dart';
 
@@ -21,12 +22,16 @@ class PaymentsBloc extends Bloc<PaymentsEvent, PaymentsState> {
   void _onSetupPaymentAccount(
       SetupPaymentAccount event, Emitter<PaymentsState> emit) async {
     emit(PaymentsLoading());
-    await _paymentsRepository.setupPaymentAccount(
+    String stripeAccountId = await _paymentsRepository.setupPaymentAccount(
       event.context,
       email: event.user.email!,
+      userId: event.user.id!,
     );
 
-    emit(PaymentsLoaded());
+    StripeAccount stripeAccount =
+        await _paymentsRepository.fetchStripeAccount(stripeAccountId);
+
+    emit(PaymentsLoaded(stripeAccount: stripeAccount));
   }
 
   void _onSendPayment(SendPayment event, Emitter<PaymentsState> emit) async {
@@ -43,6 +48,6 @@ class PaymentsBloc extends Bloc<PaymentsEvent, PaymentsState> {
   void _onLoadPayments(LoadPayments event, Emitter<PaymentsState> emit) async {
     emit(PaymentsLoading());
     await Future.delayed(const Duration(seconds: 1));
-    emit(PaymentsLoaded());
+    emit(const PaymentsLoaded());
   }
 }

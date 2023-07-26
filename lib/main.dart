@@ -44,6 +44,8 @@ void main() async {
   runApp(const MyApp());
 }
 
+StreamSubscription? _sub;
+
 class MyApp extends StatefulWidget {
   const MyApp({super.key});
 
@@ -52,8 +54,6 @@ class MyApp extends StatefulWidget {
 }
 
 class _MyAppState extends State<MyApp> {
-  StreamSubscription? _sub;
-
   @override
   initState() {
     super.initState();
@@ -69,7 +69,7 @@ class _MyAppState extends State<MyApp> {
     });
 
     // Handle links that come in while the app is open
-    linkStream.listen((link) {
+    _sub = linkStream.listen((link) {
       if (link != null) {
         handleLink(link);
       }
@@ -80,10 +80,10 @@ class _MyAppState extends State<MyApp> {
   void handleLink(String link) {
     // Parse the link
     var uri = Uri.parse(link);
-
+    print('Link: $link');
     // Use GoRouter to navigate to the path in the deep link
-    if (uri.path == 'return') {
-      goRouter.go('/onboarding');
+    if (link.contains('redirect')) {
+      goRouter.go('/stripe-confirmation?${uri.query}');
     }
   }
 
@@ -184,8 +184,12 @@ class _MyAppState extends State<MyApp> {
                   const FlexAdaptive.excludeWebAndroidFuchsia(),
               adaptiveAppBarScrollUnderOff:
                   const FlexAdaptive.excludeWebAndroidFuchsia(),
-              defaultRadiusAdaptive: 10.0,
-              adaptiveRadius: const FlexAdaptive.excludeWebAndroidFuchsia(),
+              defaultRadiusAdaptive: 12.0,
+              // adaptiveRadius: const FlexAdaptive.excludeWebAndroidFuchsia(),
+              textButtonRadius: 24.0,
+              filledButtonRadius: 24.0,
+              outlinedButtonRadius: 24.0,
+              elevatedButtonRadius: 24.0,
               elevatedButtonSchemeColor: SchemeColor.onPrimaryContainer,
               elevatedButtonSecondarySchemeColor: SchemeColor.primaryContainer,
               outlinedButtonOutlineSchemeColor: SchemeColor.primary,
@@ -416,5 +420,11 @@ class _MyHomePageState extends State<MyHomePage> {
         child: const Icon(Icons.add),
       ), // This trailing comma makes auto-formatting nicer for build methods.
     );
+  }
+
+  @override
+  void dispose() {
+    _sub?.cancel();
+    super.dispose();
   }
 }

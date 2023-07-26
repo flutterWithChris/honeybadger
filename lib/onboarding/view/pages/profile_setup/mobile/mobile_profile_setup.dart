@@ -1,5 +1,4 @@
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:email_validator/email_validator.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -35,6 +34,9 @@ class _MobileProfileSetupState extends State<MobileProfileSetup> {
   final TextEditingController stateController = TextEditingController();
   final TextEditingController bioController = TextEditingController();
   final GlobalKey<FormState> _profileFormKey = GlobalKey<FormState>();
+  final TextEditingController _skillsController = TextEditingController();
+
+  final List<String> _skills = [];
   @override
   void initState() {
     // TODO: implement initState
@@ -169,28 +171,28 @@ class _MobileProfileSetupState extends State<MobileProfileSetup> {
                             ),
                           ],
                         ),
-                        const Gutter(),
+                        // const Gutter(),
                       ],
                     ),
                   ),
                 ),
               ],
             ),
-            TextFormField(
-              validator: (value) {
-                if (value == null || value.isEmpty) {
-                  return 'Please enter your email address.';
-                }
-                if (EmailValidator.validate(value) == false) {
-                  return 'Please enter a valid email address.';
-                }
+            // TextFormField(
+            //   validator: (value) {
+            //     if (value == null || value.isEmpty) {
+            //       return 'Please enter your email address.';
+            //     }
+            //     if (EmailValidator.validate(value) == false) {
+            //       return 'Please enter a valid email address.';
+            //     }
 
-                return null;
-              },
-              controller: emailController,
-              keyboardType: TextInputType.emailAddress,
-              decoration: const InputDecoration(label: Text('Email')),
-            ),
+            //     return null;
+            //   },
+            //   controller: emailController,
+            //   keyboardType: TextInputType.emailAddress,
+            //   decoration: const InputDecoration(label: Text('Email')),
+            // ),
             const Gutter(),
             Row(
               children: [
@@ -271,59 +273,130 @@ class _MobileProfileSetupState extends State<MobileProfileSetup> {
               ],
             ),
             const Gutter(),
-            TextFormField(
-              validator: (value) {
-                if (value == null || value.isEmpty) {
-                  return 'Please enter your phone number.';
-                }
-                // if (PhoneNumberUtil().validate(value) == false) {
-                //   return 'Please enter a valid phone number.';
-                // }
-                return null;
-              },
-              controller: phoneNumberController,
-              keyboardType: TextInputType.phone,
-              decoration: const InputDecoration(label: Text('Phone Number')),
+            TypeAheadField(
+                suggestionsBoxDecoration: SuggestionsBoxDecoration(
+                  borderRadius: BorderRadius.circular(16.0),
+                ),
+                textFieldConfiguration: TextFieldConfiguration(
+                    controller: _skillsController,
+                    decoration: const InputDecoration(label: Text('Skills'))),
+                suggestionsCallback: (query) {
+                  return [
+                    'Python',
+                    'Java',
+                    'C++',
+                    'C#',
+                    'JavaScript',
+                    'HTML',
+                    'CSS',
+                    'Flutter',
+                    'Dart',
+                    'React',
+                    'React Native',
+                    'Angular',
+                    'Vue',
+                    'Node.js',
+                  ].where((suggestion) => suggestion.toLowerCase().contains(
+                      query.toLowerCase().trim().replaceAll(' ', '')));
+                },
+                itemBuilder: (context, suggestion) {
+                  return ListTile(title: Text(suggestion));
+                },
+                itemSeparatorBuilder: (context, index) => const Divider(),
+                onSuggestionSelected: (suggestion) {
+                  _skillsController.clear();
+                  if (!_skills.contains(suggestion)) {
+                    _skills.add(suggestion);
+                  }
+                }),
+            _skills.isNotEmpty ? const Gutter() : const SizedBox(),
+
+            Wrap(
+              spacing: 8.0, // gap between adjacent chips
+              runSpacing: 4.0, // gap between lines
+              children: _skills
+                  .map((skill) => Chip(
+                        label: Text(skill),
+                        onDeleted: () {
+                          setState(() {
+                            _skills.remove(skill);
+                          });
+                        },
+                      ))
+                  .toList(),
             ),
             const Gutter(),
             TextField(
-                textCapitalization: TextCapitalization.words,
-                controller: addressController,
-                keyboardType: TextInputType.streetAddress,
-                decoration: const InputDecoration(label: Text('Address'))),
-            const Gutter(),
-            Row(
-              children: [
-                Flexible(
-                    child: TextField(
-                        controller: cityController,
-                        textCapitalization: TextCapitalization.words,
-                        decoration:
-                            const InputDecoration(label: Text('City')))),
-                const Gutter(),
-                Flexible(
-                    child: TextField(
-                        controller: stateController,
-                        textCapitalization: TextCapitalization.words,
-                        decoration:
-                            const InputDecoration(label: Text('State')))),
-              ],
-            ),
-            const Gutter(),
-            TextField(
+              scrollPadding: const EdgeInsets.only(bottom: 150.0),
               controller: bioController,
               textCapitalization: TextCapitalization.sentences,
-              minLines: 3,
-              maxLines: 5,
+              minLines: 6,
+              maxLines: 10,
               decoration: const InputDecoration(
                   label: Text('Bio'),
                   hintText:
                       'Tell clients what you can do for them. Focus on the benefits of working with you & why that matters to them.'),
             ),
+            // const TextField(
+            //   minLines: 5,
+            //   maxLines: 7,
+            //   decoration: InputDecoration(
+            //     label: Text('Skills'),
+            //     hintText:
+            //         'Type your skills here. Ex: Python, Graphic Design, etc.',
+            //   ),
+            // ),
             const Gutter(),
+            // Text('Portfolio', style: Theme.of(context).textTheme.headlineLarge),
+            // const GutterSmall(),
+            // Text(
+            //     'Create projects to add images & links of your past work, if you have any.',
+            //     style: Theme.of(context).textTheme.bodyLarge),
+            // const Gutter(),
+            // Row(
+            //   children: [
+            //     Flexible(
+            //       child: FractionallySizedBox(
+            //         widthFactor: 0.5,
+            //         child: AspectRatio(
+            //           aspectRatio: 1,
+            //           child: Container(
+            //             decoration: BoxDecoration(
+            //                 border: Border.all(color: Colors.grey),
+            //                 borderRadius: BorderRadius.circular(16.0)),
+            //             child: InkWell(
+            //               onTap: () {
+            //                 showDialog(
+            //                   context: context,
+            //                   builder: (context) {
+            //                     return const AddProjectDialog();
+            //                   },
+            //                 );
+            //               },
+            //               child: Center(
+            //                 child: Row(
+            //                   mainAxisSize: MainAxisSize.min,
+            //                   mainAxisAlignment: MainAxisAlignment.center,
+            //                   crossAxisAlignment: CrossAxisAlignment.center,
+            //                   children: [
+            //                     Icon(Icons.add_circle_outline_rounded,
+            //                         size: 16, color: Colors.grey[600]!),
+            //                     const GutterSmall(),
+            //                     const Text('Create Project',
+            //                         style: TextStyle(fontSize: 16)),
+            //                   ],
+            //                 ),
+            //               ),
+            //             ),
+            //           ),
+            //         ),
+            //       ),
+            //     ),
+            //   ],
+            // ),
             FractionallySizedBox(
                 widthFactor: 0.618,
-                child: FilledButton.tonal(
+                child: FilledButton(
                     onPressed: () async {
                       context.read<OnboardingBloc>().add(UpdateUser(
                           context.read<OnboardingBloc>().state.user!.copyWith(
@@ -345,7 +418,7 @@ class _MobileProfileSetupState extends State<MobileProfileSetup> {
                           duration: const Duration(milliseconds: 500),
                           curve: Curves.ease);
                     },
-                    child: const Text('Save Profile'))),
+                    child: const Text('Submit'))),
           ]),
     );
   }

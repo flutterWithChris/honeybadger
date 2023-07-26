@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_stripe/flutter_stripe.dart';
 import 'package:honeybadger/core/constants.dart';
+import 'package:honeybadger/payments/model/stripe_account.dart';
 import 'package:http/http.dart' as http;
 import 'package:url_launcher/url_launcher.dart';
 
@@ -28,24 +29,46 @@ class PaymentsRepository {
     }
   }
 
-  /// Setup payemnt account for the user
-  Future<void> setupPaymentAccount(BuildContext context,
-      {required String email}) async {
+  /// Fetch stripe account
+  Future<StripeAccount> fetchStripeAccount(String stripeAccountId) async {
     try {
-      // Start the Stripe Connect onboarding process
+      final response = await http.post(
+          Uri.parse(
+              'https://us-central1-honeybadger-817ee.cloudfunctions.net/getStripeAccount'),
+          body: {
+            'accountId': stripeAccountId,
+          });
+      print(response.body);
+      final jsonResponse = jsonDecode(response.body);
+      log(jsonResponse.toString());
+      print(jsonResponse.toString());
+      return StripeAccount.fromJson(jsonResponse['account']);
+    } catch (e) {
+      log(e.toString());
+      rethrow;
+    }
+  }
+
+  /// Setup payemnt account for the user
+  Future<String> setupPaymentAccount(BuildContext context,
+      {required String email, required String userId}) async {
+    try {
       final response = await http.post(
           Uri.parse(
               'https://us-central1-honeybadger-817ee.cloudfunctions.net/createStripeConnectAccount'),
           body: {
             'country': 'US',
             'email': email,
+            'userId': userId,
           });
 
       final jsonResponse = jsonDecode(response.body);
       print('Response: $jsonResponse');
       String accountLinkUrl = jsonResponse['url'];
 
-      // Open the account link URL in a web browser
+      String accountId =
+          jsonResponse['accountId']; // This is the Stripe account ID
+
       if (await canLaunchUrl(Uri.parse(accountLinkUrl))) {
         await launchUrl(Uri.parse(accountLinkUrl),
             mode: LaunchMode.externalApplication);
@@ -64,12 +87,7 @@ class PaymentsRepository {
         throw 'Could not launch $accountLinkUrl';
       }
 
-      // At this point, the user would be redirected to the Stripe Connect setup page in their web browser.
-      // After they complete the setup, they would be redirected back to your app via the return URL.
-
-      // Once the user is back in your app, you would typically confirm the setup intent as a separate step,
-      // usually in response to the user performing some action like adding a payment method.
-      // Your current function seems to be missing the necessary details for this step, like the client secret of the setup intent.
+      return accountId;
     } catch (e) {
       log(e.toString());
       rethrow;
