@@ -3,7 +3,7 @@ import 'package:flutter_gutter/flutter_gutter.dart';
 import 'package:go_router/go_router.dart';
 import 'package:honeybadger/onboarding/view/pages/payment_setup.dart';
 import 'package:honeybadger/onboarding/view/pages/profile_setup/profile_setup.dart';
-import 'package:honeybadger/onboarding/view/pages/signup_page.dart';
+import 'package:honeybadger/onboarding/view/signup_page.dart';
 import 'package:honeybadger/onboarding/view/pages/skills_and_experience.dart';
 import 'package:honeybadger/onboarding/view/pages/welcome/welcome_page.dart';
 import 'package:honeybadger/profile/model/user.dart';
@@ -117,6 +117,12 @@ class _OnboardingPageState extends State<OnboardingPage> {
                 WelcomePage(
                   pageController: _pageController,
                 ),
+                // kIsWeb
+                //     ? WebSignupPage(
+                //         pageController: _pageController,
+                //         userType: widget.userType,
+                //       )
+                //     :
                 SignupPage(
                   pageController: _pageController,
                   userType: widget.userType,

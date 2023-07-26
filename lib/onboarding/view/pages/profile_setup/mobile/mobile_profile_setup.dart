@@ -5,12 +5,12 @@ import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_gutter/flutter_gutter.dart';
 import 'package:flutter_typeahead/flutter_typeahead.dart';
-import 'package:honeybadger/onboarding/view/pages/signup_page.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:phone_number/phone_number.dart';
 
 import '../../../../../profile/model/user.dart';
 import '../../../../bloc/onboarding_bloc.dart';
+import '../../../signup_page.dart';
 
 late OverlayEntry _overlayEntry;
 

@@ -10,8 +10,6 @@ import 'package:honeybadger/auth/cubit/signup/signup_cubit.dart';
 import 'package:honeybadger/core/constants.dart';
 import 'package:honeybadger/onboarding/bloc/onboarding_bloc.dart';
 import 'package:honeybadger/profile/model/user.dart';
-import 'package:google_sign_in_platform_interface/google_sign_in_platform_interface.dart';
-import 'package:google_sign_in_web/google_sign_in_web.dart' as web;
 
 class SignupPage extends StatefulWidget {
   final UserType userType;
@@ -27,26 +25,7 @@ class _SignupPageState extends State<SignupPage> {
   @override
   void initState() {
     // TODO: implement initState
-    if (kIsWeb) {
-      initGoogleSignInWeb();
-    }
     super.initState();
-  }
-
-  Future<void> initGoogleSignInWeb() async {
-    // Initialize the plugin
-    web.GoogleSignInPlugin googleSignIn = web.GoogleSignInPlugin();
-
-    GoogleSignInPlatform googleSignInPlatform = GoogleSignInPlatform.instance;
-
-    googleSignInPlatform.initWithParams(const SignInInitParameters(
-      clientId: String.fromEnvironment('GCP_OAUTH_CLIENT_ID'),
-    ));
-
-// Make sure to initialize the plugin before using it
-    await googleSignIn.initWithParams(const SignInInitParameters(
-      clientId: String.fromEnvironment('GCP_OAUTH_CLIENT_ID'),
-    ));
   }
 
   @override
@@ -113,40 +92,29 @@ class _SignupPageState extends State<SignupPage> {
                       const Gutter(),
                       Column(
                         children: [
-                          kIsWeb
-                              ? (GoogleSignInPlatform.instance
-                                      as web.GoogleSignInPlugin)
-                                  .renderButton(
-                                      configuration: web.GSIButtonConfiguration(
-                                  // type: web.GSIButtonType.icon,
-                                  // size: web.GSIButtonSize.large,
-                                  // shape: web.GSIButtonShape.pill,
-                                  logoAlignment:
-                                      web.GSIButtonLogoAlignment.center,
-                                ))
-                              : Platform.isIOS
-                                  ? FilledButton.tonal(
-                                      style: ElevatedButton.styleFrom(
-                                        foregroundColor: Colors.white,
-                                        backgroundColor: Colors.black87,
-                                      ),
-                                      onPressed: () {
-                                        context
-                                            .read<SignupCubit>()
-                                            .signupWithApple();
-                                      },
-                                      child: const Icon(FontAwesomeIcons.apple,
-                                          size: 20.0),
-                                    )
-                                  : FilledButton.tonal(
-                                      onPressed: () {
-                                        context
-                                            .read<SignupCubit>()
-                                            .signupWithGoogle();
-                                      },
-                                      child: const Icon(FontAwesomeIcons.google,
-                                          size: 20.0),
-                                    ),
+                          Platform.isIOS
+                              ? FilledButton.tonal(
+                                  style: ElevatedButton.styleFrom(
+                                    foregroundColor: Colors.white,
+                                    backgroundColor: Colors.black87,
+                                  ),
+                                  onPressed: () {
+                                    context
+                                        .read<SignupCubit>()
+                                        .signupWithApple();
+                                  },
+                                  child: const Icon(FontAwesomeIcons.apple,
+                                      size: 20.0),
+                                )
+                              : FilledButton.tonal(
+                                  onPressed: () {
+                                    context
+                                        .read<SignupCubit>()
+                                        .signupWithGoogle();
+                                  },
+                                  child: const Icon(FontAwesomeIcons.google,
+                                      size: 20.0),
+                                ),
                           const Gutter(),
                           Theme(
                             data: Theme.of(context).copyWith(
