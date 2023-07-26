@@ -149,3 +149,12 @@ functions/package-lock.json
 functions/package.json
 .firebase/hosting.YnVpbGRcd2Vi.cache
 buildweb.bat
+.env.local
+.firebase/hosting.YnVpbGRcd2Vi.cache
+.firebaserc
+android/app/google-services.json
+buildweb.bat
+firebase.json
+ios/firebase_app_id_file.json
+ios/Runner/GoogleService-Info.plist
+lib/firebase_options.dart
