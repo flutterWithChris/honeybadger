@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flex_color_scheme/flex_color_scheme.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
@@ -23,22 +24,20 @@ import 'package:honeybadger/profile/repository/user_respository.dart';
 import 'package:honeybadger/proposals/bloc/proposal_bloc.dart';
 import 'package:honeybadger/proposals/repo/proposal_repository.dart';
 import 'package:stream_chat_flutter/stream_chat_flutter.dart';
-import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:uni_links/uni_links.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await dotenv.load(fileName: ".env");
-  await Supabase.initialize(
-    url: dotenv.env['SB_CALLBACK_URL']!,
-    anonKey: dotenv.env['SB_PUB_MAG']!,
-    debug: true,
-  );
+  if (kIsWeb == false) {
+    await dotenv.load(fileName: ".env");
+  }
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
 
   await FirebaseAuth.instance.signOut();
   StreamChatClient client = StreamChatClient(
-    dotenv.get('STREAM_API_KEY'),
+    kIsWeb
+        ? const String.fromEnvironment('STREAM_API_KEY')
+        : dotenv.get('STREAM_API_KEY'),
     logLevel: Level.INFO,
   );
 
@@ -58,7 +57,7 @@ class _MyAppState extends State<MyApp> {
   @override
   initState() {
     super.initState();
-    initPlatformState();
+    kIsWeb == false ? initPlatformState() : null;
   }
 
   initPlatformState() async {
@@ -173,7 +172,7 @@ class _MyAppState extends State<MyApp> {
             bottomAppBarElevation: 2.0,
             subThemesData: FlexSubThemesData(
               cardElevation: 0.618,
-              defaultRadius: 24.0,
+              defaultRadius: 12.0,
               buttonMinSize: const Size(200, 40),
               filledButtonTextStyle: MaterialStatePropertyAll(
                   Theme.of(context).textTheme.titleMedium),
@@ -186,7 +185,7 @@ class _MyAppState extends State<MyApp> {
               adaptiveAppBarScrollUnderOff:
                   const FlexAdaptive.excludeWebAndroidFuchsia(),
               defaultRadiusAdaptive: 10.0,
-              adaptiveRadius: const FlexAdaptive.all(),
+              adaptiveRadius: const FlexAdaptive.excludeWebAndroidFuchsia(),
               elevatedButtonSchemeColor: SchemeColor.onPrimaryContainer,
               elevatedButtonSecondarySchemeColor: SchemeColor.primaryContainer,
               outlinedButtonOutlineSchemeColor: SchemeColor.primary,

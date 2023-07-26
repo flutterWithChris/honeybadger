@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'dart:developer';
 
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_stripe/flutter_stripe.dart';
@@ -13,7 +14,9 @@ class PaymentsRepository {
 
   /// Initialize Stripe
   void initializeStripe() async {
-    Stripe.publishableKey = dotenv.get('STRIPE_PUB_MAG');
+    Stripe.publishableKey = kIsWeb
+        ? const String.fromEnvironment('STRIPE_PUB_MAG')
+        : dotenv.get('STRIPE_PUB_MAG');
     await _stripe.applySettings();
   }
 

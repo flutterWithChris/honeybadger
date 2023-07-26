@@ -1,5 +1,6 @@
 import 'package:firebase_auth/firebase_auth.dart' as auth;
 import 'package:firebase_crashlytics/firebase_crashlytics.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:honeybadger/core/constants.dart';
@@ -81,14 +82,18 @@ class AuthRepository extends BaseAuthRepository {
   Future<auth.User?> signInWithGoogle() async {
     try {
       final GoogleSignInAccount? googleSignInAccount =
-          await GoogleSignIn().signIn();
+          kIsWeb ? null : await GoogleSignIn().signIn();
 
       final GoogleSignInAuthentication? googleSignInAuthentication =
           await googleSignInAccount?.authentication;
-      auth.UserCredential userCredential = await _firebaseAuth
-          .signInWithCredential(auth.GoogleAuthProvider.credential(
-              accessToken: googleSignInAuthentication?.accessToken,
-              idToken: googleSignInAuthentication?.idToken));
+      auth.UserCredential userCredential = kIsWeb
+          ? await _firebaseAuth.signInWithPopup(
+              auth.GoogleAuthProvider(),
+            )
+          : await _firebaseAuth.signInWithCredential(
+              auth.GoogleAuthProvider.credential(
+                  accessToken: googleSignInAuthentication?.accessToken,
+                  idToken: googleSignInAuthentication?.idToken));
       return userCredential.user;
     } on auth.FirebaseAuthException catch (e) {
       final SnackBar snackBar = SnackBar(

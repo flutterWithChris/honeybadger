@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_gutter/flutter_gutter.dart';
-import 'package:go_router/go_router.dart';
 import 'package:honeybadger/onboarding/bloc/onboarding_bloc.dart';
 
 import '../../../../../profile/model/user.dart';
 
 class TabletWelcomePage extends StatefulWidget {
-  const TabletWelcomePage({super.key});
+  final PageController? pageController;
+  const TabletWelcomePage({this.pageController, super.key});
 
   @override
   State<TabletWelcomePage> createState() => _TabletWelcomePageState();
@@ -116,7 +116,7 @@ class _TabletWelcomePageState extends State<TabletWelcomePage> {
                                     borderRadius: BorderRadius.circular(10.0),
                                     color: Theme.of(context)
                                         .colorScheme
-                                        .primaryContainer,
+                                        .surfaceVariant,
                                   ),
                                   child: Padding(
                                     padding: const EdgeInsets.symmetric(
@@ -143,10 +143,11 @@ class _TabletWelcomePageState extends State<TabletWelcomePage> {
                       ),
                       const GutterLarge(),
                       FilledButton.tonal(
-                          onPressed: () {
-                            context.read<OnboardingBloc>().add(
-                                StartOnboarding(User(userType: _userType)));
-                            context.go('/onboarding', extra: _userType);
+                          onPressed: () async {
+                            context.read<OnboardingBloc>().userType = _userType;
+                            await widget.pageController?.nextPage(
+                                duration: const Duration(milliseconds: 500),
+                                curve: Curves.ease);
                           },
                           child: Padding(
                             padding: const EdgeInsets.symmetric(

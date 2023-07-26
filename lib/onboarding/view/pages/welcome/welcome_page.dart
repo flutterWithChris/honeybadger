@@ -19,7 +19,7 @@ class _WelcomePageState extends State<WelcomePage> {
       if (constraints.maxWidth > desktopWidthConstraint) {
         return DesktopWelcomePage(pageController: widget.pageController);
       } else if (constraints.maxWidth > tabletWidthConstraint) {
-        return const TabletWelcomePage();
+        return TabletWelcomePage(pageController: widget.pageController);
       } else {
         return MobileWelcomePage(
           pageController: widget.pageController,

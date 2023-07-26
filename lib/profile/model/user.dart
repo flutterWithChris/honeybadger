@@ -18,7 +18,7 @@ class User {
   String? title;
   List<String>? skills;
   double? hourlyRate;
-  UserType? userType;
+  UserType userType = UserType.freelancer;
   List<PortfolioProject>? portfolioProjects;
 
   String? city;
