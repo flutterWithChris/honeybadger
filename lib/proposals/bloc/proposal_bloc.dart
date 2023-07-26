@@ -46,7 +46,7 @@ class ProposalBloc extends Bloc<ProposalsEvent, ProposalState> {
         try {
           final newProposal = event.proposal;
           await Future.delayed(const Duration(seconds: 1));
-          await _proposalRepository.sendProposal(newProposal);
+          // await _proposalRepository.sendProposal(newProposal);
           // _messagesBloc.add(event)
           _messagesBloc.add(
             SendMessage(

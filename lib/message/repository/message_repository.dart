@@ -1,9 +1,12 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:stream_chat_flutter/stream_chat_flutter.dart';
 
 class MessageRepository {
   StreamChatClient client = StreamChatClient(
-    dotenv.env['STREAM_API_KEY']!,
+    kIsWeb
+        ? const String.fromEnvironment('STREAM_API_KEY')
+        : dotenv.env['STREAM_API_KEY']!,
     logLevel: Level.INFO,
   );
 
@@ -44,9 +47,10 @@ class MessageRepository {
   }
 
   /// Send a message
-  Future<SendMessageResponse> sendMessage(Message message) async {
+  Future<SendMessageResponse> sendMessage(
+      Message message, String channelId) async {
     try {
-      return await client.sendMessage(message, '', 'messages');
+      return await client.sendMessage(message, channelId, 'messages');
     } catch (e) {
       print(e);
       rethrow;

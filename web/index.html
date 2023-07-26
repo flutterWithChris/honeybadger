@@ -24,6 +24,7 @@
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black">
   <meta name="apple-mobile-web-app-title" content="honeybadger">
+  <meta name="google-signin-client_id" content="799995890184-tgcegihb7fk1sihors02d5o2idnk3sep.apps.googleusercontent.com">
   <link rel="apple-touch-icon" href="icons/Icon-192.png">
 
   <!-- Favicon -->
@@ -40,6 +41,31 @@
   <script src="flutter.js" defer></script>
 </head>
 <body>
+  <script type="module">
+    // Import the functions you need from the SDKs you need
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.1.0/firebase-app.js";
+    import { getAnalytics } from "https://www.gstatic.com/firebasejs/10.1.0/firebase-analytics.js";
+    import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.1.0/firebase-auth.js";
+    import { getFirestore } from "https://www.gstatic.com/firebasejs/10.1.0/firebase-firestore.js";
+    // TODO: Add SDKs for Firebase products that you want to use
+    // https://firebase.google.com/docs/web/setup#available-libraries
+  
+    // Your web app's Firebase configuration
+    // For Firebase JS SDK v7.20.0 and later, measurementId is optional
+    const firebaseConfig = {
+      apiKey: "AIzaSyDO3YkbMjF6DtxyHO1CfnVef2mjFFSC8vk",
+      authDomain: "honeybadger-817ee.firebaseapp.com",
+      projectId: "honeybadger-817ee",
+      storageBucket: "honeybadger-817ee.appspot.com",
+      messagingSenderId: "799995890184",
+      appId: "1:799995890184:web:2a8e8ee8f2b1ee79451fbd",
+      measurementId: "G-3YL1P8KS94"
+    };
+  
+    // Initialize Firebase
+    const app = initializeApp(firebaseConfig);
+    const analytics = getAnalytics(app);
+  </script>
   <script>
     window.addEventListener('load', function(ev) {
       // Download main.dart.js

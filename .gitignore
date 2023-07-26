@@ -137,3 +137,15 @@ app.*.symbols
 !/dev/ci/**/Gemfile.lock
 !.vscode/settings.json
 .env
+android/app/google-services.json
+ios/Runner/GoogleService-Info.plist
+lib/firebase_options.dart
+ios/firebase_app_id_file.json
+.env.local
+.firebaserc
+firebase.json
+functions/index.js
+functions/package-lock.json
+functions/package.json
+.firebase/hosting.YnVpbGRcd2Vi.cache
+buildweb.bat

@@ -143,7 +143,7 @@ class _DesktopWelcomePageState extends State<DesktopWelcomePage> {
                                     borderRadius: BorderRadius.circular(10.0),
                                     color: Theme.of(context)
                                         .colorScheme
-                                        .primaryContainer,
+                                        .surfaceVariant,
                                   ),
                                   child: Padding(
                                     padding: const EdgeInsets.symmetric(
@@ -171,8 +171,7 @@ class _DesktopWelcomePageState extends State<DesktopWelcomePage> {
                       const GutterLarge(),
                       FilledButton.tonal(
                           onPressed: () async {
-                            context.read<OnboardingBloc>().add(
-                                StartOnboarding(User(userType: _userType)));
+                            context.read<OnboardingBloc>().userType = _userType;
                             await widget.pageController?.nextPage(
                                 duration: const Duration(milliseconds: 500),
                                 curve: Curves.ease);

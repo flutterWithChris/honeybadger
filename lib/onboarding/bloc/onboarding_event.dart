@@ -14,3 +14,9 @@ class UpdateUser extends OnboardingEvent {
 }
 
 class CompleteOnboarding extends OnboardingEvent {}
+
+class SetUserProfilePicture extends OnboardingEvent {
+  final XFile profilePicture;
+  final User user;
+  SetUserProfilePicture(this.profilePicture, this.user);
+}

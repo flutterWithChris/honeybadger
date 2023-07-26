@@ -1,54 +1,125 @@
+import 'dart:async';
+
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flex_color_scheme/flex_color_scheme.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:honeybadger/auth/bloc/auth_bloc.dart';
+import 'package:honeybadger/auth/cubit/signup/signup_cubit.dart';
+import 'package:honeybadger/auth/repository/auth_repository.dart';
 import 'package:honeybadger/core/constants.dart';
 import 'package:honeybadger/core/router/app_router.dart';
+import 'package:honeybadger/firebase_options.dart';
 import 'package:honeybadger/message/bloc/messages_bloc.dart';
 import 'package:honeybadger/message/repository/message_repository.dart';
 import 'package:honeybadger/onboarding/bloc/onboarding_bloc.dart';
-import 'package:honeybadger/payments/bloc/payment_history_bloc.dart';
+import 'package:honeybadger/payments/bloc/history/payment_history_bloc.dart';
+import 'package:honeybadger/payments/bloc/payments_bloc.dart';
+import 'package:honeybadger/payments/repository/payments_repository.dart';
 import 'package:honeybadger/profile/bloc/profile_bloc.dart';
+import 'package:honeybadger/profile/repository/user_respository.dart';
 import 'package:honeybadger/proposals/bloc/proposal_bloc.dart';
 import 'package:honeybadger/proposals/repo/proposal_repository.dart';
 import 'package:stream_chat_flutter/stream_chat_flutter.dart';
-import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:uni_links/uni_links.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await dotenv.load(fileName: ".env");
-  await Supabase.initialize(
-    url: dotenv.env['SB_CALLBACK_URL']!,
-    anonKey: dotenv.env['SB_PUB_MAG']!,
-    debug: true,
-  );
+  if (kIsWeb == false) {
+    await dotenv.load(fileName: ".env");
+  }
+  await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
+
+  await FirebaseAuth.instance.signOut();
   StreamChatClient client = StreamChatClient(
-    dotenv.get('STREAM_API_KEY'),
+    kIsWeb
+        ? const String.fromEnvironment('STREAM_API_KEY')
+        : dotenv.get('STREAM_API_KEY'),
     logLevel: Level.INFO,
   );
 
   runApp(const MyApp());
 }
 
-class MyApp extends StatelessWidget {
+class MyApp extends StatefulWidget {
   const MyApp({super.key});
+
+  @override
+  State<MyApp> createState() => _MyAppState();
+}
+
+class _MyAppState extends State<MyApp> {
+  StreamSubscription? _sub;
+
+  @override
+  initState() {
+    super.initState();
+    kIsWeb == false ? initPlatformState() : null;
+  }
+
+  initPlatformState() async {
+    // Get the initial link (if the app was launched by a link)
+    getInitialLink().then((link) {
+      if (link != null) {
+        handleLink(link);
+      }
+    });
+
+    // Handle links that come in while the app is open
+    linkStream.listen((link) {
+      if (link != null) {
+        handleLink(link);
+      }
+    });
+  }
+
+// Your handler function
+  void handleLink(String link) {
+    // Parse the link
+    var uri = Uri.parse(link);
+
+    // Use GoRouter to navigate to the path in the deep link
+    if (uri.path == 'return') {
+      goRouter.go('/onboarding');
+    }
+  }
 
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
     return MultiRepositoryProvider(
       providers: [
+        RepositoryProvider<AuthRepository>(
+            create: (context) => AuthRepository()),
+        RepositoryProvider<UserRepository>(
+          create: (context) => UserRepository(),
+        ),
         RepositoryProvider<ProposalRepository>(
           create: (context) => ProposalRepository(),
         ),
         RepositoryProvider<MessageRepository>(
           create: (context) => MessageRepository(),
         ),
+        RepositoryProvider<PaymentsRepository>(
+          create: (context) => PaymentsRepository()..initializeStripe(),
+        ),
       ],
       child: MultiBlocProvider(
         providers: [
+          BlocProvider<AuthBloc>(
+            create: (context) => AuthBloc(
+              authRepository: context.read<AuthRepository>(),
+            ),
+          ),
+          BlocProvider(
+              create: (context) =>
+                  SignupCubit(authRepository: context.read<AuthRepository>())),
           BlocProvider<OnboardingBloc>(
-            create: (context) => OnboardingBloc(),
+            create: (context) =>
+                OnboardingBloc(userRepository: context.read<UserRepository>()),
           ),
           BlocProvider(
               lazy: false,
@@ -67,6 +138,13 @@ class MyApp extends StatelessWidget {
                 messagesBloc: context.read<MessagesBloc>(),
                 proposalRepository: context.read<ProposalRepository>()),
           ),
+          BlocProvider(
+            create: (context) => PaymentsBloc(
+                paymentsRepository: context.read<PaymentsRepository>())
+              ..add(
+                LoadPayments(),
+              ),
+          )
         ],
         child: MaterialApp.router(
           scaffoldMessengerKey: scaffoldKey,
@@ -94,7 +172,7 @@ class MyApp extends StatelessWidget {
             bottomAppBarElevation: 2.0,
             subThemesData: FlexSubThemesData(
               cardElevation: 0.618,
-              defaultRadius: 16.0,
+              defaultRadius: 12.0,
               buttonMinSize: const Size(200, 40),
               filledButtonTextStyle: MaterialStatePropertyAll(
                   Theme.of(context).textTheme.titleMedium),
@@ -107,7 +185,7 @@ class MyApp extends StatelessWidget {
               adaptiveAppBarScrollUnderOff:
                   const FlexAdaptive.excludeWebAndroidFuchsia(),
               defaultRadiusAdaptive: 10.0,
-              adaptiveRadius: const FlexAdaptive.all(),
+              adaptiveRadius: const FlexAdaptive.excludeWebAndroidFuchsia(),
               elevatedButtonSchemeColor: SchemeColor.onPrimaryContainer,
               elevatedButtonSecondarySchemeColor: SchemeColor.primaryContainer,
               outlinedButtonOutlineSchemeColor: SchemeColor.primary,
@@ -124,7 +202,7 @@ class MyApp extends StatelessWidget {
               fabUseShape: true,
               fabAlwaysCircular: true,
               fabSchemeColor: SchemeColor.tertiary,
-              cardRadius: 16.0,
+              cardRadius: 24.0,
               popupMenuRadius: 6.0,
               popupMenuElevation: 3.0,
               dialogRadius: 18.0,
@@ -172,6 +250,8 @@ class MyApp extends StatelessWidget {
             bottomAppBarElevation: 2.0,
             subThemesData: const FlexSubThemesData(
               cardElevation: 0.618,
+              defaultRadius: 24.0,
+              cardRadius: 24.0,
               buttonMinSize: Size(200, 40),
               blendOnLevel: 8,
               useTextTheme: true,
@@ -197,7 +277,6 @@ class MyApp extends StatelessWidget {
               fabUseShape: true,
               fabAlwaysCircular: true,
               fabSchemeColor: SchemeColor.tertiary,
-              cardRadius: 14.0,
               popupMenuRadius: 6.0,
               popupMenuElevation: 3.0,
               dialogRadius: 18.0,
@@ -243,6 +322,12 @@ class MyApp extends StatelessWidget {
         ),
       ),
     );
+  }
+
+  @override
+  void dispose() {
+    if (_sub != null) _sub?.cancel();
+    super.dispose();
   }
 }
 

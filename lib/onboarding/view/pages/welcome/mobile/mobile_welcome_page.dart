@@ -72,6 +72,9 @@ class _MobileWelcomePageState extends State<MobileWelcomePage> {
                                             } else if (value == 'Client') {
                                               _userType = UserType.client;
                                             }
+                                            context
+                                                .read<OnboardingBloc>()
+                                                .userType = _userType;
                                           });
                                         },
                                         shape: RoundedRectangleBorder(
@@ -137,8 +140,8 @@ class _MobileWelcomePageState extends State<MobileWelcomePage> {
                           FilledButton.tonal(
                               onPressed: () async {
                                 print('Get Started Clicked');
-                                context.read<OnboardingBloc>().add(
-                                    StartOnboarding(User(userType: _userType)));
+                                context.read<OnboardingBloc>().userType =
+                                    _userType;
                                 await widget.pageController?.nextPage(
                                     duration: const Duration(milliseconds: 500),
                                     curve: Curves.ease);

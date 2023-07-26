@@ -1,11 +1,21 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_gutter/flutter_gutter.dart';
+import 'package:flutter_typeahead/flutter_typeahead.dart';
 import 'package:honeybadger/core/constants.dart';
 import 'package:image_picker/image_picker.dart';
 
-class SkillsAndExperiencePage extends StatelessWidget {
+class SkillsAndExperiencePage extends StatefulWidget {
   final PageController pageController;
+
   const SkillsAndExperiencePage({required this.pageController, super.key});
+
+  @override
+  State<SkillsAndExperiencePage> createState() =>
+      _SkillsAndExperiencePageState();
+}
+
+class _SkillsAndExperiencePageState extends State<SkillsAndExperiencePage> {
+  final List<String> _skills = [];
 
   @override
   Widget build(BuildContext context) {
@@ -157,15 +167,64 @@ class SkillsAndExperiencePage extends StatelessWidget {
                 Text('What are your skills?',
                     style: Theme.of(context).textTheme.bodyLarge),
                 const Gutter(),
-                const TextField(
-                  minLines: 5,
-                  maxLines: 7,
-                  decoration: InputDecoration(
-                    label: Text('Skills'),
-                    hintText:
-                        'Type your skills here. Ex: Python, Graphic Design, etc.',
-                  ),
+                TypeAheadField(
+                    suggestionsBoxDecoration: SuggestionsBoxDecoration(
+                      borderRadius: BorderRadius.circular(16.0),
+                    ),
+                    textFieldConfiguration: const TextFieldConfiguration(
+                        decoration: InputDecoration(label: Text('Skills'))),
+                    suggestionsCallback: (query) {
+                      return [
+                        'Python',
+                        'Java',
+                        'C++',
+                        'C#',
+                        'JavaScript',
+                        'HTML',
+                        'CSS',
+                        'Flutter',
+                        'Dart',
+                        'React',
+                        'React Native',
+                        'Angular',
+                        'Vue',
+                        'Node.js',
+                      ].where((suggestion) => suggestion.toLowerCase().contains(
+                          query.toLowerCase().trim().replaceAll(' ', '')));
+                    },
+                    itemBuilder: (context, suggestion) {
+                      return ListTile(title: Text(suggestion));
+                    },
+                    itemSeparatorBuilder: (context, index) => const Divider(),
+                    onSuggestionSelected: (suggestion) {
+                      if (!_skills.contains(suggestion)) {
+                        _skills.add(suggestion);
+                      }
+                    }),
+                const Gutter(),
+                Wrap(
+                  spacing: 8.0, // gap between adjacent chips
+                  runSpacing: 4.0, // gap between lines
+                  children: _skills
+                      .map((skill) => Chip(
+                            label: Text(skill),
+                            onDeleted: () {
+                              setState(() {
+                                _skills.remove(skill);
+                              });
+                            },
+                          ))
+                      .toList(),
                 ),
+                // const TextField(
+                //   minLines: 5,
+                //   maxLines: 7,
+                //   decoration: InputDecoration(
+                //     label: Text('Skills'),
+                //     hintText:
+                //         'Type your skills here. Ex: Python, Graphic Design, etc.',
+                //   ),
+                // ),
                 const Gutter(),
                 Text('Portfolio',
                     style: Theme.of(context).textTheme.headlineLarge),
@@ -537,6 +596,69 @@ class AddProjectDialog extends StatelessWidget {
               ]);
         }
       }),
+    );
+  }
+}
+
+class SkillsInput extends StatefulWidget {
+  const SkillsInput({Key? key}) : super(key: key);
+
+  @override
+  _SkillsInputState createState() => _SkillsInputState();
+}
+
+class _SkillsInputState extends State<SkillsInput> {
+  final List<String> _skills = [];
+  final TextEditingController _controller = TextEditingController();
+
+  void _addSkill(String skill) {
+    setState(() {
+      _skills.add(skill.trim());
+      _controller.clear();
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      children: [
+        Stack(
+          alignment: Alignment.centerLeft,
+          children: [
+            TextField(
+              controller: _controller,
+              decoration: const InputDecoration(
+                labelText: 'Skills',
+                hintText:
+                    'Type your skills here, separated by commas or press enter. Ex: Python, Graphic Design, etc.',
+              ),
+              onChanged: (value) {
+                if (value.endsWith(',')) {
+                  _addSkill(value.substring(
+                      0, value.length - 1)); // Remove the comma at the end
+                }
+              },
+              onSubmitted: (value) {
+                _addSkill(value);
+              },
+            ),
+            Wrap(
+              spacing: 8.0, // gap between adjacent chips
+              runSpacing: 4.0, // gap between lines
+              children: _skills
+                  .map((skill) => Chip(
+                        label: Text(skill),
+                        onDeleted: () {
+                          setState(() {
+                            _skills.remove(skill);
+                          });
+                        },
+                      ))
+                  .toList(),
+            ),
+          ],
+        ),
+      ],
     );
   }
 }

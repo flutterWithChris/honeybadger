@@ -320,113 +320,156 @@ class _MobileJobDetailsPageState extends State<MobileJobDetailsPage> {
                                                   ],
                                                 ),
                                                 children: [
-                                                  BlocBuilder<ProposalBloc,
-                                                      ProposalState>(
-                                                    builder: (context, state) {
-                                                      // if (state
-                                                      //     is ProposalSaving) {
-                                                      //   return const Center(
-                                                      //       child:
-                                                      //           CircularProgressIndicator());
-                                                      // }
-                                                      if (state
-                                                              is ProposalStarted ||
-                                                          state
-                                                              is ProposalSaving) {
-                                                        _lastSavedAt = state
-                                                            .proposal?.savedAt;
-                                                        List<Milestone>?
-                                                            milestones = state
-                                                                .proposal
-                                                                ?.milestones;
-                                                        if (milestones !=
-                                                                null &&
-                                                            milestones
-                                                                .isNotEmpty) {
-                                                          return Column(
-                                                            children: [
-                                                              for (Milestone milestone
-                                                                  in milestones)
-                                                                MilestoneEntry(
-                                                                  proposal: state
-                                                                      .proposal,
-                                                                  milestone:
-                                                                      milestone,
-                                                                ),
-                                                              Row(
-                                                                mainAxisAlignment:
-                                                                    MainAxisAlignment
-                                                                        .end,
-                                                                children: [
-                                                                  OutlinedButton.icon(
-                                                                      style: FilledButton.styleFrom(minimumSize: const Size(180, 34), fixedSize: const Size(180, 34)),
-                                                                      onPressed: () {
-                                                                        context
-                                                                            .read<ProposalBloc>()
-                                                                            .add(
-                                                                              AddMilestone(
-                                                                                Milestone(jobId: state.proposal!.jobId),
-                                                                              ),
-                                                                            );
-                                                                      },
-                                                                      icon: Icon(MdiIcons.plusCircle, size: 12.0),
-                                                                      label: const Text('Add Milestone')),
-                                                                  const Gutter(),
-                                                                  FilledButton
-                                                                      .tonal(
-                                                                          onPressed:
-                                                                              () {},
-                                                                          style: FilledButton.styleFrom(
-                                                                              minimumSize: const Size(180,
-                                                                                  34),
-                                                                              fixedSize: const Size(180,
-                                                                                  34)),
-                                                                          child:
-                                                                              const Text(
-                                                                            'Save',
-                                                                            style:
-                                                                                TextStyle(color: Colors.white),
-                                                                          )),
-                                                                ],
-                                                              ),
-                                                              const GutterLarge(),
-                                                            ],
-                                                          );
-                                                        } else {
-                                                          return Column(
-                                                            mainAxisSize:
-                                                                MainAxisSize
-                                                                    .min,
-                                                            children: [
-                                                              const GutterSmall(),
-                                                              Row(
-                                                                mainAxisAlignment:
-                                                                    MainAxisAlignment
-                                                                        .center,
-                                                                children: [
-                                                                  OutlinedButton.icon(
-                                                                      style: FilledButton.styleFrom(minimumSize: const Size(180, 34), fixedSize: const Size(180, 34)),
-                                                                      onPressed: () {
-                                                                        context
-                                                                            .read<ProposalBloc>()
-                                                                            .add(
-                                                                              AddMilestone(
-                                                                                Milestone(jobId: widget.job.id),
-                                                                              ),
-                                                                            );
-                                                                      },
-                                                                      icon: Icon(MdiIcons.plusCircle, size: 12.0),
-                                                                      label: const Text('Add Milestone')),
-                                                                ],
-                                                              ),
-                                                              const Gutter(),
-                                                            ],
-                                                          );
-                                                        }
-                                                      }
-                                                      return const Text(
-                                                          'Something went wrong.');
-                                                    },
+                                                  Row(
+                                                    crossAxisAlignment:
+                                                        CrossAxisAlignment
+                                                            .start,
+                                                    children: [
+                                                      Flexible(
+                                                        child: BlocBuilder<
+                                                            ProposalBloc,
+                                                            ProposalState>(
+                                                          builder:
+                                                              (context, state) {
+                                                            if (state
+                                                                    is ProposalStarted &&
+                                                                state.proposal
+                                                                        ?.milestones !=
+                                                                    null &&
+                                                                state
+                                                                    .proposal!
+                                                                    .milestones!
+                                                                    .isNotEmpty) {
+                                                              return Stepper(
+                                                                  key:
+                                                                      UniqueKey(),
+                                                                  margin: const EdgeInsets
+                                                                          .only(
+                                                                      bottom:
+                                                                          60.0),
+                                                                  controlsBuilder:
+                                                                      (context,
+                                                                              details) =>
+                                                                          const SizedBox(),
+                                                                  steps: [
+                                                                    for (Milestone milestone
+                                                                        in state
+                                                                            .proposal!
+                                                                            .milestones!)
+                                                                      Step(
+                                                                          title: const Text(
+                                                                              ''),
+                                                                          content:
+                                                                              Text(milestone.title ?? ''))
+                                                                  ]);
+                                                            }
+                                                            return const SizedBox();
+                                                          },
+                                                        ),
+                                                      ),
+                                                      Expanded(
+                                                        flex: 6,
+                                                        child: BlocBuilder<
+                                                            ProposalBloc,
+                                                            ProposalState>(
+                                                          builder:
+                                                              (context, state) {
+                                                            // if (state
+                                                            //     is ProposalSaving) {
+                                                            //   return const Center(
+                                                            //       child:
+                                                            //           CircularProgressIndicator());
+                                                            // }
+                                                            if (state
+                                                                    is ProposalStarted ||
+                                                                state
+                                                                    is ProposalSaving) {
+                                                              _lastSavedAt =
+                                                                  state.proposal
+                                                                      ?.savedAt;
+                                                              List<Milestone>?
+                                                                  milestones =
+                                                                  state.proposal
+                                                                      ?.milestones;
+                                                              if (milestones !=
+                                                                      null &&
+                                                                  milestones
+                                                                      .isNotEmpty) {
+                                                                return Column(
+                                                                  children: [
+                                                                    for (Milestone milestone
+                                                                        in milestones)
+                                                                      MilestoneEntry(
+                                                                        proposal:
+                                                                            state.proposal,
+                                                                        milestone:
+                                                                            milestone,
+                                                                      ),
+                                                                    Row(
+                                                                      mainAxisAlignment:
+                                                                          MainAxisAlignment
+                                                                              .end,
+                                                                      children: [
+                                                                        OutlinedButton.icon(
+                                                                            style: FilledButton.styleFrom(minimumSize: const Size(180, 34), fixedSize: const Size(180, 34)),
+                                                                            onPressed: () {
+                                                                              context.read<ProposalBloc>().add(
+                                                                                    AddMilestone(
+                                                                                      Milestone(jobId: state.proposal!.jobId),
+                                                                                    ),
+                                                                                  );
+                                                                            },
+                                                                            icon: Icon(MdiIcons.plusCircle, size: 12.0),
+                                                                            label: const Text('Add Milestone')),
+                                                                        const Gutter(),
+                                                                        FilledButton.tonal(
+                                                                            onPressed: () {},
+                                                                            style: FilledButton.styleFrom(minimumSize: const Size(180, 34), fixedSize: const Size(180, 34)),
+                                                                            child: const Text(
+                                                                              'Save',
+                                                                              style: TextStyle(color: Colors.white),
+                                                                            )),
+                                                                      ],
+                                                                    ),
+                                                                    const GutterLarge(),
+                                                                  ],
+                                                                );
+                                                              } else {
+                                                                return Column(
+                                                                  mainAxisSize:
+                                                                      MainAxisSize
+                                                                          .min,
+                                                                  children: [
+                                                                    const GutterSmall(),
+                                                                    Row(
+                                                                      mainAxisAlignment:
+                                                                          MainAxisAlignment
+                                                                              .center,
+                                                                      children: [
+                                                                        OutlinedButton.icon(
+                                                                            style: FilledButton.styleFrom(minimumSize: const Size(180, 34), fixedSize: const Size(180, 34)),
+                                                                            onPressed: () {
+                                                                              context.read<ProposalBloc>().add(
+                                                                                    AddMilestone(
+                                                                                      Milestone(jobId: widget.job.id),
+                                                                                    ),
+                                                                                  );
+                                                                            },
+                                                                            icon: Icon(MdiIcons.plusCircle, size: 12.0),
+                                                                            label: const Text('Add Milestone')),
+                                                                      ],
+                                                                    ),
+                                                                    const Gutter(),
+                                                                  ],
+                                                                );
+                                                              }
+                                                            }
+                                                            return const Text(
+                                                                'Something went wrong.');
+                                                          },
+                                                        ),
+                                                      ),
+                                                    ],
                                                   )
                                                 ],
                                               ),
@@ -926,7 +969,7 @@ class MilestoneEntry extends StatelessWidget {
             begin: Offset(-0.5, 0.0), duration: Duration(milliseconds: 200))
       ],
       child: Padding(
-        padding: const EdgeInsets.only(left: 16.0, bottom: 16.0, right: 16.0),
+        padding: const EdgeInsets.only(bottom: 16.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           mainAxisSize: MainAxisSize.min,
