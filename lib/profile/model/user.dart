@@ -20,14 +20,13 @@ class User {
   double? hourlyRate;
   UserType userType = UserType.freelancer;
   List<PortfolioProject>? portfolioProjects;
-
   String? city;
   String? state;
   String? zip;
   String? country;
   String? photoUrl;
   String? bio;
-  String? stripeId;
+  String? stripeAccountId;
   DateTime? createdAt;
   DateTime? updatedAt;
 
@@ -53,7 +52,7 @@ class User {
     this.country,
     this.photoUrl,
     this.bio,
-    this.stripeId,
+    this.stripeAccountId,
     this.createdAt,
     this.updatedAt,
   });
@@ -91,7 +90,7 @@ class User {
     country = json['country'];
     photoUrl = json['photoUrl'];
     bio = json['bio'];
-    stripeId = json['stripeId'];
+    stripeAccountId = json['stripeAccountId'];
     createdAt = DateTime.parse(json['createdAt']);
     updatedAt = DateTime.parse(json['updatedAt']);
   }
@@ -119,7 +118,7 @@ class User {
       'country': country,
       'photoUrl': photoUrl,
       'bio': bio,
-      'stripeId': stripeId,
+      'stripeAccountId': stripeAccountId,
       'createdAt': createdAt?.toIso8601String(),
       'updatedAt': updatedAt?.toIso8601String(),
     };
@@ -142,7 +141,7 @@ class User {
     phoneNumber = snap['phoneNumber'];
     address = snap['address'];
     title = snap['title'];
-    skills = snap['skills'].cast<String>();
+    skills = snap['skills'];
     hourlyRate = snap['hourlyRate'];
     userType = snap['userType'] == 'freelancer'
         ? UserType.freelancer
@@ -158,7 +157,7 @@ class User {
     country = snap['country'];
     photoUrl = snap['photoUrl'];
     bio = snap['bio'];
-    stripeId = snap['stripeId'];
+    stripeAccountId = snap['stripeAccountId'];
     createdAt = snap['createdAt']?.toDate();
     updatedAt = snap['updatedAt']?.toDate();
   }
@@ -186,7 +185,7 @@ class User {
       country: country,
       photoUrl: photoUrl,
       bio: bio,
-      stripeId: stripeId,
+      stripeAccountId: stripeAccountId,
       createdAt: createdAt,
       updatedAt: updatedAt,
     );
@@ -215,7 +214,7 @@ class User {
     String? country,
     String? photoUrl,
     String? bio,
-    String? stripeId,
+    String? stripeAccountId,
     DateTime? createdAt,
     DateTime? updatedAt,
   }) {
@@ -241,7 +240,7 @@ class User {
       country: country ?? this.country,
       photoUrl: photoUrl ?? this.photoUrl,
       bio: bio ?? this.bio,
-      stripeId: stripeId ?? this.stripeId,
+      stripeAccountId: stripeAccountId ?? this.stripeAccountId,
       createdAt: createdAt ?? this.createdAt,
       updatedAt: updatedAt ?? this.updatedAt,
     );

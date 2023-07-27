@@ -13,6 +13,7 @@ class ProfileInitial extends ProfileState {}
 class ProfileLoading extends ProfileState {}
 
 class ProfileLoaded extends ProfileState {
+  @override
   final User user;
 
   const ProfileLoaded(this.user);

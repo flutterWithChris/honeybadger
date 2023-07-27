@@ -1,6 +1,5 @@
 import 'dart:async';
 
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flex_color_scheme/flex_color_scheme.dart';
 import 'package:flutter/foundation.dart';
@@ -23,7 +22,7 @@ import 'package:honeybadger/profile/bloc/profile_bloc.dart';
 import 'package:honeybadger/profile/repository/user_respository.dart';
 import 'package:honeybadger/proposals/bloc/proposal_bloc.dart';
 import 'package:honeybadger/proposals/repo/proposal_repository.dart';
-import 'package:stream_chat_flutter/stream_chat_flutter.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:uni_links/uni_links.dart';
 
 void main() async {
@@ -33,13 +32,7 @@ void main() async {
   }
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
 
-  await FirebaseAuth.instance.signOut();
-  StreamChatClient client = StreamChatClient(
-    kIsWeb
-        ? const String.fromEnvironment('STREAM_API_KEY')
-        : dotenv.get('STREAM_API_KEY'),
-    logLevel: Level.INFO,
-  );
+  // await FirebaseAuth.instance.signOut();
 
   runApp(const MyApp());
 }
@@ -77,12 +70,14 @@ class _MyAppState extends State<MyApp> {
   }
 
 // Your handler function
-  void handleLink(String link) {
+  void handleLink(String link) async {
     // Parse the link
     var uri = Uri.parse(link);
     print('Link: $link');
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    bool paymentSetupComplete = prefs.getBool('paymentSetupComplete') ?? false;
     // Use GoRouter to navigate to the path in the deep link
-    if (link.contains('redirect')) {
+    if (link.contains('redirect') && paymentSetupComplete == false) {
       goRouter.go('/stripe-confirmation?${uri.query}');
     }
   }
@@ -123,7 +118,9 @@ class _MyAppState extends State<MyApp> {
           ),
           BlocProvider(
               lazy: false,
-              create: (context) => ProfileBloc()..add(LoadProfile())),
+              create: (context) => ProfileBloc(
+                  userRepository: context.read<UserRepository>(),
+                  authBloc: context.read<AuthBloc>())),
           BlocProvider<PaymentHistoryBloc>(
             create: (context) => PaymentHistoryBloc()
               ..add(const FetchPaymentHistory(userId: 'userId')),
@@ -131,7 +128,7 @@ class _MyAppState extends State<MyApp> {
           BlocProvider<MessagesBloc>(
             create: (context) => MessagesBloc(
               messageRepository: context.read<MessageRepository>(),
-            )..add(LoadMessages()),
+            ),
           ),
           BlocProvider<ProposalBloc>(
             create: (context) => ProposalBloc(
@@ -139,26 +136,16 @@ class _MyAppState extends State<MyApp> {
                 proposalRepository: context.read<ProposalRepository>()),
           ),
           BlocProvider(
-            create: (context) => PaymentsBloc(
-                paymentsRepository: context.read<PaymentsRepository>())
-              ..add(
-                LoadPayments(),
-              ),
-          )
+              create: (context) => PaymentsBloc(
+                  profileBloc: context.read<ProfileBloc>(),
+                  paymentsRepository: context.read<PaymentsRepository>()))
         ],
         child: MaterialApp.router(
           scaffoldMessengerKey: scaffoldKey,
           routeInformationParser: goRouter.routeInformationParser,
           routerDelegate: goRouter.routerDelegate,
           routeInformationProvider: goRouter.routeInformationProvider,
-
           title: 'Honeybadger ',
-          builder: (context, child) => StreamChat(
-              client: StreamChatClient(
-                dotenv.env['STREAM_API_KEY']!,
-                logLevel: Level.INFO,
-              ),
-              child: child),
           debugShowCheckedModeBanner: false,
           // Theme config for FlexColorScheme version 7.1.x. Make sure you use
           // same or higher package version, but still same major version. If you

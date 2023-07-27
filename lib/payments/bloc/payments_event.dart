@@ -1,18 +1,40 @@
 part of 'payments_bloc.dart';
 
 abstract class PaymentsEvent extends Equatable {
-  const PaymentsEvent();
+  final User? user;
+  const PaymentsEvent({this.user});
 
   @override
-  List<Object> get props => [];
+  List<Object?> get props => [user];
 }
 
-class LoadPayments extends PaymentsEvent {}
+class LoadPayments extends PaymentsEvent {
+  @override
+  final User user;
+  const LoadPayments({required this.user});
+  @override
+  // TODO: implement props
+  List<Object?> get props => [user];
+}
 
 class SetupPaymentAccount extends PaymentsEvent {
+  @override
   User user;
   BuildContext context;
   SetupPaymentAccount({required this.user, required this.context});
+  @override
+  // TODO: implement props
+  List<Object?> get props => [user];
+}
+
+class FinishSetupPaymentAccount extends PaymentsEvent {
+  @override
+  User user;
+  BuildContext context;
+  FinishSetupPaymentAccount({required this.user, required this.context});
+  @override
+  // TODO: implement props
+  List<Object?> get props => [user];
 }
 
 class SendPayment extends PaymentsEvent {
@@ -21,4 +43,7 @@ class SendPayment extends PaymentsEvent {
   BuildContext context;
   SendPayment(
       {required this.client, required this.freelancer, required this.context});
+  @override
+  // TODO: implement props
+  List<Object?> get props => [user];
 }

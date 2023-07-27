@@ -45,6 +45,7 @@
 
 // // Make sure to initialize the plugin before using it
 //     await googleSignIn.initWithParams(const SignInInitParameters(
+//       scopes: [],
 //       clientId: String.fromEnvironment('GCP_OAUTH_CLIENT_ID'),
 //     ));
 //   }
@@ -120,9 +121,7 @@
 //                                       configuration: web.GSIButtonConfiguration(
 //                                   // type: web.GSIButtonType.icon,
 //                                   // size: web.GSIButtonSize.large,
-//                                   // shape: web.GSIButtonShape.pill,
-//                                   logoAlignment:
-//                                       web.GSIButtonLogoAlignment.center,
+//                                   shape: web.GSIButtonShape.pill,
 //                                 ))
 //                               : Platform.isIOS
 //                                   ? FilledButton.tonal(

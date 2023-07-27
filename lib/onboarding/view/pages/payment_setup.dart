@@ -93,7 +93,7 @@ class PaymentSetupPage extends StatelessWidget {
                         ],
                       );
                     }
-                    if (state is PaymentsLoaded) {
+                    if (state is PaymentsLoaded || state is PaymentsInitial) {
                       return FractionallySizedBox(
                         widthFactor:
                             constraints.maxWidth > tabletWidthConstraint

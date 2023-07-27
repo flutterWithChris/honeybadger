@@ -30,7 +30,7 @@ class PaymentsRepository {
   }
 
   /// Fetch stripe account
-  Future<StripeAccount> fetchStripeAccount(String stripeAccountId) async {
+  Future<StripeAccount?> fetchStripeAccount(String stripeAccountId) async {
     try {
       final response = await http.post(
           Uri.parse(
@@ -43,6 +43,62 @@ class PaymentsRepository {
       log(jsonResponse.toString());
       print(jsonResponse.toString());
       return StripeAccount.fromJson(jsonResponse['account']);
+    } catch (e) {
+      log(e.toString());
+      return null;
+    }
+  }
+
+  Future<void> finishStripeConnectOnboarding(String stripeAccountId) async {
+    try {
+      final response = await http.post(
+          Uri.parse(
+              'https://us-central1-honeybadger-817ee.cloudfunctions.net/getStripeConnectOnboardingLink'),
+          body: {
+            'stripeAccountId': stripeAccountId,
+          });
+      print(response.body);
+      final jsonResponse = jsonDecode(response.body);
+      log(jsonResponse.toString());
+      print(jsonResponse.toString());
+      String accountLinkUrl = jsonResponse['url'];
+
+      if (await canLaunchUrl(Uri.parse(accountLinkUrl))) {
+        await launchUrl(Uri.parse(accountLinkUrl),
+            mode: LaunchMode.externalApplication);
+      } else {
+        scaffoldKey.currentState!.showSnackBar(
+          const SnackBar(
+            backgroundColor: Colors.red,
+            behavior: SnackBarBehavior.floating,
+            content: Text(
+              'Error starting Stripe Connect setup!',
+              style: TextStyle(color: Colors.white),
+            ),
+            duration: Duration(seconds: 2),
+          ),
+        );
+        throw 'Could not launch $accountLinkUrl';
+      }
+    } catch (e) {
+      log(e.toString());
+      rethrow;
+    }
+  }
+
+  Future<String> getLoginLink(String stripeAccountId) async {
+    try {
+      final response = await http.post(
+          Uri.parse(
+              'https://us-central1-honeybadger-817ee.cloudfunctions.net/createStripeLoginLink'),
+          body: {
+            'accountId': stripeAccountId,
+          });
+      print(response.body);
+      final jsonResponse = jsonDecode(response.body);
+      log(jsonResponse.toString());
+      print(jsonResponse.toString());
+      return jsonResponse['url'];
     } catch (e) {
       log(e.toString());
       rethrow;

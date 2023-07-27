@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:honeybadger/onboarding/view/pages/payment_setup.dart';
 import 'package:honeybadger/onboarding/view/pages/profile_setup/profile_setup.dart';
-import 'package:honeybadger/onboarding/view/signup_page.dart';
 import 'package:honeybadger/onboarding/view/pages/skills_and_experience.dart';
 import 'package:honeybadger/onboarding/view/pages/welcome/welcome_page.dart';
+import 'package:honeybadger/onboarding/view/signup_page.dart';
 import 'package:honeybadger/profile/model/user.dart';
 import 'package:smooth_page_indicator/smooth_page_indicator.dart';
 
@@ -120,7 +120,7 @@ class _OnboardingPageState extends State<OnboardingPage> {
                 //         pageController: _pageController,
                 //         userType: widget.userType,
                 //       )
-                //     :
+                //    :
                 SignupPage(
                   pageController: _pageController,
                   userType: widget.userType,

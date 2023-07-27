@@ -1,6 +1,7 @@
 import 'package:animations/animations.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:honeybadger/jobs/model/job.dart';
 import 'package:honeybadger/jobs/view/job_details_page/job_page.dart';
@@ -10,9 +11,11 @@ import 'package:honeybadger/message/view/messages_page.dart';
 import 'package:honeybadger/onboarding/stripe_confirmation.dart';
 import 'package:honeybadger/onboarding/view/onboarding_page.dart';
 import 'package:honeybadger/onboarding/view/pages/welcome/welcome_page.dart';
+import 'package:honeybadger/payments/bloc/payments_bloc.dart';
 import 'package:honeybadger/payments/details/payment_details.dart';
 import 'package:honeybadger/payments/model/payment.dart';
 import 'package:honeybadger/payments/view/payments_page.dart';
+import 'package:honeybadger/profile/bloc/profile_bloc.dart';
 import 'package:honeybadger/profile/model/user.dart';
 import 'package:honeybadger/profile/view/profile_page.dart';
 import 'package:honeybadger/proposals/create/view/create_proposal_page.dart';
@@ -26,7 +29,7 @@ GoRouter goRouter = GoRouter(
   initialLocation: '/search',
   redirect: (context, state) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    bool onboarded = false;
+    bool onboarded = true;
     // onboarded = prefs.getBool('onboarded') ?? false;
 
     if (onboarded == false) {
@@ -119,11 +122,16 @@ GoRouter goRouter = GoRouter(
         name: 'profile',
         builder: (context, state) => const ProfilePage()),
     GoRoute(
-      path: '/stripe-confirmation',
-      name: 'stripe-confirmation',
-      builder: (context, state) => StripeConfirmationPage(
-        stripeAccountId: state.queryParameters['account_id']!,
-      ),
-    )
+        path: '/stripe-confirmation',
+        name: 'stripe-confirmation',
+        builder: (context, state) {
+          if (context.read<ProfileBloc>().state.user != null) {
+            context.read<PaymentsBloc>().add(
+                LoadPayments(user: context.read<ProfileBloc>().state.user!));
+          }
+          return StripeConfirmationPage(
+            stripeAccountId: state.queryParameters['account_id']!,
+          );
+        })
   ],
 );
