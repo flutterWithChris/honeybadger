@@ -13,6 +13,7 @@ class ProfileBloc extends Bloc<ProfileEvent, ProfileState> {
   final UserRepository _userRepository;
   final AuthBloc _authBloc;
   StreamSubscription<AuthState>? _authSubscription;
+  StreamSubscription<User>? _userSubscription;
   ProfileBloc({
     required UserRepository userRepository,
     required AuthBloc authBloc,
@@ -22,17 +23,35 @@ class ProfileBloc extends Bloc<ProfileEvent, ProfileState> {
     on<LoadProfile>(_onLoadProfile);
     on<UpdateProfile>(_onUpdateProfile);
     on<DeleteProfile>(_onDeleteProfile);
+    print('Profile State: $state');
     _authSubscription = _authBloc.stream.listen((state) {
+      print('Profile Bloc received Auth State: $state');
       if (state.status == AuthStatus.authenticated) {
-        add(LoadProfile(userId: state.user!.uid));
+        add(LoadProfile());
       }
     });
   }
   void _onLoadProfile(LoadProfile event, Emitter<ProfileState> emit) async {
     emit(ProfileLoading());
     try {
-      final user = await _userRepository.getUser(event.userId);
-      emit(ProfileLoaded(user));
+      await emit.forEach(
+        _userRepository.getUserAsStream(_authBloc.state.user!.uid),
+        onData: (data) {
+          return ProfileLoaded(data);
+        },
+        onError: (error, stackTrace) {
+          return ProfileError(error.toString());
+        },
+      );
+      // _userSubscription =
+      //     _userRepository.getUserAsStream(event.userId).listen((user) {
+      //   if (!emit.isDone) {
+      //     emit(ProfileLoaded(user));
+      //   }
+      // }, onError: (e) {
+      //   emit(ProfileError(e.toString()));
+      // });
+      // emit(ProfileLoaded(user));
     } catch (e) {
       print(e);
       emit(ProfileError(e.toString()));
@@ -65,6 +84,7 @@ class ProfileBloc extends Bloc<ProfileEvent, ProfileState> {
   Future<void> close() {
     // TODO: implement close
     _authSubscription?.cancel();
+    _userSubscription?.cancel();
     return super.close();
   }
 }

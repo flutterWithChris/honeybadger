@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
+import 'package:honeybadger/auth/bloc/auth_bloc.dart';
 import 'package:honeybadger/jobs/model/job.dart';
 import 'package:honeybadger/jobs/view/job_details_page/job_page.dart';
 import 'package:honeybadger/jobs/view/jobs_page/jobs_page.dart';
@@ -28,10 +29,16 @@ GoRouter goRouter = GoRouter(
   observers: [HeroController()],
   initialLocation: '/search',
   redirect: (context, state) async {
+    bool loggedIn =
+        context.read<AuthBloc>().state.status == AuthStatus.authenticated;
+    print('Logged in: $loggedIn');
     SharedPreferences prefs = await SharedPreferences.getInstance();
     bool onboarded = true;
-    // onboarded = prefs.getBool('onboarded') ?? false;
 
+    // onboarded = prefs.getBool('onboarded') ?? false;
+    if (loggedIn == false) {
+      return '/welcome';
+    }
     if (onboarded == false) {
       if (state.location.contains('stripe-confirmation')) {
         return null;
@@ -109,13 +116,20 @@ GoRouter goRouter = GoRouter(
     GoRoute(
         path: '/payments',
         name: 'payments',
-        builder: (context, state) => const PaymentsPage(),
+        builder: (context, state) {
+          // if (context.read<ProfileBloc>().state is ProfileLoaded == false) {
+          //   context.read<ProfileBloc>().add(LoadProfile());
+          // } if (context.read<PaymentsBloc>().add(LoadPayments(user: )))
+          return const PaymentsPage();
+        },
         routes: [
           GoRoute(
-              path: 'details/:id',
-              name: 'details',
-              builder: (context, state) =>
-                  PaymentDetailsPage(payment: state.extra as Payment)),
+            path: 'details/:id',
+            name: 'details',
+            builder: (context, state) {
+              return PaymentDetailsPage(payment: state.extra as Payment);
+            },
+          )
         ]),
     GoRoute(
         path: '/profile',

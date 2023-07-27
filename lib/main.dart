@@ -120,7 +120,8 @@ class _MyAppState extends State<MyApp> {
               lazy: false,
               create: (context) => ProfileBloc(
                   userRepository: context.read<UserRepository>(),
-                  authBloc: context.read<AuthBloc>())),
+                  authBloc: context.read<AuthBloc>())
+                ..add(LoadProfile())),
           BlocProvider<PaymentHistoryBloc>(
             create: (context) => PaymentHistoryBloc()
               ..add(const FetchPaymentHistory(userId: 'userId')),
@@ -138,7 +139,9 @@ class _MyAppState extends State<MyApp> {
           BlocProvider(
               create: (context) => PaymentsBloc(
                   profileBloc: context.read<ProfileBloc>(),
-                  paymentsRepository: context.read<PaymentsRepository>()))
+                  paymentsRepository: context.read<PaymentsRepository>())
+                ..add(LoadPayments(
+                    user: context.read<ProfileBloc>().state.user!)))
         ],
         child: MaterialApp.router(
           scaffoldMessengerKey: scaffoldKey,

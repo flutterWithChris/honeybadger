@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:flutter/material.dart';
@@ -11,6 +13,7 @@ part 'payments_state.dart';
 
 class PaymentsBloc extends Bloc<PaymentsEvent, PaymentsState> {
   final ProfileBloc _profileBloc;
+  StreamSubscription<ProfileState>? _profileSubscription;
   final PaymentsRepository _paymentsRepository;
   PaymentsBloc(
       {required PaymentsRepository paymentsRepository,
@@ -22,6 +25,12 @@ class PaymentsBloc extends Bloc<PaymentsEvent, PaymentsState> {
     on<FinishSetupPaymentAccount>(_onFinishSetupPaymentAccount);
     on<LoadPayments>(_onLoadPayments);
     on<SendPayment>(_onSendPayment);
+    _profileSubscription = _profileBloc.stream.listen((state) {
+      if (state is ProfileLoaded) {
+        add(LoadPayments(user: state.user));
+      }
+    });
+    print('Payments State: $state');
   }
   void _onSetupPaymentAccount(
       SetupPaymentAccount event, Emitter<PaymentsState> emit) async {
@@ -55,11 +64,16 @@ class PaymentsBloc extends Bloc<PaymentsEvent, PaymentsState> {
   }
 
   void _onLoadPayments(LoadPayments event, Emitter<PaymentsState> emit) async {
-    StripeAccount? stripeAccount = await _paymentsRepository
-        .fetchStripeAccount(event.user.stripeAccountId!);
+    StripeAccount? stripeAccount;
+    if (event.user.stripeAccountId != null) {
+      stripeAccount = await _paymentsRepository
+          .fetchStripeAccount(event.user.stripeAccountId!);
+    }
+
     String? loginLink;
     bool stripeSetupComplete =
-        (stripeAccount?.requirements?['currently_due'] as List).isEmpty;
+        (stripeAccount?.requirements?['currently_due'] as List?)?.isEmpty ??
+            true;
     if (stripeSetupComplete == true) {
       loginLink = await _paymentsRepository.getLoginLink(
         event.user.stripeAccountId!,
