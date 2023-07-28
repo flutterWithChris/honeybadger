@@ -4,14 +4,14 @@ import 'package:flutter_gutter/flutter_gutter.dart';
 import 'package:honeybadger/core/constants.dart';
 import 'package:honeybadger/core/presentation/system/main_navigation_bar.dart';
 import 'package:honeybadger/core/presentation/system/mobile_sliver_app_bar.dart';
-import 'package:honeybadger/payments/model/payment.dart';
+import 'package:honeybadger/globals.dart';
+import 'package:honeybadger/payments/model/balance_transaction.dart';
 import 'package:honeybadger/payments/view/widgets/payment_status_chip.dart';
-import 'package:jiffy/jiffy.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 
 class MobilePaymentDetailsPage extends StatelessWidget {
-  final Payment payment;
-  const MobilePaymentDetailsPage({required this.payment, super.key});
+  final BalanceTransaction balanceTransaction;
+  const MobilePaymentDetailsPage({required this.balanceTransaction, super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -46,7 +46,7 @@ class MobilePaymentDetailsPage extends StatelessWidget {
                           crossAxisAlignment: CrossAxisAlignment.end,
                           children: [
                             Text(
-                              '${Jiffy.parse(payment.paymentDate!).yMMMd} · ${Jiffy.parse(payment.paymentDate!).jm}',
+                              '${parseBalanceTransactionDate(balanceTransaction).yMMMd} · ${parseBalanceTransactionDate(balanceTransaction).jm}',
                               style: Theme.of(context)
                                   .textTheme
                                   .bodyMedium
@@ -61,7 +61,8 @@ class MobilePaymentDetailsPage extends StatelessWidget {
                             // ),
                           ],
                         ),
-                        PaymentStatusChip(payment: payment)
+                        PaymentStatusChip(
+                            balanceTransaction: balanceTransaction),
                       ],
                     ),
                     Row(
@@ -69,41 +70,41 @@ class MobilePaymentDetailsPage extends StatelessWidget {
                       children: [
                         Expanded(
                           child: Text(
-                              convertDoubleToString(
-                                payment.amount!,
+                              convertCentsToCurrency(
+                                balanceTransaction.amount!,
                               ),
                               style: Theme.of(context)
                                   .textTheme
                                   .headlineMedium
                                   ?.copyWith(fontWeight: FontWeight.bold)),
                         ),
-                        payment.type == PaymentType.fixed
-                            ? Flexible(
-                                child: Row(
-                                  mainAxisAlignment: MainAxisAlignment.end,
-                                  children: [
-                                    Icon(MdiIcons.timelineOutline, size: 16.0),
-                                    const GutterSmall(),
-                                    Text.rich(
-                                      TextSpan(
-                                          text: payment.milestoneTitle,
-                                          style: Theme.of(context)
-                                              .textTheme
-                                              .bodyMedium),
-                                    ),
-                                  ],
-                                ),
-                              )
-                            : Flexible(
-                                child: Text.rich(
-                                  TextSpan(
-                                      text: '${payment.hours} hrs.',
-                                      style: Theme.of(context)
-                                          .textTheme
-                                          .bodyMedium
-                                          ?.copyWith()),
-                                ),
-                              ),
+                        // payment.type == PaymentType.fixed
+                        //     ? Flexible(
+                        //         child: Row(
+                        //           mainAxisAlignment: MainAxisAlignment.end,
+                        //           children: [
+                        //             Icon(MdiIcons.timelineOutline, size: 16.0),
+                        //             const GutterSmall(),
+                        //             Text.rich(
+                        //               TextSpan(
+                        //                   text: payment.milestoneTitle,
+                        //                   style: Theme.of(context)
+                        //                       .textTheme
+                        //                       .bodyMedium),
+                        //             ),
+                        //           ],
+                        //         ),
+                        //       )
+                        //     : Flexible(
+                        //         child: Text.rich(
+                        //           TextSpan(
+                        //               text: '${payment.hours} hrs.',
+                        //               style: Theme.of(context)
+                        //                   .textTheme
+                        //                   .bodyMedium
+                        //                   ?.copyWith()),
+                        //         ),
+                        //       ),
                       ],
                     ),
 
@@ -120,28 +121,30 @@ class MobilePaymentDetailsPage extends StatelessWidget {
                                   .bodyMedium
                                   ?.copyWith(fontWeight: FontWeight.bold),
                             ),
-                            PayerChip(payment: payment),
+                            PayerChip(
+                              balanceTransaction: balanceTransaction,
+                            ),
                           ],
                         ),
-                        Row(
-                          children: [
-                            Chip(
-                                shape: const StadiumBorder(),
-                                backgroundColor:
-                                    Theme.of(context).scaffoldBackgroundColor,
-                                visualDensity: VisualDensity.compact,
-                                side: BorderSide.none,
-                                avatar: payment.type == PaymentType.hourly
-                                    ? const Icon(Icons.timer, size: 14.0)
-                                    : payment.type == PaymentType.fixed
-                                        ? const Icon(Icons.attach_money,
-                                            size: 14.0)
-                                        : const Icon(Icons.money_off,
-                                            size: 14.0),
-                                label: Text(
-                                    parseEnumName(payment.type.toString()))),
-                          ],
-                        ),
+                        // Row(
+                        //   children: [
+                        //     Chip(
+                        //         shape: const StadiumBorder(),
+                        //         backgroundColor:
+                        //             Theme.of(context).scaffoldBackgroundColor,
+                        //         visualDensity: VisualDensity.compact,
+                        //         side: BorderSide.none,
+                        //         avatar: payment.type == PaymentType.hourly
+                        //             ? const Icon(Icons.timer, size: 14.0)
+                        //             : payment.type == PaymentType.fixed
+                        //                 ? const Icon(Icons.attach_money,
+                        //                     size: 14.0)
+                        //                 : const Icon(Icons.money_off,
+                        //                     size: 14.0),
+                        //         label: Text(
+                        //             parseEnumName(payment.type.toString()))),
+                        //   ],
+                        // ),
                       ],
                     ),
                     //  const GutterTiny(),
@@ -197,7 +200,8 @@ class MobilePaymentDetailsPage extends StatelessWidget {
                     // ),
                     TextButton(
                       onPressed: () {
-                        Clipboard.setData(ClipboardData(text: payment.id!));
+                        Clipboard.setData(
+                            ClipboardData(text: balanceTransaction.id!));
                         ScaffoldMessenger.of(context).showSnackBar(
                           SnackBar(
                             behavior: SnackBarBehavior.floating,
@@ -220,7 +224,7 @@ class MobilePaymentDetailsPage extends StatelessWidget {
                           text: 'ID: ',
                           children: <TextSpan>[
                             TextSpan(
-                                text: payment.id,
+                                text: balanceTransaction.id,
                                 style: Theme.of(context).textTheme.bodySmall),
                           ],
                           style:
@@ -267,10 +271,10 @@ class MobilePaymentDetailsPage extends StatelessWidget {
 class PayerChip extends StatelessWidget {
   const PayerChip({
     super.key,
-    required this.payment,
+    required this.balanceTransaction,
   });
 
-  final Payment payment;
+  final BalanceTransaction balanceTransaction;
 
   @override
   Widget build(BuildContext context) {
@@ -283,6 +287,6 @@ class PayerChip extends StatelessWidget {
           radius: 10.0,
           child: Icon(Icons.person, size: 10.0),
         ),
-        label: Text(payment.payerName!));
+        label: Text(balanceTransaction.source!));
   }
 }

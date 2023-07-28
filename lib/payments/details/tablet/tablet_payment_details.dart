@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:honeybadger/payments/model/payment.dart';
+import 'package:honeybadger/payments/model/balance_transaction.dart';
 
 class TabletPaymentDetailsPage extends StatelessWidget {
-  final Payment payment;
-  const TabletPaymentDetailsPage({required this.payment, super.key});
+  final BalanceTransaction balanceTransaction;
+  const TabletPaymentDetailsPage({required this.balanceTransaction, super.key});
 
   @override
   Widget build(BuildContext context) {

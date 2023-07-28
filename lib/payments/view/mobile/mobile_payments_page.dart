@@ -41,34 +41,25 @@ class MobilePaymentsPage extends StatelessWidget {
                 BlocBuilder<PaymentsBloc, PaymentsState>(
                   builder: (context, state) {
                     if (state is PaymentsLoaded && state.loginLink != null) {
+                      var availableBalance = 0;
+                      if (state.balance?.available != null) {
+                        availableBalance = state.balance!.available!
+                            .map((e) => e.amount!)
+                            .reduce((value, element) => value + element);
+                      }
+                      var pendingBalance = 0;
+
+                      if (state.balance?.pending != null) {
+                        pendingBalance = state.balance!.pending!
+                            .map((e) => e.amount!)
+                            .reduce((value, element) => value + element);
+                      }
+
                       return SliverPadding(
                         padding: const EdgeInsets.symmetric(vertical: 16.0),
                         sliver: SliverToBoxAdapter(
                           child: Column(
                             children: [
-                              FractionallySizedBox(
-                                widthFactor: 0.8,
-                                child: FilledButton.icon(
-                                    style:
-                                        state.stripeAccount?.payoutsEnabled ==
-                                                false
-                                            ? FilledButton.styleFrom(
-                                                backgroundColor: Colors.red,
-                                                foregroundColor: Colors.white)
-                                            : null,
-                                    onPressed: () {
-                                      launchUrlString(state.loginLink!,
-                                          mode: LaunchMode.externalApplication);
-                                    },
-                                    icon: Icon(
-                                        state.stripeAccount?.payoutsEnabled ==
-                                                false
-                                            ? Icons.error_rounded
-                                            : Icons.dashboard,
-                                        size: 20.0),
-                                    label: const Text('View Dashboard')),
-                              ),
-                              // const Gutter(),
                               // FractionallySizedBox(
                               //   widthFactor: 0.8,
                               //   child: FilledButton.icon(
@@ -101,6 +92,88 @@ class MobilePaymentsPage extends StatelessWidget {
                               //           size: 20.0),
                               //       label: const Text('Test Payment')),
                               // ),
+                              Padding(
+                                padding: const EdgeInsets.symmetric(
+                                    horizontal: 16.0),
+                                child: Row(
+                                  children: [
+                                    Text(
+                                      'Balance',
+                                      style: Theme.of(context)
+                                          .textTheme
+                                          .headlineMedium,
+                                    ),
+                                  ],
+                                ),
+                              ),
+                              const GutterSmall(),
+                              Padding(
+                                padding: const EdgeInsets.symmetric(
+                                    horizontal: 16.0),
+                                child: Row(
+                                  children: [
+                                    Text.rich(
+                                      TextSpan(
+                                        text: 'Available: ',
+                                        children: [
+                                          TextSpan(
+                                            text: convertCentsToCurrency(
+                                                availableBalance),
+                                            style: Theme.of(context)
+                                                .textTheme
+                                                .bodyMedium
+                                                ?.copyWith(
+                                                    fontWeight:
+                                                        FontWeight.bold),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                    const Gutter(),
+                                    Text.rich(
+                                      TextSpan(
+                                        text: 'Pending: ',
+                                        children: [
+                                          TextSpan(
+                                            text: convertCentsToCurrency(
+                                                pendingBalance),
+                                            style: Theme.of(context)
+                                                .textTheme
+                                                .bodyMedium
+                                                ?.copyWith(
+                                                    fontWeight:
+                                                        FontWeight.bold),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                              const Gutter(),
+                              FractionallySizedBox(
+                                widthFactor: 0.8,
+                                child: FilledButton.icon(
+                                    style:
+                                        state.stripeAccount?.payoutsEnabled ==
+                                                false
+                                            ? FilledButton.styleFrom(
+                                                backgroundColor: Colors.red,
+                                                foregroundColor: Colors.white)
+                                            : null,
+                                    onPressed: () {
+                                      launchUrlString(state.loginLink!,
+                                          mode: LaunchMode.externalApplication);
+                                    },
+                                    icon: Icon(
+                                        state.stripeAccount?.payoutsEnabled ==
+                                                false
+                                            ? Icons.error_rounded
+                                            : Icons.dashboard,
+                                        size: 20.0),
+                                    label: const Text('View Dashboard')),
+                              ),
+
                               state.stripeAccount?.payoutsEnabled == false
                                   ? Padding(
                                       padding: const EdgeInsets.fromLTRB(

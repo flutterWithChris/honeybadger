@@ -173,6 +173,8 @@ class PaymentsRepository {
 
       await Stripe.instance.initPaymentSheet(
           paymentSheetParameters: SetupPaymentSheetParameters(
+        googlePay: const PaymentSheetGooglePay(
+            merchantCountryCode: 'US', testEnv: true),
         paymentIntentClientSecret: jsonResponse['paymentIntent'],
         merchantDisplayName: 'Honeybadger',
         customerId: jsonResponse['customer'],
@@ -283,4 +285,6 @@ class PaymentsRepository {
       rethrow;
     }
   }
+
+  /// initPaymentSheet
 }

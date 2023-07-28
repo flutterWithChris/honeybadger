@@ -14,7 +14,7 @@ import 'package:honeybadger/onboarding/view/onboarding_page.dart';
 import 'package:honeybadger/onboarding/view/pages/welcome/welcome_page.dart';
 import 'package:honeybadger/payments/bloc/payments_bloc.dart';
 import 'package:honeybadger/payments/details/payment_details.dart';
-import 'package:honeybadger/payments/model/payment.dart';
+import 'package:honeybadger/payments/model/balance_transaction.dart';
 import 'package:honeybadger/payments/view/payments_page.dart';
 import 'package:honeybadger/profile/bloc/profile_bloc.dart';
 import 'package:honeybadger/profile/model/user.dart';
@@ -127,7 +127,8 @@ GoRouter goRouter = GoRouter(
             path: 'details/:id',
             name: 'details',
             builder: (context, state) {
-              return PaymentDetailsPage(payment: state.extra as Payment);
+              return PaymentDetailsPage(
+                  balanceTransaction: state.extra as BalanceTransaction);
             },
           )
         ]),

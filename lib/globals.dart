@@ -1,4 +1,5 @@
-import 'package:uuid/uuid.dart';
+import 'package:honeybadger/payments/model/balance_transaction.dart';
+import 'package:stream_chat_flutter/stream_chat_flutter.dart';
 import 'package:jose/jose.dart';
 
 String generateUniqueId() {
@@ -19,4 +20,9 @@ String generateToken(String userId) {
 
   var jws = builder.build();
   return jws.toCompactSerialization();
+}
+
+Jiffy parseBalanceTransactionDate(BalanceTransaction balanceTransaction) {
+  return Jiffy.parseFromMillisecondsSinceEpoch(
+      balanceTransaction.created! * 1000);
 }

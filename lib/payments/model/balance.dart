@@ -1,29 +1,29 @@
 class Balance {
-  final String object;
-  final bool liveMode;
-  final List<BalanceItem> available;
-  final List<BalanceItem> pending;
-  final List<ConnectReserved> connectReserved;
+  final String? object;
+  final bool? liveMode;
+  final List<BalanceItem>? available;
+  final List<BalanceItem>? pending;
+  final List<ConnectReserved>? connectReserved;
 
   Balance(
-      {required this.object,
-      required this.liveMode,
-      required this.available,
-      required this.pending,
-      required this.connectReserved});
+      {this.object,
+      this.liveMode,
+      this.available,
+      this.pending,
+      this.connectReserved});
 
   factory Balance.fromJson(Map<String, dynamic> json) {
-    var availList = json['available'] as List;
+    var availList = json['available'] as List?;
     List<BalanceItem> availableList =
-        availList.map((i) => BalanceItem.fromJson(i)).toList();
+        availList?.map((i) => BalanceItem.fromJson(i)).toList() ?? [];
 
-    var pendList = json['pending'] as List;
+    var pendList = json['pending'] as List?;
     List<BalanceItem> pendingList =
-        pendList.map((i) => BalanceItem.fromJson(i)).toList();
+        pendList?.map((i) => BalanceItem.fromJson(i)).toList() ?? [];
 
-    var connList = json['connect_reserved'] as List;
+    var connList = json['connect_reserved'] as List?;
     List<ConnectReserved> connListItems =
-        connList.map((i) => ConnectReserved.fromJson(i)).toList();
+        connList?.map((i) => ConnectReserved.fromJson(i)).toList() ?? [];
 
     return Balance(
       object: json['object'],
@@ -36,29 +36,28 @@ class Balance {
 }
 
 class BalanceItem {
-  final int amount;
-  final String currency;
-  final SourceTypes sourceTypes;
+  final int? amount;
+  final String? currency;
+  final SourceTypes? sourceTypes;
 
-  BalanceItem(
-      {required this.amount,
-      required this.currency,
-      required this.sourceTypes});
+  BalanceItem({this.amount, this.currency, this.sourceTypes});
 
   factory BalanceItem.fromJson(Map<String, dynamic> json) {
     return BalanceItem(
       amount: json['amount'],
       currency: json['currency'],
-      sourceTypes: SourceTypes.fromJson(json['source_types']),
+      sourceTypes: json['source_types'] != null
+          ? SourceTypes.fromJson(json['source_types'])
+          : null,
     );
   }
 }
 
 class ConnectReserved {
-  final int amount;
-  final String currency;
+  final int? amount;
+  final String? currency;
 
-  ConnectReserved({required this.amount, required this.currency});
+  ConnectReserved({this.amount, this.currency});
 
   factory ConnectReserved.fromJson(Map<String, dynamic> json) {
     return ConnectReserved(
@@ -69,9 +68,9 @@ class ConnectReserved {
 }
 
 class SourceTypes {
-  final int card;
+  final int? card;
 
-  SourceTypes({required this.card});
+  SourceTypes({this.card});
 
   factory SourceTypes.fromJson(Map<String, dynamic> json) {
     return SourceTypes(

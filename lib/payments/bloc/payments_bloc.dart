@@ -84,6 +84,7 @@ class PaymentsBloc extends Bloc<PaymentsEvent, PaymentsState>
 
   void _onSendPayment(SendPayment event, Emitter<PaymentsState> emit) async {
     emit(PaymentsLoading());
+
     await _paymentsRepository.initPaymentSheet(
       event.context,
       email: event.client.email!,
@@ -103,9 +104,10 @@ class PaymentsBloc extends Bloc<PaymentsEvent, PaymentsState>
         event.user.stripeAccountId!.isNotEmpty) {
       stripeAccount = await _paymentsRepository
           .fetchStripeAccount(event.user.stripeAccountId!);
-      bool stripeSetupComplete =
-          (stripeAccount?.requirements?['currently_due'] as List?)?.isEmpty ??
-              true;
+      // bool stripeSetupComplete =
+      //     (stripeAccount?.requirements?['currently_due'] as List?)?.isEmpty ??
+      //         true;
+      bool stripeSetupComplete = stripeAccount?.detailsSubmitted ?? true;
       if (stripeSetupComplete == true) {
         var futures = [
           _paymentsRepository.getLoginLink(event.user.stripeAccountId!),
