@@ -34,3 +34,12 @@ extension MaterialStateHelpers on Iterable<MaterialState> {
 extension IterableExtensions on Iterable {
   bool containsAny(Iterable<Object?> other) => other.any((e) => contains(e));
 }
+
+/// Title case a string
+extension StringExtensions on String {
+  String toTitleCase() {
+    return split(' ')
+        .map((word) => word[0].toUpperCase() + word.substring(1))
+        .join(' ');
+  }
+}

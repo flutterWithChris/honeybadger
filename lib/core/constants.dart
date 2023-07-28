@@ -48,3 +48,9 @@ Widget applySearchBarTheme(Widget searchbar, BuildContext context) {
                   Theme.of(context).inputDecorationTheme.fillColor))),
       child: searchbar);
 }
+
+// Convert cents int to currency format
+String convertCentsToCurrency(int cents) {
+  NumberFormat formatter = NumberFormat.simpleCurrency(decimalDigits: 2);
+  return formatter.format(cents / 100);
+}

@@ -6,6 +6,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_stripe/flutter_stripe.dart';
 import 'package:honeybadger/core/constants.dart';
+import 'package:honeybadger/payments/model/balance.dart';
+import 'package:honeybadger/payments/model/balance_transaction.dart';
 import 'package:honeybadger/payments/model/stripe_account.dart';
 import 'package:http/http.dart' as http;
 import 'package:url_launcher/url_launcher.dart';
@@ -213,6 +215,72 @@ class PaymentsRepository {
           ),
         );
       }
+    }
+  }
+
+  Future<Balance> getBalance(String stripeAccountId) async {
+    try {
+      final response = await http.post(
+          Uri.parse(
+              'https://us-central1-honeybadger-817ee.cloudfunctions.net/getStripeBalance'),
+          body: {
+            'accountId': stripeAccountId,
+          });
+      print(response.body);
+      final jsonResponse = jsonDecode(response.body);
+      log(jsonResponse.toString());
+      print(jsonResponse.toString());
+      return Balance.fromJson(jsonResponse['balance']);
+    } catch (e) {
+      log(e.toString());
+      rethrow;
+    }
+  }
+
+  Future<List<BalanceTransaction>> getBalanceTransactions(
+      String stripeAccountId) async {
+    try {
+      final response = await http.post(
+          Uri.parse(
+              'https://us-central1-honeybadger-817ee.cloudfunctions.net/getStripeBalanceTransactions'),
+          body: {
+            'accountId': stripeAccountId,
+          });
+      print(response.body);
+      final jsonResponse = jsonDecode(response.body);
+      log(jsonResponse.toString());
+      print(jsonResponse.toString());
+      var transactions = jsonResponse['balance_transactions']['data'] as List;
+      List<BalanceTransaction> transactionsList =
+          transactions.map((i) => BalanceTransaction.fromJson(i)).toList();
+      return transactionsList;
+    } catch (e) {
+      log(e.toString());
+      rethrow;
+    }
+  }
+
+  Future<List<BalanceTransaction>> getBalanceTransactionsPaginated(
+      String stripeAccountId, String startingAfterTransactionId) async {
+    try {
+      final response = await http.post(
+          Uri.parse(
+              'https://us-central1-honeybadger-817ee.cloudfunctions.net/getStripeBalanceTransactionsPaginated'),
+          body: {
+            'accountId': stripeAccountId,
+            'startingAfter': startingAfterTransactionId
+          });
+      print(response.body);
+      final jsonResponse = jsonDecode(response.body);
+      log(jsonResponse.toString());
+      print(jsonResponse.toString());
+      var transactions = jsonResponse['transactions'] as List;
+      List<BalanceTransaction> transactionsList =
+          transactions.map((i) => BalanceTransaction.fromJson(i)).toList();
+      return transactionsList;
+    } catch (e) {
+      log(e.toString());
+      rethrow;
     }
   }
 }

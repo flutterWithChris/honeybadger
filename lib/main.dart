@@ -69,6 +69,12 @@ class _MyAppState extends State<MyApp> {
     });
   }
 
+  @override
+  void dispose() {
+    _sub?.cancel();
+    super.dispose();
+  }
+
 // Your handler function
   void handleLink(String link) async {
     // Parse the link
@@ -254,7 +260,6 @@ class _MyAppState extends State<MyApp> {
               adaptiveAppBarScrollUnderOff:
                   FlexAdaptive.excludeWebAndroidFuchsia(),
               defaultRadiusAdaptive: 10.0,
-              adaptiveRadius: FlexAdaptive.all(),
               elevatedButtonSchemeColor: SchemeColor.onPrimaryContainer,
               elevatedButtonSecondarySchemeColor: SchemeColor.primaryContainer,
               outlinedButtonOutlineSchemeColor: SchemeColor.primary,
@@ -316,12 +321,6 @@ class _MyAppState extends State<MyApp> {
         ),
       ),
     );
-  }
-
-  @override
-  void dispose() {
-    if (_sub != null) _sub?.cancel();
-    super.dispose();
   }
 }
 
@@ -410,11 +409,5 @@ class _MyHomePageState extends State<MyHomePage> {
         child: const Icon(Icons.add),
       ), // This trailing comma makes auto-formatting nicer for build methods.
     );
-  }
-
-  @override
-  void dispose() {
-    _sub?.cancel();
-    super.dispose();
   }
 }

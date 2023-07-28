@@ -6,8 +6,8 @@ class MobileSliverAppBar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return SliverAppBar(
-      floating: true,
-      pinned: true,
+      //floating: true,
+      //pinned: true,
       centerTitle: true,
       leadingWidth: 40,
       // leading: const CircleAvatar(
