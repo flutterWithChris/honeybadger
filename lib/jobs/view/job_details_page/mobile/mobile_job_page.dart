@@ -168,6 +168,32 @@ class _MobileJobDetailsPageState extends State<MobileJobDetailsPage> {
                     runSpacing: 8.0,
                     crossAxisAlignment: WrapCrossAlignment.center,
                     children: [
+                      Hero(
+                        tag: '${widget.job.id}-budget',
+                        child: Material(
+                          color: Colors.transparent,
+                          type: MaterialType.transparency,
+                          child: Chip(
+                            visualDensity: VisualDensity.compact,
+                            padding: EdgeInsets.zero,
+                            side: BorderSide.none,
+                            elevation: 1,
+                            backgroundColor: Theme.of(context).primaryColor,
+                            label: Text(numberFormat.format(widget.job.budget),
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                                style: Theme.of(context)
+                                    .textTheme
+                                    .titleSmall
+                                    ?.copyWith(
+                                      fontWeight: FontWeight.bold,
+                                      color: Theme.of(context)
+                                          .colorScheme
+                                          .onPrimary,
+                                    )),
+                          ),
+                        ),
+                      ),
                       Chip(
                         visualDensity: VisualDensity.compact,
                         padding: EdgeInsets.zero,
@@ -181,30 +207,6 @@ class _MobileJobDetailsPageState extends State<MobileJobDetailsPage> {
                                     widget.job.paymentType.toString()),
                                 style: Theme.of(context).textTheme.bodyMedium),
                           ],
-                        ),
-                      ),
-                      Hero(
-                        tag: '${widget.job.id}-budget',
-                        child: Material(
-                          color: Colors.transparent,
-                          type: MaterialType.transparency,
-                          child: Chip(
-                            visualDensity: VisualDensity.compact,
-                            padding: EdgeInsets.zero,
-                            side: BorderSide.none,
-                            elevation: 1,
-                            backgroundColor:
-                                Theme.of(context).colorScheme.primaryContainer,
-                            label: Text(numberFormat.format(widget.job.budget),
-                                maxLines: 1,
-                                overflow: TextOverflow.ellipsis,
-                                style: Theme.of(context)
-                                    .textTheme
-                                    .titleSmall
-                                    ?.copyWith(
-                                      fontWeight: FontWeight.bold,
-                                    )),
-                          ),
                         ),
                       ),
                       Chip(

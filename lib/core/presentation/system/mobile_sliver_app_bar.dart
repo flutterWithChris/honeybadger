@@ -23,9 +23,14 @@ class MobileSliverAppBar extends StatelessWidget {
               spacing: 8.0,
               crossAxisAlignment: WrapCrossAlignment.center,
               children: [
-                Icon(Icons.hive_outlined, size: 30.0, color: Colors.blue[600]),
-                Text('Honeybadger',
-                    style: Theme.of(context).textTheme.titleLarge),
+                Image.asset(
+                  'assets/honeybee_logo.png',
+                  color: Theme.of(context).brightness == Brightness.light
+                      ? const Color(0xFF1E2223)
+                      : Colors.white,
+                  height: 18,
+                ),
+                Text('Honeybee', style: Theme.of(context).textTheme.titleLarge),
               ],
             ),
           ],

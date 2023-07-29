@@ -21,17 +21,16 @@ class MobilePaymentDetailsPage extends StatelessWidget {
         slivers: [
           const MobileSliverAppBar(),
           SliverPadding(
-            padding: const EdgeInsets.all(8.0),
+            padding: const EdgeInsets.all(16.0),
             sliver: SliverList(
                 delegate: SliverChildListDelegate([
               Text('Payment Details',
                   style: Theme.of(context).textTheme.headlineLarge),
-              const Gutter(),
-              Card(
-                  child: Padding(
+              //  const Gutter(),
+              Padding(
                 padding: const EdgeInsets.symmetric(
                   horizontal: 16.0,
-                  vertical: 16.0,
+                  vertical: 8.0,
                 ),
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.start,
@@ -150,8 +149,7 @@ class MobilePaymentDetailsPage extends StatelessWidget {
                     //  const GutterTiny(),
                   ],
                 ),
-              )),
-              const Gutter(),
+              ),
               Row(
                 children: [
                   Flexible(
@@ -177,10 +175,10 @@ class MobilePaymentDetailsPage extends StatelessWidget {
                   //const Gutter(),
                   Expanded(
                     flex: 6,
-                    child: FilledButton.tonalIcon(
+                    child: FilledButton.icon(
                         onPressed: () {},
-                        icon: Icon(MdiIcons.fileEye, size: 16.0),
-                        label: const Text('View Invoice')),
+                        icon: Icon(MdiIcons.archiveEye, size: 16.0),
+                        label: const Text('View Transaction')),
                   ),
                   const Spacer(),
                 ],

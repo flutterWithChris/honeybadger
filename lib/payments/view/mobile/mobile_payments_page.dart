@@ -59,7 +59,7 @@ class MobilePaymentsPage extends StatelessWidget {
                       sliver: SliverToBoxAdapter(
                         child: Column(
                           children: [
-                            //   FractionallySizedBox(
+                            //   FractionallySizedfamounBox(
                             //     widthFactor: 0.8,
                             //     child: FilledButton.icon(
                             //         style:
@@ -321,7 +321,7 @@ class MobilePaymentsPage extends StatelessWidget {
                   if (paymentsState.balanceTransactions != null &&
                       paymentsState.balanceTransactions!.isNotEmpty) {
                     return SliverPadding(
-                      padding: const EdgeInsets.all(8.0),
+                      padding: const EdgeInsets.symmetric(horizontal: 0.0),
                       sliver: SliverList(
                         delegate: SliverChildBuilderDelegate(
                           (context, index) {
@@ -330,139 +330,147 @@ class MobilePaymentsPage extends StatelessWidget {
                             if (transactionType == 'transfer') {
                               transactionType = 'Payment';
                             }
-                            return Padding(
-                              padding: const EdgeInsets.only(bottom: 4.0),
-                              child: Card(
-                                child: Padding(
-                                  padding:
-                                      const EdgeInsets.symmetric(vertical: 4.0),
-                                  child: ListTile(
-                                    onTap: () => context.go(
-                                        '/payments/details/${paymentsState.balanceTransactions![index].id}',
-                                        extra: paymentsState
-                                            .balanceTransactions![index]),
-                                    leading: paymentsState
-                                                .balanceTransactions![index]
-                                                .status ==
-                                            'available'
-                                        ? Icon(
-                                            MdiIcons.checkBold,
-                                            size: 16.0,
-                                            color: Colors.green,
-                                          )
-                                        : paymentsState
-                                                    .balanceTransactions![index]
-                                                    .status ==
-                                                'pending'
-                                            ? const Icon(
-                                                Icons.pending,
-                                                size: 16.0,
-                                                color: Colors.grey,
-                                              )
-                                            : const Icon(
-                                                Icons.close,
-                                                size: 16.0,
-                                                color: Colors.red,
-                                              ),
-                                    title: Row(
-                                      children: [
-                                        Text(
-                                            transactionType
-                                                .replaceAll('_', ' ')
-                                                .toTitleCase(),
-                                            maxLines: 1,
-                                            overflow: TextOverflow.ellipsis,
-                                            style: Theme.of(context)
-                                                .textTheme
-                                                .titleSmall
-                                                ?.copyWith(
-                                                    fontWeight:
-                                                        FontWeight.bold)),
-                                        paymentsState
-                                                    .balanceTransactions![index]
-                                                    .availableOn !=
-                                                null
-                                            ? Flexible(
-                                                child: Text(
-                                                  ' - Available on ${Jiffy.parseFromMillisecondsSinceEpoch(paymentsState.balanceTransactions![index].availableOn! * 1000).MMMd}',
-                                                  maxLines: 1,
-                                                  overflow:
-                                                      TextOverflow.ellipsis,
-                                                  style: Theme.of(context)
-                                                      .textTheme
-                                                      .bodySmall
-                                                      ?.copyWith(
-                                                          color: Theme.of(context)
-                                                                      .brightness ==
-                                                                  Brightness
-                                                                      .light
-                                                              ? Colors.grey[500]
-                                                              : Colors
-                                                                  .grey[600]),
+                            return Column(
+                              children: [
+                                const Divider(),
+                                Padding(
+                                  padding: const EdgeInsets.only(bottom: 4.0),
+                                  child: Padding(
+                                    padding: const EdgeInsets.symmetric(
+                                        vertical: 4.0),
+                                    child: ListTile(
+                                      onTap: () => context.go(
+                                          '/payments/details/${paymentsState.balanceTransactions![index].id}',
+                                          extra: paymentsState
+                                              .balanceTransactions![index]),
+                                      leading: paymentsState
+                                                  .balanceTransactions![index]
+                                                  .status ==
+                                              'available'
+                                          ? Icon(
+                                              MdiIcons.checkBold,
+                                              size: 20.0,
+                                              color: Colors.green,
+                                            )
+                                          : paymentsState
+                                                      .balanceTransactions![
+                                                          index]
+                                                      .status ==
+                                                  'pending'
+                                              ? const Icon(
+                                                  Icons.pending,
+                                                  size: 20.0,
+                                                  color: Colors.grey,
+                                                )
+                                              : const Icon(
+                                                  Icons.close,
+                                                  size: 20.0,
+                                                  color: Colors.red,
                                                 ),
-                                              )
-                                            : const GutterTiny(),
-                                      ],
-                                    ),
-                                    subtitle: paymentsState
-                                                .balanceTransactions?[index]
-                                                .description !=
-                                            null
-                                        ? Text(
-                                            paymentsState
+                                      title: Row(
+                                        children: [
+                                          Text(
+                                              transactionType
+                                                  .replaceAll('_', ' ')
+                                                  .toTitleCase(),
+                                              maxLines: 1,
+                                              overflow: TextOverflow.ellipsis,
+                                              style: Theme.of(context)
+                                                  .textTheme
+                                                  .titleMedium
+                                                  ?.copyWith(
+                                                      fontWeight:
+                                                          FontWeight.bold)),
+                                          const GutterSmall(),
+                                          paymentsState
+                                                      .balanceTransactions![
+                                                          index]
+                                                      .availableOn !=
+                                                  null
+                                              ? Flexible(
+                                                  child: Text(
+                                                    'Available on ${Jiffy.parseFromMillisecondsSinceEpoch(paymentsState.balanceTransactions![index].availableOn! * 1000).MMMd}',
+                                                    maxLines: 1,
+                                                    overflow:
+                                                        TextOverflow.ellipsis,
+                                                    style: Theme.of(context)
+                                                        .textTheme
+                                                        .bodySmall
+                                                        ?.copyWith(
+                                                            color: Theme.of(context)
+                                                                        .brightness ==
+                                                                    Brightness
+                                                                        .light
+                                                                ? Colors
+                                                                    .grey[500]
+                                                                : Colors
+                                                                    .grey[600]),
+                                                  ),
+                                                )
+                                              : const GutterTiny(),
+                                        ],
+                                      ),
+                                      subtitle: paymentsState
+                                                  .balanceTransactions?[index]
+                                                  .description !=
+                                              null
+                                          ? Text(
+                                              paymentsState
+                                                  .balanceTransactions![index]
+                                                  .description!,
+                                              maxLines: 1,
+                                              overflow: TextOverflow.ellipsis,
+                                              style: Theme.of(context)
+                                                  .textTheme
+                                                  .bodyMedium)
+                                          : const SizedBox(),
+                                      // TODO: Add payment status widge
+                                      trailing: Column(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.end,
+                                        mainAxisSize: MainAxisSize.min,
+                                        children: [
+                                          Text(
+                                            convertCentsToCurrency(paymentsState
                                                 .balanceTransactions![index]
-                                                .description!,
-                                            maxLines: 1,
-                                            overflow: TextOverflow.ellipsis,
+                                                .amount!),
                                             style: Theme.of(context)
                                                 .textTheme
-                                                .bodyMedium)
-                                        : const SizedBox(),
-                                    // TODO: Add payment status widge
-                                    trailing: Column(
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.end,
-                                      mainAxisSize: MainAxisSize.min,
-                                      children: [
-                                        Text(
-                                          convertCentsToCurrency(paymentsState
-                                              .balanceTransactions![index]
-                                              .amount!),
-                                          style: Theme.of(context)
-                                              .textTheme
-                                              .bodyMedium
-                                              ?.copyWith(
-                                                  // color:
-                                                  //     Theme.of(context).brightness ==
-                                                  //             Brightness.light
-                                                  //         ? Colors.grey[500]
-                                                  //         : Colors.grey[600],
-                                                  ),
-                                        ),
-                                        const GutterTiny(),
-                                        Text(
-                                          Jiffy.parseFromMillisecondsSinceEpoch(
-                                                  paymentsState
-                                                          .balanceTransactions![
-                                                              index]
-                                                          .created! *
-                                                      1000)
-                                              .fromNow(),
-                                          style: Theme.of(context)
-                                              .textTheme
-                                              .bodySmall
-                                              ?.copyWith(
-                                                  color: Theme.of(context)
-                                                              .brightness ==
-                                                          Brightness.light
-                                                      ? Colors.grey[500]
-                                                      : Colors.grey[600]),
-                                        ),
-                                      ],
+                                                .titleMedium
+                                                ?.copyWith(
+                                                    // color:
+                                                    //     Theme.of(context).brightness ==
+                                                    //             Brightness.light
+                                                    //         ? Colors.grey[500]
+                                                    //         : Colors.grey[600],
+                                                    ),
+                                          ),
+                                          const GutterTiny(),
+                                          Text(
+                                            Jiffy.parseFromMillisecondsSinceEpoch(
+                                                    paymentsState
+                                                            .balanceTransactions![
+                                                                index]
+                                                            .created! *
+                                                        1000)
+                                                .fromNow(),
+                                            style: Theme.of(context)
+                                                .textTheme
+                                                .bodySmall
+                                                ?.copyWith(
+                                                    color: Theme.of(context)
+                                                                .brightness ==
+                                                            Brightness.light
+                                                        ? Colors.grey[500]
+                                                        : Colors.grey[600]),
+                                          ),
+                                        ],
+                                      ),
                                     ),
                                   ),
                                 ),
-                              ),
+                                const Divider(),
+                              ],
                             );
                           },
                           childCount: paymentsState.balanceTransactions!.length,
