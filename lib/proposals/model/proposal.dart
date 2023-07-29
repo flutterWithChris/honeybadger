@@ -15,6 +15,7 @@ class Proposal {
   final String? freelancerId;
   final String? freelancerName;
   final String? jobId;
+  final String? jobName;
   final DateTime? createdAt;
   final DateTime? updatedAt;
   final DateTime? sentAt;
@@ -33,6 +34,7 @@ class Proposal {
     this.freelancerId,
     this.freelancerName,
     this.jobId,
+    this.jobName,
     this.createdAt,
     this.updatedAt,
     this.sentAt,
@@ -54,6 +56,7 @@ class Proposal {
       'freelancerId': freelancerId,
       'freelancerName': freelancerName,
       'jobId': jobId,
+      'jobName': jobName,
       'createdAt': createdAt,
       'updatedAt': updatedAt,
       'sentAt': sentAt,
@@ -76,6 +79,7 @@ class Proposal {
       freelancerId: json['freelancerId'] as String?,
       freelancerName: json['freelancerName'] as String?,
       jobId: json['jobId'] as String?,
+      jobName: json['jobName'] as String?,
       createdAt: json['createdAt'] as DateTime?,
       updatedAt: json['updatedAt'] as DateTime?,
       sentAt: json['sentAt'] as DateTime?,
@@ -96,6 +100,7 @@ class Proposal {
     String? freelancerId,
     String? freelancerName,
     String? jobId,
+    String? jobName,
     DateTime? createdAt,
     DateTime? updatedAt,
     DateTime? sentAt,
@@ -114,6 +119,7 @@ class Proposal {
       freelancerId: freelancerId ?? this.freelancerId,
       freelancerName: freelancerName ?? this.freelancerName,
       jobId: jobId ?? this.jobId,
+      jobName: jobName ?? this.jobName,
       createdAt: createdAt ?? this.createdAt,
       updatedAt: updatedAt ?? this.updatedAt,
       sentAt: sentAt ?? this.sentAt,

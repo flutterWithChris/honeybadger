@@ -63,7 +63,7 @@ class MobileProfilePage extends StatelessWidget {
                 return SliverList(
                   delegate: SliverChildListDelegate([
                     Padding(
-                      padding: const EdgeInsets.fromLTRB(16.0, 16.0, 16.0, 8.0),
+                      padding: const EdgeInsets.fromLTRB(16.0, 16.0, 16.0, 0.0),
                       child: Row(
                         children: [
                           const CircleAvatar(
@@ -181,53 +181,79 @@ class MobileProfilePage extends StatelessWidget {
                     //     return const Center(child: Text('Something Went Wrong...'),);
                     //   },
                     // ),
-                    const Gutter(),
+                    // const Gutter(),
                     Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 16.0),
-                      child: Text(
-                        'Portfolio',
-                        style: Theme.of(context).textTheme.titleLarge,
+                      child: Row(
+                        children: [
+                          Text(
+                            'Portfolio',
+                            style: Theme.of(context).textTheme.titleLarge,
+                          ),
+                          const GutterTiny(),
+                          IconButton(
+                              onPressed: () async {
+                                await showDialog(
+                                    context: context,
+                                    builder: (context) =>
+                                        const AddProjectDialog());
+                              },
+                              icon: const Icon(Icons.add_circle_rounded))
+                        ],
                       ),
                     ),
-                    const Gutter(),
+                    const GutterSmall(),
                     Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                      padding: const EdgeInsets.symmetric(horizontal: 0.0),
                       child: SizedBox(
-                        height: 160,
+                        height: 180,
                         child: ListView.separated(
+                          padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                          physics: const BouncingScrollPhysics(),
                           shrinkWrap: true,
                           scrollDirection: Axis.horizontal,
-                          itemCount: user.skills!.length,
+                          itemCount: 5,
                           itemBuilder: (context, index) {
-                            return AspectRatio(
-                              aspectRatio: 1,
-                              child: Container(
-                                  decoration: BoxDecoration(
-                                    color: Colors.grey[300],
+                            List<String> photoLinks = [
+                              'https://www.upwork.com/att/download/portfolio/persons/uid/1109088236987375616/profile/projects/files/544fded9-0423-43ab-8a29-78c920bda193',
+                              'https://www.upwork.com/att/download/portfolio/persons/uid/1109088236987375616/profile/projects/files/0ccd34d7-2a12-4a18-b532-e1000d0015d2',
+                              'https://www.upwork.com/att/download/portfolio/persons/uid/1109088236987375616/profile/projects/files/ac1b3bed-bf87-47df-8edf-c8cf35a58178',
+                              'https://images.squarespace-cdn.com/content/v1/630dd25ca749cb7575f60864/db9f1e2a-b618-4b71-8898-64af579fc9ce/TonyLor_CoffeeShopMarket_FINAL01+-+011923+%281%29.jpg?format=750w',
+                              'https://images.squarespace-cdn.com/content/v1/630dd25ca749cb7575f60864/7f4a9c80-be3f-4bc8-91ee-efc5055e2f3d/1.jpg?format=750w',
+                              'https://www.beachwelcomecenter.com/wp-content/uploads/crabb-bills_building-1_WEB-16x9-1.jpg',
+                              'https://images.squarespace-cdn.com/content/v1/630dd25ca749cb7575f60864/1da6ed99-03f3-43bb-9d03-6c13f6110550/3.jpg?format=750w'
+                                  'https://images.squarespace-cdn.com/content/v1/630dd25ca749cb7575f60864/b1667257-b7c7-4e4e-932e-f31c1902e30f/6.png?format=750w',
+                              'https://images.squarespace-cdn.com/content/v1/630dd25ca749cb7575f60864/6d859112-15bf-4ebc-9ed8-98c28acde02c/1.jpg?format=750w',
+                              'https://images.squarespace-cdn.com/content/v1/630dd25ca749cb7575f60864/1664597665853-HJBS77OU03199C2CD6W8/1_View01a.png?format=1500w',
+                            ];
+                            return Container(
+                              height: 180,
+                              decoration: BoxDecoration(
+                                // image: DecorationImage(
+                                //   image: CachedNetworkImageProvider(
+                                //     photoLinks[index],
+                                //   ),
+                                //   fit: BoxFit.cover,
+                                // ),
+                                // color: Colors.grey[300],
+                                borderRadius: BorderRadius.circular(16.0),
+                              ),
+                              child: Material(
+                                color: Colors.transparent,
+                                child: InkWell(
                                     borderRadius: BorderRadius.circular(16.0),
-                                  ),
-                                  child: Material(
-                                    color: Colors.transparent,
-                                    child: InkWell(
+                                    onTap: () async {},
+                                    child: ClipRRect(
                                       borderRadius: BorderRadius.circular(16.0),
-                                      onTap: () async {
-                                        await showDialog(
-                                            context: context,
-                                            builder: (context) =>
-                                                const AddProjectDialog());
-                                      },
-                                      child: const Center(
-                                        child: Icon(
-                                          Icons.add_circle,
-                                          color: Colors.grey,
-                                        ),
+                                      child: CachedNetworkImage(
+                                        imageUrl: photoLinks[index],
                                       ),
-                                    ),
-                                  )),
+                                    )),
+                              ),
                             );
                           },
                           separatorBuilder: (context, index) {
-                            return const GutterSmall();
+                            return const Gutter();
                           },
                         ),
                       ),

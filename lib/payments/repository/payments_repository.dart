@@ -156,7 +156,10 @@ class PaymentsRepository {
   Future<void> initPaymentSheet(context,
       {required String email,
       required double amount,
-      required String freelancerStripeId}) async {
+      required String freelancerStripeId,
+      required String description,
+      required Map<String, dynamic> metadata}) async {
+    print('MEtadata: ${jsonEncode(metadata)}');
     try {
       final response = await http.post(
           Uri.parse(
@@ -164,7 +167,8 @@ class PaymentsRepository {
           body: {
             'amount': (amount * 100).toString(),
             'email': email,
-            'freelancerStripeId': freelancerStripeId,
+            //'description': description,
+            // 'metadata': jsonEncode(metadata),
           });
 
       final jsonResponse = jsonDecode(response.body);

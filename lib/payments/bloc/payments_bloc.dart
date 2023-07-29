@@ -9,6 +9,7 @@ import 'package:honeybadger/payments/model/stripe_account.dart';
 import 'package:honeybadger/payments/repository/payments_repository.dart';
 import 'package:honeybadger/profile/bloc/profile_bloc.dart';
 import 'package:honeybadger/profile/model/user.dart';
+import 'package:honeybadger/proposals/model/proposal.dart';
 
 part 'payments_event.dart';
 part 'payments_state.dart';
@@ -90,6 +91,13 @@ class PaymentsBloc extends Bloc<PaymentsEvent, PaymentsState>
       email: event.client.email!,
       amount: 100.0,
       freelancerStripeId: event.freelancer.stripeAccountId!,
+      description: 'Payment for ${event.proposal.jobName}',
+      metadata: {
+        'proposalId': event.proposal.id,
+        'clientId': event.client.id,
+        'clientName': '${event.client.firstName} ${event.client.lastName}',
+        'freelancerId': event.freelancer.id,
+      },
     );
     emit(PaymentSent());
   }

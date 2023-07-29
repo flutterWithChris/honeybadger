@@ -161,7 +161,7 @@ class _MyAppState extends State<MyApp> {
           // use a lower package version, some properties may not be supported.
           // In that case remove them after copying this theme to your app.
           theme: FlexThemeData.light(
-            scheme: FlexScheme.flutterDash,
+            scheme: FlexScheme.purpleM3,
             surfaceMode: FlexSurfaceMode.highBackgroundLowScaffold,
             blendLevel: 1,
             appBarStyle: FlexAppBarStyle.background,
@@ -243,7 +243,7 @@ class _MyAppState extends State<MyApp> {
             // fontFamily: GoogleFonts.notoSans().fontFamily,
           ),
           darkTheme: FlexThemeData.dark(
-            scheme: FlexScheme.flutterDash,
+            scheme: FlexScheme.purpleM3,
             surfaceMode: FlexSurfaceMode.highBackgroundLowScaffold,
             blendLevel: 2,
             appBarStyle: FlexAppBarStyle.background,
