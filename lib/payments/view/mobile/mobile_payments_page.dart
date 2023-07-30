@@ -31,8 +31,8 @@ class MobilePaymentsPage extends StatelessWidget {
           // spring:
           //     const SpringDescription(mass: 60, stiffness: 100, damping: 500),
           onRefresh: () async {
-            context.read<PaymentsBloc>().add(
-                LoadPayments(user: context.read<ProfileBloc>().state.user!));
+            context.read<PaymentsBloc>().add(LoadBalanceAndTransactions(
+                user: context.read<ProfileBloc>().state.user!));
           },
           child: CustomScrollView(
             slivers: [
@@ -59,46 +59,6 @@ class MobilePaymentsPage extends StatelessWidget {
                       sliver: SliverToBoxAdapter(
                         child: Column(
                           children: [
-                            //   FractionallySizedfamounBox(
-                            //     widthFactor: 0.8,
-                            //     child: FilledButton.icon(
-                            //         style:
-                            //             state.stripeAccount?.payoutsEnabled ==
-                            //                     false
-                            //                 ? FilledButton.styleFrom(
-                            //                     backgroundColor: Colors.red,
-                            //                     foregroundColor: Colors.white)
-                            //                 : null,
-                            //         onPressed: () {
-                            //           context.read<PaymentsBloc>().add(
-                            //               SendPayment(
-                            //                   client: User(
-                            //                     id: '123456789',
-                            //                     firstName: 'Billy',
-                            //                     lastName: 'Conforto',
-                            //                     email: 'billy@email.com',
-                            //                     stripeAccountId:
-                            //                         'acct_1NYeAV4JF4nBzb2w',
-                            //                   ),
-                            //                   freelancer: context
-                            //                       .read<ProfileBloc>()
-                            //                       .state
-                            //                       .user!,
-                            //                   proposal: Proposal(
-                            //                     id: '17382673',
-                            //                     jobName:
-                            //                         'Build a hydration tracking app.',
-                            //                   ),
-                            //                   context: context));
-                            //         },
-                            //         icon: Icon(
-                            //             state.stripeAccount?.payoutsEnabled ==
-                            //                     false
-                            //                 ? Icons.error_rounded
-                            //                 : Icons.dashboard,
-                            //             size: 20.0),
-                            //         label: const Text('Test Payment')),
-                            //   ),
                             Padding(
                               padding:
                                   const EdgeInsets.symmetric(horizontal: 16.0),
@@ -661,7 +621,50 @@ class MobilePaymentsPage extends StatelessWidget {
                     child: Center(
                   child: Text('Something Went Wrong...'),
                 ));
-              })
+              }),
+              // SliverToBoxAdapter(
+              //   child: FractionallySizedBox(
+              //     widthFactor: 0.8,
+              //     child: FilledButton.icon(
+              //         style: context
+              //                     .read<PaymentsBloc>()
+              //                     .state
+              //                     .stripeAccount
+              //                     ?.payoutsEnabled ==
+              //                 false
+              //             ? FilledButton.styleFrom(
+              //                 backgroundColor: Colors.red,
+              //                 foregroundColor: Colors.white)
+              //             : null,
+              //         onPressed: () {
+              //           context.read<PaymentsBloc>().add(SendPayment(
+              //               client: User(
+              //                 id: '123456789',
+              //                 firstName: 'Billy',
+              //                 lastName: 'Conforto',
+              //                 email: 'billy@email.com',
+              //                 stripeAccountId: 'acct_1NYeAV4JF4nBzb2w',
+              //               ),
+              //               freelancer: context.read<ProfileBloc>().state.user!,
+              //               proposal: Proposal(
+              //                 id: '17382673',
+              //                 jobName: 'Build a hydration tracking app.',
+              //               ),
+              //               context: context));
+              //         },
+              //         icon: Icon(
+              //             context
+              //                         .read<PaymentsBloc>()
+              //                         .state
+              //                         .stripeAccount
+              //                         ?.payoutsEnabled ==
+              //                     false
+              //                 ? Icons.error_rounded
+              //                 : Icons.dashboard,
+              //             size: 20.0),
+              //         label: const Text('Test Payment')),
+              //   ),
+              // ),
             ],
           ),
         ));

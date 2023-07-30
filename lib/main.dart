@@ -143,11 +143,10 @@ class _MyAppState extends State<MyApp> {
                 proposalRepository: context.read<ProposalRepository>()),
           ),
           BlocProvider(
+              lazy: false,
               create: (context) => PaymentsBloc(
                   profileBloc: context.read<ProfileBloc>(),
-                  paymentsRepository: context.read<PaymentsRepository>())
-                ..add(LoadPayments(
-                    user: context.read<ProfileBloc>().state.user!)))
+                  paymentsRepository: context.read<PaymentsRepository>()))
         ],
         child: MaterialApp.router(
           scaffoldMessengerKey: scaffoldKey,

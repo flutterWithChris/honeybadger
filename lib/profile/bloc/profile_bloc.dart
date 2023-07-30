@@ -23,7 +23,7 @@ class ProfileBloc extends Bloc<ProfileEvent, ProfileState> {
     on<LoadProfile>(_onLoadProfile);
     on<UpdateProfile>(_onUpdateProfile);
     on<DeleteProfile>(_onDeleteProfile);
-    print('Profile State: $state');
+
     _authSubscription = _authBloc.stream.listen((state) {
       print('Profile Bloc received Auth State: $state');
       if (state.status == AuthStatus.authenticated) {
@@ -37,6 +37,7 @@ class ProfileBloc extends Bloc<ProfileEvent, ProfileState> {
       await emit.forEach(
         _userRepository.getUserAsStream(_authBloc.state.user!.uid),
         onData: (data) {
+          //   _paymentsBloc.add(LoadPayments(user: data));
           return ProfileLoaded(data);
         },
         onError: (error, stackTrace) {

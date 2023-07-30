@@ -30,7 +30,9 @@ class PaymentsBloc extends Bloc<PaymentsEvent, PaymentsState>
     on<FinishSetupPaymentAccount>(_onFinishSetupPaymentAccount);
     on<LoadPayments>(_onLoadPayments);
     on<SendPayment>(_onSendPayment);
+    on<LoadBalanceAndTransactions>(_onLoadBalanceAndTransactions);
     _profileSubscription = _profileBloc.stream.listen((state) {
+      print('Profile State: $state');
       if (state is ProfileLoaded) {
         add(LoadPayments(user: state.user));
       }
@@ -137,6 +139,38 @@ class PaymentsBloc extends Bloc<PaymentsEvent, PaymentsState>
               : StripeAccountStatus.incomplete,
           balance: balance,
           balanceTransactions: balanceTransactions));
+      return;
+    } else {
+      emit(const PaymentsLoaded(
+          stripeAccountStatus: StripeAccountStatus.notCreated));
+      print('There is no stripe account');
+      return;
+    }
+  }
+
+  void _onLoadBalanceAndTransactions(
+      LoadBalanceAndTransactions event, Emitter<PaymentsState> emit) async {
+    var previousState = state;
+    emit(PaymentsLoading());
+    Balance? balance;
+    List<BalanceTransaction>? balanceTransactions;
+    if (event.user.stripeAccountId != null &&
+        event.user.stripeAccountId!.isNotEmpty) {
+      var futures = [
+        _paymentsRepository.getBalance(event.user.stripeAccountId!),
+        _paymentsRepository.getBalanceTransactions(
+          event.user.stripeAccountId!,
+        ),
+      ];
+      var results = await Future.wait(futures);
+      balance = results[0] as Balance;
+      balanceTransactions = results[1] as List<BalanceTransaction>;
+      emit(PaymentsLoaded(
+          balance: balance,
+          balanceTransactions: balanceTransactions,
+          stripeAccountStatus: previousState.stripeAccountStatus,
+          stripeAccount: previousState.stripeAccount,
+          loginLink: previousState.loginLink));
       return;
     } else {
       emit(const PaymentsLoaded(

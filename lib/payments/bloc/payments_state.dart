@@ -3,7 +3,7 @@ part of 'payments_bloc.dart';
 // TODO: Create pending stripe account state
 enum StripeAccountStatus { notCreated, incomplete, complete }
 
-abstract class PaymentsState extends Equatable {
+class PaymentsState extends Equatable {
   final StripeAccount? stripeAccount;
   final String? loginLink;
   final StripeAccountStatus? stripeAccountStatus;
@@ -25,6 +25,23 @@ abstract class PaymentsState extends Equatable {
         balance,
         balanceTransactions
       ];
+
+  // copyWith
+  PaymentsState copyWith({
+    StripeAccount? stripeAccount,
+    StripeAccountStatus? stripeAccountStatus,
+    String? loginLink,
+    Balance? balance,
+    List<BalanceTransaction>? balanceTransactions,
+  }) {
+    return PaymentsState(
+      stripeAccount: stripeAccount ?? this.stripeAccount,
+      stripeAccountStatus: stripeAccountStatus ?? this.stripeAccountStatus,
+      loginLink: loginLink ?? this.loginLink,
+      balance: balance ?? this.balance,
+      balanceTransactions: balanceTransactions ?? this.balanceTransactions,
+    );
+  }
 }
 
 class PaymentsInitial extends PaymentsState {}
@@ -37,7 +54,7 @@ class PaymentsLoaded extends PaymentsState {
   @override
   final String? loginLink;
   @override
-  final StripeAccountStatus stripeAccountStatus;
+  final StripeAccountStatus? stripeAccountStatus;
   @override
   final Balance? balance;
   @override
@@ -45,7 +62,7 @@ class PaymentsLoaded extends PaymentsState {
   const PaymentsLoaded(
       {this.stripeAccount,
       this.loginLink,
-      required this.stripeAccountStatus,
+      this.stripeAccountStatus,
       this.balance,
       this.balanceTransactions});
   @override
