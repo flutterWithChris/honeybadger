@@ -97,7 +97,8 @@ class MobileProfilePage extends StatelessWidget {
                                       height: 40.0,
                                       child: FittedBox(
                                         child: Chip(
-                                          padding: const EdgeInsets.all(0.0),
+                                          padding: const EdgeInsets.symmetric(
+                                              horizontal: 4.0),
                                           label: Row(
                                             children: [
                                               Icon(
@@ -130,7 +131,8 @@ class MobileProfilePage extends StatelessWidget {
                                       child: FittedBox(
                                         child: Chip(
                                           visualDensity: VisualDensity.compact,
-                                          padding: EdgeInsets.zero,
+                                          padding: const EdgeInsets.symmetric(
+                                              horizontal: 4.0),
                                           side: BorderSide.none,
                                           backgroundColor: Theme.of(context)
                                               .colorScheme
@@ -141,7 +143,9 @@ class MobileProfilePage extends StatelessWidget {
                                               Icon(
                                                 MdiIcons.trophyAward,
                                                 size: 14.0,
-                                                color: Colors.white,
+                                                color: Theme.of(context)
+                                                    .colorScheme
+                                                    .onSecondary,
                                               ),
                                               const GutterTiny(),
                                               Text('Top Rated',
@@ -149,9 +153,10 @@ class MobileProfilePage extends StatelessWidget {
                                                       .textTheme
                                                       .bodySmall
                                                       ?.copyWith(
-                                                          color: Colors.white,
-                                                          fontWeight:
-                                                              FontWeight.bold)),
+                                                        color: Theme.of(context)
+                                                            .colorScheme
+                                                            .onSecondary,
+                                                      )),
                                             ],
                                           ),
                                         ),
@@ -269,14 +274,9 @@ class MobileProfilePage extends StatelessWidget {
                     const GutterSmall(),
                     Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 16.0),
-                      child: Card(
-                        child: Padding(
-                          padding: const EdgeInsets.all(16.0),
-                          child: Text(
-                            'I am a mobile app developer with 5 years of experience in developing mobile applications for both Android and iOS. I have worked with clients from all over the world and have developed a wide range of mobile apps. I have worked with clients from all over the world and have developed a wide range of mobile apps.',
-                            style: Theme.of(context).textTheme.bodyMedium,
-                          ),
-                        ),
+                      child: Text(
+                        'I am a mobile app developer with 5 years of experience in developing mobile applications for both Android and iOS. I have worked with clients from all over the world and have developed a wide range of mobile apps. I have worked with clients from all over the world and have developed a wide range of mobile apps.',
+                        style: Theme.of(context).textTheme.bodyMedium,
                       ),
                     ),
                     const Gutter(),
