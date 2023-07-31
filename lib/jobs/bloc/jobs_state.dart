@@ -21,3 +21,12 @@ class JobsLoaded extends JobsState {
 }
 
 class JobLoading extends JobsState {}
+
+class JobCreated extends JobsState {
+  final Job job;
+
+  const JobCreated(this.job);
+
+  @override
+  List<Object> get props => [job];
+}

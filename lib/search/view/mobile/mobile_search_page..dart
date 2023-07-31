@@ -4,14 +4,13 @@ import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_gutter/flutter_gutter.dart';
 import 'package:go_router/go_router.dart';
 import 'package:honeybadger/core/constants.dart';
+import 'package:honeybadger/core/presentation/system/main_navigation_bar.dart';
 import 'package:honeybadger/core/presentation/system/mobile_sliver_app_bar.dart';
 import 'package:honeybadger/jobs/model/job.dart';
 import 'package:honeybadger/jobs/model/job_category.dart';
 import 'package:honeybadger/profile/model/user.dart';
 import 'package:honeybadger/search/view/widgets/job_card.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
-
-import '../../../core/presentation/system/main_navigation_bar.dart';
 
 class MobileSearchPage extends StatefulWidget {
   const MobileSearchPage({super.key});
@@ -35,6 +34,15 @@ class _MobileSearchPageState extends State<MobileSearchPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      floatingActionButton: inProduction == false
+          ? FloatingActionButton(
+              onPressed: () {
+                context.go('/create-project');
+              },
+              backgroundColor: Theme.of(context).primaryColor,
+              child: const Icon(Icons.add),
+            )
+          : const SizedBox(),
       bottomNavigationBar: const MainBottomNavBar(),
       body: CustomScrollView(
         slivers: [

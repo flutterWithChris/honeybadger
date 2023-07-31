@@ -1,4 +1,5 @@
 import 'package:flex_color_scheme/flex_color_scheme.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
@@ -54,3 +55,6 @@ String convertCentsToCurrency(int cents) {
   NumberFormat formatter = NumberFormat.simpleCurrency(decimalDigits: 2);
   return formatter.format(cents / 100);
 }
+
+bool get inProduction =>
+    kReleaseMode && !kProfileMode && !kDebugMode && !kIsWeb;

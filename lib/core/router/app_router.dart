@@ -4,6 +4,7 @@ import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:honeybadger/auth/bloc/auth_bloc.dart';
+import 'package:honeybadger/jobs/create-project/view/create_project.dart';
 import 'package:honeybadger/jobs/model/job.dart';
 import 'package:honeybadger/jobs/view/job_details_page/job_page.dart';
 import 'package:honeybadger/jobs/view/jobs_page/jobs_page.dart';
@@ -147,6 +148,11 @@ GoRouter goRouter = GoRouter(
           return StripeConfirmationPage(
             stripeAccountId: state.queryParameters['account_id']!,
           );
-        })
+        }),
+    GoRoute(
+      path: '/create-project',
+      name: 'create-project',
+      builder: (context, state) => const CreateProjectPage(),
+    )
   ],
 );
