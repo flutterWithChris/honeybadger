@@ -177,7 +177,6 @@ class _MobileSearchPageState extends State<MobileSearchPage> {
                               ),
                       ),
                       const Gutter(),
-
                       PageTransitionSwitcher(
                         duration: 400.ms,
                         // reverse: true,
@@ -265,6 +264,7 @@ class _MobileSearchPageState extends State<MobileSearchPage> {
                             : PopupMenuButton(
                                 key: const ValueKey('fixed'),
                                 elevation: 0.3,
+                                surfaceTintColor: Colors.transparent,
                                 //  icon: Icon(MdiIcons.filterVariant),
                                 onOpened: () {
                                   _minFixedPriceController.text =
@@ -348,193 +348,22 @@ class _MobileSearchPageState extends State<MobileSearchPage> {
             ),
           ),
           SliverList(
-            delegate: SliverChildListDelegate(
-              [
-                Padding(
-                  padding: const EdgeInsets.symmetric(
-                      horizontal: 8.0, vertical: 4.0),
-                  child: JobCard(
-                    job: Job(
-                      id: '1',
-                      client: User(
-                          id: 'ronswanson',
-                          firstName: 'John',
-                          lastName: 'Doe',
-                          city: 'San Francisco',
-                          state: 'CA',
-                          photoUrl: '',
-                          email: '',
-                          ratingCount: 4,
-                          rating: 4.5),
-                      title:
-                          'Create an app for a Veterinarian\'s office patients.',
-                      description:
-                          'Flutter Developer needed for a project. We are looking for someone who can work with us long term.\n\nCreating an app for a local veterinarian who\'d like a way for patients to check in and pay through their phone.',
-                      budget: 12000,
-                      duration: JobDuration.recurring,
-                      skills: ['Flutter', 'Dart', 'Firebase'],
-                      category: JobCategory(
-                        id: '1',
-                        name: 'Mobile App Development',
-                      ),
-                      paymentType: PaymentType.fixedPrice,
-                      visibility: JobVisibility.public,
-                      status: JobStatus.open,
-                      weekEstimate: 10,
-                      startDate: DateTime.now().add(const Duration(days: 7)),
-                      endDate: DateTime.now().add(const Duration(days: 82)),
-                      tags: ['mobile app', 'cross platform', 'veterinarian'],
+            delegate: SliverChildBuilderDelegate(
+              childCount: sampleJobCards.length,
+              (context, index) => Column(
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.only(bottom: 8.0),
+                    child: JobCard(
+                      job: sampleJobCards[index].job,
                     ),
                   ),
-                ),
-                Padding(
-                  padding: const EdgeInsets.symmetric(
-                      horizontal: 8.0, vertical: 4.0),
-                  child: JobCard(
-                    job: Job(
-                      id: '2',
-                      client: User(
-                          id: '1',
-                          firstName: 'John',
-                          lastName: 'Doe',
-                          city: 'San Francisco',
-                          state: 'CA',
-                          photoUrl: '',
-                          email: '',
-                          ratingCount: 4,
-                          rating: 4.5),
-                      title:
-                          'Graphic design work for a new mobile app we\'re working on.',
-                      description:
-                          'Needing a graphic designer to help us with a new mobile app we\'re working on. We\'re looking for someone who can work with us long term.\n\nCreating an app for a local veterinarian who\'d like a way for patients to check in and pay through their phone.',
-                      budget: 8000,
-                      duration: JobDuration.recurring,
-                      skills: ['Illustrator', 'Photoshop', 'Adobe XD'],
-                      category: JobCategory(
-                        id: '1',
-                        name: 'Graphic Design',
-                      ),
-                      paymentType: PaymentType.fixedPrice,
-                      visibility: JobVisibility.public,
-                      status: JobStatus.open,
-                      weekEstimate: 10,
-                      startDate: DateTime.now().add(const Duration(days: 7)),
-                      endDate: DateTime.now().add(const Duration(days: 82)),
-                      tags: ['mobile app', 'cross platform', 'veterinarian'],
-                    ),
+                  const Padding(
+                    padding: EdgeInsets.symmetric(vertical: 8.0),
+                    child: Divider(),
                   ),
-                ),
-                Padding(
-                  padding: const EdgeInsets.symmetric(
-                      horizontal: 8.0, vertical: 4.0),
-                  child: JobCard(
-                    job: Job(
-                      id: '3',
-                      client: User(
-                          id: '2',
-                          firstName: 'John',
-                          lastName: 'Doe',
-                          city: 'San Francisco',
-                          state: 'CA',
-                          photoUrl: '',
-                          email: '',
-                          ratingCount: 4,
-                          rating: 4.5),
-                      title: 'Create a landing page with Framer.',
-                      description:
-                          'Our company, , is looking for a Framer expert to help us create a landing page for our new product. Should include animations and be responsive. While also being SEO friendly.',
-                      budget: 10000,
-                      duration: JobDuration.recurring,
-                      skills: ['Framer', 'React', 'Javascript'],
-                      category: JobCategory(
-                        id: '1',
-                        name: 'Web Development',
-                      ),
-                      paymentType: PaymentType.fixedPrice,
-                      visibility: JobVisibility.public,
-                      status: JobStatus.open,
-                      weekEstimate: 10,
-                      startDate: DateTime.now().add(const Duration(days: 7)),
-                      endDate: DateTime.now().add(const Duration(days: 82)),
-                      tags: ['mobile app', 'cross platform', 'veterinarian'],
-                    ),
-                  ),
-                ),
-                Padding(
-                  padding: const EdgeInsets.symmetric(
-                      horizontal: 8.0, vertical: 4.0),
-                  child: JobCard(
-                    job: Job(
-                      id: '4',
-                      client: User(
-                          id: '3',
-                          firstName: 'John',
-                          lastName: 'Doe',
-                          city: 'San Francisco',
-                          state: 'CA',
-                          photoUrl: '',
-                          email: '',
-                          ratingCount: 4,
-                          rating: 4.5),
-                      title:
-                          'Create an app for a Veterinarian\'s office patients.',
-                      description:
-                          'Flutter Developer needed for a project. We are looking for someone who can work with us long term.\n\nCreating an app for a local veterinarian who\'d like a way for patients to check in and pay through their phone.',
-                      budget: 10000,
-                      duration: JobDuration.recurring,
-                      skills: ['Flutter', 'Dart', 'Firebase'],
-                      category: JobCategory(
-                        id: '1',
-                        name: 'Mobile App Development',
-                      ),
-                      paymentType: PaymentType.fixedPrice,
-                      visibility: JobVisibility.public,
-                      status: JobStatus.open,
-                      weekEstimate: 10,
-                      startDate: DateTime.now().add(const Duration(days: 7)),
-                      endDate: DateTime.now().add(const Duration(days: 82)),
-                      tags: ['mobile app', 'cross platform', 'veterinarian'],
-                    ),
-                  ),
-                ),
-                Padding(
-                  padding: const EdgeInsets.symmetric(
-                      horizontal: 8.0, vertical: 4.0),
-                  child: JobCard(
-                    job: Job(
-                      id: '5',
-                      client: User(
-                          id: '4',
-                          firstName: 'John',
-                          lastName: 'Doe',
-                          city: 'San Francisco',
-                          state: 'CA',
-                          photoUrl: '',
-                          email: '',
-                          ratingCount: 4,
-                          rating: 4.5),
-                      title:
-                          'Create an app for a Veterinarian\'s office patients.',
-                      description:
-                          'Flutter Developer needed for a project. We are looking for someone who can work with us long term.\n\nCreating an app for a local veterinarian who\'d like a way for patients to check in and pay through their phone.',
-                      budget: 10000,
-                      duration: JobDuration.recurring,
-                      skills: ['Flutter', 'Dart', 'Firebase'],
-                      category: JobCategory(
-                        id: '1',
-                        name: 'Mobile App Development',
-                      ),
-                      paymentType: PaymentType.fixedPrice,
-                      visibility: JobVisibility.public,
-                      status: JobStatus.open,
-                      weekEstimate: 10,
-                      startDate: DateTime.now().add(const Duration(days: 7)),
-                      endDate: DateTime.now().add(const Duration(days: 82)),
-                      tags: ['mobile app', 'cross platform', 'veterinarian'],
-                    ),
-                  ),
-                ),
-              ],
+                ],
+              ),
             ),
           )
         ],
@@ -542,3 +371,166 @@ class _MobileSearchPageState extends State<MobileSearchPage> {
     );
   }
 }
+
+List<JobCard> sampleJobCards = [
+  JobCard(
+    job: Job(
+      id: '1',
+      client: User(
+          id: 'ronswanson',
+          firstName: 'John',
+          lastName: 'Doe',
+          city: 'San Francisco',
+          state: 'CA',
+          photoUrl: '',
+          email: '',
+          ratingCount: 4,
+          rating: 4.5),
+      title: 'Create an app for a Veterinarian\'s office patients.',
+      description:
+          'Flutter Developer needed for a project. We are looking for someone who can work with us long term.\n\nCreating an app for a local veterinarian who\'d like a way for patients to check in and pay through their phone.',
+      budget: 12000,
+      duration: JobDuration.recurring,
+      skills: ['Flutter', 'Dart', 'Firebase'],
+      category: JobCategory(
+        id: '1',
+        name: 'Mobile App Development',
+      ),
+      paymentType: PaymentType.fixedPrice,
+      visibility: JobVisibility.public,
+      status: JobStatus.open,
+      weekEstimate: 10,
+      startDate: DateTime.now().add(const Duration(days: 7)),
+      endDate: DateTime.now().add(const Duration(days: 82)),
+      tags: ['mobile app', 'cross platform', 'veterinarian'],
+    ),
+  ),
+  JobCard(
+    job: Job(
+      id: '2',
+      client: User(
+          id: '1',
+          firstName: 'John',
+          lastName: 'Doe',
+          city: 'San Francisco',
+          state: 'CA',
+          photoUrl: '',
+          email: '',
+          ratingCount: 4,
+          rating: 4.5),
+      title: 'Graphic design work for a new mobile app we\'re working on.',
+      description:
+          'Needing a graphic designer to help us with a new mobile app we\'re working on. We\'re looking for someone who can work with us long term.\n\nCreating an app for a local veterinarian who\'d like a way for patients to check in and pay through their phone.',
+      budget: 8000,
+      duration: JobDuration.recurring,
+      skills: ['Illustrator', 'Photoshop', 'Adobe XD'],
+      category: JobCategory(
+        id: '1',
+        name: 'Graphic Design',
+      ),
+      paymentType: PaymentType.fixedPrice,
+      visibility: JobVisibility.public,
+      status: JobStatus.open,
+      weekEstimate: 10,
+      startDate: DateTime.now().add(const Duration(days: 7)),
+      endDate: DateTime.now().add(const Duration(days: 82)),
+      tags: ['mobile app', 'cross platform', 'veterinarian'],
+    ),
+  ),
+  JobCard(
+    job: Job(
+      id: '3',
+      client: User(
+          id: '2',
+          firstName: 'John',
+          lastName: 'Doe',
+          city: 'San Francisco',
+          state: 'CA',
+          photoUrl: '',
+          email: '',
+          ratingCount: 4,
+          rating: 4.5),
+      title: 'Create a landing page with Framer.',
+      description:
+          'Our company, , is looking for a Framer expert to help us create a landing page for our new product. Should include animations and be responsive. While also being SEO friendly.',
+      budget: 10000,
+      duration: JobDuration.recurring,
+      skills: ['Framer', 'React', 'Javascript'],
+      category: JobCategory(
+        id: '1',
+        name: 'Web Development',
+      ),
+      paymentType: PaymentType.fixedPrice,
+      visibility: JobVisibility.public,
+      status: JobStatus.open,
+      weekEstimate: 10,
+      startDate: DateTime.now().add(const Duration(days: 7)),
+      endDate: DateTime.now().add(const Duration(days: 82)),
+      tags: ['mobile app', 'cross platform', 'veterinarian'],
+    ),
+  ),
+  JobCard(
+    job: Job(
+      id: '4',
+      client: User(
+          id: '3',
+          firstName: 'John',
+          lastName: 'Doe',
+          city: 'San Francisco',
+          state: 'CA',
+          photoUrl: '',
+          email: '',
+          ratingCount: 4,
+          rating: 4.5),
+      title: 'Create an app for a Veterinarian\'s office patients.',
+      description:
+          'Flutter Developer needed for a project. We are looking for someone who can work with us long term.\n\nCreating an app for a local veterinarian who\'d like a way for patients to check in and pay through their phone.',
+      budget: 10000,
+      duration: JobDuration.recurring,
+      skills: ['Flutter', 'Dart', 'Firebase'],
+      category: JobCategory(
+        id: '1',
+        name: 'Mobile App Development',
+      ),
+      paymentType: PaymentType.fixedPrice,
+      visibility: JobVisibility.public,
+      status: JobStatus.open,
+      weekEstimate: 10,
+      startDate: DateTime.now().add(const Duration(days: 7)),
+      endDate: DateTime.now().add(const Duration(days: 82)),
+      tags: ['mobile app', 'cross platform', 'veterinarian'],
+    ),
+  ),
+  JobCard(
+    job: Job(
+      id: '5',
+      client: User(
+          id: '4',
+          firstName: 'John',
+          lastName: 'Doe',
+          city: 'San Francisco',
+          state: 'CA',
+          photoUrl: '',
+          email: '',
+          ratingCount: 4,
+          rating: 4.5),
+      title: 'Create an app for a Veterinarian\'s office patients.',
+      description:
+          'Flutter Developer needed for a project. We are looking for someone who can work with us long term.\n\nCreating an app for a local veterinarian who\'d like a way for patients to check in and pay through their phone.',
+      budget: 10000,
+      duration: JobDuration.recurring,
+      skills: ['Flutter', 'Dart', 'Firebase'],
+      category: JobCategory(
+        id: '1',
+        name: 'Mobile App Development',
+      ),
+      paymentType: PaymentType.fixedPrice,
+      visibility: JobVisibility.public,
+      status: JobStatus.open,
+      weekEstimate: 10,
+      startDate: DateTime.now().add(const Duration(days: 7)),
+      endDate: DateTime.now().add(const Duration(days: 82)),
+      tags: ['mobile app', 'cross platform', 'veterinarian'],
+    ),
+  ),
+];

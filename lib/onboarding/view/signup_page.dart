@@ -81,116 +81,114 @@ class _SignupPageState extends State<SignupPage> {
               if (state.status == SignupStatus.initial ||
                   state.status == SignupStatus.error) {
                 return Center(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Text(
-                        'Create Your Account.',
-                        style: Theme.of(context).textTheme.headlineLarge,
-                      ),
-                      const Gutter(),
-                      Column(
-                        children: [
-                          Platform.isIOS
-                              ? FilledButton.tonal(
-                                  style: ElevatedButton.styleFrom(
-                                    foregroundColor: Colors.white,
-                                    backgroundColor: Colors.black87,
+                  child: Theme(
+                    data: ThemeData(
+                        filledButtonTheme: FilledButtonThemeData(
+                            style: Theme.of(context)
+                                .filledButtonTheme
+                                .style
+                                ?.copyWith(
+                                  fixedSize: MaterialStateProperty.all<Size>(
+                                      const Size.fromWidth(260)),
+                                ))),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Text(
+                          'Create Your Account.',
+                          style: Theme.of(context).textTheme.headlineLarge,
+                        ),
+                        const Gutter(),
+                        Column(
+                          children: [
+                            Platform.isIOS
+                                ? FilledButton.tonalIcon(
+                                    style: ElevatedButton.styleFrom(
+                                      foregroundColor: Colors.white,
+                                      backgroundColor: Colors.black87,
+                                    ),
+                                    onPressed: () {
+                                      context
+                                          .read<SignupCubit>()
+                                          .signupWithApple();
+                                    },
+                                    label: const Text('Continue with Apple'),
+                                    icon: const Icon(FontAwesomeIcons.apple,
+                                        size: 20.0),
+                                  )
+                                : FilledButton.tonalIcon(
+                                    onPressed: () {
+                                      context
+                                          .read<SignupCubit>()
+                                          .signupWithGoogle();
+                                    },
+                                    label: const Text('Continue with Google'),
+                                    icon: const Icon(FontAwesomeIcons.google,
+                                        size: 20.0),
                                   ),
-                                  onPressed: () {
-                                    context
-                                        .read<SignupCubit>()
-                                        .signupWithApple();
-                                  },
-                                  child: const Icon(FontAwesomeIcons.apple,
-                                      size: 20.0),
-                                )
-                              : FilledButton.tonal(
-                                  onPressed: () {
-                                    context
-                                        .read<SignupCubit>()
-                                        .signupWithGoogle();
-                                  },
-                                  child: const Icon(FontAwesomeIcons.google,
-                                      size: 20.0),
-                                ),
-                          const Gutter(),
-                          Theme(
-                            data: Theme.of(context).copyWith(
-                                filledButtonTheme: FilledButtonThemeData(
-                                    style: ButtonStyle(
-                              minimumSize: MaterialStateProperty.all(
-                                  const Size(84.0, 40.0)),
-                            ))),
-                            child: Row(
-                              mainAxisSize: MainAxisSize.min,
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                kIsWeb || Platform.isAndroid
-                                    ? FilledButton.tonal(
-                                        style: ElevatedButton.styleFrom(
-                                          foregroundColor: Colors.white,
-                                          backgroundColor: Colors.black87,
-                                        ),
-                                        onPressed: () {
-                                          context
-                                              .read<SignupCubit>()
-                                              .signupWithApple();
-                                        },
-                                        child: const Icon(
-                                            FontAwesomeIcons.apple,
-                                            size: 20.0),
-                                      )
-                                    : FilledButton.tonal(
-                                        onPressed: () {
-                                          context
-                                              .read<SignupCubit>()
-                                              .signupWithGoogle();
-                                        },
-                                        child: const Icon(
-                                            FontAwesomeIcons.google,
-                                            size: 20.0),
-                                      ),
-                                const GutterSmall(),
-                                FilledButton.tonal(
-                                  style: FilledButton.styleFrom(
-                                      backgroundColor: FlexColor
-                                          .flutterDash.dark.secondaryContainer),
-                                  onPressed: () {
-                                    context
-                                        .read<SignupCubit>()
-                                        .signupWithGithub();
-                                  },
-                                  child: const Icon(FontAwesomeIcons.github,
-                                      color: Colors.white, size: 20.0),
-                                ),
-                              ],
+                            kIsWeb || Platform.isAndroid
+                                ? FilledButton.tonalIcon(
+                                    style: ElevatedButton.styleFrom(
+                                      foregroundColor: Colors.white,
+                                      backgroundColor: Colors.black87,
+                                    ),
+                                    onPressed: () {
+                                      context
+                                          .read<SignupCubit>()
+                                          .signupWithApple();
+                                    },
+                                    label: const Text('Continue with Apple'),
+                                    icon: const Icon(FontAwesomeIcons.apple,
+                                        size: 20.0),
+                                  )
+                                : FilledButton.tonalIcon(
+                                    onPressed: () {
+                                      context
+                                          .read<SignupCubit>()
+                                          .signupWithGoogle();
+                                    },
+                                    label: const Text('Continue with Google'),
+                                    icon: const Icon(FontAwesomeIcons.google,
+                                        size: 20.0),
+                                  ),
+                            FilledButton.tonalIcon(
+                              style: FilledButton.styleFrom(
+                                  backgroundColor: FlexColor
+                                      .flutterDash.dark.secondaryContainer),
+                              onPressed: () {
+                                context.read<SignupCubit>().signupWithGithub();
+                              },
+                              label: const Text(
+                                'Continue with Github',
+                                style: TextStyle(color: Colors.white),
+                              ),
+                              icon: const Icon(FontAwesomeIcons.github,
+                                  color: Colors.white, size: 20.0),
                             ),
-                          ),
-                        ],
-                      ),
-
-                      const GutterSmall(),
-                      // ElevatedButton.icon(
-                      //     onPressed: () {
-                      //       context.read<OnboardingBloc>().add(StartOnboarding(
-                      //           User(
-                      //               userType:
-                      //                   onboardingState.user!.userType!)));
-                      //     },
-                      //     icon: const Icon(FontAwesomeIcons.magicWandSparkles,
-                      //         size: 16.0),
-                      //     label: const Text('Send a Magic Link'),
-                      //     style: ElevatedButton.styleFrom(elevation: 0.6)),
-                      // const GutterTiny(),
-                      TextButton(
-                          onPressed: () {},
-                          child:
-                              const Text('Already have an account? Sign in.')),
-                      const GutterSmall(),
-                      const UserTypeInputChip(),
-                    ],
+                          ],
+                        ),
+                        // const GutterSmall(),
+                        // ElevatedButton.icon(
+                        //     onPressed: () {
+                        //       context.read<OnboardingBloc>().add(StartOnboarding(
+                        //           User(
+                        //               userType:
+                        //                   onboardingState.user!.userType!)));
+                        //     },
+                        //     icon: const Icon(FontAwesomeIcons.magicWandSparkles,
+                        //         size: 16.0),
+                        //     label: const Text('Send a Magic Link'),
+                        //     style: ElevatedButton.styleFrom(elevation: 0.6)),
+                        // const GutterTiny(),
+                        TextButton(
+                            onPressed: () {},
+                            child: const Text(
+                                'Already have an account? Sign in.')),
+                        //   const GutterSmall(),
+                        const UserTypeInputChip(),
+                      ],
+                    ),
                   ),
                 );
               }

@@ -63,7 +63,7 @@ class _MainBottomNavBarState extends State<MainBottomNavBar> {
           NavigationDestination(
             icon: Badge(
               label: const Text('1'),
-              backgroundColor: Theme.of(context).colorScheme.tertiaryContainer,
+              backgroundColor: Theme.of(context).colorScheme.primary,
               child: Icon(MdiIcons.cash),
             ),
             selectedIcon: Icon(MdiIcons.cash),

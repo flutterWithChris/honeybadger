@@ -1,6 +1,5 @@
 import 'dart:async';
 
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flex_color_scheme/flex_color_scheme.dart';
 import 'package:flutter/foundation.dart';
@@ -23,7 +22,7 @@ import 'package:honeybadger/profile/bloc/profile_bloc.dart';
 import 'package:honeybadger/profile/repository/user_respository.dart';
 import 'package:honeybadger/proposals/bloc/proposal_bloc.dart';
 import 'package:honeybadger/proposals/repo/proposal_repository.dart';
-import 'package:stream_chat_flutter/stream_chat_flutter.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:uni_links/uni_links.dart';
 
 void main() async {
@@ -33,16 +32,12 @@ void main() async {
   }
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
 
-  await FirebaseAuth.instance.signOut();
-  StreamChatClient client = StreamChatClient(
-    kIsWeb
-        ? const String.fromEnvironment('STREAM_API_KEY')
-        : dotenv.get('STREAM_API_KEY'),
-    logLevel: Level.INFO,
-  );
+  // await FirebaseAuth.instance.signOut();
 
   runApp(const MyApp());
 }
+
+StreamSubscription? _sub;
 
 class MyApp extends StatefulWidget {
   const MyApp({super.key});
@@ -52,8 +47,6 @@ class MyApp extends StatefulWidget {
 }
 
 class _MyAppState extends State<MyApp> {
-  StreamSubscription? _sub;
-
   @override
   initState() {
     super.initState();
@@ -69,21 +62,29 @@ class _MyAppState extends State<MyApp> {
     });
 
     // Handle links that come in while the app is open
-    linkStream.listen((link) {
+    _sub = linkStream.listen((link) {
       if (link != null) {
         handleLink(link);
       }
     });
   }
 
+  @override
+  void dispose() {
+    _sub?.cancel();
+    super.dispose();
+  }
+
 // Your handler function
-  void handleLink(String link) {
+  void handleLink(String link) async {
     // Parse the link
     var uri = Uri.parse(link);
-
+    print('Link: $link');
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    bool paymentSetupComplete = prefs.getBool('paymentSetupComplete') ?? false;
     // Use GoRouter to navigate to the path in the deep link
-    if (uri.path == 'return') {
-      goRouter.go('/onboarding');
+    if (link.contains('redirect') && paymentSetupComplete == false) {
+      goRouter.go('/stripe-confirmation?${uri.query}');
     }
   }
 
@@ -123,7 +124,10 @@ class _MyAppState extends State<MyApp> {
           ),
           BlocProvider(
               lazy: false,
-              create: (context) => ProfileBloc()..add(LoadProfile())),
+              create: (context) => ProfileBloc(
+                  userRepository: context.read<UserRepository>(),
+                  authBloc: context.read<AuthBloc>())
+                ..add(LoadProfile())),
           BlocProvider<PaymentHistoryBloc>(
             create: (context) => PaymentHistoryBloc()
               ..add(const FetchPaymentHistory(userId: 'userId')),
@@ -131,7 +135,7 @@ class _MyAppState extends State<MyApp> {
           BlocProvider<MessagesBloc>(
             create: (context) => MessagesBloc(
               messageRepository: context.read<MessageRepository>(),
-            )..add(LoadMessages()),
+            ),
           ),
           BlocProvider<ProposalBloc>(
             create: (context) => ProposalBloc(
@@ -139,195 +143,186 @@ class _MyAppState extends State<MyApp> {
                 proposalRepository: context.read<ProposalRepository>()),
           ),
           BlocProvider(
-            create: (context) => PaymentsBloc(
-                paymentsRepository: context.read<PaymentsRepository>())
-              ..add(
-                LoadPayments(),
-              ),
-          )
+              lazy: false,
+              create: (context) => PaymentsBloc(
+                  profileBloc: context.read<ProfileBloc>(),
+                  paymentsRepository: context.read<PaymentsRepository>()))
         ],
         child: MaterialApp.router(
           scaffoldMessengerKey: scaffoldKey,
           routeInformationParser: goRouter.routeInformationParser,
           routerDelegate: goRouter.routerDelegate,
           routeInformationProvider: goRouter.routeInformationProvider,
-
           title: 'Honeybadger ',
-          builder: (context, child) => StreamChat(
-              client: StreamChatClient(
-                dotenv.env['STREAM_API_KEY']!,
-                logLevel: Level.INFO,
-              ),
-              child: child),
           debugShowCheckedModeBanner: false,
-          // Theme config for FlexColorScheme version 7.1.x. Make sure you use
-          // same or higher package version, but still same major version. If you
-          // use a lower package version, some properties may not be supported.
-          // In that case remove them after copying this theme to your app.
+// Theme config for FlexColorScheme version 7.2.x. Make sure you use
+// same or higher package version, but still same major version. If you
+// use a lower package version, some properties may not be supported.
+// In that case remove them after copying this theme to your app.
           theme: FlexThemeData.light(
-            scheme: FlexScheme.flutterDash,
-            surfaceMode: FlexSurfaceMode.highBackgroundLowScaffold,
-            blendLevel: 1,
+            colors: const FlexSchemeColor(
+              primary: Color(0xFF1E2223),
+              primaryContainer: Color(0xffd0e4ff),
+              secondary: Color(0xffac3306),
+              secondaryContainer: Color(0xff97f0ff),
+              tertiary: Color(0xff006875),
+              tertiaryContainer: Color(0xff95f0ff),
+              appBarColor: Color(0xff97f0ff),
+              error: Color(0xffb00020),
+            ),
+            surfaceMode: FlexSurfaceMode.highScaffoldLowSurface,
+            blendLevel: 22,
             appBarStyle: FlexAppBarStyle.background,
-            bottomAppBarElevation: 2.0,
-            subThemesData: FlexSubThemesData(
-              cardElevation: 0.618,
-              defaultRadius: 12.0,
-              buttonMinSize: const Size(200, 40),
-              filledButtonTextStyle: MaterialStatePropertyAll(
-                  Theme.of(context).textTheme.titleMedium),
-              blendOnLevel: 6,
+            bottomAppBarElevation: 1.0,
+            lightIsWhite: true,
+
+            subThemesData: const FlexSubThemesData(
+              blendOnLevel: 10,
               blendOnColors: false,
               useTextTheme: true,
               useM2StyleDividerInM3: true,
-              adaptiveElevationShadowsBack:
-                  const FlexAdaptive.excludeWebAndroidFuchsia(),
-              adaptiveAppBarScrollUnderOff:
-                  const FlexAdaptive.excludeWebAndroidFuchsia(),
-              defaultRadiusAdaptive: 10.0,
-              adaptiveRadius: const FlexAdaptive.excludeWebAndroidFuchsia(),
+              splashType: FlexSplashType.inkRipple,
+              defaultRadius: 16.0,
               elevatedButtonSchemeColor: SchemeColor.onPrimaryContainer,
               elevatedButtonSecondarySchemeColor: SchemeColor.primaryContainer,
-              outlinedButtonOutlineSchemeColor: SchemeColor.primary,
-              toggleButtonsBorderSchemeColor: SchemeColor.primary,
               segmentedButtonSchemeColor: SchemeColor.primary,
-              segmentedButtonBorderSchemeColor: SchemeColor.primary,
-              unselectedToggleIsColored: true,
-              sliderValueTinted: true,
-              inputDecoratorSchemeColor: SchemeColor.primary,
-              inputDecoratorBackgroundAlpha: 19,
               inputDecoratorUnfocusedHasBorder: false,
-              inputDecoratorFocusedBorderWidth: 1.0,
-              inputDecoratorPrefixIconSchemeColor: SchemeColor.primary,
-              fabUseShape: true,
-              fabAlwaysCircular: true,
               fabSchemeColor: SchemeColor.tertiary,
-              cardRadius: 24.0,
               popupMenuRadius: 6.0,
-              popupMenuElevation: 3.0,
-              dialogRadius: 18.0,
-              datePickerDialogRadius: 18.0,
-              timePickerDialogRadius: 18.0,
-              appBarScrolledUnderElevation: 1.0,
-              drawerElevation: 1.0,
+              popupMenuElevation: 4.0,
+              dialogElevation: 3.0,
+              dialogRadius: 20.0,
+              snackBarBackgroundSchemeColor: SchemeColor.inverseSurface,
               drawerIndicatorSchemeColor: SchemeColor.primary,
-              bottomSheetRadius: 18.0,
+              bottomSheetRadius: 20.0,
               bottomSheetElevation: 2.0,
-              bottomSheetModalElevation: 4.0,
+              bottomSheetModalElevation: 3.0,
               bottomNavigationBarMutedUnselectedLabel: false,
               bottomNavigationBarMutedUnselectedIcon: false,
+              bottomNavigationBarBackgroundSchemeColor:
+                  SchemeColor.surfaceVariant,
               menuRadius: 6.0,
-              menuElevation: 3.0,
+              menuElevation: 4.0,
               menuBarRadius: 0.0,
               menuBarElevation: 1.0,
-              menuBarShadowColor: const Color(0x00000000),
               navigationBarSelectedLabelSchemeColor: SchemeColor.primary,
               navigationBarMutedUnselectedLabel: false,
-              navigationBarSelectedIconSchemeColor: SchemeColor.onPrimary,
+              navigationBarSelectedIconSchemeColor: SchemeColor.background,
               navigationBarMutedUnselectedIcon: false,
               navigationBarIndicatorSchemeColor: SchemeColor.primary,
               navigationBarIndicatorOpacity: 1.00,
+              navigationBarBackgroundSchemeColor: SchemeColor.background,
               navigationBarElevation: 1.0,
               navigationRailSelectedLabelSchemeColor: SchemeColor.primary,
               navigationRailMutedUnselectedLabel: false,
-              navigationRailSelectedIconSchemeColor: SchemeColor.onPrimary,
+              navigationRailSelectedIconSchemeColor: SchemeColor.background,
               navigationRailMutedUnselectedIcon: false,
               navigationRailIndicatorSchemeColor: SchemeColor.primary,
               navigationRailIndicatorOpacity: 1.00,
-              navigationRailBackgroundSchemeColor: SchemeColor.surface,
             ),
-            useMaterial3ErrorColors: true,
+            keyColors: const FlexKeyColors(
+              useTertiary: true,
+              keepPrimary: true,
+              keepSecondary: true,
+              keepTertiary: true,
+            ),
+            tones: FlexTones.highContrast(Brightness.light)
+                .onMainsUseBW()
+                .onSurfacesUseBW()
+                .surfacesUseBW(),
             visualDensity: FlexColorScheme.comfortablePlatformDensity,
             useMaterial3: true,
+            swapLegacyOnMaterial3: true,
             // To use the Playground font, add GoogleFonts package and uncomment
             // fontFamily: GoogleFonts.notoSans().fontFamily,
           ),
           darkTheme: FlexThemeData.dark(
-            scheme: FlexScheme.flutterDash,
-            surfaceMode: FlexSurfaceMode.highBackgroundLowScaffold,
-            blendLevel: 2,
+            scaffoldBackground: const Color.fromARGB(255, 18, 18, 18),
+            background: const Color.fromARGB(255, 18, 18, 18),
+            colors: const FlexSchemeColor(
+              primary: Colors.white,
+              primaryContainer: Color(0xffffffff),
+              secondary: Color(0xff00daf1),
+              secondaryContainer: Color(0xffffffff),
+              tertiary: Color(0xffffffff),
+              tertiaryContainer: Color(0xff004e59),
+              appBarColor: Color(0xffffffff),
+              error: Color(0xffcf6679),
+            ),
+            //surface: Colors.transparent,
+            surfaceMode: FlexSurfaceMode.highScaffoldLowSurface,
+            blendLevel: 18,
             appBarStyle: FlexAppBarStyle.background,
             bottomAppBarElevation: 2.0,
+            // darkIsTrueBlack: true,
             subThemesData: const FlexSubThemesData(
-              cardElevation: 0.618,
-              defaultRadius: 24.0,
-              cardRadius: 24.0,
-              buttonMinSize: Size(200, 40),
-              blendOnLevel: 8,
+              blendOnLevel: 20,
               useTextTheme: true,
               useM2StyleDividerInM3: true,
-              adaptiveElevationShadowsBack: FlexAdaptive.all(),
-              adaptiveAppBarScrollUnderOff:
-                  FlexAdaptive.excludeWebAndroidFuchsia(),
-              defaultRadiusAdaptive: 10.0,
-              adaptiveRadius: FlexAdaptive.all(),
+              splashType: FlexSplashType.inkRipple,
+              defaultRadius: 16.0,
               elevatedButtonSchemeColor: SchemeColor.onPrimaryContainer,
               elevatedButtonSecondarySchemeColor: SchemeColor.primaryContainer,
-              outlinedButtonOutlineSchemeColor: SchemeColor.primary,
-              toggleButtonsBorderSchemeColor: SchemeColor.primary,
               segmentedButtonSchemeColor: SchemeColor.primary,
-              segmentedButtonBorderSchemeColor: SchemeColor.primary,
-              unselectedToggleIsColored: true,
-              sliderValueTinted: true,
               inputDecoratorSchemeColor: SchemeColor.primary,
-              inputDecoratorBackgroundAlpha: 22,
+              inputDecoratorBackgroundAlpha: 28,
               inputDecoratorUnfocusedHasBorder: false,
-              inputDecoratorFocusedBorderWidth: 1.0,
-              inputDecoratorPrefixIconSchemeColor: SchemeColor.primary,
-              fabUseShape: true,
-              fabAlwaysCircular: true,
               fabSchemeColor: SchemeColor.tertiary,
               popupMenuRadius: 6.0,
-              popupMenuElevation: 3.0,
-              dialogRadius: 18.0,
-              datePickerDialogRadius: 18.0,
-              timePickerDialogRadius: 18.0,
-              appBarScrolledUnderElevation: 3.0,
-              drawerElevation: 1.0,
+              popupMenuElevation: 4.0,
+              dialogElevation: 3.0,
+              dialogRadius: 20.0,
+              snackBarBackgroundSchemeColor: SchemeColor.inverseSurface,
               drawerIndicatorSchemeColor: SchemeColor.primary,
-              bottomSheetRadius: 18.0,
+              bottomSheetRadius: 20.0,
               bottomSheetElevation: 2.0,
-              bottomSheetModalElevation: 4.0,
+              bottomSheetModalElevation: 3.0,
               bottomNavigationBarMutedUnselectedLabel: false,
               bottomNavigationBarMutedUnselectedIcon: false,
+              bottomNavigationBarBackgroundSchemeColor:
+                  SchemeColor.surfaceVariant,
               menuRadius: 6.0,
-              menuElevation: 3.0,
+              menuElevation: 4.0,
               menuBarRadius: 0.0,
               menuBarElevation: 1.0,
-              menuBarShadowColor: Color(0x00000000),
               navigationBarSelectedLabelSchemeColor: SchemeColor.primary,
               navigationBarMutedUnselectedLabel: false,
-              navigationBarSelectedIconSchemeColor: SchemeColor.onPrimary,
+              navigationBarSelectedIconSchemeColor: SchemeColor.background,
               navigationBarMutedUnselectedIcon: false,
               navigationBarIndicatorSchemeColor: SchemeColor.primary,
               navigationBarIndicatorOpacity: 1.00,
+              navigationBarBackgroundSchemeColor: SchemeColor.background,
               navigationBarElevation: 1.0,
               navigationRailSelectedLabelSchemeColor: SchemeColor.primary,
               navigationRailMutedUnselectedLabel: false,
-              navigationRailSelectedIconSchemeColor: SchemeColor.onPrimary,
+              navigationRailSelectedIconSchemeColor: SchemeColor.background,
               navigationRailMutedUnselectedIcon: false,
               navigationRailIndicatorSchemeColor: SchemeColor.primary,
               navigationRailIndicatorOpacity: 1.00,
-              navigationRailBackgroundSchemeColor: SchemeColor.surface,
             ),
-            useMaterial3ErrorColors: true,
+            keyColors: const FlexKeyColors(
+              useTertiary: true,
+              keepPrimary: true,
+              keepTertiary: true,
+              keepPrimaryContainer: true,
+              keepSecondaryContainer: true,
+            ),
+            tones: FlexTones.highContrast(Brightness.dark)
+                .onMainsUseBW()
+                .onSurfacesUseBW(),
+            //  .surfacesUseBW(),
             visualDensity: FlexColorScheme.comfortablePlatformDensity,
             useMaterial3: true,
+            swapLegacyOnMaterial3: true,
             // To use the Playground font, add GoogleFonts package and uncomment
             // fontFamily: GoogleFonts.notoSans().fontFamily,
           ),
-          // If you do not have a themeMode switch, uncomment this line
-          // to let the device system mode control the theme mode:
-          // themeMode: ThemeMode.system,
+// If you do not have a themeMode switch, uncomment this line
+// to let the device system mode control the theme mode:
+// themeMode: ThemeMode.system,
         ),
       ),
     );
-  }
-
-  @override
-  void dispose() {
-    if (_sub != null) _sub?.cancel();
-    super.dispose();
   }
 }
 

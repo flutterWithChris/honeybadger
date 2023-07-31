@@ -1,17 +1,22 @@
 import 'package:animations/animations.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
+import 'package:honeybadger/auth/bloc/auth_bloc.dart';
 import 'package:honeybadger/jobs/model/job.dart';
 import 'package:honeybadger/jobs/view/job_details_page/job_page.dart';
 import 'package:honeybadger/jobs/view/jobs_page/jobs_page.dart';
 import 'package:honeybadger/message/channel_page.dart';
 import 'package:honeybadger/message/view/messages_page.dart';
+import 'package:honeybadger/onboarding/stripe_confirmation.dart';
 import 'package:honeybadger/onboarding/view/onboarding_page.dart';
 import 'package:honeybadger/onboarding/view/pages/welcome/welcome_page.dart';
+import 'package:honeybadger/payments/bloc/payments_bloc.dart';
 import 'package:honeybadger/payments/details/payment_details.dart';
-import 'package:honeybadger/payments/model/payment.dart';
+import 'package:honeybadger/payments/model/balance_transaction.dart';
 import 'package:honeybadger/payments/view/payments_page.dart';
+import 'package:honeybadger/profile/bloc/profile_bloc.dart';
 import 'package:honeybadger/profile/model/user.dart';
 import 'package:honeybadger/profile/view/profile_page.dart';
 import 'package:honeybadger/proposals/create/view/create_proposal_page.dart';
@@ -24,11 +29,20 @@ GoRouter goRouter = GoRouter(
   observers: [HeroController()],
   initialLocation: '/search',
   redirect: (context, state) async {
+    bool loggedIn =
+        context.read<AuthBloc>().state.status == AuthStatus.authenticated;
+    print('Logged in: $loggedIn');
     SharedPreferences prefs = await SharedPreferences.getInstance();
     bool onboarded = true;
-    // onboarded = prefs.getBool('onboarded') ?? false;
 
+    // onboarded = prefs.getBool('onboarded') ?? false;
+    if (loggedIn == false) {
+      return '/onboarding';
+    }
     if (onboarded == false) {
+      if (state.location.contains('stripe-confirmation')) {
+        return null;
+      }
       return '/onboarding';
     }
 
@@ -102,17 +116,37 @@ GoRouter goRouter = GoRouter(
     GoRoute(
         path: '/payments',
         name: 'payments',
-        builder: (context, state) => const PaymentsPage(),
+        builder: (context, state) {
+          // if (context.read<ProfileBloc>().state is ProfileLoaded == false) {
+          //   context.read<ProfileBloc>().add(LoadProfile());
+          // } if (context.read<PaymentsBloc>().add(LoadPayments(user: )))
+          return const PaymentsPage();
+        },
         routes: [
           GoRoute(
-              path: 'details/:id',
-              name: 'details',
-              builder: (context, state) =>
-                  PaymentDetailsPage(payment: state.extra as Payment)),
+            path: 'details/:id',
+            name: 'details',
+            builder: (context, state) {
+              return PaymentDetailsPage(
+                  balanceTransaction: state.extra as BalanceTransaction);
+            },
+          )
         ]),
     GoRoute(
         path: '/profile',
         name: 'profile',
-        builder: (context, state) => const ProfilePage())
+        builder: (context, state) => const ProfilePage()),
+    GoRoute(
+        path: '/stripe-confirmation',
+        name: 'stripe-confirmation',
+        builder: (context, state) {
+          if (context.read<ProfileBloc>().state.user != null) {
+            context.read<PaymentsBloc>().add(
+                LoadPayments(user: context.read<ProfileBloc>().state.user!));
+          }
+          return StripeConfirmationPage(
+            stripeAccountId: state.queryParameters['account_id']!,
+          );
+        })
   ],
 );

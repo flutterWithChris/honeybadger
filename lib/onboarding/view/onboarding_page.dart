@@ -1,13 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_gutter/flutter_gutter.dart';
-import 'package:go_router/go_router.dart';
 import 'package:honeybadger/onboarding/view/pages/payment_setup.dart';
 import 'package:honeybadger/onboarding/view/pages/profile_setup/profile_setup.dart';
-import 'package:honeybadger/onboarding/view/signup_page.dart';
 import 'package:honeybadger/onboarding/view/pages/skills_and_experience.dart';
 import 'package:honeybadger/onboarding/view/pages/welcome/welcome_page.dart';
+import 'package:honeybadger/onboarding/view/signup_page.dart';
 import 'package:honeybadger/profile/model/user.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import 'package:smooth_page_indicator/smooth_page_indicator.dart';
 
 class OnboardingPage extends StatefulWidget {
@@ -35,6 +32,7 @@ class _OnboardingPageState extends State<OnboardingPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      resizeToAvoidBottomInset: true,
       extendBody: true,
       bottomNavigationBar: IgnorePointer(
         ignoring: _currentPage == 0,
@@ -50,21 +48,21 @@ class _OnboardingPageState extends State<OnboardingPage> {
               ),
             ),
             child: Container(
-              color: Theme.of(context).appBarTheme.backgroundColor,
+              //  color: Theme.of(context).appBarTheme.backgroundColor,
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Flexible(
-                    child: TextButton(
-                        onPressed: () async {
-                          await _pageController.previousPage(
-                            duration: const Duration(milliseconds: 500),
-                            curve: Curves.ease,
-                          );
-                        },
-                        child: const Text('Back')),
-                  ),
-                  const Gutter(),
+                  // Flexible(
+                  //   child: TextButton(
+                  //       onPressed: () async {
+                  //         await _pageController.previousPage(
+                  //           duration: const Duration(milliseconds: 500),
+                  //           curve: Curves.ease,
+                  //         );
+                  //       },
+                  //       child: const Text('Back')),
+                  // ),
+                  // const Gutter(),
                   SizedBox(
                     height: 80,
                     child: SmoothPageIndicator(
@@ -80,27 +78,27 @@ class _OnboardingPageState extends State<OnboardingPage> {
                       ),
                     ),
                   ),
-                  const Gutter(),
-                  Flexible(
-                    child: TextButton(
-                        onPressed: () async {
-                          if (_currentPage == 4) {
-                            SharedPreferences prefs =
-                                await SharedPreferences.getInstance();
-                            prefs.setBool('onboarded', true).then((value) {
-                              context.go('/search');
-                              return value;
-                            });
-                            return;
-                          } else {
-                            await _pageController.nextPage(
-                              duration: const Duration(milliseconds: 500),
-                              curve: Curves.ease,
-                            );
-                          }
-                        },
-                        child: Text(_currentPage < 4 ? 'Next' : 'Finish')),
-                  )
+                  // const Gutter(),
+                  // Flexible(
+                  //   child: TextButton(
+                  //       onPressed: () async {
+                  //         if (_currentPage == 4) {
+                  //           SharedPreferences prefs =
+                  //               await SharedPreferences.getInstance();
+                  //           prefs.setBool('onboarded', true).then((value) {
+                  //             context.go('/search');
+                  //             return value;
+                  //           });
+                  //           return;
+                  //         } else {
+                  //           await _pageController.nextPage(
+                  //             duration: const Duration(milliseconds: 500),
+                  //             curve: Curves.ease,
+                  //           );
+                  //         }
+                  //       },
+                  //       child: Text(_currentPage < 4 ? 'Next' : 'Finish')),
+                  // )
                 ],
               ),
             ),
@@ -122,7 +120,7 @@ class _OnboardingPageState extends State<OnboardingPage> {
                 //         pageController: _pageController,
                 //         userType: widget.userType,
                 //       )
-                //     :
+                //    :
                 SignupPage(
                   pageController: _pageController,
                   userType: widget.userType,

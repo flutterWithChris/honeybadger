@@ -1,13 +1,15 @@
+import 'package:flex_color_scheme/flex_color_scheme.dart';
 import 'package:flutter/material.dart';
-import 'package:honeybadger/payments/model/payment.dart';
+import 'package:honeybadger/payments/model/balance_transaction.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 
 import '../../../core/constants.dart';
 
 class PaymentStatusChip extends StatelessWidget {
-  final Payment payment;
+  final BalanceTransaction balanceTransaction;
   final EdgeInsets? padding;
-  const PaymentStatusChip({required this.payment, this.padding, super.key});
+  const PaymentStatusChip(
+      {required this.balanceTransaction, this.padding, super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -15,20 +17,20 @@ class PaymentStatusChip extends StatelessWidget {
       padding:
           padding ?? const EdgeInsets.symmetric(horizontal: 8.0, vertical: 4.0),
       shape: const StadiumBorder(),
-      backgroundColor: payment.status! == PaymentStatus.paid
+      backgroundColor: balanceTransaction.status! == 'paid'
           ? Colors.green[500]
-          : payment.status! == PaymentStatus.pending
+          : balanceTransaction.status! == 'pending'
               ? Theme.of(context).colorScheme.tertiaryContainer
               : Colors.red[500],
       visualDensity: VisualDensity.compact,
       side: BorderSide.none,
-      avatar: payment.status == PaymentStatus.paid
+      avatar: balanceTransaction.status! == 'paid'
           ? Icon(
               MdiIcons.checkBold,
               size: 14.0,
               color: Colors.white,
             )
-          : payment.status == PaymentStatus.pending
+          : balanceTransaction.status! == 'pending'
               ? const Icon(
                   Icons.pending,
                   size: 14.0,
@@ -40,7 +42,7 @@ class PaymentStatusChip extends StatelessWidget {
                   color: Colors.white,
                 ),
       label: Text(
-        parseEnumName(payment.status.toString()),
+        parseEnumName(balanceTransaction.status.toString().capitalize),
         style: Theme.of(context).textTheme.bodyMedium?.copyWith(
               fontWeight: FontWeight.bold,
               color: Colors.white,

@@ -34,6 +34,16 @@ class UserRepository extends BaseUserRepository {
         .then((doc) => User.fromDocument(doc));
   }
 
+  /// Get user as a stream
+  @override
+  Stream<User> getUserAsStream(String userId) {
+    return _firebaseFirestore
+        .collection('users')
+        .doc(userId)
+        .snapshots()
+        .map((doc) => User.fromDocument(doc));
+  }
+
   @override
   Future<void> updateUser(User user) {
     return _firebaseFirestore

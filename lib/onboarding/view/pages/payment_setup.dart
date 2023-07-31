@@ -93,7 +93,7 @@ class PaymentSetupPage extends StatelessWidget {
                         ],
                       );
                     }
-                    if (state is PaymentsLoaded) {
+                    if (state is PaymentsLoaded || state is PaymentsInitial) {
                       return FractionallySizedBox(
                         widthFactor:
                             constraints.maxWidth > tabletWidthConstraint
@@ -120,27 +120,6 @@ class PaymentSetupPage extends StatelessWidget {
                   },
                 ),
                 const GutterLarge(),
-                Card(
-                  child: Padding(
-                    padding: const EdgeInsets.all(16.0),
-                    child: Text.rich(
-                      TextSpan(
-                        text: 'Important: ',
-                        style: Theme.of(context)
-                            .textTheme
-                            .bodyLarge
-                            ?.copyWith(fontWeight: FontWeight.bold),
-                        children: [
-                          TextSpan(
-                              text:
-                                  'Since payments are made directly to you, this means you are responsible for reporting your income via 1099 to the IRS based on your state guidelines.',
-                              style: Theme.of(context).textTheme.bodyLarge)
-                        ],
-                      ),
-                      textAlign: TextAlign.center,
-                    ),
-                  ),
-                ),
               ],
             ),
           ),

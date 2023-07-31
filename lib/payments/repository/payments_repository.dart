@@ -6,6 +6,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_stripe/flutter_stripe.dart';
 import 'package:honeybadger/core/constants.dart';
+import 'package:honeybadger/payments/model/balance.dart';
+import 'package:honeybadger/payments/model/balance_transaction.dart';
+import 'package:honeybadger/payments/model/stripe_account.dart';
 import 'package:http/http.dart' as http;
 import 'package:url_launcher/url_launcher.dart';
 
@@ -28,24 +31,102 @@ class PaymentsRepository {
     }
   }
 
-  /// Setup payemnt account for the user
-  Future<void> setupPaymentAccount(BuildContext context,
-      {required String email}) async {
+  /// Fetch stripe account
+  Future<StripeAccount?> fetchStripeAccount(String stripeAccountId) async {
     try {
-      // Start the Stripe Connect onboarding process
+      final response = await http.post(
+          Uri.parse(
+              'https://us-central1-honeybadger-817ee.cloudfunctions.net/getStripeAccount'),
+          body: {
+            'accountId': stripeAccountId,
+          });
+      print(response.body);
+      final jsonResponse = jsonDecode(response.body);
+      log(jsonResponse.toString());
+      print(jsonResponse.toString());
+      return StripeAccount.fromJson(jsonResponse['account']);
+    } catch (e) {
+      log(e.toString());
+      return null;
+    }
+  }
+
+  Future<void> finishStripeConnectOnboarding(String stripeAccountId) async {
+    try {
+      final response = await http.post(
+          Uri.parse(
+              'https://us-central1-honeybadger-817ee.cloudfunctions.net/getStripeConnectOnboardingLink'),
+          body: {
+            'stripeAccountId': stripeAccountId,
+          });
+      print(response.body);
+      final jsonResponse = jsonDecode(response.body);
+      log(jsonResponse.toString());
+      print(jsonResponse.toString());
+      String accountLinkUrl = jsonResponse['url'];
+
+      if (await canLaunchUrl(Uri.parse(accountLinkUrl))) {
+        await launchUrl(Uri.parse(accountLinkUrl),
+            mode: LaunchMode.externalApplication);
+      } else {
+        scaffoldKey.currentState!.showSnackBar(
+          const SnackBar(
+            backgroundColor: Colors.red,
+            behavior: SnackBarBehavior.floating,
+            content: Text(
+              'Error starting Stripe Connect setup!',
+              style: TextStyle(color: Colors.white),
+            ),
+            duration: Duration(seconds: 2),
+          ),
+        );
+        throw 'Could not launch $accountLinkUrl';
+      }
+    } catch (e) {
+      log(e.toString());
+      rethrow;
+    }
+  }
+
+  Future<String> getLoginLink(String stripeAccountId) async {
+    try {
+      final response = await http.post(
+          Uri.parse(
+              'https://us-central1-honeybadger-817ee.cloudfunctions.net/createStripeLoginLink'),
+          body: {
+            'accountId': stripeAccountId,
+          });
+      print(response.body);
+      final jsonResponse = jsonDecode(response.body);
+      log(jsonResponse.toString());
+      print(jsonResponse.toString());
+      return jsonResponse['url'];
+    } catch (e) {
+      log(e.toString());
+      rethrow;
+    }
+  }
+
+  /// Setup payemnt account for the user
+  Future<String> setupPaymentAccount(BuildContext context,
+      {required String email, required String userId}) async {
+    try {
       final response = await http.post(
           Uri.parse(
               'https://us-central1-honeybadger-817ee.cloudfunctions.net/createStripeConnectAccount'),
           body: {
             'country': 'US',
             'email': email,
+            'userId': userId,
           });
 
       final jsonResponse = jsonDecode(response.body);
       print('Response: $jsonResponse');
       String accountLinkUrl = jsonResponse['url'];
 
-      // Open the account link URL in a web browser
+      String accountId =
+          jsonResponse['accountId']; // This is the Stripe account ID
+
       if (await canLaunchUrl(Uri.parse(accountLinkUrl))) {
         await launchUrl(Uri.parse(accountLinkUrl),
             mode: LaunchMode.externalApplication);
@@ -64,12 +145,7 @@ class PaymentsRepository {
         throw 'Could not launch $accountLinkUrl';
       }
 
-      // At this point, the user would be redirected to the Stripe Connect setup page in their web browser.
-      // After they complete the setup, they would be redirected back to your app via the return URL.
-
-      // Once the user is back in your app, you would typically confirm the setup intent as a separate step,
-      // usually in response to the user performing some action like adding a payment method.
-      // Your current function seems to be missing the necessary details for this step, like the client secret of the setup intent.
+      return accountId;
     } catch (e) {
       log(e.toString());
       rethrow;
@@ -80,7 +156,10 @@ class PaymentsRepository {
   Future<void> initPaymentSheet(context,
       {required String email,
       required double amount,
-      required String freelancerStripeId}) async {
+      required String freelancerStripeId,
+      required String description,
+      required Map<String, dynamic> metadata}) async {
+    print('MEtadata: ${jsonEncode(metadata)}');
     try {
       final response = await http.post(
           Uri.parse(
@@ -88,7 +167,8 @@ class PaymentsRepository {
           body: {
             'amount': (amount * 100).toString(),
             'email': email,
-            'freelancerStripeId': freelancerStripeId,
+            //'description': description,
+            // 'metadata': jsonEncode(metadata),
           });
 
       final jsonResponse = jsonDecode(response.body);
@@ -97,6 +177,8 @@ class PaymentsRepository {
 
       await Stripe.instance.initPaymentSheet(
           paymentSheetParameters: SetupPaymentSheetParameters(
+        googlePay: const PaymentSheetGooglePay(
+            merchantCountryCode: 'US', testEnv: true),
         paymentIntentClientSecret: jsonResponse['paymentIntent'],
         merchantDisplayName: 'Honeybadger',
         customerId: jsonResponse['customer'],
@@ -141,4 +223,72 @@ class PaymentsRepository {
       }
     }
   }
+
+  Future<Balance> getBalance(String stripeAccountId) async {
+    try {
+      final response = await http.post(
+          Uri.parse(
+              'https://us-central1-honeybadger-817ee.cloudfunctions.net/getStripeBalance'),
+          body: {
+            'accountId': stripeAccountId,
+          });
+      print(response.body);
+      final jsonResponse = jsonDecode(response.body);
+      log(jsonResponse.toString());
+      print(jsonResponse.toString());
+      return Balance.fromJson(jsonResponse['balance']);
+    } catch (e) {
+      log(e.toString());
+      rethrow;
+    }
+  }
+
+  Future<List<BalanceTransaction>> getBalanceTransactions(
+      String stripeAccountId) async {
+    try {
+      final response = await http.post(
+          Uri.parse(
+              'https://us-central1-honeybadger-817ee.cloudfunctions.net/getStripeBalanceTransactions'),
+          body: {
+            'accountId': stripeAccountId,
+          });
+      print(response.body);
+      final jsonResponse = jsonDecode(response.body);
+      log(jsonResponse.toString());
+      print(jsonResponse.toString());
+      var transactions = jsonResponse['balance_transactions']['data'] as List;
+      List<BalanceTransaction> transactionsList =
+          transactions.map((i) => BalanceTransaction.fromJson(i)).toList();
+      return transactionsList;
+    } catch (e) {
+      log(e.toString());
+      rethrow;
+    }
+  }
+
+  Future<List<BalanceTransaction>> getBalanceTransactionsPaginated(
+      String stripeAccountId, String startingAfterTransactionId) async {
+    try {
+      final response = await http.post(
+          Uri.parse(
+              'https://us-central1-honeybadger-817ee.cloudfunctions.net/getStripeBalanceTransactionsPaginated'),
+          body: {
+            'accountId': stripeAccountId,
+            'startingAfter': startingAfterTransactionId
+          });
+      print(response.body);
+      final jsonResponse = jsonDecode(response.body);
+      log(jsonResponse.toString());
+      print(jsonResponse.toString());
+      var transactions = jsonResponse['transactions'] as List;
+      List<BalanceTransaction> transactionsList =
+          transactions.map((i) => BalanceTransaction.fromJson(i)).toList();
+      return transactionsList;
+    } catch (e) {
+      log(e.toString());
+      rethrow;
+    }
+  }
+
+  /// initPaymentSheet
 }
