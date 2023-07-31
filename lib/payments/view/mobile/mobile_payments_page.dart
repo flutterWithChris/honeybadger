@@ -2,20 +2,74 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_gutter/flutter_gutter.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:go_router/go_router.dart';
 import 'package:honeybadger/core/constants.dart';
 import 'package:honeybadger/core/extensions.dart';
 import 'package:honeybadger/core/presentation/system/main_navigation_bar.dart';
 import 'package:honeybadger/core/presentation/system/mobile_sliver_app_bar.dart';
 import 'package:honeybadger/payments/bloc/payments_bloc.dart';
+import 'package:honeybadger/payments/details/payment_details.dart';
 import 'package:honeybadger/profile/bloc/profile_bloc.dart';
 import 'package:jiffy/jiffy.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'package:url_launcher/url_launcher_string.dart';
 
-class MobilePaymentsPage extends StatelessWidget {
+class MobilePaymentsPage extends StatefulWidget {
   const MobilePaymentsPage({super.key});
 
+  @override
+  State<MobilePaymentsPage> createState() => _MobilePaymentsPageState();
+
+  @override
+  Widget build(BuildContext context) {
+    // TODO: implement build
+    throw UnimplementedError();
+  }
+
+  @override
+  // TODO: implement context
+  BuildContext get context => throw UnimplementedError();
+
+  @override
+  void deactivate() {
+    // TODO: implement deactivate
+  }
+
+  @override
+  void didChangeDependencies() {
+    // TODO: implement didChangeDependencies
+  }
+
+  @override
+  void didUpdateWidget(covariant StatefulWidget oldWidget) {
+    // TODO: implement didUpdateWidget
+  }
+
+  @override
+  void initState() {
+    // TODO: implement initState
+  }
+
+  @override
+  // TODO: implement mounted
+  bool get mounted => throw UnimplementedError();
+
+  @override
+  void reassemble() {
+    // TODO: implement reassemble
+  }
+
+  @override
+  void setState(VoidCallback fn) {
+    // TODO: implement setState
+  }
+
+  @override
+  // TODO: implement widget
+  StatefulWidget get widget => throw UnimplementedError();
+}
+
+class _MobilePaymentsPageState extends State<MobilePaymentsPage>
+    with TickerProviderStateMixin {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -299,10 +353,29 @@ class MobilePaymentsPage extends StatelessWidget {
                                     padding: const EdgeInsets.symmetric(
                                         vertical: 4.0),
                                     child: ListTile(
-                                      onTap: () => context.go(
-                                          '/payments/details/${paymentsState.balanceTransactions![index].id}',
-                                          extra: paymentsState
-                                              .balanceTransactions![index]),
+                                      onTap: () {
+                                        // context.go(
+                                        //     '/payments/details/${paymentsState.balanceTransactions![index].id}',
+                                        //     extra: paymentsState
+                                        //         .balanceTransactions![index]);
+                                        showBottomSheet(
+                                            context: context,
+                                            builder: (context) => BottomSheet(
+                                                  animationController:
+                                                      AnimationController(
+                                                    vsync: this,
+                                                    duration: const Duration(
+                                                        milliseconds: 300),
+                                                  ),
+                                                  onClosing: () {},
+                                                  builder: (context) =>
+                                                      PaymentDetailsPage(
+                                                          balanceTransaction:
+                                                              paymentsState
+                                                                      .balanceTransactions![
+                                                                  index]),
+                                                ));
+                                      },
                                       leading: paymentsState
                                                   .balanceTransactions![index]
                                                   .status ==

@@ -37,7 +37,7 @@ GoRouter goRouter = GoRouter(
 
     // onboarded = prefs.getBool('onboarded') ?? false;
     if (loggedIn == false) {
-      return '/welcome';
+      return '/onboarding';
     }
     if (onboarded == false) {
       if (state.location.contains('stripe-confirmation')) {
