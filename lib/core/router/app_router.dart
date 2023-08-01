@@ -4,10 +4,7 @@ import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:honeybadger/auth/bloc/auth_bloc.dart';
-import 'package:honeybadger/jobs/create-project/view/create_project.dart';
-import 'package:honeybadger/jobs/model/job.dart';
-import 'package:honeybadger/jobs/view/job_details_page/job_page.dart';
-import 'package:honeybadger/jobs/view/jobs_page/jobs_page.dart';
+
 import 'package:honeybadger/message/channel_page.dart';
 import 'package:honeybadger/message/view/messages_page.dart';
 import 'package:honeybadger/onboarding/stripe_confirmation.dart';
@@ -20,6 +17,10 @@ import 'package:honeybadger/payments/view/payments_page.dart';
 import 'package:honeybadger/profile/bloc/profile_bloc.dart';
 import 'package:honeybadger/profile/model/user.dart';
 import 'package:honeybadger/profile/view/profile_page.dart';
+import 'package:honeybadger/projects/create-project/view/create_project.dart';
+import 'package:honeybadger/projects/model/project.dart';
+import 'package:honeybadger/projects/view/job_details_page/project_page.dart';
+import 'package:honeybadger/projects/view/jobs_page/projects_page.dart';
 import 'package:honeybadger/proposals/create/view/create_proposal_page.dart';
 import 'package:honeybadger/search/view/search_page.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -76,7 +77,7 @@ GoRouter goRouter = GoRouter(
         pageBuilder: (context, state) => CustomTransitionPage(
               transitionDuration: 400.ms,
               reverseTransitionDuration: 400.ms,
-              child: JobDetailsPage(job: state.extra as Job),
+              child: ProjectDetailsPage(project: state.extra as Project),
               transitionsBuilder:
                   (context, animation, secondaryAnimation, child) {
                 return SharedAxisTransition(
@@ -92,14 +93,14 @@ GoRouter goRouter = GoRouter(
             path: 'create-proposal',
             name: 'create-proposal',
             builder: (context, state) => CreateProposalPage(
-              job: state.extra as Job,
+              project: state.extra as Project,
             ),
           ),
         ]),
     GoRoute(
-      path: '/jobs',
-      name: 'jobs',
-      builder: (context, state) => const JobsPage(),
+      path: '/projects',
+      name: 'projects',
+      builder: (context, state) => const ProjectsPage(),
     ),
     GoRoute(
         path: '/messages',

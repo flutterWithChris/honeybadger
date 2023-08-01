@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:honeybadger/jobs/model/job.dart';
+
+import '../../../../projects/model/project.dart';
 
 class TabletCreateProposalPage extends StatelessWidget {
-  final Job job;
-  const TabletCreateProposalPage({required this.job, super.key});
+  final Project project;
+  const TabletCreateProposalPage({required this.project, super.key});
 
   @override
   Widget build(BuildContext context) {

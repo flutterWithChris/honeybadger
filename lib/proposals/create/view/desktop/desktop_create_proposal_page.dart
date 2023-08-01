@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 
-import '../../../../jobs/model/job.dart';
+import '../../../../projects/model/project.dart';
 
 class DesktopCreateProposalPage extends StatelessWidget {
-  final Job job;
-  const DesktopCreateProposalPage({required this.job, super.key});
+  final Project project;
+  const DesktopCreateProposalPage({required this.project, super.key});
 
   @override
   Widget build(BuildContext context) {

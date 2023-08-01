@@ -12,7 +12,7 @@ class Milestone {
   final DateTime? createdAt;
   final DateTime? updatedAt;
   final String? proposalId;
-  final String? jobId;
+  final String? projectId;
 
   Milestone({
     this.id,
@@ -28,6 +28,6 @@ class Milestone {
     this.createdAt,
     this.updatedAt,
     this.proposalId,
-    this.jobId,
+    this.projectId,
   });
 }

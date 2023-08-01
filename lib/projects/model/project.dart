@@ -1,17 +1,17 @@
-import 'package:honeybadger/jobs/model/job_category.dart';
 import 'package:honeybadger/profile/model/user.dart';
+import 'package:honeybadger/projects/model/project_category.dart';
 
 import '../../proposals/model/milestone.dart';
 
 enum PaymentType { hourly, fixedPrice }
 
-enum JobStatus { open, closed, inProgress }
+enum ProjectStatus { open, closed, inProgress }
 
-enum JobDuration { oneTime, recurring }
+enum ProjectDuration { oneTime, recurring }
 
-enum JobVisibility { public, private }
+enum ProjectVisibility { public, private }
 
-class Job {
+class Project {
   final String? id;
   final User? client;
   final User? freelancer;
@@ -20,11 +20,11 @@ class Job {
   final String? location;
   final List<String>? skills;
   final List<String>? tags;
-  final JobCategory? category;
+  final ProjectCategory? category;
   final PaymentType? paymentType;
-  final JobStatus? status;
-  final JobDuration? duration;
-  final JobVisibility? visibility;
+  final ProjectStatus? status;
+  final ProjectDuration? duration;
+  final ProjectVisibility? visibility;
   final double? budget;
   final DateTime? createdAt;
   final DateTime? updatedAt;
@@ -39,7 +39,7 @@ class Job {
   final DateTime? endDate;
   final List<Milestone>? milestones;
 
-  Job({
+  Project({
     this.id,
     this.client,
     this.freelancer,

@@ -1,15 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_gutter/flutter_gutter.dart';
 import 'package:go_router/go_router.dart';
+import 'package:honeybadger/search/view/widgets/project_card.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
-
 import '../../../core/constants.dart';
 import '../../../core/presentation/system/main_navigation_bar.dart';
 import '../../../core/presentation/system/mobile_sliver_app_bar.dart';
-import '../../../jobs/model/job.dart';
-import '../../../jobs/model/job_category.dart';
 import '../../../profile/model/user.dart';
-import '../widgets/job_card.dart';
+import '../../../projects/model/project.dart';
+import '../../../projects/model/project_category.dart';
 
 class DesktopSearchPage extends StatefulWidget {
   const DesktopSearchPage({super.key});
@@ -55,7 +54,7 @@ class _DesktopSearchPageState extends State<DesktopSearchPage> {
                                     .inputDecorationTheme
                                     .fillColor))),
                     child: SearchBar(
-                      hintText: 'Search Jobs..',
+                      hintText: 'Search Projects..',
                       hintStyle: MaterialStatePropertyAll(TextStyle(
                           color: Theme.of(context)
                               .iconTheme
@@ -265,8 +264,8 @@ class _DesktopSearchPageState extends State<DesktopSearchPage> {
                 Padding(
                   padding: const EdgeInsets.symmetric(
                       horizontal: 8.0, vertical: 4.0),
-                  child: JobCard(
-                    job: Job(
+                  child: ProjectCard(
+                    project: Project(
                       id: '1',
                       client: User(
                           id: '5',
@@ -283,15 +282,15 @@ class _DesktopSearchPageState extends State<DesktopSearchPage> {
                       description:
                           'Flutter Developer needed for a project. We are looking for someone who can work with us long term.\n\nCreating an app for a local veterinarian who\'d like a way for patients to check in and pay through their phone.',
                       budget: 10000,
-                      duration: JobDuration.recurring,
+                      duration: ProjectDuration.recurring,
                       skills: ['Flutter', 'Dart', 'Firebase'],
-                      category: JobCategory(
+                      category: ProjectCategory(
                         id: '1',
                         name: 'Mobile App Development',
                       ),
                       paymentType: PaymentType.fixedPrice,
-                      visibility: JobVisibility.public,
-                      status: JobStatus.open,
+                      visibility: ProjectVisibility.public,
+                      status: ProjectStatus.open,
                       weekEstimate: 10,
                       startDate: DateTime.now().add(const Duration(days: 7)),
                       endDate: DateTime.now().add(const Duration(days: 82)),
@@ -302,8 +301,8 @@ class _DesktopSearchPageState extends State<DesktopSearchPage> {
                 Padding(
                   padding: const EdgeInsets.symmetric(
                       horizontal: 8.0, vertical: 4.0),
-                  child: JobCard(
-                    job: Job(
+                  child: ProjectCard(
+                    project: Project(
                       id: '2',
                       client: User(
                           id: '1',
@@ -320,15 +319,15 @@ class _DesktopSearchPageState extends State<DesktopSearchPage> {
                       description:
                           'Flutter Developer needed for a project. We are looking for someone who can work with us long term.\n\nCreating an app for a local veterinarian who\'d like a way for patients to check in and pay through their phone.',
                       budget: 10000,
-                      duration: JobDuration.recurring,
+                      duration: ProjectDuration.recurring,
                       skills: ['Flutter', 'Dart', 'Firebase'],
-                      category: JobCategory(
+                      category: ProjectCategory(
                         id: '1',
                         name: 'Mobile App Development',
                       ),
                       paymentType: PaymentType.fixedPrice,
-                      visibility: JobVisibility.public,
-                      status: JobStatus.open,
+                      visibility: ProjectVisibility.public,
+                      status: ProjectStatus.open,
                       weekEstimate: 10,
                       startDate: DateTime.now().add(const Duration(days: 7)),
                       endDate: DateTime.now().add(const Duration(days: 82)),
@@ -339,8 +338,8 @@ class _DesktopSearchPageState extends State<DesktopSearchPage> {
                 Padding(
                   padding: const EdgeInsets.symmetric(
                       horizontal: 8.0, vertical: 4.0),
-                  child: JobCard(
-                    job: Job(
+                  child: ProjectCard(
+                    project: Project(
                       id: '3',
                       client: User(
                           id: '2',
@@ -357,15 +356,15 @@ class _DesktopSearchPageState extends State<DesktopSearchPage> {
                       description:
                           'Flutter Developer needed for a project. We are looking for someone who can work with us long term.\n\nCreating an app for a local veterinarian who\'d like a way for patients to check in and pay through their phone.',
                       budget: 10000,
-                      duration: JobDuration.recurring,
+                      duration: ProjectDuration.recurring,
                       skills: ['Flutter', 'Dart', 'Firebase'],
-                      category: JobCategory(
+                      category: ProjectCategory(
                         id: '1',
                         name: 'Mobile App Development',
                       ),
                       paymentType: PaymentType.fixedPrice,
-                      visibility: JobVisibility.public,
-                      status: JobStatus.open,
+                      visibility: ProjectVisibility.public,
+                      status: ProjectStatus.open,
                       weekEstimate: 10,
                       startDate: DateTime.now().add(const Duration(days: 7)),
                       endDate: DateTime.now().add(const Duration(days: 82)),
@@ -376,8 +375,8 @@ class _DesktopSearchPageState extends State<DesktopSearchPage> {
                 Padding(
                   padding: const EdgeInsets.symmetric(
                       horizontal: 8.0, vertical: 4.0),
-                  child: JobCard(
-                    job: Job(
+                  child: ProjectCard(
+                    project: Project(
                       id: '4',
                       client: User(
                           id: '3',
@@ -394,15 +393,15 @@ class _DesktopSearchPageState extends State<DesktopSearchPage> {
                       description:
                           'Flutter Developer needed for a project. We are looking for someone who can work with us long term.\n\nCreating an app for a local veterinarian who\'d like a way for patients to check in and pay through their phone.',
                       budget: 10000,
-                      duration: JobDuration.recurring,
+                      duration: ProjectDuration.recurring,
                       skills: ['Flutter', 'Dart', 'Firebase'],
-                      category: JobCategory(
+                      category: ProjectCategory(
                         id: '1',
                         name: 'Mobile App Development',
                       ),
                       paymentType: PaymentType.fixedPrice,
-                      visibility: JobVisibility.public,
-                      status: JobStatus.open,
+                      visibility: ProjectVisibility.public,
+                      status: ProjectStatus.open,
                       weekEstimate: 10,
                       startDate: DateTime.now().add(const Duration(days: 7)),
                       endDate: DateTime.now().add(const Duration(days: 82)),
@@ -413,8 +412,8 @@ class _DesktopSearchPageState extends State<DesktopSearchPage> {
                 Padding(
                   padding: const EdgeInsets.symmetric(
                       horizontal: 8.0, vertical: 4.0),
-                  child: JobCard(
-                    job: Job(
+                  child: ProjectCard(
+                    project: Project(
                       id: '5',
                       client: User(
                           id: '4',
@@ -431,15 +430,15 @@ class _DesktopSearchPageState extends State<DesktopSearchPage> {
                       description:
                           'Flutter Developer needed for a project. We are looking for someone who can work with us long term.\n\nCreating an app for a local veterinarian who\'d like a way for patients to check in and pay through their phone.',
                       budget: 10000,
-                      duration: JobDuration.recurring,
+                      duration: ProjectDuration.recurring,
                       skills: ['Flutter', 'Dart', 'Firebase'],
-                      category: JobCategory(
+                      category: ProjectCategory(
                         id: '1',
                         name: 'Mobile App Development',
                       ),
                       paymentType: PaymentType.fixedPrice,
-                      visibility: JobVisibility.public,
-                      status: JobStatus.open,
+                      visibility: ProjectVisibility.public,
+                      status: ProjectStatus.open,
                       weekEstimate: 10,
                       startDate: DateTime.now().add(const Duration(days: 7)),
                       endDate: DateTime.now().add(const Duration(days: 82)),

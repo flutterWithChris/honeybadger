@@ -3,14 +3,14 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_gutter/flutter_gutter.dart';
 import 'package:go_router/go_router.dart';
 import 'package:honeybadger/core/constants.dart';
-import 'package:honeybadger/jobs/model/job.dart';
+import 'package:honeybadger/projects/model/project.dart';
 import 'package:honeybadger/proposals/bloc/proposal_bloc.dart';
 import 'package:intl/intl.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 
-class JobCard extends StatelessWidget {
-  final Job job;
-  const JobCard({required this.job, super.key});
+class ProjectCard extends StatelessWidget {
+  final Project project;
+  const ProjectCard({required this.project, super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -20,8 +20,8 @@ class JobCard extends StatelessWidget {
     );
     return InkWell(
       onTap: () {
-        context.read<ProposalBloc>().add(LoadProposal(job.id!));
-        context.push('/job/${job.id}', extra: job);
+        context.read<ProposalBloc>().add(LoadProposal(project.id!));
+        context.push('/Project/${project.id}', extra: Project);
       },
       child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 16.0),
@@ -34,10 +34,10 @@ class JobCard extends StatelessWidget {
                 Flexible(
                   flex: 3,
                   child: Hero(
-                    tag: '${job.id}-title',
+                    tag: '${project.id}-title',
                     child: Material(
                       color: Colors.transparent,
-                      child: Text(job.title!,
+                      child: Text(project.title!,
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
                           style:
@@ -52,7 +52,7 @@ class JobCard extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.end,
                     children: [
                       Hero(
-                        tag: '${job.id}-budget',
+                        tag: '${project.id}-budget',
                         child: Material(
                           color: Colors.transparent,
                           type: MaterialType.transparency,
@@ -61,7 +61,7 @@ class JobCard extends StatelessWidget {
                             visualDensity: VisualDensity.compact,
                             padding: EdgeInsets.zero,
                             side: BorderSide.none,
-                            label: Text(numberFormat.format(job.budget),
+                            label: Text(numberFormat.format(project.budget),
                                 maxLines: 1,
                                 overflow: TextOverflow.ellipsis,
                                 style: Theme.of(context)
@@ -86,11 +86,11 @@ class JobCard extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Hero(
-                  tag: '${job.id}-category',
+                  tag: '${project.id}-category',
                   child: Material(
                     color: Colors.transparent,
                     child: Text(
-                      job.category!.name!,
+                      project.category!.name!,
                       maxLines: 1,
                       style: const TextStyle(
                         fontStyle: FontStyle.italic,
@@ -100,12 +100,12 @@ class JobCard extends StatelessWidget {
                 ),
                 const GutterTiny(),
                 Hero(
-                  tag: '${job.id}-description',
+                  tag: '${project.id}-description',
                   child: Material(
                     color: Colors.transparent,
                     type: MaterialType.transparency,
                     child: Text(
-                      job.description!,
+                      project.description!,
                       maxLines: 2,
                       overflow: TextOverflow.ellipsis,
                     ),
@@ -118,7 +118,7 @@ class JobCard extends StatelessWidget {
               spacing: 16.0,
               children: [
                 Text(
-                  job.skills!.join(', '),
+                  project.skills!.join(', '),
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                   style: Theme.of(context).textTheme.bodySmall,
@@ -128,7 +128,7 @@ class JobCard extends StatelessWidget {
                   children: [
                     Icon(MdiIcons.clockOutline, size: 14.0),
                     const GutterTiny(),
-                    Text('${parseEnumName(job.paymentType.toString())} ',
+                    Text('${parseEnumName(project.paymentType.toString())} ',
                         style: Theme.of(context).textTheme.bodySmall),
                   ],
                 ),
@@ -137,7 +137,7 @@ class JobCard extends StatelessWidget {
                   children: [
                     Icon(MdiIcons.calendarClock, size: 14.0),
                     const GutterTiny(),
-                    Text('${job.weekEstimate! / 4} Months ',
+                    Text('${project.weekEstimate! / 4} Months ',
                         style: Theme.of(context).textTheme.bodySmall),
                   ],
                 )

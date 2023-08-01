@@ -19,22 +19,23 @@ import 'package:jiffy/jiffy.dart';
 import 'package:loading_animation_widget/loading_animation_widget.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 
-import '../../../model/job.dart';
+import '../../../model/project.dart';
 
 Timer? _autosaveTimer;
 late Timer _autosaveTimestampTimer;
 DateTime? _lastSavedAt;
 String? _lastSavedAtString;
 
-class MobileJobDetailsPage extends StatefulWidget {
-  final Job job;
-  const MobileJobDetailsPage({required this.job, super.key});
+class MobileProjectDetailsPage extends StatefulWidget {
+  final Project project;
+  const MobileProjectDetailsPage({required this.project, super.key});
 
   @override
-  State<MobileJobDetailsPage> createState() => _MobileJobDetailsPageState();
+  State<MobileProjectDetailsPage> createState() =>
+      _MobileProjectDetailsPageState();
 }
 
-class _MobileJobDetailsPageState extends State<MobileJobDetailsPage> {
+class _MobileProjectDetailsPageState extends State<MobileProjectDetailsPage> {
   final bool _writingProposal = false;
 
   final _proposalController = TextEditingController();
@@ -82,10 +83,10 @@ class _MobileJobDetailsPageState extends State<MobileJobDetailsPage> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Hero(
-                    tag: '${widget.job.id}-category',
+                    tag: '${widget.project.id}-category',
                     child: Material(
                       color: Colors.transparent,
-                      child: Text(widget.job.category!.name!,
+                      child: Text(widget.project.category!.name!,
                           style: Theme.of(context)
                               .textTheme
                               .bodyMedium
@@ -94,10 +95,10 @@ class _MobileJobDetailsPageState extends State<MobileJobDetailsPage> {
                   ),
                   const GutterSmall(),
                   Hero(
-                    tag: '${widget.job.id}-title',
+                    tag: '${widget.project.id}-title',
                     child: Material(
                       color: Colors.transparent,
-                      child: Text(widget.job.title!,
+                      child: Text(widget.project.title!,
                           style: Theme.of(context).textTheme.headlineSmall),
                     ),
                   ),
@@ -105,14 +106,14 @@ class _MobileJobDetailsPageState extends State<MobileJobDetailsPage> {
 
                   Row(
                     children: [
-                      widget.job.startDate != null
+                      widget.project.startDate != null
                           ? Text.rich(
                               TextSpan(
                                   text: 'Start:  ',
                                   children: [
                                     TextSpan(
                                         text: Jiffy.parseFromDateTime(
-                                                widget.job.startDate!)
+                                                widget.project.startDate!)
                                             .yMMMMd,
                                         style: const TextStyle(
                                             fontWeight: FontWeight.normal))
@@ -133,14 +134,14 @@ class _MobileJobDetailsPageState extends State<MobileJobDetailsPage> {
                                       TextStyle(fontWeight: FontWeight.bold)),
                             ),
                       const GutterSmall(),
-                      widget.job.endDate != null
+                      widget.project.endDate != null
                           ? Text.rich(
                               TextSpan(
                                   text: 'End:  ',
                                   children: [
                                     TextSpan(
                                         text: Jiffy.parseFromDateTime(
-                                                widget.job.endDate!)
+                                                widget.project.endDate!)
                                             .yMMMMd,
                                         style: const TextStyle(
                                             fontWeight: FontWeight.normal))
@@ -170,7 +171,7 @@ class _MobileJobDetailsPageState extends State<MobileJobDetailsPage> {
                     crossAxisAlignment: WrapCrossAlignment.center,
                     children: [
                       Hero(
-                        tag: '${widget.job.id}-budget',
+                        tag: '${widget.project.id}-budget',
                         child: Material(
                           color: Colors.transparent,
                           type: MaterialType.transparency,
@@ -180,7 +181,8 @@ class _MobileJobDetailsPageState extends State<MobileJobDetailsPage> {
                             side: BorderSide.none,
                             elevation: 1,
                             backgroundColor: Theme.of(context).primaryColor,
-                            label: Text(numberFormat.format(widget.job.budget),
+                            label: Text(
+                                numberFormat.format(widget.project.budget),
                                 maxLines: 1,
                                 overflow: TextOverflow.ellipsis,
                                 style: Theme.of(context)
@@ -205,7 +207,7 @@ class _MobileJobDetailsPageState extends State<MobileJobDetailsPage> {
                             const GutterSmall(),
                             Text(
                                 parseEnumName(
-                                    widget.job.paymentType.toString()),
+                                    widget.project.paymentType.toString()),
                                 style: Theme.of(context).textTheme.bodyMedium),
                           ],
                         ),
@@ -223,12 +225,14 @@ class _MobileJobDetailsPageState extends State<MobileJobDetailsPage> {
                             children: [
                               CircleAvatar(
                                 backgroundColor:
-                                    widget.job.status == JobStatus.open
+                                    widget.project.status == ProjectStatus.open
                                         ? Colors.green[400]
                                         : Colors.red,
                                 radius: 4,
                               ),
-                              Text(parseEnumName(widget.job.status.toString()),
+                              Text(
+                                  parseEnumName(
+                                      widget.project.status.toString()),
                                   style: Theme.of(context).textTheme.bodyLarge),
                             ]),
                       )
@@ -236,11 +240,11 @@ class _MobileJobDetailsPageState extends State<MobileJobDetailsPage> {
                   ),
                   const Gutter(),
                   Hero(
-                    tag: '${widget.job.id}-description',
+                    tag: '${widget.project.id}-description',
                     child: Material(
                       color: Colors.transparent,
                       type: MaterialType.transparency,
-                      child: Text(widget.job.description!,
+                      child: Text(widget.project.description!,
                           style: Theme.of(context).textTheme.bodyMedium),
                     ),
                   ),
@@ -289,7 +293,7 @@ class _MobileJobDetailsPageState extends State<MobileJobDetailsPage> {
                                 ? Column(
                                     mainAxisSize: MainAxisSize.min,
                                     children: [
-                                      widget.job.paymentType ==
+                                      widget.project.paymentType ==
                                               PaymentType.fixedPrice
                                           ? Flexible(
                                               child: Theme(
@@ -328,8 +332,8 @@ class _MobileJobDetailsPageState extends State<MobileJobDetailsPage> {
                                                                   ProposalBloc>()
                                                               .add(AddMilestone(
                                                                   Milestone(
-                                                                      jobId: widget
-                                                                          .job
+                                                                      projectId: widget
+                                                                          .project
                                                                           .id!)));
                                                         },
                                                         icon: Icon(
@@ -436,7 +440,7 @@ class _MobileJobDetailsPageState extends State<MobileJobDetailsPage> {
                                                                     //       onPressed: () {
                                                                     //         context.read<ProposalBloc>().add(
                                                                     //               AddMilestone(
-                                                                    //                 Milestone(jobId: state.proposal!.jobId),
+                                                                    //                 Milestone(projectId: state.proposal!.projectId),
                                                                     //               ),
                                                                     //             );
                                                                     //       },
@@ -595,12 +599,12 @@ class _MobileJobDetailsPageState extends State<MobileJobDetailsPage> {
                                                                             context.read<ProposalBloc>().add(
                                                                                   SendProposal(
                                                                                     state.proposal!.copyWith(
-                                                                                      jobId: widget.job.id!,
+                                                                                      id: widget.project.id!,
                                                                                       description: _proposalController.text,
                                                                                       freelancerId: context.read<ProfileBloc>().state.user!.id,
                                                                                       freelancerName: context.read<ProfileBloc>().state.user!.firstName,
-                                                                                      clientId: widget.job.client!.id,
-                                                                                      clientName: '${widget.job.client!.firstName} ${widget.job.client!.lastName}',
+                                                                                      clientId: widget.project.client!.id,
+                                                                                      clientName: '${widget.project.client!.firstName} ${widget.project.client!.lastName}',
                                                                                     ),
                                                                                   ),
                                                                                 );
@@ -723,7 +727,8 @@ class _MobileJobDetailsPageState extends State<MobileJobDetailsPage> {
                                       FilledButton.icon(
                                         onPressed: () {
                                           context.read<ProposalBloc>().add(
-                                              StartProposal(widget.job.id!));
+                                              StartProposal(
+                                                  widget.project.id!));
                                         },
                                         icon: Icon(MdiIcons.lightningBolt),
                                         label: const Text('Create Proposal'),
@@ -742,11 +747,12 @@ class _MobileJobDetailsPageState extends State<MobileJobDetailsPage> {
                           padding: const EdgeInsets.only(right: 16.0),
                           child: CircleAvatar(
                               radius: 14,
-                              child: widget.job.client!.photoUrl == null ||
-                                      widget.job.client!.photoUrl!.isEmpty
+                              child: widget.project.client!.photoUrl == null ||
+                                      widget.project.client!.photoUrl!.isEmpty
                                   ? const Icon(Icons.person, size: 20)
                                   : CachedNetworkImage(
-                                      imageUrl: widget.job.client!.photoUrl!)),
+                                      imageUrl:
+                                          widget.project.client!.photoUrl!)),
                         ),
                         Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
@@ -755,13 +761,13 @@ class _MobileJobDetailsPageState extends State<MobileJobDetailsPage> {
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
                                 Text(
-                                  widget.job.client!.firstName!,
+                                  widget.project.client!.firstName!,
                                   style: Theme.of(context).textTheme.titleLarge,
                                 ),
                                 const GutterSmall(),
                                 const Text('-'),
                                 const GutterSmall(),
-                                if (widget.job.client!.rating != null)
+                                if (widget.project.client!.rating != null)
                                   Row(
                                     mainAxisSize: MainAxisSize.min,
                                     mainAxisAlignment: MainAxisAlignment.end,
@@ -774,11 +780,11 @@ class _MobileJobDetailsPageState extends State<MobileJobDetailsPage> {
                                       const GutterTiny(),
                                       Text.rich(TextSpan(
                                           text:
-                                              '${widget.job.client!.rating.toString()} ',
+                                              '${widget.project.client!.rating.toString()} ',
                                           children: [
                                             TextSpan(
                                                 text:
-                                                    '(${widget.job.client!.ratingCount.toString()})',
+                                                    '(${widget.project.client!.ratingCount.toString()})',
                                                 style: Theme.of(context)
                                                     .textTheme
                                                     .bodySmall)
@@ -792,7 +798,7 @@ class _MobileJobDetailsPageState extends State<MobileJobDetailsPage> {
                                 Icon(MdiIcons.mapMarkerOutline, size: 14.0),
                                 const GutterTiny(),
                                 Text(
-                                    '${widget.job.client!.city!}, ${widget.job.client!.state!}',
+                                    '${widget.project.client!.city!}, ${widget.project.client!.state!}',
                                     style:
                                         Theme.of(context).textTheme.bodyMedium),
                               ],
@@ -828,7 +834,7 @@ class _MobileJobDetailsPageState extends State<MobileJobDetailsPage> {
                               crossAxisAlignment: WrapCrossAlignment.center,
                               alignment: WrapAlignment.start,
                               children: [
-                                for (String skill in widget.job.skills!)
+                                for (String skill in widget.project.skills!)
                                   Chip(
                                     padding: EdgeInsets.zero,
                                     label: Text(skill),
@@ -840,7 +846,8 @@ class _MobileJobDetailsPageState extends State<MobileJobDetailsPage> {
                       )
                     ],
                   ),
-                  if (widget.job.tags != null && widget.job.tags!.isNotEmpty)
+                  if (widget.project.tags != null &&
+                      widget.project.tags!.isNotEmpty)
                     ExpansionTile(
                       tilePadding: EdgeInsets.zero,
                       expandedAlignment: Alignment.center,
@@ -863,7 +870,7 @@ class _MobileJobDetailsPageState extends State<MobileJobDetailsPage> {
                             alignment: WrapAlignment.start,
                             runAlignment: WrapAlignment.start,
                             children: [
-                              for (String tag in widget.job.tags!)
+                              for (String tag in widget.project.tags!)
                                 Chip(
                                   padding: EdgeInsets.zero,
                                   label: Text(tag),

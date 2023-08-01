@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_gutter/flutter_gutter.dart';
 import 'package:honeybadger/core/constants.dart';
-import 'package:honeybadger/jobs/dialogs/add_project_dialog.dart';
+import 'package:honeybadger/projects/dialogs/add_project_dialog.dart';
 
 class SkillsAndExperiencePage extends StatefulWidget {
   final PageController pageController;

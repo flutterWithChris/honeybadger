@@ -6,8 +6,8 @@ import 'package:honeybadger/core/presentation/system/main_navigation_bar.dart';
 
 import '../../../core/presentation/system/mobile_jobs_app_bar.dart';
 
-class JobsPage extends StatelessWidget {
-  const JobsPage({super.key});
+class ProjectsPage extends StatelessWidget {
+  const ProjectsPage({super.key});
 
   @override
   Widget build(BuildContext context) {
