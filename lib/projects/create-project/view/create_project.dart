@@ -2,13 +2,15 @@ import 'package:flex_color_scheme/flex_color_scheme.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_gutter/flutter_gutter.dart';
+import 'package:go_router/go_router.dart';
 import 'package:honeybadger/core/constants.dart';
 import 'package:honeybadger/core/presentation/system/main_navigation_bar.dart';
 import 'package:honeybadger/core/presentation/system/mobile_sliver_app_bar.dart';
+import 'package:honeybadger/profile/bloc/profile_bloc.dart';
 import 'package:honeybadger/projects/bloc/projects_bloc.dart';
 import 'package:honeybadger/projects/model/project.dart';
-import 'package:honeybadger/projects/model/project_category.dart';
 import 'package:jiffy/jiffy.dart';
+import 'package:loading_animation_widget/loading_animation_widget.dart';
 
 class CreateProjectPage extends StatefulWidget {
   const CreateProjectPage({super.key});
@@ -37,16 +39,88 @@ class _CreateProjectPageState extends State<CreateProjectPage> {
             BlocBuilder<ProjectsBloc, ProjectsState>(
               builder: (context, state) {
                 if (state is ProjectsError) {
-                  return const SliverFillRemaining(child: Text('Error'));
+                  return SliverFillRemaining(
+                      child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      const Icon(
+                        Icons.error_rounded,
+                        size: 72.0,
+                        color: Colors.red,
+                      ),
+                      const Gutter(),
+                      Text('Error loading projects!',
+                          style: Theme.of(context).textTheme.headlineMedium),
+                      const Gutter(),
+                      FilledButton.icon(
+                          onPressed: () {
+                            context.read<ProjectsBloc>().add(LoadProjects(
+                                user: context.read<ProfileBloc>().state.user!));
+                          },
+                          icon: const Icon(Icons.refresh_rounded),
+                          label: const Text('Reload Projects')),
+                    ],
+                  ));
                 }
-                if (state is ProjectLoading) {
-                  return const SliverFillRemaining(child: Text('Loading...'));
+                if (state is ProjectsLoading) {
+                  return SliverFillRemaining(
+                      hasScrollBody: false,
+                      child: Center(
+                          child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          LoadingAnimationWidget.staggeredDotsWave(
+                              color: Theme.of(context).iconTheme.color!,
+                              size: 40.0),
+                          const Gutter(),
+                          Text('Loading...',
+                              style:
+                                  Theme.of(context).textTheme.headlineMedium),
+                        ],
+                      )));
                 }
                 if (state is ProjectSending) {
-                  return const SliverFillRemaining(child: Text('Sending...'));
+                  return SliverFillRemaining(
+                      hasScrollBody: false,
+                      child: Center(
+                          child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          LoadingAnimationWidget.staggeredDotsWave(
+                              color: Theme.of(context).iconTheme.color!,
+                              size: 40.0),
+                          const Gutter(),
+                          Text('Creating Project...',
+                              style:
+                                  Theme.of(context).textTheme.headlineMedium),
+                        ],
+                      )));
                 }
                 if (state is ProjectCreated) {
-                  return const SliverFillRemaining(child: Text('Created'));
+                  return SliverFillRemaining(
+                      hasScrollBody: false,
+                      child: Center(
+                          child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          const Icon(
+                            Icons.check_circle_rounded,
+                            size: 72.0,
+                            color: Colors.lightGreen,
+                          ),
+                          const Gutter(),
+                          Text('Project Created!',
+                              style:
+                                  Theme.of(context).textTheme.headlineMedium),
+                          const Gutter(),
+                          FilledButton.icon(
+                              onPressed: () {
+                                context.go('/projects');
+                              },
+                              icon: const Icon(Icons.arrow_back),
+                              label: const Text('View Active Projects')),
+                        ],
+                      )));
                 }
                 if (state is ProjectsLoaded) {
                   return SliverPadding(
@@ -225,32 +299,37 @@ class _CreateProjectPageState extends State<CreateProjectPage> {
                               Expanded(
                                 child: FilledButton.icon(
                                     onPressed: () {
-                                      context
-                                          .read<ProjectsBloc>()
-                                          .add(CreateProject(
+                                      context.read<ProjectsBloc>().add(
+                                            CreateProject(
                                               project: Project(
-                                            title: _titleController.value.text,
-                                            description: _descriptionController
-                                                .value.text,
-                                            deliverables:
-                                                _deliverablesController
-                                                    .value.text,
-                                            category: ProjectCategory(
-                                                name: _categoryController
-                                                    .value.text),
-                                            projectType: _projectType,
-                                            budget: double.parse(
-                                                _budgetController.value.text),
-                                            deadline: Jiffy.parse(
-                                                    _deadlineController
-                                                        .value.text,
-                                                    pattern: 'MMM do, yyyy')
-                                                .dateTime,
-                                            tags: _tagsController.value.text
-                                                .split(','),
-                                            skills: _skillsController.value.text
-                                                .split(','),
-                                          )));
+                                                  title: _titleController
+                                                      .value.text,
+                                                  description: _descriptionController
+                                                      .value.text,
+                                                  deliverables:
+                                                      _deliverablesController
+                                                          .value.text,
+                                                  category: _categoryController
+                                                      .value.text,
+                                                  projectType: _projectType,
+                                                  budget: double.parse(
+                                                      _budgetController
+                                                          .value.text),
+                                                  deadline: Jiffy.parse(
+                                                          _deadlineController
+                                                              .value.text,
+                                                          pattern: 'MMM do, yyyy')
+                                                      .dateTime,
+                                                  tags: _tagsController.value.text.split(','),
+                                                  skills: _skillsController.value.text.split(','),
+                                                  status: ProjectStatus.open,
+                                                  createdAt: DateTime.now()),
+                                              user: context
+                                                  .read<ProfileBloc>()
+                                                  .state
+                                                  .user!,
+                                            ),
+                                          );
                                     },
                                     icon: const Icon(Icons.add),
                                     label: const Text('Create Project')),

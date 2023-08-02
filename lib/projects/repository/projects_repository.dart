@@ -1,16 +1,24 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:honeybadger/core/constants.dart';
+import 'package:honeybadger/profile/model/user.dart';
 
 import '../model/project.dart';
 
 class ProjectsRepository {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
-  Stream<List<Project>>? getProjects() {
+// Get list of projects as a stream
+  Stream<List<Project>> getProjects(User user) {
     try {
-      return _firestore.collection('projects').snapshots().map((snapshot) {
-        return snapshot.docs.map((doc) => Project.fromDocument(doc)).toList();
+      return _firestore
+          .collection('projects')
+          .where('clientId', isEqualTo: user.id)
+          .snapshots()
+          .map((snapshot) {
+        return snapshot.docs.map((doc) {
+          return Project.fromDocument(doc);
+        }).toList();
       });
     } on FirebaseException catch (e) {
       print(e);
@@ -21,7 +29,7 @@ class ProjectsRepository {
           content: Text('Error loading projects'),
         ),
       );
-      return null;
+      return const Stream.empty();
     }
   }
 
@@ -47,12 +55,13 @@ class ProjectsRepository {
     }
   }
 
-  Future<void> createProject(Project project) async {
+  Future<String?> createProject(Project project) async {
     try {
-      return await _firestore
-          .collection('projects')
-          .doc(project.id)
-          .set(project.toDocument());
+      var docRef = _firestore.collection('projects').doc();
+
+      await docRef.set(project.copyWith(id: docRef.id).toDocument());
+
+      return docRef.id;
     } on FirebaseException catch (e) {
       print(e);
       scaffoldKey.currentState!.showSnackBar(
@@ -60,6 +69,42 @@ class ProjectsRepository {
           backgroundColor: Colors.red,
           behavior: SnackBarBehavior.floating,
           content: Text('Error creating project'),
+        ),
+      );
+      return null;
+    }
+  }
+
+  Future<void> createProjectReference(User user, String projectId) async {
+    try {
+      return await _firestore.collection('users').doc(user.id).update({
+        'projectIds': FieldValue.arrayUnion([projectId])
+      });
+    } on FirebaseException catch (e) {
+      print(e);
+      scaffoldKey.currentState!.showSnackBar(
+        const SnackBar(
+          backgroundColor: Colors.red,
+          behavior: SnackBarBehavior.floating,
+          content: Text('Error creating project'),
+        ),
+      );
+    }
+  }
+
+  /// Delete project reference from user
+  Future<void> deleteProjectReference(User user, Project project) async {
+    try {
+      return await _firestore.collection('users').doc(user.id).update({
+        'projectIds': FieldValue.arrayRemove([project.id])
+      });
+    } on FirebaseException catch (e) {
+      print(e);
+      scaffoldKey.currentState!.showSnackBar(
+        const SnackBar(
+          backgroundColor: Colors.red,
+          behavior: SnackBarBehavior.floating,
+          content: Text('Error deleting project'),
         ),
       );
     }

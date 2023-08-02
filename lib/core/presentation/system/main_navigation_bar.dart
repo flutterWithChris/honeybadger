@@ -27,7 +27,7 @@ class _MainBottomNavBarState extends State<MainBottomNavBar> {
               context.go('/search');
               break;
             case 1:
-              context.go('/jobs');
+              context.go('/projects');
               break;
             case 2:
               context.go('/messages');

@@ -8,10 +8,10 @@ class ProjectCategory {
 
   factory ProjectCategory.fromJson(Map<String, dynamic> json) {
     return ProjectCategory(
-      id: json['id'],
-      name: json['name'],
-      description: json['description'],
-      image: json['image'],
+      id: json['id'] as String?,
+      name: json['name'] as String?,
+      description: json['description'] as String?,
+      image: json['image'] as String?,
     );
   }
 

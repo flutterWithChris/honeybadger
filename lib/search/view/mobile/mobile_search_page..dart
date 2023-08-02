@@ -6,9 +6,7 @@ import 'package:go_router/go_router.dart';
 import 'package:honeybadger/core/constants.dart';
 import 'package:honeybadger/core/presentation/system/main_navigation_bar.dart';
 import 'package:honeybadger/core/presentation/system/mobile_sliver_app_bar.dart';
-import 'package:honeybadger/profile/model/user.dart';
 import 'package:honeybadger/projects/model/project.dart';
-import 'package:honeybadger/projects/model/project_category.dart';
 import 'package:honeybadger/search/view/widgets/Project_card.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 
@@ -200,7 +198,7 @@ class _MobileSearchPageState extends State<MobileSearchPage> {
                               child: child,
                             );
                           },
-                          child: ProjectType == ProjectType.hourly
+                          child: projectType == ProjectType.hourly
                               ? PopupMenuButton(
                                   key: const ValueKey('hourly'),
                                   elevation: 0.3,
@@ -354,7 +352,7 @@ class _MobileSearchPageState extends State<MobileSearchPage> {
                             child: const Text('Filters')),
                       ],
                     ),
-                  )
+                  ),
                 ],
               ),
             ),
@@ -364,6 +362,8 @@ class _MobileSearchPageState extends State<MobileSearchPage> {
               childCount: sampleProjectCards.length,
               (context, index) => Column(
                 children: [
+                  index == 0 ? const Divider() : const SizedBox(),
+                  index == 0 ? const GutterSmall() : const SizedBox(),
                   Padding(
                     padding: const EdgeInsets.only(bottom: 8.0),
                     child: ProjectCard(
@@ -388,26 +388,15 @@ List<ProjectCard> sampleProjectCards = [
   ProjectCard(
     project: Project(
       id: '1',
-      client: User(
-          id: 'ronswanson',
-          firstName: 'John',
-          lastName: 'Doe',
-          city: 'San Francisco',
-          state: 'CA',
-          photoUrl: '',
-          email: '',
-          ratingCount: 4,
-          rating: 4.5),
+      clientId: 'l028jt2RgQe5ksneyYdW',
+      clientName: 'Dwight Schrute',
       title: 'Create an app for a Veterinarian\'s office patients.',
       description:
           'Flutter Developer needed for a project. We are looking for someone who can work with us long term.\n\nCreating an app for a local veterinarian who\'d like a way for patients to check in and pay through their phone.',
-      budget: 12000,
+      budget: 10000,
       duration: ProjectDuration.recurring,
       skills: ['Flutter', 'Dart', 'Firebase'],
-      category: ProjectCategory(
-        id: '1',
-        name: 'Mobile App Development',
-      ),
+      category: 'Mobile App Development',
       projectType: ProjectType.fixed,
       visibility: ProjectVisibility.public,
       status: ProjectStatus.open,
@@ -420,26 +409,15 @@ List<ProjectCard> sampleProjectCards = [
   ProjectCard(
     project: Project(
       id: '2',
-      client: User(
-          id: '1',
-          firstName: 'John',
-          lastName: 'Doe',
-          city: 'San Francisco',
-          state: 'CA',
-          photoUrl: '',
-          email: '',
-          ratingCount: 4,
-          rating: 4.5),
-      title: 'Graphic design work for a new mobile app we\'re working on.',
+      clientId: 'l028jt2RgQe5ksneyYdW',
+      clientName: 'Angela Martin',
+      title: 'Create an app for a Veterinarian\'s office patients.',
       description:
-          'Needing a graphic designer to help us with a new mobile app we\'re working on. We\'re looking for someone who can work with us long term.\n\nCreating an app for a local veterinarian who\'d like a way for patients to check in and pay through their phone.',
-      budget: 8000,
+          'Flutter Developer needed for a project. We are looking for someone who can work with us long term.\n\nCreating an app for a local veterinarian who\'d like a way for patients to check in and pay through their phone.',
+      budget: 10000,
       duration: ProjectDuration.recurring,
-      skills: ['Illustrator', 'Photoshop', 'Adobe XD'],
-      category: ProjectCategory(
-        id: '1',
-        name: 'Graphic Design',
-      ),
+      skills: ['Flutter', 'Dart', 'Firebase'],
+      category: 'Mobile App Development',
       projectType: ProjectType.fixed,
       visibility: ProjectVisibility.public,
       status: ProjectStatus.open,
@@ -452,26 +430,15 @@ List<ProjectCard> sampleProjectCards = [
   ProjectCard(
     project: Project(
       id: '3',
-      client: User(
-          id: '2',
-          firstName: 'John',
-          lastName: 'Doe',
-          city: 'San Francisco',
-          state: 'CA',
-          photoUrl: '',
-          email: '',
-          ratingCount: 4,
-          rating: 4.5),
-      title: 'Create a landing page with Framer.',
+      clientId: 'l028jt2RgQe5ksneyYdW',
+      clientName: 'Kevin Malone',
+      title: 'Create an app for a Veterinarian\'s office patients.',
       description:
-          'Our company, , is looking for a Framer expert to help us create a landing page for our new product. Should include animations and be responsive. While also being SEO friendly.',
+          'Flutter Developer needed for a project. We are looking for someone who can work with us long term.\n\nCreating an app for a local veterinarian who\'d like a way for patients to check in and pay through their phone.',
       budget: 10000,
       duration: ProjectDuration.recurring,
-      skills: ['Framer', 'React', 'Javascript'],
-      category: ProjectCategory(
-        id: '1',
-        name: 'Web Development',
-      ),
+      skills: ['Flutter', 'Dart', 'Firebase'],
+      category: 'Mobile App Development',
       projectType: ProjectType.fixed,
       visibility: ProjectVisibility.public,
       status: ProjectStatus.open,
@@ -484,26 +451,15 @@ List<ProjectCard> sampleProjectCards = [
   ProjectCard(
     project: Project(
       id: '4',
-      client: User(
-          id: '3',
-          firstName: 'John',
-          lastName: 'Doe',
-          city: 'San Francisco',
-          state: 'CA',
-          photoUrl: '',
-          email: '',
-          ratingCount: 4,
-          rating: 4.5),
+      clientId: 'l028jt2RgQe5ksneyYdW',
+      clientName: 'Micheal Scott',
       title: 'Create an app for a Veterinarian\'s office patients.',
       description:
           'Flutter Developer needed for a project. We are looking for someone who can work with us long term.\n\nCreating an app for a local veterinarian who\'d like a way for patients to check in and pay through their phone.',
       budget: 10000,
       duration: ProjectDuration.recurring,
       skills: ['Flutter', 'Dart', 'Firebase'],
-      category: ProjectCategory(
-        id: '1',
-        name: 'Mobile App Development',
-      ),
+      category: 'Mobile App Development',
       projectType: ProjectType.fixed,
       visibility: ProjectVisibility.public,
       status: ProjectStatus.open,
@@ -516,26 +472,15 @@ List<ProjectCard> sampleProjectCards = [
   ProjectCard(
     project: Project(
       id: '5',
-      client: User(
-          id: '4',
-          firstName: 'John',
-          lastName: 'Doe',
-          city: 'San Francisco',
-          state: 'CA',
-          photoUrl: '',
-          email: '',
-          ratingCount: 4,
-          rating: 4.5),
+      clientId: 'l028jt2RgQe5ksneyYdW',
+      clientName: 'John Doe',
       title: 'Create an app for a Veterinarian\'s office patients.',
       description:
           'Flutter Developer needed for a project. We are looking for someone who can work with us long term.\n\nCreating an app for a local veterinarian who\'d like a way for patients to check in and pay through their phone.',
       budget: 10000,
       duration: ProjectDuration.recurring,
       skills: ['Flutter', 'Dart', 'Firebase'],
-      category: ProjectCategory(
-        id: '1',
-        name: 'Mobile App Development',
-      ),
+      category: 'Mobile App Development',
       projectType: ProjectType.fixed,
       visibility: ProjectVisibility.public,
       status: ProjectStatus.open,

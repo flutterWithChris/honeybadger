@@ -29,6 +29,8 @@ class User {
   String? stripeAccountId;
   DateTime? createdAt;
   DateTime? updatedAt;
+  List<dynamic>? projectIds;
+  List<dynamic>? proposalIds;
 
   User({
     this.id,
@@ -55,6 +57,8 @@ class User {
     this.stripeAccountId,
     this.createdAt,
     this.updatedAt,
+    this.projectIds,
+    this.proposalIds,
   });
 
   User.fromJson(Map<String, dynamic> json) {
@@ -93,6 +97,8 @@ class User {
     stripeAccountId = json['stripeAccountId'];
     createdAt = DateTime.parse(json['createdAt']);
     updatedAt = DateTime.parse(json['updatedAt']);
+    projectIds = json['projectIds'];
+    proposalIds = json['proposalIds'];
   }
 
   Map<String, dynamic> toJson() {
@@ -121,6 +127,8 @@ class User {
       'stripeAccountId': stripeAccountId,
       'createdAt': createdAt?.toIso8601String(),
       'updatedAt': updatedAt?.toIso8601String(),
+      'projectIds': projectIds,
+      'proposalIds': proposalIds,
     };
   }
 
@@ -160,6 +168,8 @@ class User {
     stripeAccountId = snap['stripeAccountId'];
     createdAt = snap['createdAt']?.toDate();
     updatedAt = snap['updatedAt']?.toDate();
+    projectIds = snap['projectIds'];
+    proposalIds = snap['proposalIds'];
   }
 
   User toDocument() {

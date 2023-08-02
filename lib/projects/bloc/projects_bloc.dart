@@ -1,9 +1,10 @@
 import 'package:equatable/equatable.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:honeybadger/profile/model/user.dart';
 import 'package:honeybadger/projects/model/project.dart';
 import 'package:honeybadger/projects/repository/projects_repository.dart';
 
-part 'projects_event.dart';
+part 'rojects_event.dart';
 part 'projects_state.dart';
 
 class ProjectsBloc extends Bloc<ProjectsEvent, ProjectsState> {
@@ -18,9 +19,15 @@ class ProjectsBloc extends Bloc<ProjectsEvent, ProjectsState> {
     on<CreateProject>(_onCreateProject);
     on<UpdateProject>(_onUpdateProject);
   }
-  void _onLoadProjects(LoadProjects event, Emitter<ProjectsState> emit) {
+  void _onLoadProjects(LoadProjects event, Emitter<ProjectsState> emit) async {
     emit(ProjectsLoading());
-    emit(const ProjectsLoaded([]));
+    await emit.forEach(_projectsRepository.getProjects(event.user),
+        onData: (data) {
+      print('Projects Bloc received Projects State: $data');
+      return ProjectsLoaded(data);
+    }, onError: (error, stackTrace) {
+      return ProjectsError(error.toString());
+    });
   }
 
   void _onLoadProject(LoadProject event, Emitter<ProjectsState> emit) {
@@ -31,11 +38,15 @@ class ProjectsBloc extends Bloc<ProjectsEvent, ProjectsState> {
   void _onCreateProject(
       CreateProject event, Emitter<ProjectsState> emit) async {
     emit(ProjectSending(event.project));
-    await _projectsRepository.createProject(event.project);
+    String? newProjectId =
+        await _projectsRepository.createProject(event.project);
+    if (newProjectId == null) {
+      emit(const ProjectsError('Error creating project'));
+      return;
+    }
+    await _projectsRepository.createProjectReference(event.user, newProjectId);
     await Future.delayed(const Duration(seconds: 2));
     emit(ProjectCreated(event.project));
-    await Future.delayed(const Duration(seconds: 2));
-    emit(const ProjectsLoaded([]));
   }
 
   void _onUpdateProject(

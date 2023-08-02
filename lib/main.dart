@@ -155,7 +155,8 @@ class _MyAppState extends State<MyApp> {
           BlocProvider(
             create: (context) => ProjectsBloc(
                 projectsRepository: context.read<ProjectsRepository>())
-              ..add(LoadProjects()),
+              ..add(
+                  LoadProjects(user: context.read<ProfileBloc>().state.user!)),
           ),
         ],
         child: MaterialApp.router(

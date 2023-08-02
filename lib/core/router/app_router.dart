@@ -17,6 +17,7 @@ import 'package:honeybadger/payments/view/payments_page.dart';
 import 'package:honeybadger/profile/bloc/profile_bloc.dart';
 import 'package:honeybadger/profile/model/user.dart';
 import 'package:honeybadger/profile/view/profile_page.dart';
+import 'package:honeybadger/projects/bloc/projects_bloc.dart';
 import 'package:honeybadger/projects/create-project/view/create_project.dart';
 import 'package:honeybadger/projects/model/project.dart';
 import 'package:honeybadger/projects/view/project_details_page/project_page.dart';
@@ -100,7 +101,15 @@ GoRouter goRouter = GoRouter(
     GoRoute(
       path: '/projects',
       name: 'projects',
-      builder: (context, state) => const ProjectsPage(),
+      builder: (context, state) {
+        if (context.read<ProfileBloc>().state.user != null &&
+            context.read<ProjectsBloc>().state is ProjectsLoaded == false) {
+          context
+              .read<ProjectsBloc>()
+              .add(LoadProjects(user: context.read<ProfileBloc>().state.user!));
+        }
+        return const ProjectsPage();
+      },
     ),
     GoRoute(
         path: '/messages',

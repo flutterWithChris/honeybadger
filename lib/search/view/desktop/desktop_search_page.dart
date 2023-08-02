@@ -6,9 +6,7 @@ import 'package:material_design_icons_flutter/material_design_icons_flutter.dart
 import '../../../core/constants.dart';
 import '../../../core/presentation/system/main_navigation_bar.dart';
 import '../../../core/presentation/system/mobile_sliver_app_bar.dart';
-import '../../../profile/model/user.dart';
 import '../../../projects/model/project.dart';
-import '../../../projects/model/project_category.dart';
 
 class DesktopSearchPage extends StatefulWidget {
   const DesktopSearchPage({super.key});
@@ -267,16 +265,8 @@ class _DesktopSearchPageState extends State<DesktopSearchPage> {
                   child: ProjectCard(
                     project: Project(
                       id: '1',
-                      client: User(
-                          id: '5',
-                          firstName: 'John',
-                          lastName: 'Doe',
-                          city: 'San Francisco',
-                          state: 'CA',
-                          photoUrl: '',
-                          email: '',
-                          ratingCount: 4,
-                          rating: 4.5),
+                      clientId: 'l028jt2RgQe5ksneyYdW',
+                      clientName: 'Dwight Schrute',
                       title:
                           'Create an app for a Veterinarian\'s office patients.',
                       description:
@@ -284,10 +274,7 @@ class _DesktopSearchPageState extends State<DesktopSearchPage> {
                       budget: 10000,
                       duration: ProjectDuration.recurring,
                       skills: ['Flutter', 'Dart', 'Firebase'],
-                      category: ProjectCategory(
-                        id: '1',
-                        name: 'Mobile App Development',
-                      ),
+                      category: 'Mobile App Development',
                       projectType: ProjectType.fixed,
                       visibility: ProjectVisibility.public,
                       status: ProjectStatus.open,
@@ -304,16 +291,8 @@ class _DesktopSearchPageState extends State<DesktopSearchPage> {
                   child: ProjectCard(
                     project: Project(
                       id: '2',
-                      client: User(
-                          id: '1',
-                          firstName: 'John',
-                          lastName: 'Doe',
-                          city: 'San Francisco',
-                          state: 'CA',
-                          photoUrl: '',
-                          email: '',
-                          ratingCount: 4,
-                          rating: 4.5),
+                      clientId: 'l028jt2RgQe5ksneyYdW',
+                      clientName: 'Angela Martin',
                       title:
                           'Create an app for a Veterinarian\'s office patients.',
                       description:
@@ -321,10 +300,7 @@ class _DesktopSearchPageState extends State<DesktopSearchPage> {
                       budget: 10000,
                       duration: ProjectDuration.recurring,
                       skills: ['Flutter', 'Dart', 'Firebase'],
-                      category: ProjectCategory(
-                        id: '1',
-                        name: 'Mobile App Development',
-                      ),
+                      category: 'Mobile App Development',
                       projectType: ProjectType.fixed,
                       visibility: ProjectVisibility.public,
                       status: ProjectStatus.open,
@@ -341,16 +317,8 @@ class _DesktopSearchPageState extends State<DesktopSearchPage> {
                   child: ProjectCard(
                     project: Project(
                       id: '3',
-                      client: User(
-                          id: '2',
-                          firstName: 'John',
-                          lastName: 'Doe',
-                          city: 'San Francisco',
-                          state: 'CA',
-                          photoUrl: '',
-                          email: '',
-                          ratingCount: 4,
-                          rating: 4.5),
+                      clientId: 'l028jt2RgQe5ksneyYdW',
+                      clientName: 'Kevin Malone',
                       title:
                           'Create an app for a Veterinarian\'s office patients.',
                       description:
@@ -358,10 +326,7 @@ class _DesktopSearchPageState extends State<DesktopSearchPage> {
                       budget: 10000,
                       duration: ProjectDuration.recurring,
                       skills: ['Flutter', 'Dart', 'Firebase'],
-                      category: ProjectCategory(
-                        id: '1',
-                        name: 'Mobile App Development',
-                      ),
+                      category: 'Mobile App Development',
                       projectType: ProjectType.fixed,
                       visibility: ProjectVisibility.public,
                       status: ProjectStatus.open,
@@ -378,16 +343,8 @@ class _DesktopSearchPageState extends State<DesktopSearchPage> {
                   child: ProjectCard(
                     project: Project(
                       id: '4',
-                      client: User(
-                          id: '3',
-                          firstName: 'John',
-                          lastName: 'Doe',
-                          city: 'San Francisco',
-                          state: 'CA',
-                          photoUrl: '',
-                          email: '',
-                          ratingCount: 4,
-                          rating: 4.5),
+                      clientId: 'l028jt2RgQe5ksneyYdW',
+                      clientName: 'Micheal Scott',
                       title:
                           'Create an app for a Veterinarian\'s office patients.',
                       description:
@@ -395,10 +352,7 @@ class _DesktopSearchPageState extends State<DesktopSearchPage> {
                       budget: 10000,
                       duration: ProjectDuration.recurring,
                       skills: ['Flutter', 'Dart', 'Firebase'],
-                      category: ProjectCategory(
-                        id: '1',
-                        name: 'Mobile App Development',
-                      ),
+                      category: 'Mobile App Development',
                       projectType: ProjectType.fixed,
                       visibility: ProjectVisibility.public,
                       status: ProjectStatus.open,
@@ -415,16 +369,8 @@ class _DesktopSearchPageState extends State<DesktopSearchPage> {
                   child: ProjectCard(
                     project: Project(
                       id: '5',
-                      client: User(
-                          id: '4',
-                          firstName: 'John',
-                          lastName: 'Doe',
-                          city: 'San Francisco',
-                          state: 'CA',
-                          photoUrl: '',
-                          email: '',
-                          ratingCount: 4,
-                          rating: 4.5),
+                      clientId: 'l028jt2RgQe5ksneyYdW',
+                      clientName: 'John Doe',
                       title:
                           'Create an app for a Veterinarian\'s office patients.',
                       description:
@@ -432,10 +378,7 @@ class _DesktopSearchPageState extends State<DesktopSearchPage> {
                       budget: 10000,
                       duration: ProjectDuration.recurring,
                       skills: ['Flutter', 'Dart', 'Firebase'],
-                      category: ProjectCategory(
-                        id: '1',
-                        name: 'Mobile App Development',
-                      ),
+                      category: 'Mobile App Development',
                       projectType: ProjectType.fixed,
                       visibility: ProjectVisibility.public,
                       status: ProjectStatus.open,

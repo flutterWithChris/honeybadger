@@ -30,6 +30,7 @@ class ProjectCard extends StatelessWidget {
           children: [
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Flexible(
                   flex: 3,
@@ -38,7 +39,7 @@ class ProjectCard extends StatelessWidget {
                     child: Material(
                       color: Colors.transparent,
                       child: Text(project.title!,
-                          maxLines: 1,
+                          maxLines: 2,
                           overflow: TextOverflow.ellipsis,
                           style:
                               Theme.of(context).textTheme.titleMedium?.copyWith(
@@ -81,24 +82,10 @@ class ProjectCard extends StatelessWidget {
                 ),
               ],
             ),
-            // const GutterTiny(),
+            const GutterTiny(),
             Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Hero(
-                  tag: '${project.id}-category',
-                  child: Material(
-                    color: Colors.transparent,
-                    child: Text(
-                      project.category!.name!,
-                      maxLines: 1,
-                      style: const TextStyle(
-                        fontStyle: FontStyle.italic,
-                      ),
-                    ),
-                  ),
-                ),
-                const GutterTiny(),
                 Hero(
                   tag: '${project.id}-description',
                   child: Material(
@@ -113,7 +100,7 @@ class ProjectCard extends StatelessWidget {
                 ),
               ],
             ),
-            const Gutter(),
+            const GutterSmall(),
             Wrap(
               spacing: 16.0,
               children: [
@@ -143,6 +130,28 @@ class ProjectCard extends StatelessWidget {
                 )
               ],
             ),
+            // Hero(
+            //   tag: '${project.id}-category',
+            //   child: Material(
+            //     color: Colors.transparent,
+            //     child: SizedBox(
+            //       height: 32.0,
+            //       child: FittedBox(
+            //         child: Chip(
+            //           visualDensity: VisualDensity.compact,
+            //           label: Text(
+            //             project.category!,
+            //             maxLines: 1,
+            //             style: const TextStyle(
+            //               fontStyle: FontStyle.italic,
+            //               fontWeight: FontWeight.bold,
+            //             ),
+            //           ),
+            //         ),
+            //       ),
+            //     ),
+            //   ),
+            // ),
             // Row(
             //   mainAxisAlignment: MainAxisAlignment.end,
             //   children: [

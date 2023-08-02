@@ -40,16 +40,19 @@ class MobileProfilePage extends StatelessWidget {
               if (state is ProfileError) {
                 return SliverFillRemaining(
                   child: Center(
-                    child: Column(children: [
-                      const Icon(Icons.error_outline, size: 40.0),
-                      const GutterSmall(),
-                      const Text('Error Loading Profile!'),
-                      ElevatedButton(
-                          onPressed: () {
-                            context.read<ProfileBloc>().add(LoadProfile());
-                          },
-                          child: const Text('Retry'))
-                    ]),
+                    child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          const Icon(Icons.error_outline, size: 40.0),
+                          const GutterSmall(),
+                          const Text('Error Loading Profile!'),
+                          const Gutter(),
+                          ElevatedButton(
+                              onPressed: () {
+                                context.read<ProfileBloc>().add(LoadProfile());
+                              },
+                              child: const Text('Retry'))
+                        ]),
                   ),
                 );
               }

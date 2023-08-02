@@ -26,16 +26,17 @@ late Timer _autosaveTimestampTimer;
 DateTime? _lastSavedAt;
 String? _lastSavedAtString;
 
-class MobileProjectDetailsPage extends StatefulWidget {
+class MobileClientProjectDetailsPage extends StatefulWidget {
   final Project project;
-  const MobileProjectDetailsPage({required this.project, super.key});
+  const MobileClientProjectDetailsPage({required this.project, super.key});
 
   @override
-  State<MobileProjectDetailsPage> createState() =>
-      _MobileProjectDetailsPageState();
+  State<MobileClientProjectDetailsPage> createState() =>
+      _MobileClientProjectDetailsPageState();
 }
 
-class _MobileProjectDetailsPageState extends State<MobileProjectDetailsPage> {
+class _MobileClientProjectDetailsPageState
+    extends State<MobileClientProjectDetailsPage> {
   final bool _writingProposal = false;
 
   final _proposalController = TextEditingController();
@@ -75,312 +76,235 @@ class _MobileProjectDetailsPageState extends State<MobileProjectDetailsPage> {
       body: CustomScrollView(
         slivers: [
           const MobileSliverAppBar(),
-          SliverList(
-              delegate: SliverChildListDelegate([
-            Padding(
-              padding: const EdgeInsets.all(16.0),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
+          SliverPadding(
+            padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 8.0),
+            sliver: SliverList(
+                delegate: SliverChildListDelegate([
+              Hero(
+                tag: '${widget.project.id}-category',
+                child: Material(
+                  color: Colors.transparent,
+                  child: Text(widget.project.category!,
+                      style: Theme.of(context)
+                          .textTheme
+                          .bodyMedium
+                          ?.copyWith(fontStyle: FontStyle.italic)),
+                ),
+              ),
+              const GutterSmall(),
+              Hero(
+                tag: '${widget.project.id}-title',
+                child: Material(
+                  color: Colors.transparent,
+                  child: Text(widget.project.title!,
+                      style: Theme.of(context).textTheme.headlineSmall),
+                ),
+              ),
+              const GutterSmall(),
+              const DefaultTabController(
+                length: 3,
+                child: TabBar(tabs: [
+                  Tab(
+                    text: 'Details',
+                  ),
+                  Tab(
+                    text: 'Proposals',
+                  ),
+                  Tab(
+                    text: 'Messages',
+                  ),
+                ]),
+              ),
+              const Gutter(),
+              Row(
+                children: [
+                  widget.project.startDate != null
+                      ? Text.rich(
+                          TextSpan(
+                              text: 'Start:  ',
+                              children: [
+                                TextSpan(
+                                    text: Jiffy.parseFromDateTime(
+                                            widget.project.startDate!)
+                                        .yMMMMd,
+                                    style: const TextStyle(
+                                        fontWeight: FontWeight.normal))
+                              ],
+                              style:
+                                  const TextStyle(fontWeight: FontWeight.bold)),
+                        )
+                      : const Text.rich(
+                          TextSpan(
+                              text: 'Start:  ',
+                              children: [
+                                TextSpan(
+                                    text: 'N/A',
+                                    style: TextStyle(
+                                        fontWeight: FontWeight.normal))
+                              ],
+                              style: TextStyle(fontWeight: FontWeight.bold)),
+                        ),
+                  const GutterSmall(),
+                  widget.project.endDate != null
+                      ? Text.rich(
+                          TextSpan(
+                              text: 'End:  ',
+                              children: [
+                                TextSpan(
+                                    text: Jiffy.parseFromDateTime(
+                                            widget.project.endDate!)
+                                        .yMMMMd,
+                                    style: const TextStyle(
+                                        fontWeight: FontWeight.normal))
+                              ],
+                              style:
+                                  const TextStyle(fontWeight: FontWeight.bold)),
+                        )
+                      : const Text.rich(
+                          TextSpan(
+                              text: 'End:  ',
+                              children: [
+                                TextSpan(
+                                    text: 'N/A',
+                                    style: TextStyle(
+                                        fontWeight: FontWeight.normal))
+                              ],
+                              style: TextStyle(fontWeight: FontWeight.bold)),
+                        ),
+                ],
+              ),
+              const GutterSmall(),
+              Wrap(
+                spacing: 16.0,
+                runSpacing: 8.0,
+                crossAxisAlignment: WrapCrossAlignment.center,
                 children: [
                   Hero(
-                    tag: '${widget.project.id}-category',
-                    child: Material(
-                      color: Colors.transparent,
-                      child: Text(widget.project.category!,
-                          style: Theme.of(context)
-                              .textTheme
-                              .bodyMedium
-                              ?.copyWith(fontStyle: FontStyle.italic)),
-                    ),
-                  ),
-                  const GutterSmall(),
-                  Hero(
-                    tag: '${widget.project.id}-title',
-                    child: Material(
-                      color: Colors.transparent,
-                      child: Text(widget.project.title!,
-                          style: Theme.of(context).textTheme.headlineSmall),
-                    ),
-                  ),
-                  const GutterSmall(),
-
-                  Row(
-                    children: [
-                      widget.project.startDate != null
-                          ? Text.rich(
-                              TextSpan(
-                                  text: 'Start:  ',
-                                  children: [
-                                    TextSpan(
-                                        text: Jiffy.parseFromDateTime(
-                                                widget.project.startDate!)
-                                            .yMMMMd,
-                                        style: const TextStyle(
-                                            fontWeight: FontWeight.normal))
-                                  ],
-                                  style: const TextStyle(
-                                      fontWeight: FontWeight.bold)),
-                            )
-                          : const Text.rich(
-                              TextSpan(
-                                  text: 'Start:  ',
-                                  children: [
-                                    TextSpan(
-                                        text: 'N/A',
-                                        style: TextStyle(
-                                            fontWeight: FontWeight.normal))
-                                  ],
-                                  style:
-                                      TextStyle(fontWeight: FontWeight.bold)),
-                            ),
-                      const GutterSmall(),
-                      widget.project.endDate != null
-                          ? Text.rich(
-                              TextSpan(
-                                  text: 'End:  ',
-                                  children: [
-                                    TextSpan(
-                                        text: Jiffy.parseFromDateTime(
-                                                widget.project.endDate!)
-                                            .yMMMMd,
-                                        style: const TextStyle(
-                                            fontWeight: FontWeight.normal))
-                                  ],
-                                  style: const TextStyle(
-                                      fontWeight: FontWeight.bold)),
-                            )
-                          : const Text.rich(
-                              TextSpan(
-                                  text: 'End:  ',
-                                  children: [
-                                    TextSpan(
-                                        text: 'N/A',
-                                        style: TextStyle(
-                                            fontWeight: FontWeight.normal))
-                                  ],
-                                  style:
-                                      TextStyle(fontWeight: FontWeight.bold)),
-                            ),
-                    ],
-                  ),
-
-                  const GutterSmall(),
-                  Wrap(
-                    spacing: 16.0,
-                    runSpacing: 8.0,
-                    crossAxisAlignment: WrapCrossAlignment.center,
-                    children: [
-                      Hero(
-                        tag: '${widget.project.id}-budget',
-                        child: Material(
-                          color: Colors.transparent,
-                          type: MaterialType.transparency,
-                          child: Chip(
-                            visualDensity: VisualDensity.compact,
-                            padding: EdgeInsets.zero,
-                            side: BorderSide.none,
-                            elevation: 1,
-                            backgroundColor: Theme.of(context).primaryColor,
-                            label: Text(
-                                numberFormat.format(widget.project.budget),
-                                maxLines: 1,
-                                overflow: TextOverflow.ellipsis,
-                                style: Theme.of(context)
-                                    .textTheme
-                                    .titleSmall
-                                    ?.copyWith(
-                                      fontWeight: FontWeight.bold,
-                                      color: Theme.of(context)
-                                          .colorScheme
-                                          .onPrimary,
-                                    )),
-                          ),
-                        ),
-                      ),
-                      Chip(
-                        visualDensity: VisualDensity.compact,
-                        padding: EdgeInsets.zero,
-                        label: Row(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            Icon(MdiIcons.cashLock, size: 16.0),
-                            const GutterSmall(),
-                            Text(
-                                parseEnumName(
-                                    widget.project.projectType.toString()),
-                                style: Theme.of(context).textTheme.bodyMedium),
-                          ],
-                        ),
-                      ),
-                      ProjectStatusChip(project: widget.project)
-                    ],
-                  ),
-                  const Gutter(),
-                  Hero(
-                    tag: '${widget.project.id}-description',
+                    tag: '${widget.project.id}-budget',
                     child: Material(
                       color: Colors.transparent,
                       type: MaterialType.transparency,
-                      child: Text(widget.project.description!,
-                          style: Theme.of(context).textTheme.bodyMedium),
+                      child: Chip(
+                        visualDensity: VisualDensity.compact,
+                        padding: EdgeInsets.zero,
+                        side: BorderSide.none,
+                        elevation: 1,
+                        backgroundColor: Theme.of(context).primaryColor,
+                        label: Text(numberFormat.format(widget.project.budget),
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                            style: Theme.of(context)
+                                .textTheme
+                                .titleSmall
+                                ?.copyWith(
+                                  fontWeight: FontWeight.bold,
+                                  color:
+                                      Theme.of(context).colorScheme.onPrimary,
+                                )),
+                      ),
                     ),
                   ),
-
-                  context.watch<ProposalBloc>().state is ProposalStarted
-                      ? const GutterTiny()
-                      : const Gutter(),
-                  CreateProposalSection(
-                    widget: widget,
-                    proposalController: _proposalController,
-                  ),
-                  const Gutter(),
-                  ExpansionTile(
-                    tilePadding: EdgeInsets.zero,
-                    backgroundColor: Theme.of(context).colorScheme.surface,
-                    title: Row(
-                      //mainAxisSize: MainAxisSize.min,
-                      children: [
-                        // Padding(
-                        //   padding: const EdgeInsets.only(right: 16.0),
-                        //   child: CircleAvatar(
-                        //       radius: 14,
-                        //       child: widget.project.client!.photoUrl == null ||
-                        //               widget.project.client!.photoUrl!.isEmpty
-                        //           ? const Icon(Icons.person, size: 20)
-                        //           : CachedNetworkImage(
-                        //               imageUrl:
-                        //                   widget.project.client!.photoUrl!)),
-                        // ),
-                        Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                Text(
-                                  widget.project.clientName!.split(' ')[0],
-                                  style: Theme.of(context).textTheme.titleLarge,
-                                ),
-                                const GutterSmall(),
-                                const Text('-'),
-                                const GutterSmall(),
-                                // if (widget.project.client!.rating != null)
-                                //   Row(
-                                //     mainAxisSize: MainAxisSize.min,
-                                //     mainAxisAlignment: MainAxisAlignment.end,
-                                //     children: [
-                                //       Icon(
-                                //         MdiIcons.star,
-                                //         color: Colors.yellow[600],
-                                //         size: 16.0,
-                                //       ),
-                                //       const GutterTiny(),
-                                //       Text.rich(TextSpan(
-                                //           text:
-                                //               '${widget.project.client!.rating.toString()} ',
-                                //           children: [
-                                //             TextSpan(
-                                //                 text:
-                                //                     '(${widget.project.client!.ratingCount.toString()})',
-                                //                 style: Theme.of(context)
-                                //                     .textTheme
-                                //                     .bodySmall)
-                                //           ])),
-                                //     ],
-                                //   )
-                              ],
-                            ),
-                            Row(
-                              children: [
-                                Icon(MdiIcons.mapMarkerOutline, size: 14.0),
-                                const GutterTiny(),
-                                // Text(
-                                //     '${widget.project.client!.city!}, ${widget.project.client!.state!}',
-                                //     style:
-                                //         Theme.of(context).textTheme.bodyMedium),
-                              ],
-                            ),
-                          ],
-                        ),
-                      ],
-                    ),
-                    children: const [],
-                  ),
-                  // Text('Client', style: Theme.of(context).textTheme.titleSmall),
-                  ExpansionTile(
-                    tilePadding: EdgeInsets.zero,
-                    expandedAlignment: Alignment.center,
-                    backgroundColor: Theme.of(context).colorScheme.surface,
-                    title: Row(
+                  Chip(
+                    visualDensity: VisualDensity.compact,
+                    padding: EdgeInsets.zero,
+                    label: Row(
                       mainAxisSize: MainAxisSize.min,
                       children: [
-                        Icon(MdiIcons.tools, size: 24.0),
-                        const Gutter(),
-                        Text('Skills',
-                            style: Theme.of(context).textTheme.titleLarge),
+                        Icon(MdiIcons.cashLock, size: 16.0),
+                        const GutterSmall(),
+                        Text(
+                            parseEnumName(
+                                widget.project.projectType.toString()),
+                            style: Theme.of(context).textTheme.bodyMedium),
                       ],
                     ),
-                    children: [
-                      Padding(
-                        padding: const EdgeInsets.only(
-                            left: 16.0, bottom: 16.0, right: 16.0),
-                        child: Row(
-                          children: [
-                            Wrap(
-                              spacing: 8.0,
-                              crossAxisAlignment: WrapCrossAlignment.center,
-                              alignment: WrapAlignment.start,
-                              children: [
-                                for (String skill in widget.project.skills!)
-                                  Chip(
-                                    padding: EdgeInsets.zero,
-                                    label: Text(skill),
-                                  ),
-                              ],
-                            ),
-                          ],
-                        ),
-                      )
-                    ],
                   ),
-                  if (widget.project.tags != null &&
-                      widget.project.tags!.isNotEmpty)
-                    ExpansionTile(
-                      tilePadding: EdgeInsets.zero,
-                      expandedAlignment: Alignment.center,
-                      backgroundColor: Theme.of(context).colorScheme.surface,
-                      title: Row(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          Icon(MdiIcons.tagText, size: 24.0),
-                          const Gutter(),
-                          Text('Tags',
-                              style: Theme.of(context).textTheme.titleLarge),
-                        ],
-                      ),
-                      children: [
-                        Padding(
-                          padding: const EdgeInsets.only(bottom: 16.0),
-                          child: Wrap(
-                            spacing: 8.0,
-                            crossAxisAlignment: WrapCrossAlignment.center,
-                            alignment: WrapAlignment.start,
-                            runAlignment: WrapAlignment.start,
-                            children: [
-                              for (String tag in widget.project.tags!)
-                                Chip(
-                                  padding: EdgeInsets.zero,
-                                  label: Text(tag),
-                                ),
-                            ],
-                          ),
-                        )
-                      ],
-                    ),
+                  ProjectStatusChip(project: widget.project)
                 ],
               ),
-            ),
-          ])),
+              const Gutter(),
+              Hero(
+                tag: '${widget.project.id}-description',
+                child: Material(
+                  color: Colors.transparent,
+                  type: MaterialType.transparency,
+                  child: Text(widget.project.description!,
+                      style: Theme.of(context).textTheme.bodyMedium),
+                ),
+              ),
+              const Gutter(),
+              ExpansionTile(
+                tilePadding: EdgeInsets.zero,
+                expandedAlignment: Alignment.center,
+                backgroundColor: Theme.of(context).colorScheme.surface,
+                title: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Icon(MdiIcons.tools, size: 24.0),
+                    const Gutter(),
+                    Text('Skills',
+                        style: Theme.of(context).textTheme.titleLarge),
+                  ],
+                ),
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.only(
+                        left: 16.0, bottom: 16.0, right: 16.0),
+                    child: Row(
+                      children: [
+                        Wrap(
+                          spacing: 8.0,
+                          crossAxisAlignment: WrapCrossAlignment.center,
+                          alignment: WrapAlignment.start,
+                          children: [
+                            for (String skill in widget.project.skills!)
+                              Chip(
+                                padding: EdgeInsets.zero,
+                                label: Text(skill),
+                              ),
+                          ],
+                        ),
+                      ],
+                    ),
+                  )
+                ],
+              ),
+              if (widget.project.tags != null &&
+                  widget.project.tags!.isNotEmpty)
+                ExpansionTile(
+                  tilePadding: EdgeInsets.zero,
+                  expandedAlignment: Alignment.center,
+                  backgroundColor: Theme.of(context).colorScheme.surface,
+                  title: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Icon(MdiIcons.tagText, size: 24.0),
+                      const Gutter(),
+                      Text('Tags',
+                          style: Theme.of(context).textTheme.titleLarge),
+                    ],
+                  ),
+                  children: [
+                    Padding(
+                      padding: const EdgeInsets.only(bottom: 16.0),
+                      child: Wrap(
+                        spacing: 8.0,
+                        crossAxisAlignment: WrapCrossAlignment.center,
+                        alignment: WrapAlignment.start,
+                        runAlignment: WrapAlignment.start,
+                        children: [
+                          for (String tag in widget.project.tags!)
+                            Chip(
+                              padding: EdgeInsets.zero,
+                              label: Text(tag),
+                            ),
+                        ],
+                      ),
+                    )
+                  ],
+                ),
+            ])),
+          ),
         ],
       ),
     );
@@ -394,7 +318,7 @@ class CreateProposalSection extends StatelessWidget {
     required TextEditingController proposalController,
   }) : _proposalController = proposalController;
 
-  final MobileProjectDetailsPage widget;
+  final MobileClientProjectDetailsPage widget;
   final TextEditingController _proposalController;
 
   @override

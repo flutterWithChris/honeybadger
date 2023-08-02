@@ -31,10 +31,10 @@ class PaymentsBloc extends Bloc<PaymentsEvent, PaymentsState>
     on<LoadPayments>(_onLoadPayments);
     on<SendPayment>(_onSendPayment);
     on<LoadBalanceAndTransactions>(_onLoadBalanceAndTransactions);
-    _profileSubscription = _profileBloc.stream.listen((state) {
-      print('Profile State: $state');
-      if (state is ProfileLoaded) {
-        add(LoadPayments(user: state.user));
+    _profileSubscription = _profileBloc.stream.listen((profileState) {
+      print('Profile State: $profileState');
+      if (profileState is ProfileLoaded && state is PaymentsInitial) {
+        add(LoadPayments(user: profileState.user));
       }
     });
     print('Payments State: $state');
