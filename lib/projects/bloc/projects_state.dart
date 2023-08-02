@@ -20,6 +20,15 @@ class ProjectsLoaded extends ProjectsState {
   List<Object> get props => [projects];
 }
 
+class ProjectSending extends ProjectsState {
+  final Project project;
+
+  const ProjectSending(this.project);
+
+  @override
+  List<Object> get props => [project];
+}
+
 class ProjectLoading extends ProjectsState {}
 
 class ProjectCreated extends ProjectsState {
@@ -29,4 +38,31 @@ class ProjectCreated extends ProjectsState {
 
   @override
   List<Object> get props => [project];
+}
+
+class ProjectUpdated extends ProjectsState {
+  final Project project;
+
+  const ProjectUpdated(this.project);
+
+  @override
+  List<Object> get props => [project];
+}
+
+class ProjectDeleted extends ProjectsState {
+  final Project project;
+
+  const ProjectDeleted(this.project);
+
+  @override
+  List<Object> get props => [project];
+}
+
+class ProjectsError extends ProjectsState {
+  final String message;
+
+  const ProjectsError(this.message);
+
+  @override
+  List<Object> get props => [message];
 }

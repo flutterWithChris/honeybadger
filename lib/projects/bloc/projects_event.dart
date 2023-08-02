@@ -20,9 +20,24 @@ class LoadProject extends ProjectsEvent {
 }
 
 class CreateProject extends ProjectsEvent {
+  @override
+  @override
+  @override
   final Project project;
 
   const CreateProject({required this.project});
+
+  @override
+  List<Object> get props => [project];
+}
+
+class UpdateProject extends ProjectsEvent {
+  @override
+  @override
+  @override
+  final Project project;
+
+  const UpdateProject({required this.project});
 
   @override
   List<Object> get props => [project];

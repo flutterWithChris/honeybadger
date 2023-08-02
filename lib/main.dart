@@ -20,6 +20,8 @@ import 'package:honeybadger/payments/bloc/payments_bloc.dart';
 import 'package:honeybadger/payments/repository/payments_repository.dart';
 import 'package:honeybadger/profile/bloc/profile_bloc.dart';
 import 'package:honeybadger/profile/repository/user_respository.dart';
+import 'package:honeybadger/projects/bloc/projects_bloc.dart';
+import 'package:honeybadger/projects/repository/projects_repository.dart';
 import 'package:honeybadger/proposals/bloc/proposal_bloc.dart';
 import 'package:honeybadger/proposals/repo/proposal_repository.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -107,6 +109,9 @@ class _MyAppState extends State<MyApp> {
         RepositoryProvider<PaymentsRepository>(
           create: (context) => PaymentsRepository()..initializeStripe(),
         ),
+        RepositoryProvider<ProjectsRepository>(
+          create: (context) => ProjectsRepository(),
+        ),
       ],
       child: MultiBlocProvider(
         providers: [
@@ -146,7 +151,12 @@ class _MyAppState extends State<MyApp> {
               lazy: false,
               create: (context) => PaymentsBloc(
                   profileBloc: context.read<ProfileBloc>(),
-                  paymentsRepository: context.read<PaymentsRepository>()))
+                  paymentsRepository: context.read<PaymentsRepository>())),
+          BlocProvider(
+            create: (context) => ProjectsBloc(
+                projectsRepository: context.read<ProjectsRepository>())
+              ..add(LoadProjects()),
+          ),
         ],
         child: MaterialApp.router(
           scaffoldMessengerKey: scaffoldKey,

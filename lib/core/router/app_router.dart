@@ -72,8 +72,8 @@ GoRouter goRouter = GoRouter(
       builder: (context, state) => const SearchPage(),
     ),
     GoRoute(
-        path: '/job/:id',
-        name: 'job',
+        path: '/project/:id',
+        name: 'project',
         pageBuilder: (context, state) => CustomTransitionPage(
               transitionDuration: 400.ms,
               reverseTransitionDuration: 400.ms,

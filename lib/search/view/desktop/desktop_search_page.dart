@@ -18,7 +18,7 @@ class DesktopSearchPage extends StatefulWidget {
 }
 
 class _DesktopSearchPageState extends State<DesktopSearchPage> {
-  PaymentType paymentType = PaymentType.fixedPrice;
+  ProjectType paymentType = ProjectType.fixed;
   List<double> hourlyRateRange = [40, 60];
   List<int> fixedPriceRange = [5000, 10000];
   final TextEditingController _minHourlyRateController =
@@ -95,17 +95,17 @@ class _DesktopSearchPageState extends State<DesktopSearchPage> {
                         ),
                         itemBuilder: (context) => [
                           const PopupMenuItem(
-                            value: PaymentType.hourly,
+                            value: ProjectType.hourly,
                             child: Text('Hourly'),
                           ),
                           const PopupMenuItem(
-                            value: PaymentType.fixedPrice,
+                            value: ProjectType.fixed,
                             child: Text('Fixed Price'),
                           ),
                         ],
                       ),
                       const Gutter(),
-                      paymentType == PaymentType.hourly
+                      paymentType == ProjectType.hourly
                           ? PopupMenuButton(
                               elevation: 0.3,
                               //  icon: Icon(MdiIcons.filterVariant),
@@ -135,7 +135,7 @@ class _DesktopSearchPageState extends State<DesktopSearchPage> {
                                 PopupMenuItem(
                                   padding: const EdgeInsets.symmetric(
                                       horizontal: 8.0, vertical: 4.0),
-                                  value: PaymentType.hourly,
+                                  value: ProjectType.hourly,
                                   child: TextField(
                                     controller: _minHourlyRateController,
                                     autofocus: true,
@@ -149,7 +149,7 @@ class _DesktopSearchPageState extends State<DesktopSearchPage> {
                                 PopupMenuItem(
                                   padding: const EdgeInsets.symmetric(
                                       horizontal: 8.0, vertical: 4.0),
-                                  value: PaymentType.hourly,
+                                  value: ProjectType.hourly,
                                   child: TextField(
                                     controller: _maxHourlyRateController,
                                     decoration: const InputDecoration(
@@ -205,7 +205,7 @@ class _DesktopSearchPageState extends State<DesktopSearchPage> {
                                 PopupMenuItem(
                                   padding: const EdgeInsets.symmetric(
                                       horizontal: 8.0, vertical: 4.0),
-                                  value: PaymentType.hourly,
+                                  value: ProjectType.hourly,
                                   child: TextField(
                                     controller: _minFixedPriceController,
                                     autofocus: true,
@@ -219,7 +219,7 @@ class _DesktopSearchPageState extends State<DesktopSearchPage> {
                                 PopupMenuItem(
                                   padding: const EdgeInsets.symmetric(
                                       horizontal: 8.0, vertical: 4.0),
-                                  value: PaymentType.hourly,
+                                  value: ProjectType.hourly,
                                   child: TextField(
                                     controller: _maxFixedPriceController,
                                     decoration: const InputDecoration(
@@ -288,7 +288,7 @@ class _DesktopSearchPageState extends State<DesktopSearchPage> {
                         id: '1',
                         name: 'Mobile App Development',
                       ),
-                      paymentType: PaymentType.fixedPrice,
+                      projectType: ProjectType.fixed,
                       visibility: ProjectVisibility.public,
                       status: ProjectStatus.open,
                       weekEstimate: 10,
@@ -325,7 +325,7 @@ class _DesktopSearchPageState extends State<DesktopSearchPage> {
                         id: '1',
                         name: 'Mobile App Development',
                       ),
-                      paymentType: PaymentType.fixedPrice,
+                      projectType: ProjectType.fixed,
                       visibility: ProjectVisibility.public,
                       status: ProjectStatus.open,
                       weekEstimate: 10,
@@ -362,7 +362,7 @@ class _DesktopSearchPageState extends State<DesktopSearchPage> {
                         id: '1',
                         name: 'Mobile App Development',
                       ),
-                      paymentType: PaymentType.fixedPrice,
+                      projectType: ProjectType.fixed,
                       visibility: ProjectVisibility.public,
                       status: ProjectStatus.open,
                       weekEstimate: 10,
@@ -399,7 +399,7 @@ class _DesktopSearchPageState extends State<DesktopSearchPage> {
                         id: '1',
                         name: 'Mobile App Development',
                       ),
-                      paymentType: PaymentType.fixedPrice,
+                      projectType: ProjectType.fixed,
                       visibility: ProjectVisibility.public,
                       status: ProjectStatus.open,
                       weekEstimate: 10,
@@ -436,7 +436,7 @@ class _DesktopSearchPageState extends State<DesktopSearchPage> {
                         id: '1',
                         name: 'Mobile App Development',
                       ),
-                      paymentType: PaymentType.fixedPrice,
+                      projectType: ProjectType.fixed,
                       visibility: ProjectVisibility.public,
                       status: ProjectStatus.open,
                       weekEstimate: 10,

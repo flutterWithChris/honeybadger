@@ -14,4 +14,13 @@ class ProjectCategory {
       image: json['image'],
     );
   }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'id': id,
+      'name': name,
+      'description': description,
+      'image': image,
+    };
+  }
 }

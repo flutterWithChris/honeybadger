@@ -7,11 +7,10 @@ import 'package:honeybadger/core/constants.dart';
 import 'package:honeybadger/core/presentation/system/main_navigation_bar.dart';
 import 'package:honeybadger/core/presentation/system/mobile_sliver_app_bar.dart';
 import 'package:honeybadger/profile/model/user.dart';
+import 'package:honeybadger/projects/model/project.dart';
 import 'package:honeybadger/projects/model/project_category.dart';
 import 'package:honeybadger/search/view/widgets/Project_card.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
-
-import '../../../projects/model/project.dart';
 
 class MobileSearchPage extends StatefulWidget {
   const MobileSearchPage({super.key});
@@ -21,7 +20,7 @@ class MobileSearchPage extends StatefulWidget {
 }
 
 class _MobileSearchPageState extends State<MobileSearchPage> {
-  PaymentType paymentType = PaymentType.fixedPrice;
+  ProjectType projectType = ProjectType.fixed;
   List<double> hourlyRateRange = [40, 60];
   List<int> fixedPriceRange = [5000, 10000];
   final TextEditingController _minHourlyRateController =
@@ -100,20 +99,20 @@ class _MobileSearchPageState extends State<MobileSearchPage> {
                               child: child,
                             );
                           },
-                          child: paymentType == PaymentType.hourly
+                          child: projectType == ProjectType.hourly
                               ? PopupMenuButton(
                                   padding: EdgeInsets.zero,
                                   key: const ValueKey('hourlyPopupMenu'),
                                   //  icon: Icon(MdiIcons.filterVariant),
                                   onSelected: (value) {
                                     setState(() {
-                                      paymentType = value;
+                                      projectType = value;
                                     });
                                   },
                                   child: Chip(
                                     label: Row(
                                       children: [
-                                        paymentType == PaymentType.hourly
+                                        projectType == ProjectType.hourly
                                             ? Icon(
                                                 MdiIcons.clockTimeFourOutline,
                                                 size: 14.0)
@@ -126,7 +125,7 @@ class _MobileSearchPageState extends State<MobileSearchPage> {
                                               ),
                                         const GutterTiny(),
                                         Text(parseEnumName(
-                                            paymentType.toString())),
+                                            projectType.toString())),
                                       ],
                                     ),
                                     visualDensity: VisualDensity.compact,
@@ -135,11 +134,11 @@ class _MobileSearchPageState extends State<MobileSearchPage> {
                                   ),
                                   itemBuilder: (context) => [
                                     const PopupMenuItem(
-                                      value: PaymentType.hourly,
+                                      value: ProjectType.hourly,
                                       child: Text('Hourly'),
                                     ),
                                     const PopupMenuItem(
-                                      value: PaymentType.fixedPrice,
+                                      value: ProjectType.fixed,
                                       child: Text('Fixed Price'),
                                     ),
                                   ],
@@ -150,13 +149,13 @@ class _MobileSearchPageState extends State<MobileSearchPage> {
                                   //  icon: Icon(MdiIcons.filterVariant),
                                   onSelected: (value) {
                                     setState(() {
-                                      paymentType = value;
+                                      projectType = value;
                                     });
                                   },
                                   child: Chip(
                                     label: Row(
                                       children: [
-                                        paymentType == PaymentType.hourly
+                                        projectType == ProjectType.hourly
                                             ? Icon(
                                                 MdiIcons.clockTimeFourOutline,
                                                 size: 14.0)
@@ -169,7 +168,7 @@ class _MobileSearchPageState extends State<MobileSearchPage> {
                                               ),
                                         const GutterTiny(),
                                         Text(parseEnumName(
-                                            paymentType.toString())),
+                                            projectType.toString())),
                                       ],
                                     ),
                                     visualDensity: VisualDensity.compact,
@@ -178,11 +177,11 @@ class _MobileSearchPageState extends State<MobileSearchPage> {
                                   ),
                                   itemBuilder: (context) => [
                                     const PopupMenuItem(
-                                      value: PaymentType.hourly,
+                                      value: ProjectType.hourly,
                                       child: Text('Hourly'),
                                     ),
                                     const PopupMenuItem(
-                                      value: PaymentType.fixedPrice,
+                                      value: ProjectType.fixed,
                                       child: Text('Fixed Price'),
                                     ),
                                   ],
@@ -201,7 +200,7 @@ class _MobileSearchPageState extends State<MobileSearchPage> {
                               child: child,
                             );
                           },
-                          child: paymentType == PaymentType.hourly
+                          child: ProjectType == ProjectType.hourly
                               ? PopupMenuButton(
                                   key: const ValueKey('hourly'),
                                   elevation: 0.3,
@@ -214,7 +213,7 @@ class _MobileSearchPageState extends State<MobileSearchPage> {
                                   },
                                   onSelected: (value) {
                                     setState(() {
-                                      paymentType = value;
+                                      projectType = value;
                                     });
                                   },
                                   child: Chip(
@@ -232,7 +231,7 @@ class _MobileSearchPageState extends State<MobileSearchPage> {
                                     PopupMenuItem(
                                       padding: const EdgeInsets.symmetric(
                                           horizontal: 8.0, vertical: 4.0),
-                                      value: PaymentType.hourly,
+                                      value: ProjectType.hourly,
                                       child: TextField(
                                         controller: _minHourlyRateController,
                                         autofocus: true,
@@ -246,7 +245,7 @@ class _MobileSearchPageState extends State<MobileSearchPage> {
                                     PopupMenuItem(
                                       padding: const EdgeInsets.symmetric(
                                           horizontal: 8.0, vertical: 4.0),
-                                      value: PaymentType.hourly,
+                                      value: ProjectType.hourly,
                                       child: TextField(
                                         controller: _maxHourlyRateController,
                                         decoration: const InputDecoration(
@@ -286,7 +285,7 @@ class _MobileSearchPageState extends State<MobileSearchPage> {
                                   },
                                   onSelected: (value) {
                                     setState(() {
-                                      paymentType = value;
+                                      projectType = value;
                                     });
                                   },
                                   child: Chip(
@@ -304,7 +303,7 @@ class _MobileSearchPageState extends State<MobileSearchPage> {
                                     PopupMenuItem(
                                       padding: const EdgeInsets.symmetric(
                                           horizontal: 8.0, vertical: 4.0),
-                                      value: PaymentType.hourly,
+                                      value: ProjectType.hourly,
                                       child: TextField(
                                         controller: _minFixedPriceController,
                                         autofocus: true,
@@ -318,7 +317,7 @@ class _MobileSearchPageState extends State<MobileSearchPage> {
                                     PopupMenuItem(
                                       padding: const EdgeInsets.symmetric(
                                           horizontal: 8.0, vertical: 4.0),
-                                      value: PaymentType.hourly,
+                                      value: ProjectType.hourly,
                                       child: TextField(
                                         controller: _maxFixedPriceController,
                                         decoration: const InputDecoration(
@@ -409,7 +408,7 @@ List<ProjectCard> sampleProjectCards = [
         id: '1',
         name: 'Mobile App Development',
       ),
-      paymentType: PaymentType.fixedPrice,
+      projectType: ProjectType.fixed,
       visibility: ProjectVisibility.public,
       status: ProjectStatus.open,
       weekEstimate: 10,
@@ -441,7 +440,7 @@ List<ProjectCard> sampleProjectCards = [
         id: '1',
         name: 'Graphic Design',
       ),
-      paymentType: PaymentType.fixedPrice,
+      projectType: ProjectType.fixed,
       visibility: ProjectVisibility.public,
       status: ProjectStatus.open,
       weekEstimate: 10,
@@ -473,7 +472,7 @@ List<ProjectCard> sampleProjectCards = [
         id: '1',
         name: 'Web Development',
       ),
-      paymentType: PaymentType.fixedPrice,
+      projectType: ProjectType.fixed,
       visibility: ProjectVisibility.public,
       status: ProjectStatus.open,
       weekEstimate: 10,
@@ -505,7 +504,7 @@ List<ProjectCard> sampleProjectCards = [
         id: '1',
         name: 'Mobile App Development',
       ),
-      paymentType: PaymentType.fixedPrice,
+      projectType: ProjectType.fixed,
       visibility: ProjectVisibility.public,
       status: ProjectStatus.open,
       weekEstimate: 10,
@@ -537,7 +536,7 @@ List<ProjectCard> sampleProjectCards = [
         id: '1',
         name: 'Mobile App Development',
       ),
-      paymentType: PaymentType.fixedPrice,
+      projectType: ProjectType.fixed,
       visibility: ProjectVisibility.public,
       status: ProjectStatus.open,
       weekEstimate: 10,

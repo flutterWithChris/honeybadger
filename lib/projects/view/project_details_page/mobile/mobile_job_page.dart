@@ -207,7 +207,7 @@ class _MobileProjectDetailsPageState extends State<MobileProjectDetailsPage> {
                             const GutterSmall(),
                             Text(
                                 parseEnumName(
-                                    widget.project.paymentType.toString()),
+                                    widget.project.projectType.toString()),
                                 style: Theme.of(context).textTheme.bodyMedium),
                           ],
                         ),
@@ -293,8 +293,8 @@ class _MobileProjectDetailsPageState extends State<MobileProjectDetailsPage> {
                                 ? Column(
                                     mainAxisSize: MainAxisSize.min,
                                     children: [
-                                      widget.project.paymentType ==
-                                              PaymentType.fixedPrice
+                                      widget.project.projectType ==
+                                              ProjectType.fixed
                                           ? Flexible(
                                               child: Theme(
                                                 data: Theme.of(context)

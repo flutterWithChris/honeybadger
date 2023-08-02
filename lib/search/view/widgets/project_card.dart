@@ -21,7 +21,7 @@ class ProjectCard extends StatelessWidget {
     return InkWell(
       onTap: () {
         context.read<ProposalBloc>().add(LoadProposal(project.id!));
-        context.push('/Project/${project.id}', extra: Project);
+        context.push('/project/${project.id}', extra: project);
       },
       child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 16.0),
@@ -128,7 +128,7 @@ class ProjectCard extends StatelessWidget {
                   children: [
                     Icon(MdiIcons.clockOutline, size: 14.0),
                     const GutterTiny(),
-                    Text('${parseEnumName(project.paymentType.toString())} ',
+                    Text('${parseEnumName(project.projectType.toString())} ',
                         style: Theme.of(context).textTheme.bodySmall),
                   ],
                 ),
