@@ -33,6 +33,31 @@ class ProjectsRepository {
     }
   }
 
+// Get projects from list of project ids
+  Stream<List<Project>> getProjectsFromIds(List<String> projectIds) {
+    try {
+      return _firestore
+          .collection('projects')
+          .where('id', whereIn: projectIds)
+          .snapshots()
+          .map((snapshot) {
+        return snapshot.docs.map((doc) {
+          return Project.fromDocument(doc);
+        }).toList();
+      });
+    } on FirebaseException catch (e) {
+      print(e);
+      scaffoldKey.currentState!.showSnackBar(
+        const SnackBar(
+          backgroundColor: Colors.red,
+          behavior: SnackBarBehavior.floating,
+          content: Text('Error loading projects'),
+        ),
+      );
+      return const Stream.empty();
+    }
+  }
+
   Stream<Project>? getProject(String projectId) {
     try {
       return _firestore

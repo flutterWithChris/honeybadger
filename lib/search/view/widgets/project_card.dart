@@ -32,7 +32,7 @@ class ProjectCard extends StatelessWidget {
           children: [
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              crossAxisAlignment: CrossAxisAlignment.start,
+              crossAxisAlignment: CrossAxisAlignment.center,
               children: [
                 Flexible(
                   flex: 3,
@@ -84,7 +84,7 @@ class ProjectCard extends StatelessWidget {
                 ),
               ],
             ),
-            const GutterTiny(),
+            //const GutterTiny(),
             Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -121,15 +121,16 @@ class ProjectCard extends StatelessWidget {
                         style: Theme.of(context).textTheme.bodySmall),
                   ],
                 ),
-                Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Icon(MdiIcons.calendarClock, size: 14.0),
-                    const GutterTiny(),
-                    Text('${project.weekEstimate! / 4} Months ',
-                        style: Theme.of(context).textTheme.bodySmall),
-                  ],
-                )
+
+                // Row(
+                //   mainAxisSize: MainAxisSize.min,
+                //   children: [
+                //     Icon(MdiIcons.calendarClock, size: 14.0),
+                //     const GutterTiny(),
+                //     Text('${project.weekEstimate! / 4} Months ',
+                //         style: Theme.of(context).textTheme.bodySmall),
+                //   ],
+                // )
               ],
             ),
             // Hero(

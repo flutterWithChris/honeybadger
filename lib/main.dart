@@ -24,6 +24,8 @@ import 'package:honeybadger/projects/bloc/projects_bloc.dart';
 import 'package:honeybadger/projects/repository/projects_repository.dart';
 import 'package:honeybadger/proposals/bloc/proposal_bloc.dart';
 import 'package:honeybadger/proposals/repo/proposal_repository.dart';
+import 'package:honeybadger/search/bloc/search_bloc.dart';
+import 'package:honeybadger/search/repository/search_repository.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:uni_links/uni_links.dart';
 
@@ -112,6 +114,9 @@ class _MyAppState extends State<MyApp> {
         RepositoryProvider<ProjectsRepository>(
           create: (context) => ProjectsRepository(),
         ),
+        RepositoryProvider<SearchRepository>(
+          create: (context) => SearchRepository(),
+        ),
       ],
       child: MultiBlocProvider(
         providers: [
@@ -157,6 +162,14 @@ class _MyAppState extends State<MyApp> {
                 projectsRepository: context.read<ProjectsRepository>())
               ..add(
                   LoadProjects(user: context.read<ProfileBloc>().state.user!)),
+          ),
+          BlocProvider(
+            lazy: false,
+            create: (context) => SearchBloc(
+              projectsRepository: context.read<ProjectsRepository>(),
+              searchRepository: context.read<SearchRepository>(),
+              profileBloc: context.read<ProfileBloc>(),
+            ),
           ),
         ],
         child: MaterialApp.router(

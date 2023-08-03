@@ -149,7 +149,7 @@ class User {
     phoneNumber = snap['phoneNumber'];
     address = snap['address'];
     title = snap['title'];
-    skills = snap['skills'];
+    skills = snap['skills'] != null ? List<String>.from(snap['skills']) : null;
     hourlyRate = snap['hourlyRate'];
     userType = snap['userType'] == 'freelancer'
         ? UserType.freelancer

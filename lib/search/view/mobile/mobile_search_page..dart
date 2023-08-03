@@ -1,12 +1,15 @@
 import 'package:animations/animations.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_gutter/flutter_gutter.dart';
 import 'package:go_router/go_router.dart';
 import 'package:honeybadger/core/constants.dart';
 import 'package:honeybadger/core/presentation/system/main_navigation_bar.dart';
 import 'package:honeybadger/core/presentation/system/mobile_sliver_app_bar.dart';
+import 'package:honeybadger/profile/bloc/profile_bloc.dart';
 import 'package:honeybadger/projects/model/project.dart';
+import 'package:honeybadger/search/bloc/search_bloc.dart';
 import 'package:honeybadger/search/view/widgets/Project_card.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 
@@ -63,6 +66,9 @@ class _MobileSearchPageState extends State<MobileSearchPage> {
                                     .inputDecorationTheme
                                     .fillColor))),
                     child: SearchBar(
+                      onChanged: (value) {
+                        // context.read<SearchBloc>().add()
+                      },
                       hintText: 'Search Projects..',
                       hintStyle: MaterialStatePropertyAll(TextStyle(
                           color: Theme.of(context)
@@ -357,26 +363,74 @@ class _MobileSearchPageState extends State<MobileSearchPage> {
               ),
             ),
           ),
-          SliverList(
-            delegate: SliverChildBuilderDelegate(
-              childCount: sampleProjectCards.length,
-              (context, index) => Column(
-                children: [
-                  index == 0 ? const Divider() : const SizedBox(),
-                  index == 0 ? const GutterSmall() : const SizedBox(),
-                  Padding(
-                    padding: const EdgeInsets.only(bottom: 8.0),
-                    child: ProjectCard(
-                      project: sampleProjectCards[index].project,
+          BlocBuilder<SearchBloc, SearchState>(
+            builder: (context, state) {
+              if (state is SearchError) {
+                return SliverFillRemaining(
+                  child: Center(
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Icon(
+                          Icons.error_outline_rounded,
+                          size: 72.0,
+                          color:
+                              Theme.of(context).brightness == Brightness.light
+                                  ? Colors.grey[500]
+                                  : Colors.grey[600],
+                        ),
+                        const Gutter(),
+                        Text('Error Searching Projects..',
+                            style: Theme.of(context)
+                                .textTheme
+                                .bodyLarge
+                                ?.copyWith(
+                                    color: Theme.of(context).brightness ==
+                                            Brightness.light
+                                        ? Colors.grey[500]
+                                        : Colors.grey[600])),
+                        const Gutter(),
+                        FilledButton(
+                            onPressed: () => context.read<SearchBloc>().add(
+                                LoadSearch(
+                                    context.read<ProfileBloc>().state.user!)),
+                            child: const Text('Retry'))
+                      ],
                     ),
                   ),
-                  const Padding(
-                    padding: EdgeInsets.symmetric(vertical: 8.0),
-                    child: Divider(),
+                );
+              }
+              if (state is SearchLoading) {
+                return const SliverFillRemaining(
+                    child: Center(child: CircularProgressIndicator()));
+              }
+              if (state is SearchLoaded) {
+                return SliverList(
+                  delegate: SliverChildBuilderDelegate(
+                    childCount: state.projects?.length,
+                    (context, index) => Column(
+                      children: [
+                        index == 0 ? const Divider() : const SizedBox(),
+                        index == 0 ? const GutterSmall() : const SizedBox(),
+                        Padding(
+                          padding: const EdgeInsets.only(bottom: 8.0),
+                          child: ProjectCard(
+                            project: state.projects![index],
+                          ),
+                        ),
+                        const Padding(
+                          padding: EdgeInsets.symmetric(vertical: 8.0),
+                          child: Divider(),
+                        ),
+                      ],
+                    ),
                   ),
-                ],
-              ),
-            ),
+                );
+              } else {
+                return const SliverFillRemaining(
+                    child: Center(child: Text('Something went wrong!')));
+              }
+            },
           )
         ],
       ),
