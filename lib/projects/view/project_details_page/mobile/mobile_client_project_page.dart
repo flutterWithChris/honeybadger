@@ -67,172 +67,343 @@ class _MobileClientProjectDetailsPageState
 
   @override
   Widget build(BuildContext context) {
+    return Scaffold(
+      bottomNavigationBar: const MainBottomNavBar(),
+      body: DefaultTabController(
+        length: 2,
+        child: CustomScrollView(
+          slivers: [
+            const MobileSliverAppBar(),
+            SliverPadding(
+              padding: const EdgeInsets.symmetric(horizontal: 16.0),
+              sliver: SliverToBoxAdapter(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Hero(
+                      tag: '${widget.project.id}-category',
+                      child: Material(
+                        color: Colors.transparent,
+                        child: Text(widget.project.category!,
+                            style: Theme.of(context)
+                                .textTheme
+                                .bodyMedium
+                                ?.copyWith(fontStyle: FontStyle.italic)),
+                      ),
+                    ),
+                    const GutterSmall(),
+                    Hero(
+                      tag: '${widget.project.id}-title',
+                      child: Material(
+                        color: Colors.transparent,
+                        child: Text(widget.project.title!,
+                            style: Theme.of(context).textTheme.headlineSmall),
+                      ),
+                    ),
+                    const GutterSmall(),
+                  ],
+                ),
+              ),
+            ),
+            const SliverToBoxAdapter(
+              child: TabBar(tabs: [
+                Tab(
+                  text: 'Details',
+                ),
+                Tab(
+                  text: 'Proposals',
+                ),
+              ]),
+            ),
+            SliverFillRemaining(
+              child: TabBarView(
+                children: [
+                  DetailsTab(project: widget.project),
+                  ProposalsTab(project: widget.project),
+                ],
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class ProposalsTab extends StatefulWidget {
+  final Project project;
+  const ProposalsTab({super.key, required this.project});
+
+  @override
+  State<ProposalsTab> createState() => _ProposalsTabState();
+}
+
+class _ProposalsTabState extends State<ProposalsTab> {
+  @override
+  Widget build(BuildContext context) {
+    return BlocBuilder<ProposalBloc, ProposalState>(
+      builder: (context, state) {
+        if (state is ProposalLoading) {
+          return const Center(
+              child: CircularProgressIndicator(
+            color: Colors.blue,
+          ));
+        }
+        if (state is ProposalsError) {
+          return const Center(
+              child: Text('Something went wrong. Please try again later.'));
+        }
+        if (state is ProposalsLoaded) {
+          if (state.proposals.isNotEmpty) {
+            return ListView(
+              children: [
+                for (Proposal proposal in state.proposals)
+                  Slidable(
+                    endActionPane: ActionPane(
+                      motion: const DrawerMotion(),
+                      children: [
+                        SlidableAction(
+                          borderRadius:
+                              const BorderRadius.all(Radius.circular(16.0)),
+                          label: 'Delete',
+                          onPressed: (context) {
+                            context
+                                .read<ProposalBloc>()
+                                .add(DeleteProposal(proposal));
+                          },
+                          backgroundColor: Colors.redAccent,
+                          foregroundColor: Colors.white,
+                          icon: Icons.delete_outline,
+                        ),
+                      ],
+                    ),
+                    child: ListTile(
+                      onTap: () {
+                        Navigator.of(context).pushNamed(
+                            '/projects/${widget.project.id}/proposals/${proposal.id}');
+                      },
+                      title: Text(proposal.freelancerName!),
+                      subtitle: Text(
+                          '${proposal.milestones?.length} milestones • ${proposal.createdAt != null ? Jiffy.parseFromDateTime(proposal.createdAt!).fromNow() : 'N/A'}'),
+                      trailing: Text(NumberFormat.simpleCurrency(
+                              decimalDigits: 0,
+                              locale:
+                                  Localizations.localeOf(context).toString())
+                          .format(proposal.budgetTotal)),
+                    ),
+                  ),
+              ],
+            );
+          } else {
+            return Center(
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Icon(MdiIcons.fileDocumentOutline,
+                      size: 64.0,
+                      color: Theme.of(context).colorScheme.secondary),
+                  const Gutter(),
+                  Text('No proposals yet.',
+                      style: Theme.of(context).textTheme.bodyMedium),
+                ],
+              ),
+            );
+          }
+        }
+        return Container();
+      },
+    );
+    if (widget.project.proposalCount == 0) {
+      return Center(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(MdiIcons.fileDocumentOutline,
+                size: 64.0, color: Theme.of(context).colorScheme.secondary),
+            const Gutter(),
+            Text('No proposals yet.',
+                style: Theme.of(context).textTheme.bodyMedium),
+          ],
+        ),
+      );
+    }
+    return ListView(
+      children: const [],
+    );
+  }
+}
+
+class DetailsTab extends StatefulWidget {
+  final Project project;
+  const DetailsTab({super.key, required this.project});
+
+  @override
+  State<DetailsTab> createState() => _DetailsTabState();
+}
+
+class _DetailsTabState extends State<DetailsTab> {
+  @override
+  Widget build(BuildContext context) {
     final NumberFormat numberFormat = NumberFormat.simpleCurrency(
       decimalDigits: 0,
       locale: Localizations.localeOf(context).toString(),
     );
-    return Scaffold(
-      bottomNavigationBar: const MainBottomNavBar(),
-      body: CustomScrollView(
-        slivers: [
-          const MobileSliverAppBar(),
-          SliverPadding(
-            padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 8.0),
-            sliver: SliverList(
-                delegate: SliverChildListDelegate([
-              Hero(
-                tag: '${widget.project.id}-category',
-                child: Material(
-                  color: Colors.transparent,
-                  child: Text(widget.project.category!,
-                      style: Theme.of(context)
-                          .textTheme
-                          .bodyMedium
-                          ?.copyWith(fontStyle: FontStyle.italic)),
-                ),
-              ),
-              const GutterSmall(),
-              Hero(
-                tag: '${widget.project.id}-title',
-                child: Material(
-                  color: Colors.transparent,
-                  child: Text(widget.project.title!,
-                      style: Theme.of(context).textTheme.headlineSmall),
-                ),
-              ),
-              const GutterSmall(),
-              const DefaultTabController(
-                length: 3,
-                child: TabBar(tabs: [
-                  Tab(
-                    text: 'Details',
-                  ),
-                  Tab(
-                    text: 'Proposals',
-                  ),
-                  Tab(
-                    text: 'Messages',
-                  ),
-                ]),
-              ),
-              const Gutter(),
-              Row(
-                children: [
-                  widget.project.startDate != null
-                      ? Text.rich(
-                          TextSpan(
-                              text: 'Start:  ',
-                              children: [
-                                TextSpan(
-                                    text: Jiffy.parseFromDateTime(
-                                            widget.project.startDate!)
-                                        .yMMMMd,
-                                    style: const TextStyle(
-                                        fontWeight: FontWeight.normal))
-                              ],
-                              style:
-                                  const TextStyle(fontWeight: FontWeight.bold)),
-                        )
-                      : const Text.rich(
-                          TextSpan(
-                              text: 'Start:  ',
-                              children: [
-                                TextSpan(
-                                    text: 'N/A',
-                                    style: TextStyle(
-                                        fontWeight: FontWeight.normal))
-                              ],
-                              style: TextStyle(fontWeight: FontWeight.bold)),
-                        ),
-                  const GutterSmall(),
-                  widget.project.endDate != null
-                      ? Text.rich(
-                          TextSpan(
-                              text: 'End:  ',
-                              children: [
-                                TextSpan(
-                                    text: Jiffy.parseFromDateTime(
-                                            widget.project.endDate!)
-                                        .yMMMMd,
-                                    style: const TextStyle(
-                                        fontWeight: FontWeight.normal))
-                              ],
-                              style:
-                                  const TextStyle(fontWeight: FontWeight.bold)),
-                        )
-                      : const Text.rich(
-                          TextSpan(
-                              text: 'End:  ',
-                              children: [
-                                TextSpan(
-                                    text: 'N/A',
-                                    style: TextStyle(
-                                        fontWeight: FontWeight.normal))
-                              ],
-                              style: TextStyle(fontWeight: FontWeight.bold)),
-                        ),
-                ],
-              ),
-              const GutterSmall(),
-              Wrap(
-                spacing: 16.0,
-                runSpacing: 8.0,
-                crossAxisAlignment: WrapCrossAlignment.center,
-                children: [
-                  Hero(
-                    tag: '${widget.project.id}-budget',
-                    child: Material(
-                      color: Colors.transparent,
-                      type: MaterialType.transparency,
-                      child: Chip(
-                        visualDensity: VisualDensity.compact,
-                        padding: EdgeInsets.zero,
-                        side: BorderSide.none,
-                        elevation: 1,
-                        backgroundColor: Theme.of(context).primaryColor,
-                        label: Text(numberFormat.format(widget.project.budget),
-                            maxLines: 1,
-                            overflow: TextOverflow.ellipsis,
-                            style: Theme.of(context)
-                                .textTheme
-                                .titleSmall
-                                ?.copyWith(
-                                  fontWeight: FontWeight.bold,
-                                  color:
-                                      Theme.of(context).colorScheme.onPrimary,
-                                )),
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 8.0),
+      child: ListView(
+          padding: const EdgeInsets.symmetric(vertical: 8.0),
+          children: [
+            Row(
+              children: [
+                widget.project.startDate != null
+                    ? Text.rich(
+                        TextSpan(
+                            text: 'Start:  ',
+                            children: [
+                              TextSpan(
+                                  text: Jiffy.parseFromDateTime(
+                                          widget.project.startDate!)
+                                      .yMMMMd,
+                                  style: const TextStyle(
+                                      fontWeight: FontWeight.normal))
+                            ],
+                            style:
+                                const TextStyle(fontWeight: FontWeight.bold)),
+                      )
+                    : const Text.rich(
+                        TextSpan(
+                            text: 'Start:  ',
+                            children: [
+                              TextSpan(
+                                  text: 'N/A',
+                                  style:
+                                      TextStyle(fontWeight: FontWeight.normal))
+                            ],
+                            style: TextStyle(fontWeight: FontWeight.bold)),
                       ),
+                const GutterSmall(),
+                widget.project.endDate != null
+                    ? Text.rich(
+                        TextSpan(
+                            text: 'End:  ',
+                            children: [
+                              TextSpan(
+                                  text: Jiffy.parseFromDateTime(
+                                          widget.project.endDate!)
+                                      .yMMMMd,
+                                  style: const TextStyle(
+                                      fontWeight: FontWeight.normal))
+                            ],
+                            style:
+                                const TextStyle(fontWeight: FontWeight.bold)),
+                      )
+                    : const Text.rich(
+                        TextSpan(
+                            text: 'End:  ',
+                            children: [
+                              TextSpan(
+                                  text: 'N/A',
+                                  style:
+                                      TextStyle(fontWeight: FontWeight.normal))
+                            ],
+                            style: TextStyle(fontWeight: FontWeight.bold)),
+                      ),
+              ],
+            ),
+            const GutterSmall(),
+            Wrap(
+              spacing: 16.0,
+              runSpacing: 8.0,
+              crossAxisAlignment: WrapCrossAlignment.center,
+              children: [
+                Hero(
+                  tag: '${widget.project.id}-budget',
+                  child: Material(
+                    color: Colors.transparent,
+                    type: MaterialType.transparency,
+                    child: Chip(
+                      visualDensity: VisualDensity.compact,
+                      padding: EdgeInsets.zero,
+                      side: BorderSide.none,
+                      elevation: 1,
+                      backgroundColor: Theme.of(context).primaryColor,
+                      label: Text(numberFormat.format(widget.project.budget),
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                          style: Theme.of(context)
+                              .textTheme
+                              .titleSmall
+                              ?.copyWith(
+                                fontWeight: FontWeight.bold,
+                                color: Theme.of(context).colorScheme.onPrimary,
+                              )),
                     ),
                   ),
-                  Chip(
-                    visualDensity: VisualDensity.compact,
-                    padding: EdgeInsets.zero,
-                    label: Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Icon(MdiIcons.cashLock, size: 16.0),
-                        const GutterSmall(),
-                        Text(
-                            parseEnumName(
-                                widget.project.projectType.toString()),
-                            style: Theme.of(context).textTheme.bodyMedium),
-                      ],
-                    ),
+                ),
+                Chip(
+                  visualDensity: VisualDensity.compact,
+                  padding: EdgeInsets.zero,
+                  label: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Icon(MdiIcons.cashLock, size: 16.0),
+                      const GutterSmall(),
+                      Text(parseEnumName(widget.project.projectType.toString()),
+                          style: Theme.of(context).textTheme.bodyMedium),
+                    ],
                   ),
-                  ProjectStatusChip(project: widget.project)
+                ),
+                ProjectStatusChip(project: widget.project)
+              ],
+            ),
+            const Gutter(),
+            Hero(
+              tag: '${widget.project.id}-description',
+              child: Material(
+                color: Colors.transparent,
+                type: MaterialType.transparency,
+                child: Text(widget.project.description!,
+                    style: Theme.of(context).textTheme.bodyMedium),
+              ),
+            ),
+            const Gutter(),
+            ExpansionTile(
+              tilePadding: EdgeInsets.zero,
+              expandedAlignment: Alignment.center,
+              backgroundColor: Theme.of(context).colorScheme.surface,
+              title: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Icon(MdiIcons.tools, size: 24.0),
+                  const Gutter(),
+                  Text('Skills', style: Theme.of(context).textTheme.titleLarge),
                 ],
               ),
-              const Gutter(),
-              Hero(
-                tag: '${widget.project.id}-description',
-                child: Material(
-                  color: Colors.transparent,
-                  type: MaterialType.transparency,
-                  child: Text(widget.project.description!,
-                      style: Theme.of(context).textTheme.bodyMedium),
-                ),
-              ),
-              const Gutter(),
+              children: [
+                Padding(
+                  padding: const EdgeInsets.only(
+                      left: 16.0, bottom: 16.0, right: 16.0),
+                  child: Row(
+                    children: [
+                      Wrap(
+                        spacing: 8.0,
+                        crossAxisAlignment: WrapCrossAlignment.center,
+                        alignment: WrapAlignment.start,
+                        children: [
+                          for (String skill in widget.project.skills!)
+                            Chip(
+                              padding: EdgeInsets.zero,
+                              label: Text(skill),
+                            ),
+                        ],
+                      ),
+                    ],
+                  ),
+                )
+              ],
+            ),
+            if (widget.project.tags != null && widget.project.tags!.isNotEmpty)
               ExpansionTile(
                 tilePadding: EdgeInsets.zero,
                 expandedAlignment: Alignment.center,
@@ -240,73 +411,31 @@ class _MobileClientProjectDetailsPageState
                 title: Row(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    Icon(MdiIcons.tools, size: 24.0),
+                    Icon(MdiIcons.tagText, size: 24.0),
                     const Gutter(),
-                    Text('Skills',
-                        style: Theme.of(context).textTheme.titleLarge),
+                    Text('Tags', style: Theme.of(context).textTheme.titleLarge),
                   ],
                 ),
                 children: [
                   Padding(
-                    padding: const EdgeInsets.only(
-                        left: 16.0, bottom: 16.0, right: 16.0),
-                    child: Row(
+                    padding: const EdgeInsets.only(bottom: 16.0),
+                    child: Wrap(
+                      spacing: 8.0,
+                      crossAxisAlignment: WrapCrossAlignment.center,
+                      alignment: WrapAlignment.start,
+                      runAlignment: WrapAlignment.start,
                       children: [
-                        Wrap(
-                          spacing: 8.0,
-                          crossAxisAlignment: WrapCrossAlignment.center,
-                          alignment: WrapAlignment.start,
-                          children: [
-                            for (String skill in widget.project.skills!)
-                              Chip(
-                                padding: EdgeInsets.zero,
-                                label: Text(skill),
-                              ),
-                          ],
-                        ),
+                        for (String tag in widget.project.tags!)
+                          Chip(
+                            padding: EdgeInsets.zero,
+                            label: Text(tag),
+                          ),
                       ],
                     ),
                   )
                 ],
               ),
-              if (widget.project.tags != null &&
-                  widget.project.tags!.isNotEmpty)
-                ExpansionTile(
-                  tilePadding: EdgeInsets.zero,
-                  expandedAlignment: Alignment.center,
-                  backgroundColor: Theme.of(context).colorScheme.surface,
-                  title: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Icon(MdiIcons.tagText, size: 24.0),
-                      const Gutter(),
-                      Text('Tags',
-                          style: Theme.of(context).textTheme.titleLarge),
-                    ],
-                  ),
-                  children: [
-                    Padding(
-                      padding: const EdgeInsets.only(bottom: 16.0),
-                      child: Wrap(
-                        spacing: 8.0,
-                        crossAxisAlignment: WrapCrossAlignment.center,
-                        alignment: WrapAlignment.start,
-                        runAlignment: WrapAlignment.start,
-                        children: [
-                          for (String tag in widget.project.tags!)
-                            Chip(
-                              padding: EdgeInsets.zero,
-                              label: Text(tag),
-                            ),
-                        ],
-                      ),
-                    )
-                  ],
-                ),
-            ])),
-          ),
-        ],
-      ),
+          ]),
     );
   }
 }

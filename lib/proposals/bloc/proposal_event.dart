@@ -8,9 +8,19 @@ abstract class ProposalsEvent extends Equatable {
 }
 
 class LoadProposal extends ProposalsEvent {
-  final String jobId;
+  final String projectId;
+  final String userId;
 
-  const LoadProposal(this.jobId);
+  const LoadProposal(this.projectId, this.userId);
+}
+
+class LoadProposals extends ProposalsEvent {
+  final String projectId;
+
+  const LoadProposals(this.projectId);
+
+  @override
+  List<Object?> get props => [projectId];
 }
 
 class StartProposal extends ProposalsEvent {

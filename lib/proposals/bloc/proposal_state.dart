@@ -32,6 +32,15 @@ class ProposalStarted extends ProposalState {
   List<Object?> get props => [proposal];
 }
 
+class ProposalsLoaded extends ProposalState {
+  final List<Proposal> proposals;
+
+  const ProposalsLoaded(this.proposals);
+
+  @override
+  List<Object?> get props => [proposals];
+}
+
 class ProposalSaving extends ProposalState {
   @override
   final Proposal? proposal;

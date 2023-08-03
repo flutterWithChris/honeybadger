@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_gutter/flutter_gutter.dart';
 import 'package:go_router/go_router.dart';
 import 'package:honeybadger/core/constants.dart';
+import 'package:honeybadger/profile/bloc/profile_bloc.dart';
 import 'package:honeybadger/projects/model/project.dart';
 import 'package:honeybadger/proposals/bloc/proposal_bloc.dart';
 import 'package:intl/intl.dart';
@@ -20,7 +21,8 @@ class ProjectCard extends StatelessWidget {
     );
     return InkWell(
       onTap: () {
-        context.read<ProposalBloc>().add(LoadProposal(project.id!));
+        context.read<ProposalBloc>().add(LoadProposal(
+            project.id!, context.read<ProfileBloc>().state.user!.id!));
         context.push('/project/${project.id}', extra: project);
       },
       child: Padding(

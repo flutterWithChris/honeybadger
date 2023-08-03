@@ -6,6 +6,7 @@ import 'package:go_router/go_router.dart';
 import 'package:honeybadger/core/presentation/system/main_navigation_bar.dart';
 import 'package:honeybadger/projects/bloc/projects_bloc.dart';
 import 'package:honeybadger/projects/view/widgets/project_status_chip.dart';
+import 'package:honeybadger/proposals/bloc/proposal_bloc.dart';
 
 import '../../../core/presentation/system/mobile_jobs_app_bar.dart';
 import '../../model/project.dart';
@@ -101,33 +102,36 @@ class ActiveProjectsTab extends StatelessWidget {
             child: Padding(
               padding: const EdgeInsets.symmetric(vertical: 8.0),
               child: ListTile(
-                visualDensity: VisualDensity.comfortable,
-                title: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Expanded(
-                      flex: 3,
-                      child: Text(
-                        project.title!,
-                        style: Theme.of(context).textTheme.titleMedium,
-                        maxLines: 2,
-                        overflow: TextOverflow.ellipsis,
+                  visualDensity: VisualDensity.comfortable,
+                  title: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Expanded(
+                        flex: 3,
+                        child: Text(
+                          project.title!,
+                          style: Theme.of(context).textTheme.titleMedium,
+                          maxLines: 2,
+                          overflow: TextOverflow.ellipsis,
+                        ),
                       ),
-                    ),
-                    Flexible(
-                        child: SizedBox(
-                            height: 34.0,
-                            child: FittedBox(
-                                child: ProjectStatusChip(project: project)))),
-                  ],
-                ),
-                subtitle: Padding(
-                  padding: const EdgeInsets.only(top: 2.0),
-                  child: Text(project.description!),
-                ),
-                onTap: () =>
-                    context.push('/project/${project.id}', extra: project),
-              ),
+                      Flexible(
+                          child: SizedBox(
+                              height: 34.0,
+                              child: FittedBox(
+                                  child: ProjectStatusChip(project: project)))),
+                    ],
+                  ),
+                  subtitle: Padding(
+                    padding: const EdgeInsets.only(top: 2.0),
+                    child: Text(project.description!),
+                  ),
+                  onTap: () {
+                    context
+                        .read<ProposalBloc>()
+                        .add(LoadProposals(project.id!));
+                    context.push('/project/${project.id}', extra: project);
+                  }),
             ),
           );
         },

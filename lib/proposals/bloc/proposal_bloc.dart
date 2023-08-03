@@ -23,8 +23,16 @@ class ProposalBloc extends Bloc<ProposalsEvent, ProposalState> {
     on<LoadProposal>((event, emit) async {
       if (state is ProposalLoading == false) emit(ProposalLoading());
       Proposal? currentProposal;
-      // final proposal = await _proposalRepository.fetchProposal(event.jobId);
+      currentProposal = await _proposalRepository.fetchProposal(
+          event.projectId, event.userId);
       emit(ProposalLoaded(currentProposal));
+    });
+    on<LoadProposals>((event, emit) async {
+      if (state is ProposalLoading == false) emit(ProposalLoading());
+      List<Proposal>? proposals;
+      proposals =
+          await _proposalRepository.fetchProposalsByProject(event.projectId);
+      emit(ProposalsLoaded(proposals));
     });
     on<StartProposal>((event, emit) {
       emit(ProposalStarted(proposal: Proposal(jobId: event.jobId)));
