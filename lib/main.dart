@@ -199,7 +199,6 @@ class _MyAppState extends State<MyApp> {
             appBarStyle: FlexAppBarStyle.background,
             bottomAppBarElevation: 1.0,
             lightIsWhite: true,
-
             subThemesData: const FlexSubThemesData(
               blendOnLevel: 10,
               blendOnColors: false,

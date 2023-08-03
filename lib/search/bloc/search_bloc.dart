@@ -35,13 +35,14 @@ class SearchBloc extends Bloc<SearchEvent, SearchState> {
     on<LoadSearch>((event, emit) async {
       emit(SearchLoading());
       // TODO: Set default query to user's skills
-      _searchRepository.setQuery(event.user.skills!.join(' '));
+      _searchRepository.setQuery(event.user.skills!.join(' '), 'projects');
 
       // Get search results, then fetch the projects or freelancers
-      final value = await _searchRepository.getSearchResults().first;
+      final value = await _searchRepository.getSearchResults('projects').first;
 
       List<String> projectIds = [];
       for (Hit hit in value.hits) {
+        print('Hit found: ${hit.toString()}');
         projectIds.add(hit['objectID']);
       }
       print('Search Bloc received Project Ids: $projectIds');

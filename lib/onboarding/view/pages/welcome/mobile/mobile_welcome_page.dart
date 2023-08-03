@@ -137,7 +137,7 @@ class _MobileWelcomePageState extends State<MobileWelcomePage> {
                             ),
                           ),
                           const GutterLarge(),
-                          FilledButton.tonal(
+                          FilledButton(
                               onPressed: () async {
                                 print('Get Started Clicked');
                                 context.read<OnboardingBloc>().userType =

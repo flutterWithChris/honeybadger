@@ -4,7 +4,6 @@ import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:honeybadger/auth/bloc/auth_bloc.dart';
-
 import 'package:honeybadger/message/channel_page.dart';
 import 'package:honeybadger/message/view/messages_page.dart';
 import 'package:honeybadger/onboarding/stripe_confirmation.dart';
@@ -36,14 +35,14 @@ GoRouter goRouter = GoRouter(
         context.read<AuthBloc>().state.status == AuthStatus.authenticated;
     print('Logged in: $loggedIn');
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    bool onboarded = true;
+    bool onboarded = false;
 
     // onboarded = prefs.getBool('onboarded') ?? false;
     if (loggedIn == false) {
       return '/onboarding';
     }
     if (onboarded == false) {
-      if (state.location.contains('stripe-confirmation')) {
+      if (state.matchedLocation.contains('stripe-confirmation')) {
         return null;
       }
       return '/onboarding';
@@ -156,7 +155,7 @@ GoRouter goRouter = GoRouter(
                 LoadPayments(user: context.read<ProfileBloc>().state.user!));
           }
           return StripeConfirmationPage(
-            stripeAccountId: state.queryParameters['account_id']!,
+            stripeAccountId: state.uri.queryParameters['account_id']!,
           );
         }),
     GoRoute(

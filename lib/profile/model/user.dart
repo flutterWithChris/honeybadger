@@ -31,6 +31,7 @@ class User {
   DateTime? updatedAt;
   List<dynamic>? projectIds;
   List<dynamic>? proposalIds;
+  List<String>? categoryIds;
 
   User({
     this.id,
@@ -59,78 +60,8 @@ class User {
     this.updatedAt,
     this.projectIds,
     this.proposalIds,
+    this.categoryIds,
   });
-
-  User.fromJson(Map<String, dynamic> json) {
-    id = json['id'];
-    firstName = json['firstName'];
-    lastName = json['lastName'];
-    email = json['email'];
-    password = json['password'];
-    rating = json['rating'];
-    ratingCount = json['ratingCount'];
-    if (json['reviews'] != null) {
-      reviews = [];
-      json['reviews'].forEach((v) {
-        reviews?.add(Review.fromJson(v));
-      });
-    }
-    phoneNumber = json['phoneNumber'];
-    address = json['address'];
-    title = json['title'];
-    skills = json['skills'].cast<String>();
-    hourlyRate = json['hourlyRate'];
-    userType = json['userType'] == 'freelancer'
-        ? UserType.freelancer
-        : UserType.client;
-    portfolioProjects = json['portfolioProjects'] != null
-        ? (json['portfolioProjects'] as List)
-            .map((e) => PortfolioProject.fromJson(e))
-            .toList()
-        : null;
-    city = json['city'];
-    state = json['state'];
-    zip = json['zip'];
-    country = json['country'];
-    photoUrl = json['photoUrl'];
-    bio = json['bio'];
-    stripeAccountId = json['stripeAccountId'];
-    createdAt = DateTime.parse(json['createdAt']);
-    updatedAt = DateTime.parse(json['updatedAt']);
-    projectIds = json['projectIds'];
-    proposalIds = json['proposalIds'];
-  }
-
-  Map<String, dynamic> toJson() {
-    return {
-      'id': id,
-      'firstName': firstName,
-      'lastName': lastName,
-      'email': email,
-      'password': password,
-      'rating': rating,
-      'ratingCount': ratingCount,
-      'reviews': reviews?.map((e) => e.toJson()).toList(),
-      'phoneNumber': phoneNumber,
-      'address': address,
-      'title': title,
-      'skills': skills,
-      'hourlyRate': hourlyRate,
-      'userType': userType == UserType.freelancer ? 'freelancer' : 'client',
-      'portfolioProjects': portfolioProjects?.map((e) => e.toJson()).toList(),
-      'city': city,
-      'state': state,
-      'zip': zip,
-      'country': country,
-      'photoUrl': photoUrl,
-      'bio': bio,
-      'stripeAccountId': stripeAccountId,
-      'createdAt': createdAt?.toIso8601String(),
-      'updatedAt': updatedAt?.toIso8601String(),
-      'projectIds': projectIds,
-      'proposalIds': proposalIds,
-    };
-  }
 
   User.fromDocument(DocumentSnapshot snap) {
     id = snap.id;
@@ -170,35 +101,40 @@ class User {
     updatedAt = snap['updatedAt']?.toDate();
     projectIds = snap['projectIds'];
     proposalIds = snap['proposalIds'];
+    categoryIds = snap['categoryIds'];
   }
 
-  User toDocument() {
-    return User(
-      id: id,
-      firstName: firstName,
-      lastName: lastName,
-      email: email,
-      password: password,
-      rating: rating,
-      ratingCount: ratingCount,
-      reviews: reviews,
-      phoneNumber: phoneNumber,
-      address: address,
-      title: title,
-      skills: skills,
-      hourlyRate: hourlyRate,
-      userType: userType,
-      portfolioProjects: portfolioProjects,
-      city: city,
-      state: state,
-      zip: zip,
-      country: country,
-      photoUrl: photoUrl,
-      bio: bio,
-      stripeAccountId: stripeAccountId,
-      createdAt: createdAt,
-      updatedAt: updatedAt,
-    );
+  // To Document
+  Map<String, dynamic> toDocument() {
+    return {
+      'firstName': firstName,
+      'lastName': lastName,
+      'email': email,
+      'password': password,
+      'rating': rating,
+      'ratingCount': ratingCount,
+      'reviews': reviews?.map((v) => v.toJson()).toList(),
+      'phoneNumber': phoneNumber,
+      'address': address,
+      'title': title,
+      'skills': skills,
+      'hourlyRate': hourlyRate,
+      'userType': userType == UserType.freelancer ? 'freelancer' : 'client',
+      'portfolioProjects':
+          portfolioProjects?.map((e) => e.toJson()).toList() ?? [],
+      'city': city,
+      'state': state,
+      'zip': zip,
+      'country': country,
+      'photoUrl': photoUrl,
+      'bio': bio,
+      'stripeAccountId': stripeAccountId,
+      'createdAt': createdAt,
+      'updatedAt': updatedAt,
+      'projectIds': projectIds,
+      'proposalIds': proposalIds,
+      'categoryIds': categoryIds,
+    };
   }
 
   /// CopyWith
@@ -227,6 +163,7 @@ class User {
     String? stripeAccountId,
     DateTime? createdAt,
     DateTime? updatedAt,
+    List<String>? projectIds,
   }) {
     return User(
       id: id ?? this.id,
@@ -253,6 +190,7 @@ class User {
       stripeAccountId: stripeAccountId ?? this.stripeAccountId,
       createdAt: createdAt ?? this.createdAt,
       updatedAt: updatedAt ?? this.updatedAt,
+      projectIds: projectIds ?? this.projectIds,
     );
   }
 }

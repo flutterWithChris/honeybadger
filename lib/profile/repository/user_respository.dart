@@ -17,7 +17,7 @@ class UserRepository extends BaseUserRepository {
     return _firebaseFirestore
         .collection('users')
         .doc(user.id)
-        .set(user.toJson());
+        .set(user.toDocument());
   }
 
   @override
@@ -49,7 +49,7 @@ class UserRepository extends BaseUserRepository {
     return _firebaseFirestore
         .collection('users')
         .doc(user.id)
-        .update(user.toJson());
+        .update(user.toDocument());
   }
 
   @override

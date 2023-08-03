@@ -4,9 +4,11 @@ import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_gutter/flutter_gutter.dart';
 import 'package:flutter_typeahead/flutter_typeahead.dart';
+import 'package:honeybadger/search/repository/search_repository.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:phone_number/phone_number.dart';
 
+import '../../../../../profile/model/category.dart';
 import '../../../../../profile/model/user.dart';
 import '../../../../bloc/onboarding_bloc.dart';
 import '../../../signup_page.dart';
@@ -37,6 +39,7 @@ class _MobileProfileSetupState extends State<MobileProfileSetup> {
   final TextEditingController _skillsController = TextEditingController();
 
   final List<String> _skills = [];
+  Category? _selectedCategory;
   @override
   void initState() {
     // TODO: implement initState
@@ -206,17 +209,12 @@ class _MobileProfileSetupState extends State<MobileProfileSetup> {
                         textCapitalization: TextCapitalization.words,
                         decoration:
                             const InputDecoration(label: Text('Title'))),
-                    suggestionsCallback: (query) {
-                      return [
-                        'Mobile Developer',
-                        'Graphic Designer',
-                        'Software Engineer'
-                      ].where((suggestion) => suggestion.toLowerCase().contains(
-                          query.toLowerCase().trim().replaceAll(' ', '')));
+                    suggestionsCallback: (query) async {
+                      return await _searchCategories(query);
                     },
                     itemBuilder: (context, suggestion) {
                       return ListTile(
-                        title: Text(suggestion),
+                        title: Text(suggestion.name!),
                       );
                     },
                     noItemsFoundBuilder: (context) {
@@ -252,7 +250,7 @@ class _MobileProfileSetupState extends State<MobileProfileSetup> {
                       print('Suggetion selected: $suggestion');
                       Future.delayed(const Duration(milliseconds: 100), () {
                         setState(() {
-                          titleController.text = suggestion;
+                          titleController.text = suggestion.name!;
                         });
                       });
                     },
@@ -261,7 +259,15 @@ class _MobileProfileSetupState extends State<MobileProfileSetup> {
                 // const TitleSelection(),
                 const Gutter(),
                 Flexible(
-                    child: TextField(
+                    child: TextFormField(
+                  validator: (value) {
+                    if (value == null || value.isEmpty) {
+                      return 'Please enter your hourly rate.';
+                    } else if (double.tryParse(value) == null) {
+                      return 'Please enter a valid hourly rate.';
+                    }
+                    return null;
+                  },
                   controller: hourlyRateController,
                   keyboardType: TextInputType.number,
                   decoration: const InputDecoration(
@@ -326,7 +332,13 @@ class _MobileProfileSetupState extends State<MobileProfileSetup> {
                   .toList(),
             ),
             const Gutter(),
-            TextField(
+            TextFormField(
+              validator: (value) {
+                if (value == null || value.isEmpty) {
+                  return 'Please enter a bio.';
+                }
+                return null;
+              },
               scrollPadding: const EdgeInsets.only(bottom: 150.0),
               controller: bioController,
               textCapitalization: TextCapitalization.sentences,
@@ -398,30 +410,54 @@ class _MobileProfileSetupState extends State<MobileProfileSetup> {
                 widthFactor: 0.618,
                 child: FilledButton(
                     onPressed: () async {
-                      context.read<OnboardingBloc>().add(UpdateUser(
-                          context.read<OnboardingBloc>().state.user!.copyWith(
-                                firstName:
-                                    firstNameController.value.text.trim(),
-                                lastName: lastNameController.value.text.trim(),
-                                email: emailController.value.text.trim(),
-                                phoneNumber:
-                                    phoneNumberController.value.text.trim(),
-                                title: titleController.value.text.trim(),
-                                hourlyRate: double.parse(
-                                    hourlyRateController.value.text.trim()),
-                                address: addressController.value.text.trim(),
-                                city: cityController.value.text.trim(),
-                                state: stateController.value.text.trim(),
-                                bio: bioController.value.text.trim(),
-                              )));
-                      await widget.pageController.nextPage(
-                          duration: const Duration(milliseconds: 500),
-                          curve: Curves.ease);
+                      bool categoryIsValid = _selectedCategory != null;
+
+                      if (_profileFormKey.currentState!.validate() &&
+                          categoryIsValid) {
+                        context.read<OnboardingBloc>().add(UpdateUser(context
+                            .read<OnboardingBloc>()
+                            .state
+                            .user!
+                            .copyWith(
+                              firstName: firstNameController.value.text.trim(),
+                              lastName: lastNameController.value.text.trim(),
+                              email: emailController.value.text.trim(),
+                              phoneNumber:
+                                  phoneNumberController.value.text.trim(),
+                              title: titleController.value.text.trim(),
+                              hourlyRate: double.parse(
+                                  hourlyRateController.value.text.trim()),
+                              address: addressController.value.text.trim(),
+                              city: cityController.value.text.trim(),
+                              state: stateController.value.text.trim(),
+                              bio: bioController.value.text.trim(),
+                            )));
+                        await widget.pageController.nextPage(
+                            duration: const Duration(milliseconds: 500),
+                            curve: Curves.ease);
+                      } else {
+                        if (categoryIsValid == false) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(
+                                backgroundColor: Colors.red,
+                                  content: Text('Please select a category.')));
+                        }
+                        ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(
+                              backgroundColor: Colors.red,
+                                content: Text(
+                                    'Please fill out all required fields.')));
+                      }
                     },
                     child: const Text('Submit'))),
           ]),
     );
   }
+}
+
+Future<List<Category>> _searchCategories(String query) {
+  return SearchRepository().searchCategories(query).then((value) =>
+      value.hits.map((hit) => Category.fromAlgoliaSearch(hit)).toList());
 }
 
 class TitleSelection extends StatefulWidget {

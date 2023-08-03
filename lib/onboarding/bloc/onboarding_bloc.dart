@@ -17,7 +17,8 @@ class OnboardingBloc extends Bloc<OnboardingEvent, OnboardingState> {
     on<StartOnboarding>((event, emit) async {
       try {
         emit(OnboardingState.loading());
-        await _userRepository.createUser(event.user);
+        // TODO: Reenable this
+        //  await _userRepository.createUser(event.user);
         emit(OnboardingState.loaded(event.user));
       } catch (e) {
         emit(OnboardingState.failure());
