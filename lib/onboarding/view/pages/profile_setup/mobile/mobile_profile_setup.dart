@@ -432,19 +432,14 @@ class _MobileProfileSetupState extends State<MobileProfileSetup> {
                       'Tell clients what you can do for them. Focus on the benefits of working with you & why that matters to them.'),
             ),
             const Gutter(),
-            FractionallySizedBox(
-                widthFactor: 0.618,
-                child: FilledButton(
-                    onPressed: () async {
-                      bool categoryIsValid = selectedCategories.isNotEmpty;
+            FilledButton(
+                onPressed: () async {
+                  bool categoryIsValid = selectedCategories.isNotEmpty;
 
-                      if (_profileFormKey.currentState!.validate() &&
-                          categoryIsValid) {
-                        context.read<OnboardingBloc>().add(UpdateUser(context
-                            .read<OnboardingBloc>()
-                            .state
-                            .user!
-                            .copyWith(
+                  if (_profileFormKey.currentState!.validate() &&
+                      categoryIsValid) {
+                    context.read<OnboardingBloc>().add(UpdateUser(
+                        context.read<OnboardingBloc>().state.user!.copyWith(
                               firstName: firstNameController.value.text.trim(),
                               lastName: lastNameController.value.text.trim(),
                               email: emailController.value.text.trim(),
@@ -458,28 +453,26 @@ class _MobileProfileSetupState extends State<MobileProfileSetup> {
                               state: stateController.value.text.trim(),
                               bio: bioController.value.text.trim(),
                             )));
-                        await widget.pageController.nextPage(
-                            duration: const Duration(milliseconds: 500),
-                            curve: Curves.ease);
-                      } else {
-                        if (categoryIsValid == false) {
-                          ScaffoldMessenger.of(context).showSnackBar(
-                              const SnackBar(
-                                  backgroundColor: Colors.red,
-                                  behavior: SnackBarBehavior.floating,
-                                  content: Text(
-                                      'Please select at least one category.')));
-                        } else {
-                          ScaffoldMessenger.of(context).showSnackBar(
-                              const SnackBar(
-                                  backgroundColor: Colors.red,
-                                  behavior: SnackBarBehavior.floating,
-                                  content: Text(
-                                      'Please fill out all required fields.')));
-                        }
-                      }
-                    },
-                    child: const Text('Submit'))),
+                    await widget.pageController.nextPage(
+                        duration: const Duration(milliseconds: 500),
+                        curve: Curves.ease);
+                  } else {
+                    if (categoryIsValid == false) {
+                      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+                          backgroundColor: Colors.red,
+                          behavior: SnackBarBehavior.floating,
+                          content:
+                              Text('Please select at least one category.')));
+                    } else {
+                      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+                          backgroundColor: Colors.red,
+                          behavior: SnackBarBehavior.floating,
+                          content:
+                              Text('Please fill out all required fields.')));
+                    }
+                  }
+                },
+                child: const Text('Submit')),
           ]),
     );
   }

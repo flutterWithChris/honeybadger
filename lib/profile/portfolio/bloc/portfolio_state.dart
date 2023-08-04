@@ -31,3 +31,5 @@ class PortfolioError extends PortfolioState {
   @override
   List<Object?> get props => [message];
 }
+
+class PortfolioUpdated extends PortfolioState {}

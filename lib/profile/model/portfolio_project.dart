@@ -25,9 +25,15 @@ class PortfolioProject {
     title = snapshot['title'];
     description = snapshot['description'];
     url = snapshot['url'];
-    images = snapshot['images'];
-    startDate = snapshot['startDate'];
-    endDate = snapshot['endDate'];
+    images = snapshot['images'] != null
+        ? List<String>.from(snapshot['images'])
+        : null;
+    startDate = snapshot['startDate'] != null
+        ? (snapshot['startDate'] as Timestamp).toDate()
+        : null;
+    endDate = snapshot['endDate'] != null
+        ? (snapshot['endDate'] as Timestamp).toDate()
+        : null;
   }
 
   // toDocumentSnapshot
@@ -40,5 +46,26 @@ class PortfolioProject {
       'startDate': startDate,
       'endDate': endDate,
     };
+  }
+
+  // copyWith
+  PortfolioProject copyWith({
+    String? id,
+    String? title,
+    String? description,
+    String? url,
+    List<String>? images,
+    DateTime? startDate,
+    DateTime? endDate,
+  }) {
+    return PortfolioProject(
+      id: id ?? this.id,
+      title: title ?? this.title,
+      description: description ?? this.description,
+      url: url ?? this.url,
+      images: images ?? this.images,
+      startDate: startDate ?? this.startDate,
+      endDate: endDate ?? this.endDate,
+    );
   }
 }

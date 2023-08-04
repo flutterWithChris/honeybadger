@@ -4,7 +4,9 @@ import 'package:flutter_gutter/flutter_gutter.dart';
 import 'package:honeybadger/core/constants.dart';
 import 'package:honeybadger/onboarding/bloc/onboarding_bloc.dart';
 import 'package:honeybadger/onboarding/view/pages/profile_setup/bloc/skills/bloc/skill_search_bloc.dart';
+import 'package:honeybadger/profile/model/portfolio_project.dart';
 import 'package:honeybadger/profile/model/skill.dart';
+import 'package:honeybadger/profile/portfolio/bloc/portfolio_bloc.dart';
 import 'package:honeybadger/profile/view/widgets/add_project_dialog.dart';
 
 import '../../../profile/model/user.dart';
@@ -316,66 +318,197 @@ class _SkillsAndExperiencePageState extends State<SkillsAndExperiencePage> {
                       )
                     : const SizedBox(),
                 selectedSkills.isNotEmpty ? const GutterTiny() : const Gutter(),
-                Text('Portfolio',
-                    style: Theme.of(context).textTheme.headlineLarge),
+                Row(
+                  children: [
+                    Text('Portfolio',
+                        style: Theme.of(context).textTheme.headlineLarge),
+                    const GutterTiny(),
+                    IconButton(
+                      icon: const Icon(Icons.add_circle_outline_rounded,
+                          size: 24),
+                      onPressed: () {
+                        showDialog(
+                          context: context,
+                          builder: (context) {
+                            return const AddProjectDialog();
+                          },
+                        );
+                      },
+                    )
+                  ],
+                ),
                 const GutterSmall(),
                 Text(
                     'Create projects to add images & links of your past work, if you have any.',
                     style: Theme.of(context).textTheme.bodyLarge),
-                const GutterLarge(),
-                Row(
-                  children: [
-                    Flexible(
-                      child: FractionallySizedBox(
-                        widthFactor: 0.5,
-                        child: AspectRatio(
-                          aspectRatio: 1,
-                          child: Container(
-                            decoration: BoxDecoration(
-                                border: Border.all(color: Colors.grey),
-                                borderRadius: BorderRadius.circular(16.0)),
-                            child: InkWell(
-                              onTap: () {
-                                showDialog(
-                                  context: context,
-                                  builder: (context) {
-                                    return const AddProjectDialog();
-                                  },
-                                );
-                              },
-                              child: Center(
-                                child: Row(
-                                  mainAxisSize: MainAxisSize.min,
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  crossAxisAlignment: CrossAxisAlignment.center,
-                                  children: [
-                                    Icon(Icons.add_circle_outline_rounded,
-                                        size: 16, color: Colors.grey[600]!),
-                                    const GutterSmall(),
-                                    const Text('Add Project',
-                                        style: TextStyle(fontSize: 16)),
-                                  ],
+                const Gutter(),
+                BlocBuilder<PortfolioBloc, PortfolioState>(
+                  builder: (context, state) {
+                    if (state is PortfolioError) {
+                      return const Text('Error loading portfolio!');
+                    }
+                    if (state is PortfolioLoading ||
+                        state is PortfolioUpdated) {
+                      return const Center(
+                        child: CircularProgressIndicator(),
+                      );
+                    }
+                    if (state is PortfolioInitial ||
+                        state.projects == null ||
+                        state.projects!.isEmpty) {
+                      return Row(
+                        children: [
+                          Flexible(
+                            child: FractionallySizedBox(
+                              widthFactor: 0.5,
+                              child: AspectRatio(
+                                aspectRatio: 1,
+                                child: Container(
+                                  decoration: BoxDecoration(
+                                      border: Border.all(color: Colors.grey),
+                                      borderRadius:
+                                          BorderRadius.circular(16.0)),
+                                  child: InkWell(
+                                    onTap: () {
+                                      showDialog(
+                                        context: context,
+                                        builder: (context) {
+                                          return const AddProjectDialog();
+                                        },
+                                      );
+                                    },
+                                    child: Center(
+                                      child: Row(
+                                        mainAxisSize: MainAxisSize.min,
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.center,
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.center,
+                                        children: [
+                                          Icon(Icons.add_circle_outline_rounded,
+                                              size: 16,
+                                              color: Colors.grey[600]!),
+                                          const GutterSmall(),
+                                          const Text('Add Project',
+                                              style: TextStyle(fontSize: 16)),
+                                        ],
+                                      ),
+                                    ),
+                                  ),
                                 ),
                               ),
                             ),
                           ),
+                        ],
+                      );
+                    }
+                    if (state is PortfolioError) {
+                      return const Text('Error loading portfolio!');
+                    } else if (state is PortfolioLoaded) {
+                      return SizedBox(
+                        height: 200,
+                        child: ListView.separated(
+                          shrinkWrap: true,
+                          scrollDirection: Axis.horizontal,
+                          itemCount: state.projects.length,
+                          itemBuilder: (BuildContext context, int index) {
+                            final PortfolioProject project =
+                                state.projects.elementAt(index);
+                            return PortfolioCard(project: project);
+                          },
+                          separatorBuilder: (BuildContext context, int index) {
+                            return const GutterSmall();
+                          },
                         ),
-                      ),
-                    ),
-                  ],
+                      );
+                    } else {
+                      return const Center(
+                        child: CircularProgressIndicator(),
+                      );
+                    }
+                  },
                 ),
                 const GutterLarge(),
-                Column(
-                  mainAxisAlignment: MainAxisAlignment.end,
-                  children: [
-                    OutlinedButton(
-                        onPressed: () {}, child: const Text('Skip for now')),
-                  ],
-                )
+                context.read<PortfolioBloc>().state.projects != null &&
+                        context.read<PortfolioBloc>().state.projects!.isNotEmpty
+                    ? FilledButton(onPressed: () {}, child: const Text('Next'))
+                    : OutlinedButton(
+                        onPressed: () {}, child: const Text('Skip for now'))
               ]);
         }
       }),
     ));
+  }
+}
+
+class PortfolioCard extends StatelessWidget {
+  final PortfolioProject project;
+  const PortfolioCard({super.key, required this.project});
+
+  @override
+  Widget build(BuildContext context) {
+    return AspectRatio(
+      aspectRatio: 1,
+      child: Container(
+        decoration: BoxDecoration(borderRadius: BorderRadius.circular(16.0)),
+        child: InkWell(
+          onTap: () {
+            showDialog(
+              context: context,
+              builder: (context) {
+                return const AddProjectDialog();
+              },
+            );
+          },
+          child: Stack(
+            children: [
+              if (project.images != null)
+                Positioned.fill(
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.circular(16.0),
+                    child: Image.network(
+                      project.images![0],
+                      fit: BoxFit.cover,
+                    ),
+                  ),
+                ),
+              Positioned.fill(
+                child: Container(
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(16.0),
+                    gradient: LinearGradient(
+                      stops: const [0.0, 0.9],
+                      begin: Alignment.center,
+                      end: Alignment.bottomCenter,
+                      colors: [
+                        Colors.transparent,
+                        Colors.black.withOpacity(0.5),
+                      ],
+                    ),
+                  ),
+                ),
+              ),
+              Positioned.fill(
+                child: Padding(
+                  padding: const EdgeInsets.all(16.0),
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.end,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(project.title!,
+                          style: Theme.of(context)
+                              .textTheme
+                              .headlineSmall!
+                              .copyWith(color: Colors.white)),
+                    ],
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
   }
 }
 

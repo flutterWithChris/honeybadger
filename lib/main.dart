@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flex_color_scheme/flex_color_scheme.dart';
 import 'package:flutter/foundation.dart';
@@ -21,7 +22,9 @@ import 'package:honeybadger/payments/bloc/history/payment_history_bloc.dart';
 import 'package:honeybadger/payments/bloc/payments_bloc.dart';
 import 'package:honeybadger/payments/repository/payments_repository.dart';
 import 'package:honeybadger/profile/bloc/profile_bloc.dart';
+import 'package:honeybadger/profile/portfolio/bloc/portfolio_bloc.dart';
 import 'package:honeybadger/profile/portfolio/repository/category_repository.dart';
+import 'package:honeybadger/profile/portfolio/repository/portfiolio_repository.dart';
 import 'package:honeybadger/profile/portfolio/repository/skills_repository.dart';
 import 'package:honeybadger/profile/repository/user_respository.dart';
 import 'package:honeybadger/projects/bloc/projects_bloc.dart';
@@ -41,6 +44,8 @@ void main() async {
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
 
   // await FirebaseAuth.instance.signOut();
+// Clear firebase cache
+  await FirebaseFirestore.instance.clearPersistence();
 
   runApp(const MyApp());
 }
@@ -126,6 +131,9 @@ class _MyAppState extends State<MyApp> {
         ),
         RepositoryProvider(
           create: (context) => SkillsRepository(),
+        ),
+        RepositoryProvider(
+          create: (context) => PortfolioRepository(),
         )
       ],
       child: MultiBlocProvider(
@@ -191,6 +199,12 @@ class _MyAppState extends State<MyApp> {
               searchRepository: context.read<SearchRepository>(),
               skillsRepository: context.read<SkillsRepository>(),
             ),
+          ),
+          BlocProvider(
+            create: (context) => PortfolioBloc(
+              portfolioRepository: context.read<PortfolioRepository>(),
+            )..add(LoadPortfolio(
+                userId: context.read<AuthBloc>().state.user!.uid)),
           ),
         ],
         child: MaterialApp.router(
