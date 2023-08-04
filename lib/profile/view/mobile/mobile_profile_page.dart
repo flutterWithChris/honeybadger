@@ -8,7 +8,7 @@ import 'package:honeybadger/profile/bloc/profile_bloc.dart';
 import 'package:honeybadger/profile/model/user.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 
-import '../../../projects/dialogs/add_project_dialog.dart';
+import '../widgets/add_project_dialog.dart';
 
 class MobileProfilePage extends StatelessWidget {
   const MobileProfilePage({super.key});

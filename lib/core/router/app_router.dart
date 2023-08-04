@@ -155,7 +155,7 @@ GoRouter goRouter = GoRouter(
                 LoadPayments(user: context.read<ProfileBloc>().state.user!));
           }
           return StripeConfirmationPage(
-            stripeAccountId: state.uri.queryParameters['account_id']!,
+            stripeAccountId: state.pathParameters['account_id']!,
           );
         }),
     GoRoute(

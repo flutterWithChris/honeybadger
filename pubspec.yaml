@@ -78,6 +78,7 @@ dependencies:
   easy_refresh: ^3.3.2+1
   refresh: ^1.0.1
   algolia_helper_flutter: ^0.3.3
+  flutter_link_previewer: ^3.2.2
 
 
 dev_dependencies:

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_gutter/flutter_gutter.dart';
 import 'package:honeybadger/core/constants.dart';
-import 'package:honeybadger/projects/dialogs/add_project_dialog.dart';
+import 'package:honeybadger/profile/view/widgets/add_project_dialog.dart';
 
 class SkillsAndExperiencePage extends StatefulWidget {
   final PageController pageController;
@@ -14,7 +14,7 @@ class SkillsAndExperiencePage extends StatefulWidget {
 }
 
 class _SkillsAndExperiencePageState extends State<SkillsAndExperiencePage> {
-  final List<String> _skills = [];
+  final List<String> selectedSkills = [];
 
   @override
   Widget build(BuildContext context) {
@@ -158,73 +158,102 @@ class _SkillsAndExperiencePageState extends State<SkillsAndExperiencePage> {
               padding:
                   const EdgeInsets.symmetric(horizontal: 24.0, vertical: 24.0),
               children: [
-                // Text(
-                //   'Skills & Experience',
-                //   style: Theme.of(context).textTheme.headlineLarge,
-                // ),
-                // const Gutter(),
-                // Text('What are your skills?',
-                //     style: Theme.of(context).textTheme.bodyLarge),
-                // const Gutter(),
-                // TypeAheadField(
-                //     suggestionsBoxDecoration: SuggestionsBoxDecoration(
-                //       borderRadius: BorderRadius.circular(16.0),
-                //     ),
-                //     textFieldConfiguration: const TextFieldConfiguration(
-                //         decoration: InputDecoration(label: Text('Skills'))),
-                //     suggestionsCallback: (query) {
-                //       return [
-                //         'Python',
-                //         'Java',
-                //         'C++',
-                //         'C#',
-                //         'JavaScript',
-                //         'HTML',
-                //         'CSS',
-                //         'Flutter',
-                //         'Dart',
-                //         'React',
-                //         'React Native',
-                //         'Angular',
-                //         'Vue',
-                //         'Node.js',
-                //       ].where((suggestion) => suggestion.toLowerCase().contains(
-                //           query.toLowerCase().trim().replaceAll(' ', '')));
-                //     },
-                //     itemBuilder: (context, suggestion) {
-                //       return ListTile(title: Text(suggestion));
-                //     },
-                //     itemSeparatorBuilder: (context, index) => const Divider(),
-                //     onSuggestionSelected: (suggestion) {
-                //       if (!_skills.contains(suggestion)) {
-                //         _skills.add(suggestion);
-                //       }
-                //     }),
-                // const Gutter(),
-                // Wrap(
-                //   spacing: 8.0, // gap between adjacent chips
-                //   runSpacing: 4.0, // gap between lines
-                //   children: _skills
-                //       .map((skill) => Chip(
-                //             label: Text(skill),
-                //             onDeleted: () {
-                //               setState(() {
-                //                 _skills.remove(skill);
-                //               });
-                //             },
-                //           ))
-                //       .toList(),
-                // ),
-                // const TextField(
-                //   minLines: 5,
-                //   maxLines: 7,
-                //   decoration: InputDecoration(
-                //     label: Text('Skills'),
-                //     hintText:
-                //         'Type your skills here. Ex: Python, Graphic Design, etc.',
-                //   ),
-                // ),
+                Text(
+                  'Skills & Experience',
+                  style: Theme.of(context).textTheme.headlineLarge,
+                ),
                 const Gutter(),
+                Text('What are your skills?',
+                    style: Theme.of(context).textTheme.bodyLarge),
+                const Gutter(),
+                // Skills Autocomplete
+                Autocomplete<String>(
+                  displayStringForOption: (option) => option,
+                  optionsBuilder: (TextEditingValue textEditingValue) {
+                    if (textEditingValue.text == '') {
+                      return const Iterable.empty();
+                    }
+                    return [
+                      'Python',
+                      'Java',
+                      'C++',
+                      'C#',
+                      'JavaScript',
+                      'HTML',
+                      'CSS',
+                      'Flutter',
+                      'Dart',
+                      'React',
+                      'React Native',
+                      'Angular',
+                      'Vue',
+                      'Node.js',
+                    ].where((suggestion) => suggestion
+                        .toLowerCase()
+                        .contains(textEditingValue.text.toLowerCase().trim()));
+                  },
+                  onSelected: (String skill) {
+                    setState(() {
+                      selectedSkills.add(skill);
+                    });
+                  },
+                  optionsViewBuilder: (BuildContext context,
+                      AutocompleteOnSelected<String> onSelected,
+                      Iterable<String> options) {
+                    return Material(
+                      borderRadius: BorderRadius.circular(16.0),
+                      elevation: 4.0,
+                      child: SizedBox(
+                        child: ListView.builder(
+                          shrinkWrap: true,
+                          padding: const EdgeInsets.all(8.0),
+                          itemCount: options.length,
+                          itemBuilder: (BuildContext context, int index) {
+                            final String option = options.elementAt(index);
+                            return GestureDetector(
+                              onTap: () {
+                                onSelected(option);
+                              },
+                              child: ListTile(
+                                title: Text(option),
+                              ),
+                            );
+                          },
+                        ),
+                      ),
+                    );
+                  },
+                  fieldViewBuilder: (BuildContext context,
+                      TextEditingController textEditingController,
+                      FocusNode focusNode,
+                      VoidCallback onFieldSubmitted) {
+                    return TextFormField(
+                      controller: textEditingController,
+                      focusNode: focusNode,
+                      decoration: const InputDecoration(label: Text('Skills')),
+                      onFieldSubmitted: (String value) {
+                        onFieldSubmitted();
+                      },
+                    );
+                  },
+                ),
+                selectedSkills.isNotEmpty ? const Gutter() : const SizedBox(),
+
+                Wrap(
+                  spacing: 8.0, // gap between adjacent chips
+                  runSpacing: 4.0, // gap between lines
+                  children: selectedSkills
+                      .map((skill) => Chip(
+                            label: Text(skill),
+                            onDeleted: () {
+                              setState(() {
+                                selectedSkills.remove(skill);
+                              });
+                            },
+                          ))
+                      .toList(),
+                ),
+                selectedSkills.isNotEmpty ? const GutterTiny() : const Gutter(),
                 Text('Portfolio',
                     style: Theme.of(context).textTheme.headlineLarge),
                 const Gutter(),

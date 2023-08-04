@@ -127,6 +127,7 @@ class _SignupPageState extends State<SignupPage> {
                                     icon: const Icon(FontAwesomeIcons.google,
                                         size: 20.0),
                                   ),
+                            const GutterSmall(),
                             kIsWeb || Platform.isAndroid
                                 ? FilledButton.tonalIcon(
                                     style: ElevatedButton.styleFrom(
@@ -152,6 +153,7 @@ class _SignupPageState extends State<SignupPage> {
                                     icon: const Icon(FontAwesomeIcons.google,
                                         size: 20.0),
                                   ),
+                            const GutterSmall(),
                             FilledButton.tonalIcon(
                               style: FilledButton.styleFrom(
                                   backgroundColor: FlexColor

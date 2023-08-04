@@ -39,6 +39,7 @@ class _ProfileSetupState extends State<ProfileSetup> {
                   return DesktopProfileSetup(
                       pageController: widget.pageController);
                 } else {
+                  // TODO: Client Profile Setup
                   return MobileProfileSetup(
                       pageController: widget.pageController);
                 }

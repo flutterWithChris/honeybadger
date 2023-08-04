@@ -138,6 +138,10 @@ class _MobileWelcomePageState extends State<MobileWelcomePage> {
                           ),
                           const GutterLarge(),
                           FilledButton(
+                              style: FilledButton.styleFrom(
+                                padding: const EdgeInsets.symmetric(
+                                    horizontal: 64.0, vertical: 8.0),
+                              ),
                               onPressed: () async {
                                 print('Get Started Clicked');
                                 context.read<OnboardingBloc>().userType =
@@ -149,7 +153,6 @@ class _MobileWelcomePageState extends State<MobileWelcomePage> {
                               child: const Text(
                                 'Get Started',
                                 style: TextStyle(
-                                  color: Colors.white,
                                   fontWeight: FontWeight.bold,
                                 ),
                               )),

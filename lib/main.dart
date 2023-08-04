@@ -15,6 +15,7 @@ import 'package:honeybadger/firebase_options.dart';
 import 'package:honeybadger/message/bloc/messages_bloc.dart';
 import 'package:honeybadger/message/repository/message_repository.dart';
 import 'package:honeybadger/onboarding/bloc/onboarding_bloc.dart';
+import 'package:honeybadger/onboarding/view/pages/profile_setup/bloc/bloc/category_search_bloc.dart';
 import 'package:honeybadger/payments/bloc/history/payment_history_bloc.dart';
 import 'package:honeybadger/payments/bloc/payments_bloc.dart';
 import 'package:honeybadger/payments/repository/payments_repository.dart';
@@ -171,6 +172,11 @@ class _MyAppState extends State<MyApp> {
               profileBloc: context.read<ProfileBloc>(),
             ),
           ),
+          BlocProvider(
+            create: (context) => CategorySearchBloc(
+              searchRepository: context.read<SearchRepository>(),
+            )..add(const SearchCategories(query: '')),
+          )
         ],
         child: MaterialApp.router(
           scaffoldMessengerKey: scaffoldKey,
