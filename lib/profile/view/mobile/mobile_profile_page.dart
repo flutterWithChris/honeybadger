@@ -22,7 +22,6 @@ class MobileProfilePage extends StatelessWidget {
         city: 'Brooklyn',
         country: 'United States',
         state: 'New York',
-        skills: ['Flutter', 'Dart', 'Firebase', 'NodeJS', 'MongoDB'],
         hourlyRate: 50,
         rating: 4.7,
         bio:
@@ -292,26 +291,26 @@ class MobileProfilePage extends StatelessWidget {
                       ),
                     ),
                     const Gutter(),
-                    if (user.skills != null && user.skills!.isNotEmpty)
-                      Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 16.0),
-                        child: SizedBox(
-                          height: 40,
-                          child: ListView.separated(
-                            shrinkWrap: true,
-                            scrollDirection: Axis.horizontal,
-                            itemCount: user.skills!.length,
-                            itemBuilder: (context, index) {
-                              return Chip(
-                                label: Text(user.skills![index]),
-                              );
-                            },
-                            separatorBuilder: (context, index) {
-                              return const GutterSmall();
-                            },
-                          ),
-                        ),
-                      ),
+                    // if (user.skills != null && user.skills!.isNotEmpty)
+                    //   Padding(
+                    //     padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                    //     child: SizedBox(
+                    //       height: 40,
+                    //       child: ListView.separated(
+                    //         shrinkWrap: true,
+                    //         scrollDirection: Axis.horizontal,
+                    //         itemCount: user.skills!.length,
+                    //         itemBuilder: (context, index) {
+                    //           return Chip(
+                    //             label: Text(user.skills![index]),
+                    //           );
+                    //         },
+                    //         separatorBuilder: (context, index) {
+                    //           return const GutterSmall();
+                    //         },
+                    //       ),
+                    //     ),
+                    //   ),
                     const Gutter(),
                   ]),
                 );

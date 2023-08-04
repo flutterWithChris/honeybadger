@@ -9,20 +9,18 @@ class Category {
   Category({this.id, this.name, this.description, this.path});
 
   // From DocumentSnapshot
-  Category fromDocumentSnapshot(DocumentSnapshot snap) {
-    return Category(
-      id: snap.id,
-      name: snap['name'] as String?,
-      description: snap['description'] as String?,
-    );
+  Category.fromDocumentSnapshot(DocumentSnapshot snap) {
+    id = snap.id;
+    name = snap['name'];
+    description = snap['description'];
   }
 
   // To document
-  Category toDocument(Category category) {
-    return Category(
-      name: category.name,
-      description: category.description,
-    );
+  Map<String, dynamic> toDocument() {
+    return {
+      'name': name,
+      'description': description,
+    };
   }
 
   Category.fromAlgoliaSearch(Map<String, dynamic> json) {

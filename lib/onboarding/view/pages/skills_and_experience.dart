@@ -1,7 +1,13 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_gutter/flutter_gutter.dart';
 import 'package:honeybadger/core/constants.dart';
+import 'package:honeybadger/onboarding/bloc/onboarding_bloc.dart';
+import 'package:honeybadger/onboarding/view/pages/profile_setup/bloc/skills/bloc/skill_search_bloc.dart';
+import 'package:honeybadger/profile/model/skill.dart';
 import 'package:honeybadger/profile/view/widgets/add_project_dialog.dart';
+
+import '../../../profile/model/user.dart';
 
 class SkillsAndExperiencePage extends StatefulWidget {
   final PageController pageController;
@@ -14,10 +20,14 @@ class SkillsAndExperiencePage extends StatefulWidget {
 }
 
 class _SkillsAndExperiencePageState extends State<SkillsAndExperiencePage> {
-  final List<String> selectedSkills = [];
+  Skill? newSkill;
 
   @override
   Widget build(BuildContext context) {
+    List<Skill> selectedSkills =
+        context.watch<OnboardingBloc>().state.user?.skills ?? [];
+    User? currentUser = context.read<OnboardingBloc>().state.user;
+
     return Scaffold(body: SafeArea(
       child: LayoutBuilder(builder: (context, constraints) {
         if (constraints.maxWidth > desktopWidthConstraint) {
@@ -162,101 +172,153 @@ class _SkillsAndExperiencePageState extends State<SkillsAndExperiencePage> {
                   'Skills & Experience',
                   style: Theme.of(context).textTheme.headlineLarge,
                 ),
-                const Gutter(),
+                const GutterSmall(),
                 Text('What are your skills?',
                     style: Theme.of(context).textTheme.bodyLarge),
                 const Gutter(),
                 // Skills Autocomplete
-                Autocomplete<String>(
-                  displayStringForOption: (option) => option,
-                  optionsBuilder: (TextEditingValue textEditingValue) {
-                    if (textEditingValue.text == '') {
-                      return const Iterable.empty();
+                BlocBuilder<SkillSearchBloc, SkillSearchState>(
+                  builder: (context, state) {
+                    if (state is SkillSearchFailure) {
+                      return const Text('Error loading skills!');
                     }
-                    return [
-                      'Python',
-                      'Java',
-                      'C++',
-                      'C#',
-                      'JavaScript',
-                      'HTML',
-                      'CSS',
-                      'Flutter',
-                      'Dart',
-                      'React',
-                      'React Native',
-                      'Angular',
-                      'Vue',
-                      'Node.js',
-                    ].where((suggestion) => suggestion
-                        .toLowerCase()
-                        .contains(textEditingValue.text.toLowerCase().trim()));
-                  },
-                  onSelected: (String skill) {
-                    setState(() {
-                      selectedSkills.add(skill);
-                    });
-                  },
-                  optionsViewBuilder: (BuildContext context,
-                      AutocompleteOnSelected<String> onSelected,
-                      Iterable<String> options) {
-                    return Material(
-                      borderRadius: BorderRadius.circular(16.0),
-                      elevation: 4.0,
-                      child: SizedBox(
-                        child: ListView.builder(
-                          shrinkWrap: true,
-                          padding: const EdgeInsets.all(8.0),
-                          itemCount: options.length,
-                          itemBuilder: (BuildContext context, int index) {
-                            final String option = options.elementAt(index);
-                            return GestureDetector(
-                              onTap: () {
-                                onSelected(option);
+                    return Autocomplete<Skill>(
+                      displayStringForOption: (option) => option.name!,
+                      optionsBuilder: (TextEditingValue textEditingValue) {
+                        if (textEditingValue.text == '') {
+                          return const Iterable.empty();
+                        }
+                        List<Skill> matchingSkills = [];
+                        if (state.skills != null && state.skills!.isNotEmpty) {
+                          matchingSkills = state.skills?.toList() ?? [];
+                          for (Skill skill in matchingSkills) {
+                            print('Found Skill: ${skill.name}');
+                          }
+                        }
+                        if (matchingSkills.isEmpty) {
+                          newSkill = Skill(
+                              name: textEditingValue.text.trim(),
+                              description: null);
+                          return [newSkill!];
+                        }
+                        return matchingSkills;
+                      },
+                      onSelected: (Skill skill) {
+                        if (skill == newSkill) {
+                          BlocProvider.of<SkillSearchBloc>(context)
+                              .add(AddSkill(skill: skill));
+                        }
+                        context.read<OnboardingBloc>().add(UpdateUser(
+                            currentUser!.copyWith(
+                                skills: ((currentUser.skills ?? []))
+                                  ..add(skill))));
+                      },
+                      optionsViewBuilder: (BuildContext context,
+                          AutocompleteOnSelected<Skill> onSelected,
+                          Iterable<Skill> options) {
+                        return Material(
+                          borderRadius: BorderRadius.circular(16.0),
+                          elevation: 4.0,
+                          child: SizedBox(
+                            child: ListView.builder(
+                              shrinkWrap: true,
+                              padding: const EdgeInsets.all(8.0),
+                              itemCount: options.length,
+                              itemBuilder: (BuildContext context, int index) {
+                                final Skill option = options.elementAt(index);
+                                bool isHighlighted =
+                                    AutocompleteHighlightedOption.of(context) ==
+                                        index;
+                                return GestureDetector(
+                                  onTap: () {
+                                    onSelected(option);
+                                  },
+                                  child: ListTile(
+                                    shape: RoundedRectangleBorder(
+                                        borderRadius:
+                                            BorderRadius.circular(16.0)),
+                                    tileColor:
+                                        isHighlighted ? Colors.grey[200] : null,
+                                    leading: option == newSkill
+                                        ? const Icon(Icons.add)
+                                        : null,
+                                    title: option == newSkill
+                                        ? Text.rich(
+                                            TextSpan(
+                                              text: 'Add ',
+                                              children: <TextSpan>[
+                                                TextSpan(
+                                                  text: "'${option.name}'",
+                                                  style: const TextStyle(
+                                                    fontWeight: FontWeight.bold,
+                                                  ),
+                                                ),
+                                                const TextSpan(
+                                                  text: ' as a new skill',
+                                                ),
+                                              ],
+                                            ),
+                                          )
+                                        : Text(option.name!),
+                                  ),
+                                );
                               },
-                              child: ListTile(
-                                title: Text(option),
-                              ),
-                            );
+                            ),
+                          ),
+                        );
+                      },
+                      fieldViewBuilder: (BuildContext context,
+                          TextEditingController textEditingController,
+                          FocusNode focusNode,
+                          VoidCallback onFieldSubmitted) {
+                        return TextFormField(
+                          textCapitalization: TextCapitalization.words,
+                          controller: textEditingController,
+                          onChanged: (value) {
+                            // Debounce search
+
+                            if (value.isNotEmpty) {
+                              context
+                                  .read<SkillSearchBloc>()
+                                  .add(SearchSkills(query: value.trim()));
+                            }
                           },
-                        ),
-                      ),
-                    );
-                  },
-                  fieldViewBuilder: (BuildContext context,
-                      TextEditingController textEditingController,
-                      FocusNode focusNode,
-                      VoidCallback onFieldSubmitted) {
-                    return TextFormField(
-                      controller: textEditingController,
-                      focusNode: focusNode,
-                      decoration: const InputDecoration(label: Text('Skills')),
-                      onFieldSubmitted: (String value) {
-                        onFieldSubmitted();
+                          focusNode: focusNode,
+                          decoration:
+                              const InputDecoration(label: Text('Skills')),
+                          onFieldSubmitted: (String value) {
+                            onFieldSubmitted();
+                          },
+                        );
                       },
                     );
                   },
                 ),
                 selectedSkills.isNotEmpty ? const Gutter() : const SizedBox(),
+                selectedSkills.isNotEmpty
+                    ? Wrap(
+                        spacing: 8.0, // gap between adjacent chips
+                        runSpacing: 4.0, // gap between lines
+                        children: selectedSkills
+                            .map((skill) => Chip(
+                                  label: Text(skill.name!),
+                                  onDeleted: () {
+                                    List<Skill> updatedSkills =
+                                        (currentUser?.skills ?? [])
+                                          ..remove(skill);
 
-                Wrap(
-                  spacing: 8.0, // gap between adjacent chips
-                  runSpacing: 4.0, // gap between lines
-                  children: selectedSkills
-                      .map((skill) => Chip(
-                            label: Text(skill),
-                            onDeleted: () {
-                              setState(() {
-                                selectedSkills.remove(skill);
-                              });
-                            },
-                          ))
-                      .toList(),
-                ),
+                                    context.read<OnboardingBloc>().add(
+                                        UpdateUser(currentUser!
+                                            .copyWith(skills: updatedSkills)));
+                                  },
+                                ))
+                            .toList(),
+                      )
+                    : const SizedBox(),
                 selectedSkills.isNotEmpty ? const GutterTiny() : const Gutter(),
                 Text('Portfolio',
                     style: Theme.of(context).textTheme.headlineLarge),
-                const Gutter(),
+                const GutterSmall(),
                 Text(
                     'Create projects to add images & links of your past work, if you have any.',
                     style: Theme.of(context).textTheme.bodyLarge),

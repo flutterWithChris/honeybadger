@@ -35,7 +35,7 @@ class SearchBloc extends Bloc<SearchEvent, SearchState> {
     on<LoadSearch>((event, emit) async {
       emit(SearchLoading());
       // TODO: Set default query to user's skills
-      _searchRepository.setQuery(event.user.skills!.join(' '), 'projects');
+      _searchRepository.setQuery('', 'projects');
 
       // Get search results, then fetch the projects or freelancers
       final value = await _searchRepository.getSearchResults('projects').first;

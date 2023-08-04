@@ -15,6 +15,12 @@ class SearchRepository {
     apiKey: dotenv.env['ALGOLIA_API_KEY']!,
     indexName: 'categories',
   );
+  final HitsSearcher skillsHitsSearcher = HitsSearcher(
+    applicationID: dotenv.env['ALGOLIA_APP_ID']!,
+    apiKey: dotenv.env['ALGOLIA_API_KEY']!,
+    indexName: 'skills',
+    debounce: const Duration(milliseconds: 500),
+  );
 
   void setQuery(String query, String indexName) async {
     switch (indexName) {
@@ -24,6 +30,10 @@ class SearchRepository {
         break;
       case 'categories':
         categoryHitsSearcher
+            .applyState((state) => state.copyWith(query: query, page: 0));
+        break;
+      case 'skills':
+        skillsHitsSearcher
             .applyState((state) => state.copyWith(query: query, page: 0));
         break;
       default:
@@ -39,6 +49,8 @@ class SearchRepository {
         return hitsSearcher.state;
       case 'categories':
         return categoryHitsSearcher.state;
+      case 'skills':
+        return skillsHitsSearcher.state;
       default:
         return hitsSearcher.state;
     }
@@ -50,6 +62,8 @@ class SearchRepository {
         return hitsSearcher.responses;
       case 'categories':
         return categoryHitsSearcher.responses;
+      case 'skills':
+        return skillsHitsSearcher.responses;
       default:
         return hitsSearcher.responses;
     }
@@ -65,6 +79,9 @@ class SearchRepository {
         categoryHitsSearcher
             .applyState((state) => state.copyWith(page: state.page! + 1));
         break;
+      case 'skills':
+        skillsHitsSearcher
+            .applyState((state) => state.copyWith(page: state.page! + 1));
       default:
         hitsSearcher
             .applyState((state) => state.copyWith(page: state.page! + 1));
@@ -79,6 +96,9 @@ class SearchRepository {
         break;
       case 'categories':
         categoryHitsSearcher.applyState((state) => state.copyWith(query: ''));
+        break;
+      case 'skills':
+        skillsHitsSearcher.applyState((state) => state.copyWith(query: ''));
         break;
       default:
         hitsSearcher.applyState((state) => state.copyWith(query: ''));

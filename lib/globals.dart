@@ -44,3 +44,31 @@ Future<Size> _getImageSize(String imageUrl, BuildContext context) async {
   await precacheImage(image.image, context);
   return completer.future;
 }
+
+typedef DebounceCallback = void Function();
+
+class Debouncer {
+  Debouncer({required this.interval});
+
+  final Duration interval;
+
+  DebounceCallback? action;
+
+  Timer? _timer;
+
+  void call(DebounceCallback action) {
+    action = action;
+    _timer?.cancel();
+    _timer = Timer(interval, action);
+  }
+
+  void _callAction() {
+    action?.call();
+    _timer = null;
+  }
+
+  void reset() {
+    action = null;
+    _timer = null;
+  }
+}

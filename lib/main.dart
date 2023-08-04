@@ -16,10 +16,13 @@ import 'package:honeybadger/message/bloc/messages_bloc.dart';
 import 'package:honeybadger/message/repository/message_repository.dart';
 import 'package:honeybadger/onboarding/bloc/onboarding_bloc.dart';
 import 'package:honeybadger/onboarding/view/pages/profile_setup/bloc/bloc/category_search_bloc.dart';
+import 'package:honeybadger/onboarding/view/pages/profile_setup/bloc/skills/bloc/skill_search_bloc.dart';
 import 'package:honeybadger/payments/bloc/history/payment_history_bloc.dart';
 import 'package:honeybadger/payments/bloc/payments_bloc.dart';
 import 'package:honeybadger/payments/repository/payments_repository.dart';
 import 'package:honeybadger/profile/bloc/profile_bloc.dart';
+import 'package:honeybadger/profile/portfolio/repository/category_repository.dart';
+import 'package:honeybadger/profile/portfolio/repository/skills_repository.dart';
 import 'package:honeybadger/profile/repository/user_respository.dart';
 import 'package:honeybadger/projects/bloc/projects_bloc.dart';
 import 'package:honeybadger/projects/repository/projects_repository.dart';
@@ -118,6 +121,12 @@ class _MyAppState extends State<MyApp> {
         RepositoryProvider<SearchRepository>(
           create: (context) => SearchRepository(),
         ),
+        RepositoryProvider<CategoryRepository>(
+          create: (context) => CategoryRepository(),
+        ),
+        RepositoryProvider(
+          create: (context) => SkillsRepository(),
+        )
       ],
       child: MultiBlocProvider(
         providers: [
@@ -134,7 +143,6 @@ class _MyAppState extends State<MyApp> {
                 OnboardingBloc(userRepository: context.read<UserRepository>()),
           ),
           BlocProvider(
-              lazy: false,
               create: (context) => ProfileBloc(
                   userRepository: context.read<UserRepository>(),
                   authBloc: context.read<AuthBloc>())
@@ -175,8 +183,15 @@ class _MyAppState extends State<MyApp> {
           BlocProvider(
             create: (context) => CategorySearchBloc(
               searchRepository: context.read<SearchRepository>(),
+              categoryRepository: context.read<CategoryRepository>(),
             )..add(const SearchCategories(query: '')),
-          )
+          ),
+          BlocProvider(
+            create: (context) => SkillSearchBloc(
+              searchRepository: context.read<SearchRepository>(),
+              skillsRepository: context.read<SkillsRepository>(),
+            ),
+          ),
         ],
         child: MaterialApp.router(
           scaffoldMessengerKey: scaffoldKey,

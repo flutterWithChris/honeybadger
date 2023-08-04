@@ -1,4 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:honeybadger/profile/model/category.dart';
+import 'package:honeybadger/profile/model/skill.dart';
 import 'package:honeybadger/profile/review.dart';
 
 enum UserType { freelancer, client }
@@ -15,7 +17,6 @@ class User {
   String? phoneNumber;
   String? address;
   String? title;
-  List<String>? skills;
   double? hourlyRate;
   UserType userType = UserType.freelancer;
   String? city;
@@ -29,7 +30,8 @@ class User {
   DateTime? updatedAt;
   List<dynamic>? projectIds;
   List<dynamic>? proposalIds;
-  List<String>? categoryIds;
+  List<Skill>? skills;
+  List<Category>? categories;
 
   User({
     this.id,
@@ -43,7 +45,6 @@ class User {
     this.phoneNumber,
     this.address,
     this.title,
-    this.skills,
     this.hourlyRate,
     this.userType = UserType.freelancer,
     this.city,
@@ -57,12 +58,14 @@ class User {
     this.updatedAt,
     this.projectIds,
     this.proposalIds,
-    this.categoryIds,
+    this.skills,
+    this.categories,
   });
 
   User.fromDocument(DocumentSnapshot snap) {
     id = snap.id;
     firstName = snap['firstName'];
+
     lastName = snap['lastName'];
     email = snap['email'];
     password = snap['password'];
@@ -77,7 +80,6 @@ class User {
     phoneNumber = snap['phoneNumber'];
     address = snap['address'];
     title = snap['title'];
-    skills = snap['skills'] != null ? List<String>.from(snap['skills']) : null;
     hourlyRate = snap['hourlyRate'];
     userType = snap['userType'] == 'freelancer'
         ? UserType.freelancer
@@ -93,7 +95,18 @@ class User {
     updatedAt = snap['updatedAt']?.toDate();
     projectIds = snap['projectIds'];
     proposalIds = snap['proposalIds'];
-    categoryIds = snap['categoryIds'];
+    if (snap['skills'] != null) {
+      skills = [];
+      snap['skills'].forEach((v) {
+        skills?.add(Skill.fromDocumentSnapshot(documentSnapshot: v));
+      });
+    }
+    if (snap['categories'] != null) {
+      categories = [];
+      snap['categories'].forEach((v) {
+        categories?.add(Category.fromDocumentSnapshot(v));
+      });
+    }
   }
 
   // To Document
@@ -109,7 +122,6 @@ class User {
       'phoneNumber': phoneNumber,
       'address': address,
       'title': title,
-      'skills': skills,
       'hourlyRate': hourlyRate,
       'userType': userType == UserType.freelancer ? 'freelancer' : 'client',
       'city': city,
@@ -123,7 +135,8 @@ class User {
       'updatedAt': updatedAt,
       'projectIds': projectIds,
       'proposalIds': proposalIds,
-      'categoryIds': categoryIds,
+      'skills': skills?.map((v) => v.toDocument()).toList(),
+      'categories': categories?.map((v) => v.toDocument()).toList(),
     };
   }
 
@@ -140,7 +153,6 @@ class User {
     String? phoneNumber,
     String? address,
     String? title,
-    List<String>? skills,
     double? hourlyRate,
     UserType? userType,
     String? city,
@@ -153,6 +165,8 @@ class User {
     DateTime? createdAt,
     DateTime? updatedAt,
     List<String>? projectIds,
+    List<Category>? categories,
+    List<Skill>? skills,
   }) {
     return User(
       id: id ?? this.id,
@@ -166,7 +180,6 @@ class User {
       phoneNumber: phoneNumber ?? this.phoneNumber,
       address: address ?? this.address,
       title: title ?? this.title,
-      skills: skills ?? this.skills,
       hourlyRate: hourlyRate ?? this.hourlyRate,
       userType: userType ?? this.userType,
       city: city ?? this.city,
@@ -179,6 +192,8 @@ class User {
       createdAt: createdAt ?? this.createdAt,
       updatedAt: updatedAt ?? this.updatedAt,
       projectIds: projectIds ?? this.projectIds,
+      categories: categories ?? this.categories,
+      skills: skills ?? this.skills,
     );
   }
 }

@@ -17,3 +17,23 @@ class SearchCategories extends CategorySearchEvent {
   @override
   List<Object?> get props => [query];
 }
+
+class ClearSearch extends CategorySearchEvent {}
+
+class AddCategory extends CategorySearchEvent {
+  final Category category;
+
+  const AddCategory({required this.category});
+
+  @override
+  List<Object?> get props => [category];
+}
+
+class UpdateUserCategories extends CategorySearchEvent {
+  final List<Category> categories;
+
+  const UpdateUserCategories({required this.categories});
+
+  @override
+  List<Object?> get props => [categories];
+}

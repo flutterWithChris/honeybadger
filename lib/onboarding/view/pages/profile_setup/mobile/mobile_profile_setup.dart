@@ -40,7 +40,7 @@ class _MobileProfileSetupState extends State<MobileProfileSetup> {
   final TextEditingController categoryController = TextEditingController();
 
   List<String> selectedSkills = [];
-  List<Category> selectedCategories = [];
+
   Category? _selectedCategory;
   @override
   void initState() {
@@ -62,6 +62,8 @@ class _MobileProfileSetupState extends State<MobileProfileSetup> {
 
   @override
   Widget build(BuildContext context) {
+    List<Category> selectedCategories =
+        context.read<OnboardingBloc>().state.user!.categories ?? [];
     return Form(
       key: _profileFormKey,
       child: ListView(
@@ -202,7 +204,9 @@ class _MobileProfileSetupState extends State<MobileProfileSetup> {
                   child: TextFormField(
                     controller: titleController,
                     textCapitalization: TextCapitalization.words,
-                    decoration: const InputDecoration(label: Text('Title')),
+                    decoration: const InputDecoration(
+                        label: Text('Title'),
+                        hintText: 'e.g. Software Engineer'),
                     validator: (value) {
                       if (value == null || value.isEmpty) {
                         return 'Please enter your title.';
@@ -235,6 +239,7 @@ class _MobileProfileSetupState extends State<MobileProfileSetup> {
             const Gutter(),
             BlocBuilder<CategorySearchBloc, CategorySearchState>(
               builder: (context, state) {
+                Category? newCategory;
                 List<Category> categories = state.categories ?? [];
                 String _displayStringForOption(Category option) =>
                     option.name ?? '';
@@ -244,14 +249,28 @@ class _MobileProfileSetupState extends State<MobileProfileSetup> {
                     if (textEditingValue.text == '') {
                       return const Iterable.empty();
                     }
-                    return state.categories
+                    List<Category> matchingCategories = state.categories
                             ?.where((category) => category.name!
                                 .toLowerCase()
                                 .contains(textEditingValue.text.toLowerCase()))
                             .toList() ??
                         [];
+
+                    if (matchingCategories.isEmpty) {
+                      newCategory = Category(
+                        name: textEditingValue.text.trim(),
+                      );
+                      matchingCategories.add(newCategory!);
+                    }
+
+                    return matchingCategories;
                   },
                   onSelected: (Category category) {
+                    if (category == newCategory) {
+                      context
+                          .read<CategorySearchBloc>()
+                          .add(AddCategory(category: category));
+                    }
                     WidgetsBinding.instance.addPostFrameCallback((_) {
                       final textEditingController =
                           TextEditingController.fromValue(
@@ -259,10 +278,29 @@ class _MobileProfileSetupState extends State<MobileProfileSetup> {
                       );
                       textEditingController.value = TextEditingValue.empty;
                     });
-                    setState(() {
-                      selectedCategories.add(category);
-                      print('Categories: $categories');
-                    });
+
+                    if (selectedCategories.length >= 3) {
+                      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+                          content:
+                              Text('You can only select up to 3 categories.')));
+                      return;
+                    }
+                    print('Categories: $categories');
+
+                    var currentUser =
+                        context.read<OnboardingBloc>().state.user!;
+                    List<Category> updatedCategories =
+                        (currentUser.categories ?? [])..add(category);
+                    context.read<OnboardingBloc>().add(UpdateUser(
+                          currentUser.copyWith(
+                            categories: updatedCategories,
+                          ),
+                        ));
+                    // Print categories that are being added
+                    print('Categories being added:');
+                    for (Category category in updatedCategories) {
+                      print(category.name);
+                    }
                   },
                   optionsViewBuilder: (BuildContext context,
                       AutocompleteOnSelected<Category> onSelected,
@@ -274,15 +312,50 @@ class _MobileProfileSetupState extends State<MobileProfileSetup> {
                         child: ListView.builder(
                           shrinkWrap: true,
                           padding: const EdgeInsets.all(8.0),
-                          itemCount: options.length,
+                          itemCount: options.isNotEmpty ? options.length : 1,
                           itemBuilder: (BuildContext context, int index) {
+                            if (options.isEmpty) {
+                              return const ListTile(
+                                title: Text('No results found'),
+                              );
+                            }
                             final Category option = options.elementAt(index);
+                            bool isHighlighted =
+                                AutocompleteHighlightedOption.of(context) ==
+                                    index;
                             return GestureDetector(
                               onTap: () {
                                 onSelected(option);
                               },
                               child: ListTile(
-                                title: Text(option.name!),
+                                leading: option == newCategory
+                                    ? const Icon(Icons.add)
+                                    : null,
+                                shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(16.0)),
+                                tileColor:
+                                    isHighlighted ? Colors.grey[200] : null,
+                                title: option == newCategory
+                                    ? Text.rich(TextSpan(
+                                        text: 'Add ',
+                                        children: [
+                                          TextSpan(
+                                            text: newCategory!.name!,
+                                            style: const TextStyle(
+                                              fontWeight: FontWeight.bold,
+                                            ),
+                                          ),
+                                        ],
+                                      ))
+                                    : Text(option.name!),
+                                subtitle: option.description == null
+                                    ? null
+                                    : Text(
+                                        option.description!,
+                                        maxLines: 2,
+                                        style:
+                                            TextStyle(color: Colors.grey[600]!),
+                                      ),
                               ),
                             );
                           },
@@ -296,9 +369,11 @@ class _MobileProfileSetupState extends State<MobileProfileSetup> {
                       VoidCallback onFieldSubmitted) {
                     return TextFormField(
                       controller: textEditingController,
+                      textCapitalization: TextCapitalization.words,
                       focusNode: focusNode,
-                      decoration:
-                          const InputDecoration(label: Text('Categories')),
+                      decoration: const InputDecoration(
+                          label: Text('Categories'),
+                          hintText: 'Add up to 3 categories..'),
                       onFieldSubmitted: (String value) {
                         onFieldSubmitted();
                       },
@@ -307,7 +382,6 @@ class _MobileProfileSetupState extends State<MobileProfileSetup> {
                 );
               },
             ),
-
             selectedCategories.isNotEmpty
                 ? const GutterSmall()
                 : const SizedBox(),
@@ -315,13 +389,26 @@ class _MobileProfileSetupState extends State<MobileProfileSetup> {
                 ? const SizedBox()
                 : Wrap(
                     spacing: 8.0,
-                    children: selectedCategories
+                    children: context
+                        .watch<OnboardingBloc>()
+                        .state
+                        .user!
+                        .categories!
                         .map((category) => Chip(
                               label: Text(category.name!),
                               onDeleted: () {
-                                setState(() {
-                                  selectedCategories.remove(category);
-                                });
+                                // Remove category from user
+                                var currentUser =
+                                    context.read<OnboardingBloc>().state.user!;
+
+                                List<Category> updatedCategories =
+                                    (currentUser.categories ?? [])
+                                      ..remove(category);
+                                context.read<OnboardingBloc>().add(UpdateUser(
+                                      currentUser.copyWith(
+                                        categories: updatedCategories,
+                                      ),
+                                    ));
                               },
                             ))
                         .toList(),
@@ -349,7 +436,7 @@ class _MobileProfileSetupState extends State<MobileProfileSetup> {
                 widthFactor: 0.618,
                 child: FilledButton(
                     onPressed: () async {
-                      bool categoryIsValid = _selectedCategory != null;
+                      bool categoryIsValid = selectedCategories.isNotEmpty;
 
                       if (_profileFormKey.currentState!.validate() &&
                           categoryIsValid) {
@@ -379,13 +466,17 @@ class _MobileProfileSetupState extends State<MobileProfileSetup> {
                           ScaffoldMessenger.of(context).showSnackBar(
                               const SnackBar(
                                   backgroundColor: Colors.red,
-                                  content: Text('Please select a category.')));
+                                  behavior: SnackBarBehavior.floating,
+                                  content: Text(
+                                      'Please select at least one category.')));
+                        } else {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(
+                                  backgroundColor: Colors.red,
+                                  behavior: SnackBarBehavior.floating,
+                                  content: Text(
+                                      'Please fill out all required fields.')));
                         }
-                        ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(
-                                backgroundColor: Colors.red,
-                                content: Text(
-                                    'Please fill out all required fields.')));
                       }
                     },
                     child: const Text('Submit'))),
