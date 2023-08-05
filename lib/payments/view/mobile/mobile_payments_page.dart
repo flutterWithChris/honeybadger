@@ -93,6 +93,54 @@ class _MobilePaymentsPageState extends State<MobilePaymentsPage>
               const MobileSliverAppBar(),
               BlocBuilder<PaymentsBloc, PaymentsState>(
                 builder: (context, state) {
+                  if (state.stripeAccountStatus ==
+                      StripeAccountStatus.notCreated) {
+                    // Create not setup page
+                    return SliverPadding(
+                      padding: const EdgeInsets.symmetric(horizontal: 24.0),
+                      sliver: SliverFillRemaining(
+                        child: Center(
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Icon(Icons.money_off,
+                                  size: 72.0,
+                                  color: Theme.of(context).brightness ==
+                                          Brightness.light
+                                      ? Colors.grey[500]
+                                      : Colors.grey[600]),
+                              const Gutter(),
+                              Text('You have not setup payments yet.',
+                                  style: Theme.of(context)
+                                      .textTheme
+                                      .bodyLarge
+                                      ?.copyWith(
+                                          color: Theme.of(context).brightness ==
+                                                  Brightness.light
+                                              ? Colors.grey[500]
+                                              : Colors.grey[600])),
+                              const Gutter(),
+                              Row(
+                                children: [
+                                  Expanded(
+                                    child: FilledButton.icon(
+                                        onPressed: () {},
+                                        icon: const Icon(
+                                          Icons.payments,
+                                          size: 14.0,
+                                        ),
+                                        label: const Text(
+                                          'Setup Payments',
+                                        )),
+                                  ),
+                                ],
+                              )
+                            ],
+                          ),
+                        ),
+                      ),
+                    );
+                  }
                   if (state is PaymentsLoaded && state.loginLink != null) {
                     var availableBalance = 0;
                     if (state.balance?.available != null) {

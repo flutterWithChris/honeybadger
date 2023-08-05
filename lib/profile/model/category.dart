@@ -15,6 +15,13 @@ class Category {
     description = snap['description'];
   }
 
+  // fromJson
+  Category.fromJson(Map<String, dynamic> json) {
+    id = json['id'];
+    name = json['name'];
+    description = json['description'];
+  }
+
   // To document
   Map<String, dynamic> toDocument() {
     return {

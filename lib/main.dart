@@ -295,7 +295,7 @@ class _MyAppState extends State<MyApp> {
             // fontFamily: GoogleFonts.notoSans().fontFamily,
           ),
           darkTheme: FlexThemeData.dark(
-            scaffoldBackground: const Color.fromARGB(255, 18, 18, 18),
+            scaffoldBackground: const Color.fromARGB(255, 0, 0, 0),
             background: const Color.fromARGB(255, 18, 18, 18),
             colors: const FlexSchemeColor(
               primary: Colors.white,
@@ -312,7 +312,8 @@ class _MyAppState extends State<MyApp> {
             blendLevel: 18,
             appBarStyle: FlexAppBarStyle.background,
             bottomAppBarElevation: 2.0,
-            // darkIsTrueBlack: true,
+            darkIsTrueBlack: true,
+
             subThemesData: const FlexSubThemesData(
               blendOnLevel: 20,
               useTextTheme: true,

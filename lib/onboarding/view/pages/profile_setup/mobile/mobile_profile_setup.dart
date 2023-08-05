@@ -154,6 +154,8 @@ class _MobileProfileSetupState extends State<MobileProfileSetup> {
                               keyboardType: TextInputType.name,
                               textCapitalization: TextCapitalization.words,
                               decoration: const InputDecoration(
+                                  floatingLabelBehavior:
+                                      FloatingLabelBehavior.always,
                                   label: Text('First Name')),
                             ),
                           ),
@@ -170,6 +172,8 @@ class _MobileProfileSetupState extends State<MobileProfileSetup> {
                               textCapitalization: TextCapitalization.words,
                               keyboardType: TextInputType.name,
                               decoration: const InputDecoration(
+                                  floatingLabelBehavior:
+                                      FloatingLabelBehavior.always,
                                   label: Text('Last Name')),
                             ),
                           ),
@@ -204,6 +208,7 @@ class _MobileProfileSetupState extends State<MobileProfileSetup> {
                     controller: titleController,
                     textCapitalization: TextCapitalization.words,
                     decoration: const InputDecoration(
+                        floatingLabelBehavior: FloatingLabelBehavior.always,
                         label: Text('Title'),
                         hintText: 'e.g. Software Engineer'),
                     validator: (value) {
@@ -228,10 +233,12 @@ class _MobileProfileSetupState extends State<MobileProfileSetup> {
                   controller: hourlyRateController,
                   keyboardType: TextInputType.number,
                   decoration: const InputDecoration(
-                      label: Text('Hourly Rate'),
-                      hintText: '40',
-                      prefixText: '\$',
-                      suffixText: '/hr'),
+                    label: Text('Hourly Rate'),
+                    hintText: '40',
+                    prefixText: '\$',
+                    suffixText: '/hr',
+                    floatingLabelBehavior: FloatingLabelBehavior.always,
+                  ),
                 ))
               ],
             ),
@@ -380,8 +387,10 @@ class _MobileProfileSetupState extends State<MobileProfileSetup> {
                       textCapitalization: TextCapitalization.words,
                       focusNode: focusNode,
                       decoration: const InputDecoration(
-                          label: Text('Categories'),
-                          hintText: 'Add up to 3 categories..'),
+                        label: Text('Categories'),
+                        hintText: 'Add up to 3 categories..',
+                        floatingLabelBehavior: FloatingLabelBehavior.always,
+                      ),
                       onFieldSubmitted: (String value) {
                         onFieldSubmitted();
                       },
@@ -426,9 +435,11 @@ class _MobileProfileSetupState extends State<MobileProfileSetup> {
               minLines: 6,
               maxLines: 10,
               decoration: const InputDecoration(
-                  label: Text('Bio'),
-                  hintText:
-                      'Tell clients what you can do for them. Focus on the benefits of working with you & why that matters to them.'),
+                label: Text('Bio'),
+                hintText:
+                    'Tell clients what you can do for them. Focus on the benefits of working with you & why that matters to them.',
+                floatingLabelBehavior: FloatingLabelBehavior.always,
+              ),
             ),
             const Gutter(),
             FilledButton(

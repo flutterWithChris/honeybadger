@@ -22,6 +22,13 @@ class Skill {
     };
   }
 
+  // fromJson
+  Skill.fromJson(Map<String, dynamic> json) {
+    id = json['id'];
+    name = json['name'];
+    description = json['description'];
+  }
+
   /// From Algolia Search
   Skill.fromAlgoliaSearch({required Map<String, dynamic> algoliaSearch}) {
     id = algoliaSearch['objectID'];

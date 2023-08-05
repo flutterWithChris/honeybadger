@@ -24,12 +24,12 @@ class ProfileBloc extends Bloc<ProfileEvent, ProfileState> {
     on<UpdateProfile>(_onUpdateProfile);
     on<DeleteProfile>(_onDeleteProfile);
 
-    // _authSubscription = _authBloc.stream.listen((state) {
-    //   print('Profile Bloc received Auth State: $state');
-    //   if (state.status == AuthStatus.authenticated) {
-    //     add(LoadProfile());
-    //   }
-    // });
+    _authSubscription = _authBloc.stream.listen((state) {
+      print('Profile Bloc received Auth State: $state');
+      if (state.status == AuthStatus.authenticated) {
+        add(LoadProfile());
+      }
+    });
   }
   void _onLoadProfile(LoadProfile event, Emitter<ProfileState> emit) async {
     emit(ProfileLoading());

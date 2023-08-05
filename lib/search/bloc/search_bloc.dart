@@ -26,16 +26,16 @@ class SearchBloc extends Bloc<SearchEvent, SearchState> {
         _searchRepository = searchRepository,
         _profileBloc = profileBloc,
         super(SearchLoading()) {
-    _profileSubscription = _profileBloc.stream.listen((state) {
-      print('Search Bloc received Profile State: $state');
-      if (state is ProfileLoaded) {
-        add(LoadSearch(state.user));
-      }
-    });
+    // _profileSubscription = _profileBloc.stream.listen((state) {
+    //   print('Search Bloc received Profile State: $state');
+    //   if (state is ProfileLoaded) {
+    //     add(LoadSearch(state.user));
+    //   }
+    // });
     on<LoadSearch>((event, emit) async {
       emit(SearchLoading());
       // TODO: Set default query to user's skills
-      _searchRepository.setQuery('', 'projects');
+      _searchRepository.setQuery('app', 'projects');
 
       // Get search results, then fetch the projects or freelancers
       final value = await _searchRepository.getSearchResults('projects').first;

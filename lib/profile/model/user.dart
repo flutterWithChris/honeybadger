@@ -98,13 +98,13 @@ class User {
     if (snap['skills'] != null) {
       skills = [];
       snap['skills'].forEach((v) {
-        skills?.add(Skill.fromDocumentSnapshot(documentSnapshot: v));
+        skills?.add(Skill.fromJson(v));
       });
     }
     if (snap['categories'] != null) {
       categories = [];
       snap['categories'].forEach((v) {
-        categories?.add(Category.fromDocumentSnapshot(v));
+        categories?.add(Category.fromJson(v));
       });
     }
   }
