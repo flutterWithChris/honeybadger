@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_gutter/flutter_gutter.dart';
+import 'package:honeybadger/auth/bloc/auth_bloc.dart';
 import 'package:honeybadger/core/constants.dart';
 import 'package:honeybadger/onboarding/bloc/onboarding_bloc.dart';
 import 'package:honeybadger/onboarding/view/pages/profile_setup/bloc/skills/bloc/skill_search_bloc.dart';
+import 'package:honeybadger/profile/bloc/profile_bloc.dart';
 import 'package:honeybadger/profile/model/portfolio_project.dart';
 import 'package:honeybadger/profile/model/skill.dart';
 import 'package:honeybadger/profile/portfolio/bloc/portfolio_bloc.dart';
@@ -23,11 +25,17 @@ class SkillsAndExperiencePage extends StatefulWidget {
 
 class _SkillsAndExperiencePageState extends State<SkillsAndExperiencePage> {
   Skill? newSkill;
+  List<Skill> selectedSkills = [];
+  List<PortfolioProject> portfolioProjects = [];
+
+  @override
+  void initState() {
+    selectedSkills = context.read<OnboardingBloc>().state.user?.skills ?? [];
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
-    List<Skill> selectedSkills =
-        context.watch<OnboardingBloc>().state.user?.skills ?? [];
     User? currentUser = context.read<OnboardingBloc>().state.user;
 
     return Scaffold(body: SafeArea(
@@ -210,10 +218,9 @@ class _SkillsAndExperiencePageState extends State<SkillsAndExperiencePage> {
                           BlocProvider.of<SkillSearchBloc>(context)
                               .add(AddSkill(skill: skill));
                         }
-                        context.read<OnboardingBloc>().add(UpdateUser(
-                            currentUser!.copyWith(
-                                skills: ((currentUser.skills ?? []))
-                                  ..add(skill))));
+                        setState(() {
+                          selectedSkills.add(skill);
+                        });
                       },
                       optionsViewBuilder: (BuildContext context,
                           AutocompleteOnSelected<Skill> onSelected,
@@ -305,13 +312,8 @@ class _SkillsAndExperiencePageState extends State<SkillsAndExperiencePage> {
                             .map((skill) => Chip(
                                   label: Text(skill.name!),
                                   onDeleted: () {
-                                    List<Skill> updatedSkills =
-                                        (currentUser?.skills ?? [])
-                                          ..remove(skill);
-
-                                    context.read<OnboardingBloc>().add(
-                                        UpdateUser(currentUser!
-                                            .copyWith(skills: updatedSkills)));
+                                    selectedSkills = selectedSkills
+                                      ..remove(skill);
                                   },
                                 ))
                             .toList(),
@@ -433,7 +435,11 @@ class _SkillsAndExperiencePageState extends State<SkillsAndExperiencePage> {
                         context.read<PortfolioBloc>().state.projects!.isNotEmpty
                     ? FilledButton(onPressed: () {}, child: const Text('Next'))
                     : OutlinedButton(
-                        onPressed: () {}, child: const Text('Skip for now'))
+                        onPressed: () {
+                          context.read<OnboardingBloc>().add(UpdateUser(
+                              currentUser!.copyWith(skills: selectedSkills)));
+                        },
+                        child: const Text('Skip for now'))
               ]);
         }
       }),
@@ -504,6 +510,28 @@ class PortfolioCard extends StatelessWidget {
                   ),
                 ),
               ),
+              Positioned(
+                  top: 0,
+                  left: 0,
+                  child: Row(
+                    children: [
+                      IconButton.filled(
+                          style: IconButton.styleFrom(
+                              minimumSize: const Size(32, 32),
+                              fixedSize: const Size(32, 32),
+                              backgroundColor: Colors.red.withOpacity(0.8)),
+                          onPressed: () {
+                            context.read<PortfolioBloc>().add(DeleteProject(
+                                project: project,
+                                userId:
+                                    context.read<AuthBloc>().state.user!.uid));
+                          },
+                          color: Colors.white,
+                          icon: const Icon(Icons.remove, size: 16)),
+                      // IconButton.filled(
+                      //     onPressed: () {}, icon: const Icon(Icons.edit)),
+                    ],
+                  )),
             ],
           ),
         ),

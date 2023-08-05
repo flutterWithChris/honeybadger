@@ -32,6 +32,7 @@ class _AddProjectDialogState extends State<AddProjectDialog> {
   DateTime? _projectStart;
   DateTime? _projectEnd;
   final GlobalKey<FormState> formKey = GlobalKey<FormState>();
+  bool imageValid = true;
 
   @override
   Widget build(BuildContext context) {
@@ -259,10 +260,10 @@ class _AddProjectDialogState extends State<AddProjectDialog> {
               ]);
         } else {
           return BlocConsumer<PortfolioBloc, PortfolioState>(
+            listenWhen: (previous, current) =>
+                previous is PortfolioLoading && current is PortfolioLoaded,
             listener: (context, state) async {
-              if (state is PortfolioUpdated) {
-                await Future.delayed(const Duration(seconds: 2));
-                if (!mounted) return;
+              if (state is PortfolioLoaded) {
                 context.pop();
               }
             },
@@ -298,41 +299,6 @@ class _AddProjectDialogState extends State<AddProjectDialog> {
                     child: CircularProgressIndicator(),
                   ),
                 ]);
-              }
-              if (state is PortfolioUpdated) {
-                return Padding(
-                  padding: const EdgeInsets.symmetric(
-                      horizontal: 24.0, vertical: 24.0),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      const Icon(
-                        Icons.check_circle_outline_rounded,
-                        color: Colors.green,
-                        size: 32,
-                      ),
-                      const Gutter(),
-                      Text(
-                        'Portfolio Updated',
-                        style: Theme.of(context).textTheme.headlineMedium,
-                      ),
-                      const Gutter(),
-                      Text(
-                        'Your project has been added successfully.',
-                        style: Theme.of(context).textTheme.bodyLarge,
-                        textAlign: TextAlign.center,
-                      ),
-                      const Gutter(),
-                      TextButton(
-                          onPressed: () {
-                            Navigator.pop(context);
-                          },
-                          child: const Text('Close')),
-                      const Gutter(),
-                    ],
-                  ),
-                );
               }
               if (state is PortfolioLoaded || state is PortfolioInitial) {
                 return Form(
@@ -579,7 +545,12 @@ class _AddProjectDialogState extends State<AddProjectDialog> {
                                   height: 160,
                                   width: 160,
                                   decoration: BoxDecoration(
-                                      border: Border.all(color: Colors.grey),
+                                      border: Border.all(
+                                          color: imageValid
+                                              ? Colors.grey
+                                              : Theme.of(context)
+                                                  .colorScheme
+                                                  .error),
                                       borderRadius: BorderRadius.circular(8)),
                                   child: InkWell(
                                     onTap: () async {
@@ -593,7 +564,7 @@ class _AddProjectDialogState extends State<AddProjectDialog> {
                                         });
                                       }
                                     },
-                                    child: const Row(
+                                    child: Row(
                                       mainAxisSize: MainAxisSize.min,
                                       mainAxisAlignment:
                                           MainAxisAlignment.center,
@@ -603,14 +574,25 @@ class _AddProjectDialogState extends State<AddProjectDialog> {
                                         // Icon(Icons.add_circle_outline_rounded,
                                         //     size: 16, color: Colors.grey[600]!),
                                         // const GutterSmall(),
-                                        Text('No Images Selected',
-                                            style: TextStyle(fontSize: 16)),
+                                        imageValid
+                                            ? const SizedBox()
+                                            : const Icon(Icons.error_rounded,
+                                                size: 20,
+                                                color: Colors.redAccent),
+                                        imageValid
+                                            ? const SizedBox()
+                                            : const GutterSmall(),
+                                        Text(
+                                            imageValid
+                                                ? 'No Images Selected'
+                                                : 'Please add at least one image',
+                                            style:
+                                                const TextStyle(fontSize: 16)),
                                       ],
                                     ),
                                   ),
                                 ),
                         ),
-                        const Gutter(),
                         const Gutter(),
                         Row(
                           mainAxisAlignment: MainAxisAlignment.end,
@@ -621,16 +603,19 @@ class _AddProjectDialogState extends State<AddProjectDialog> {
                                 },
                                 child: const Text('Cancel')),
                             const Gutter(),
-                            TextButton(
+                            FilledButton(
                                 onPressed: () {
+                                  if (_images.isEmpty) {
+                                    setState(() {
+                                      imageValid = false;
+                                    });
+                                    ScaffoldMessenger.of(context).showSnackBar(
+                                        const SnackBar(
+                                            content: Text(
+                                                'Please select at least one image')));
+                                    return;
+                                  }
                                   if (formKey.currentState!.validate()) {
-                                    if (_images.isEmpty) {
-                                      ScaffoldMessenger.of(context)
-                                          .showSnackBar(const SnackBar(
-                                              content: Text(
-                                                  'Please select at least one image')));
-                                      return;
-                                    }
                                     context.read<PortfolioBloc>().add(
                                         AddProject(
                                             project: PortfolioProject(
@@ -660,7 +645,7 @@ class _AddProjectDialogState extends State<AddProjectDialog> {
                                                 'Please fill in all fields')));
                                   }
                                 },
-                                child: const Text('Add')),
+                                child: const Text('Add Project')),
                             const Gutter(),
                           ],
                         )

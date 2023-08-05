@@ -35,9 +35,8 @@ GoRouter goRouter = GoRouter(
         context.read<AuthBloc>().state.status == AuthStatus.authenticated;
     print('Logged in: $loggedIn');
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    bool onboarded = false;
 
-    // onboarded = prefs.getBool('onboarded') ?? false;
+    bool onboarded = prefs.getBool('onboarded') ?? false;
     if (loggedIn == false) {
       return '/onboarding';
     }

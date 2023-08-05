@@ -17,16 +17,16 @@ class OnboardingPage extends StatefulWidget {
 
 class _OnboardingPageState extends State<OnboardingPage> {
   final PageController _pageController = PageController();
-  int _currentPage = 0;
+  final int _currentPage = 0;
   @override
   void initState() {
     super.initState();
-    _pageController.addListener(() {
-      setState(() {
-        _currentPage = _pageController.page!.round();
-        print('Current Page: $_currentPage');
-      });
-    });
+    // _pageController.addListener(() {
+    //   setState(() {
+    //     _currentPage = _pageController.page!.round();
+    //     print('Current Page: $_currentPage');
+    //   });
+    // });
   }
 
   @override

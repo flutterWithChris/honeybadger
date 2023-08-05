@@ -27,7 +27,8 @@ class PortfolioRepository {
         const SnackBar(
           behavior: SnackBarBehavior.floating,
           backgroundColor: Colors.red,
-          content: Text('Error getting portfolio projects!'),
+          content: Text('Error getting portfolio projects!',
+              style: TextStyle(color: Colors.white)),
         ),
       );
       print(e);
@@ -52,7 +53,8 @@ class PortfolioRepository {
         const SnackBar(
           behavior: SnackBarBehavior.floating,
           backgroundColor: Colors.red,
-          content: Text('Error adding portfolio project!'),
+          content: Text('Error adding portfolio project!',
+              style: TextStyle(color: Colors.white)),
         ),
       );
       throw Exception(e.message);
@@ -74,7 +76,8 @@ class PortfolioRepository {
         const SnackBar(
           behavior: SnackBarBehavior.floating,
           backgroundColor: Colors.red,
-          content: Text('Error updating portfolio project!'),
+          content: Text('Error updating portfolio project!',
+              style: TextStyle(color: Colors.white)),
         ),
       );
       throw Exception(e.message);
@@ -85,17 +88,28 @@ class PortfolioRepository {
   Future<void> deletePortfolioProject(
       String userId, PortfolioProject project) async {
     try {
-      await _firestore
-          .collection('users')
-          .doc(userId)
-          .collection('portfolio')
-          .doc(project.id)
-          .delete();
+      Future.wait([
+        for (var image in project.images!)
+          _firebaseStorage
+              .ref()
+              .child('users')
+              .child(userId)
+              .child('portfolio')
+              .child(image)
+              .delete(),
+        _firestore
+            .collection('users')
+            .doc(userId)
+            .collection('portfolio')
+            .doc(project.id)
+            .delete()
+      ]);
     } on FirebaseException catch (e) {
       scaffoldKey.currentState!.showSnackBar(const SnackBar(
         behavior: SnackBarBehavior.floating,
         backgroundColor: Colors.red,
-        content: Text('Error deleting portfolio project!'),
+        content: Text('Error deleting portfolio project!',
+            style: TextStyle(color: Colors.white)),
       ));
       throw Exception(e.message);
     }
@@ -105,8 +119,8 @@ class PortfolioRepository {
   Future<List<String>> savePortfolioProjectImages(
       String userId, List<XFile> images) async {
     try {
-      List<String> imageUrls = [];
-      for (var image in images) {
+      // Save Project Images to Firebase Storage in Parallel
+      List<Future<String>> tasks = images.map((image) async {
         var ref = _firebaseStorage
             .ref()
             .child('users')
@@ -114,16 +128,17 @@ class PortfolioRepository {
             .child('portfolio')
             .child(image.name);
         await ref.putFile(File(image.path));
-        var url = await ref.getDownloadURL();
-        imageUrls.add(url);
-      }
-      return imageUrls;
+        return ref.getDownloadURL();
+      }).toList();
+
+      return await Future.wait(tasks);
     } on FirebaseException catch (e) {
       scaffoldKey.currentState!.showSnackBar(
         const SnackBar(
           behavior: SnackBarBehavior.floating,
           backgroundColor: Colors.red,
-          content: Text('Error saving images!'),
+          content: Text('Error saving images!',
+              style: TextStyle(color: Colors.white)),
         ),
       );
       throw Exception(e.message);
@@ -143,7 +158,8 @@ class PortfolioRepository {
         const SnackBar(
           behavior: SnackBarBehavior.floating,
           backgroundColor: Colors.red,
-          content: Text('Error deleting images!'),
+          content: Text('Error deleting images!',
+              style: TextStyle(color: Colors.white)),
         ),
       );
       throw Exception(e.message);
@@ -161,7 +177,8 @@ class PortfolioRepository {
         const SnackBar(
           behavior: SnackBarBehavior.floating,
           backgroundColor: Colors.red,
-          content: Text('Error deleting image!'),
+          content: Text('Error deleting image!',
+              style: TextStyle(color: Colors.white)),
         ),
       );
       throw Exception(e.message);

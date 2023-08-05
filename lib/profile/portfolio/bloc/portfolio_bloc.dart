@@ -28,7 +28,8 @@ class PortfolioBloc extends Bloc<PortfolioEvent, PortfolioState> {
           const SnackBar(
             behavior: SnackBarBehavior.floating,
             backgroundColor: Colors.red,
-            content: Text('Error getting portfolio projects!'),
+            content: Text('Error getting portfolio projects!',
+                style: TextStyle(color: Colors.white)),
           ),
         );
         print(e);
@@ -40,14 +41,18 @@ class PortfolioBloc extends Bloc<PortfolioEvent, PortfolioState> {
         emit(PortfolioLoading());
         await _portfolioRepository.addPortfolioProject(
             event.userId, event.project, event.images);
-        emit(PortfolioUpdated());
-        await Future.delayed(const Duration(seconds: 2));
+        scaffoldKey.currentState!.showSnackBar(const SnackBar(
+          behavior: SnackBarBehavior.floating,
+          content: Text('Portfolio project added!'),
+        ));
+
         add(LoadPortfolio(userId: event.userId));
       } catch (e) {
         scaffoldKey.currentState!.showSnackBar(const SnackBar(
           behavior: SnackBarBehavior.floating,
           backgroundColor: Colors.red,
-          content: Text('Error adding portfolio project!'),
+          content: Text('Error adding portfolio project!',
+              style: TextStyle(color: Colors.white)),
         ));
         emit(PortfolioError(message: e.toString()));
       }
@@ -56,13 +61,17 @@ class PortfolioBloc extends Bloc<PortfolioEvent, PortfolioState> {
       try {
         await _portfolioRepository.updatePortfolioProject(
             event.userId, event.project);
-        emit(PortfolioUpdated());
+        scaffoldKey.currentState!.showSnackBar(const SnackBar(
+          behavior: SnackBarBehavior.floating,
+          content: Text('Portfolio project updated!'),
+        ));
         add(LoadPortfolio(userId: event.userId));
       } catch (e) {
         scaffoldKey.currentState!.showSnackBar(const SnackBar(
           behavior: SnackBarBehavior.floating,
           backgroundColor: Colors.red,
-          content: Text('Error updating portfolio project!'),
+          content: Text('Error updating portfolio project!',
+              style: TextStyle(color: Colors.white)),
         ));
         emit(PortfolioError(message: e.toString()));
       }
@@ -71,12 +80,19 @@ class PortfolioBloc extends Bloc<PortfolioEvent, PortfolioState> {
       try {
         await _portfolioRepository.deletePortfolioProject(
             event.userId, event.project);
+        scaffoldKey.currentState!.showSnackBar(const SnackBar(
+          behavior: SnackBarBehavior.floating,
+          content: Text(
+            'Portfolio project deleted!',
+          ),
+        ));
         add(LoadPortfolio(userId: event.userId));
       } catch (e) {
         scaffoldKey.currentState!.showSnackBar(const SnackBar(
           behavior: SnackBarBehavior.floating,
           backgroundColor: Colors.red,
-          content: Text('Error deleting portfolio project!'),
+          content: Text('Error deleting portfolio project!',
+              style: TextStyle(color: Colors.white)),
         ));
         emit(PortfolioError(message: e.toString()));
       }

@@ -305,7 +305,7 @@ class _MyAppState extends State<MyApp> {
               tertiary: Color(0xffffffff),
               tertiaryContainer: Color(0xff004e59),
               appBarColor: Color(0xffffffff),
-              error: Color(0xffcf6679),
+              error: Color(0xffb00020),
             ),
             //surface: Colors.transparent,
             surfaceMode: FlexSurfaceMode.highScaffoldLowSurface,
