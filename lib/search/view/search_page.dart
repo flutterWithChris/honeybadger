@@ -2,7 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:honeybadger/core/constants.dart';
 import 'package:honeybadger/profile/bloc/profile_bloc.dart';
+import 'package:honeybadger/profile/model/user.dart';
 import 'package:honeybadger/search/view/desktop/desktop_search_page.dart';
+import 'package:honeybadger/search/view/mobile/mobile_client_search_page.dart';
 import 'package:honeybadger/search/view/mobile/mobile_search_page..dart';
 import 'package:honeybadger/search/view/tablet/tablet_search_page.dart';
 
@@ -36,6 +38,10 @@ class _SearchPageState extends State<SearchPage> {
         } else if (constraints.maxWidth > tabletWidthConstraint) {
           return const TabletSearchPage();
         } else {
+          if (context.read<ProfileBloc>().state.user?.userType ==
+              UserType.client) {
+            return const MobileClientSearchPage();
+          }
           return const MobileSearchPage();
         }
       }),

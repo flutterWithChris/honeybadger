@@ -1,3 +1,4 @@
+import 'package:algolia_helper_flutter/algolia_helper_flutter.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:honeybadger/profile/model/category.dart';
 import 'package:honeybadger/profile/model/skill.dart';
@@ -220,5 +221,41 @@ class User {
       communicationPreference:
           communicationPreference ?? this.communicationPreference,
     );
+  }
+
+  // from AlgoliaSearch
+  User.fromAlgoliaSearch(Hit hit) {
+    id = hit['objectID'];
+    firstName = hit['firstName'];
+    lastName = hit['lastName'];
+    company = hit['company'];
+    rating = hit['rating'];
+    ratingCount = hit['ratingCount'];
+    if (hit['reviews'] != null) {
+      reviews = [];
+      hit['reviews'].forEach((v) {
+        reviews?.add(Review.fromJson(v));
+      });
+    }
+    title = hit['title'];
+    hourlyRate = hit['hourlyRate'];
+    city = hit['city'];
+    state = hit['state'];
+    zip = hit['zip'];
+    country = hit['country'];
+    photoUrl = hit['photoUrl'];
+    bio = hit['bio'];
+    if (hit['skills'] != null) {
+      skills = [];
+      hit['skills'].forEach((v) {
+        skills?.add(Skill.fromJson(v));
+      });
+    }
+    if (hit['categories'] != null) {
+      categories = [];
+      hit['categories'].forEach((v) {
+        categories?.add(Category.fromJson(v));
+      });
+    }
   }
 }

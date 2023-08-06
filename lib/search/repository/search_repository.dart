@@ -8,18 +8,28 @@ class SearchRepository {
     applicationID: dotenv.env['ALGOLIA_APP_ID']!,
     apiKey: dotenv.env['ALGOLIA_API_KEY']!,
     indexName: 'projects',
+    debounce: const Duration(milliseconds: 800),
   );
 
   final HitsSearcher categoryHitsSearcher = HitsSearcher(
     applicationID: dotenv.env['ALGOLIA_APP_ID']!,
     apiKey: dotenv.env['ALGOLIA_API_KEY']!,
     indexName: 'categories',
+    debounce: const Duration(milliseconds: 800),
   );
+
   final HitsSearcher skillsHitsSearcher = HitsSearcher(
     applicationID: dotenv.env['ALGOLIA_APP_ID']!,
     apiKey: dotenv.env['ALGOLIA_API_KEY']!,
     indexName: 'skills',
-    debounce: const Duration(milliseconds: 500),
+    debounce: const Duration(milliseconds: 800),
+  );
+
+  final HitsSearcher freelancerHitsSearcher = HitsSearcher(
+    applicationID: dotenv.env['ALGOLIA_APP_ID']!,
+    apiKey: dotenv.env['ALGOLIA_API_KEY']!,
+    indexName: 'freelancers',
+    debounce: const Duration(milliseconds: 800),
   );
 
   void setQuery(String query, String indexName) async {
@@ -34,6 +44,10 @@ class SearchRepository {
         break;
       case 'skills':
         skillsHitsSearcher
+            .applyState((state) => state.copyWith(query: query, page: 0));
+        break;
+      case 'freelancers':
+        freelancerHitsSearcher
             .applyState((state) => state.copyWith(query: query, page: 0));
         break;
       default:
@@ -51,6 +65,8 @@ class SearchRepository {
         return categoryHitsSearcher.state;
       case 'skills':
         return skillsHitsSearcher.state;
+      case 'freelancers':
+        return freelancerHitsSearcher.state;
       default:
         return hitsSearcher.state;
     }
@@ -64,6 +80,8 @@ class SearchRepository {
         return categoryHitsSearcher.responses;
       case 'skills':
         return skillsHitsSearcher.responses;
+      case 'freelancers':
+        return freelancerHitsSearcher.responses;
       default:
         return hitsSearcher.responses;
     }
@@ -82,9 +100,15 @@ class SearchRepository {
       case 'skills':
         skillsHitsSearcher
             .applyState((state) => state.copyWith(page: state.page! + 1));
+        break;
+      case 'freelancers':
+        freelancerHitsSearcher
+            .applyState((state) => state.copyWith(page: state.page! + 1));
+        break;
       default:
         hitsSearcher
             .applyState((state) => state.copyWith(page: state.page! + 1));
+
         break;
     }
   }
@@ -99,6 +123,9 @@ class SearchRepository {
         break;
       case 'skills':
         skillsHitsSearcher.applyState((state) => state.copyWith(query: ''));
+        break;
+      case 'freelancers':
+        freelancerHitsSearcher.applyState((state) => state.copyWith(query: ''));
         break;
       default:
         hitsSearcher.applyState((state) => state.copyWith(query: ''));

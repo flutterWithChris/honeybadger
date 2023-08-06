@@ -44,11 +44,12 @@ class MobileClientProfilePage extends StatelessWidget {
                           const GutterSmall(),
                           const Text('Error Loading Profile!'),
                           const Gutter(),
-                          ElevatedButton(
+                          FilledButton.icon(
                               onPressed: () {
                                 context.read<ProfileBloc>().add(LoadProfile());
                               },
-                              child: const Text('Retry'))
+                              icon: const Icon(Icons.refresh_rounded),
+                              label: const Text('Retry'))
                         ]),
                   ),
                 );
