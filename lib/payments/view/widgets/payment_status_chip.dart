@@ -17,20 +17,24 @@ class PaymentStatusChip extends StatelessWidget {
       padding:
           padding ?? const EdgeInsets.symmetric(horizontal: 8.0, vertical: 4.0),
       shape: const StadiumBorder(),
-      backgroundColor: balanceTransaction.status! == 'paid'
+      backgroundColor: balanceTransaction.status! == 'paid' ||
+              balanceTransaction.status! == 'available'
           ? Colors.green[500]
-          : balanceTransaction.status! == 'pending'
+          : balanceTransaction.status! == 'pending' ||
+                  balanceTransaction.status! == 'in_transit'
               ? Theme.of(context).colorScheme.tertiaryContainer
               : Colors.red[500],
       visualDensity: VisualDensity.compact,
       side: BorderSide.none,
-      avatar: balanceTransaction.status! == 'paid'
+      avatar: balanceTransaction.status! == 'paid' ||
+              balanceTransaction.status! == 'available'
           ? Icon(
               MdiIcons.checkBold,
               size: 14.0,
               color: Colors.white,
             )
-          : balanceTransaction.status! == 'pending'
+          : balanceTransaction.status! == 'pending' ||
+                  balanceTransaction.status! == 'in_transit'
               ? const Icon(
                   Icons.pending,
                   size: 14.0,

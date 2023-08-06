@@ -254,18 +254,15 @@ class _MobilePaymentsPageState extends State<MobilePaymentsPage>
                                       mainAxisAlignment:
                                           MainAxisAlignment.center,
                                       children: [
-                                        const Spacer(),
+                                        Flexible(
+                                            child: IconButton.filled(
+                                                onPressed: () {},
+                                                icon: const Icon(
+                                                    Icons.dashboard))),
+                                        const Gutter(),
                                         Expanded(
                                           flex: 7,
                                           child: FilledButton.icon(
-                                              style: const ButtonStyle(
-                                                backgroundColor:
-                                                    MaterialStatePropertyAll(
-                                                        Colors.green),
-                                                foregroundColor:
-                                                    MaterialStatePropertyAll(
-                                                        Colors.white),
-                                              ),
                                               onPressed: () {
                                                 showBottomSheet(
                                                   context: context,
@@ -281,16 +278,11 @@ class _MobilePaymentsPageState extends State<MobilePaymentsPage>
                                                 Icons.payments,
                                                 size: 14.0,
                                               ),
-                                              label: const Text(
-                                                'Payout',
+                                              label: Text(
+                                                'Payout ${convertCentsToCurrency(availableBalance)}',
                                               )),
                                         ),
-                                        const Gutter(),
-                                        Flexible(
-                                            child: IconButton.filled(
-                                                onPressed: () {},
-                                                icon: const Icon(
-                                                    Icons.dashboard)))
+                                        const Spacer(),
                                       ],
                                     ),
                                   )
@@ -466,6 +458,14 @@ class _MobilePaymentsPageState extends State<MobilePaymentsPage>
                       sliver: SliverList(
                         delegate: SliverChildBuilderDelegate(
                           (context, index) {
+                            DateTime availableDate =
+                                Jiffy.parseFromMillisecondsSinceEpoch(
+                                        paymentsState
+                                                .balanceTransactions![index]
+                                                .availableOn! *
+                                            1000)
+                                    .dateTime;
+
                             String transactionType =
                                 paymentsState.balanceTransactions![index].type!;
                             if (transactionType == 'transfer') {
@@ -473,7 +473,7 @@ class _MobilePaymentsPageState extends State<MobilePaymentsPage>
                             }
                             return Column(
                               children: [
-                                const Divider(),
+                                index == 0 ? const Divider() : const SizedBox(),
                                 Padding(
                                   padding: const EdgeInsets.only(bottom: 4.0),
                                   child: Padding(
@@ -488,16 +488,13 @@ class _MobilePaymentsPageState extends State<MobilePaymentsPage>
                                         showBottomSheet(
                                             enableDrag: true,
                                             context: context,
-                                            builder: (context) => BottomSheet(
-                                                  showDragHandle: true,
-                                                  animationController:
-                                                      AnimationController(
-                                                    vsync: this,
-                                                    duration: const Duration(
-                                                        milliseconds: 300),
-                                                  ),
-                                                  onClosing: () {},
-                                                  builder: (context) =>
+                                            builder: (context) =>
+                                                DraggableScrollableSheet(
+                                                  expand: false,
+                                                  initialChildSize: 0.21,
+                                                  minChildSize: 0.2,
+                                                  builder: (context,
+                                                          scrollController) =>
                                                       PaymentDetailsPage(
                                                           balanceTransaction:
                                                               paymentsState
@@ -506,19 +503,30 @@ class _MobilePaymentsPageState extends State<MobilePaymentsPage>
                                                 ));
                                       },
                                       leading: paymentsState
-                                                  .balanceTransactions![index]
-                                                  .status ==
-                                              'available'
+                                                      .balanceTransactions![
+                                                          index]
+                                                      .status ==
+                                                  'available' ||
+                                              paymentsState
+                                                      .balanceTransactions![
+                                                          index]
+                                                      .status ==
+                                                  'paid'
                                           ? Icon(
                                               MdiIcons.checkBold,
                                               size: 20.0,
                                               color: Colors.green,
                                             )
                                           : paymentsState
-                                                      .balanceTransactions![
-                                                          index]
-                                                      .status ==
-                                                  'pending'
+                                                          .balanceTransactions![
+                                                              index]
+                                                          .status ==
+                                                      'pending' ||
+                                                  paymentsState
+                                                          .balanceTransactions![
+                                                              index]
+                                                          .status ==
+                                                      'in_transit'
                                               ? const Icon(
                                                   Icons.pending,
                                                   size: 20.0,
@@ -545,10 +553,12 @@ class _MobilePaymentsPageState extends State<MobilePaymentsPage>
                                                           FontWeight.bold)),
                                           const GutterSmall(),
                                           paymentsState
-                                                      .balanceTransactions![
-                                                          index]
-                                                      .availableOn !=
-                                                  null
+                                                          .balanceTransactions![
+                                                              index]
+                                                          .availableOn !=
+                                                      null &&
+                                                  availableDate
+                                                      .isAfter(DateTime.now())
                                               ? Flexible(
                                                   child: Text(
                                                     'Available on ${Jiffy.parseFromMillisecondsSinceEpoch(paymentsState.balanceTransactions![index].availableOn! * 1000).MMMd}',
@@ -584,8 +594,14 @@ class _MobilePaymentsPageState extends State<MobilePaymentsPage>
                                               overflow: TextOverflow.ellipsis,
                                               style: Theme.of(context)
                                                   .textTheme
-                                                  .bodyMedium)
-                                          : const SizedBox(),
+                                                  .bodySmall!
+                                                  .copyWith(
+                                                      color: Theme.of(context)
+                                                                  .brightness ==
+                                                              Brightness.light
+                                                          ? Colors.grey[500]
+                                                          : Colors.grey[600]))
+                                          : null,
                                       // TODO: Add payment status widge
                                       trailing: Column(
                                         crossAxisAlignment:
@@ -595,7 +611,7 @@ class _MobilePaymentsPageState extends State<MobilePaymentsPage>
                                           Text(
                                             convertCentsToCurrency(paymentsState
                                                 .balanceTransactions![index]
-                                                .amount!),
+                                                .net!),
                                             style: Theme.of(context)
                                                 .textTheme
                                                 .titleMedium
@@ -892,10 +908,17 @@ class _PayoutMethodSheetState extends State<PayoutMethodSheet> {
       initialChildSize: context.watch<PayoutBloc>().state is PayoutStarted
           ? 0.26
           : context.watch<PayoutBloc>().state is PayoutInitial
-              ? 0.23
+              ? 0.24
               : 0.2,
       minChildSize: 0.2,
-      builder: (context, controller) => BlocBuilder<PayoutBloc, PayoutState>(
+      builder: (context, controller) => BlocConsumer<PayoutBloc, PayoutState>(
+        listener: (context, state) {
+          if (state is PayoutSuccess) {
+            context.read<PaymentsBloc>().add(LoadBalanceAndTransactions(
+                user: context.read<ProfileBloc>().state.user!));
+          }
+          if (state is PayoutFailure) {}
+        },
         builder: (context, state) {
           if (state is PayoutLoading) {
             return Padding(
@@ -950,7 +973,12 @@ class _PayoutMethodSheetState extends State<PayoutMethodSheet> {
                           style: FilledButton.styleFrom(
                               backgroundColor: Colors.red,
                               foregroundColor: Colors.white),
-                          onPressed: () => Navigator.of(context).pop(),
+                          onPressed: () {
+                            context.read<PayoutBloc>().add(RequestPayout(
+                                user: state.user!,
+                                amountInCents: state.amountInCents!,
+                                payoutMethod: state.payoutMethod!));
+                          },
                           icon: const Icon(Icons.refresh_rounded, size: 20.0),
                           label: const Text('Retry'),
                         ),
@@ -1036,74 +1064,130 @@ class _PayoutMethodSheetState extends State<PayoutMethodSheet> {
                     ],
                   ),
                   const Gutter(),
-                  AnimatedSwitcher(
-                      duration: const Duration(milliseconds: 400),
-                      child: state.payoutMethod == null
-                          ? const PayoutMethodButtons()
-                          : Column(
+                  context
+                                  .read<PaymentsBloc>()
+                                  .state
+                                  .stripeAccount
+                                  ?.availablePayoutMethods !=
+                              null &&
+                          context
+                              .read<PaymentsBloc>()
+                              .state
+                              .stripeAccount!
+                              .availablePayoutMethods!
+                              .contains('instant')
+                      ? AnimatedSwitcher(
+                          duration: const Duration(milliseconds: 400),
+                          child: state.payoutMethod == null
+                              ? const PayoutMethodButtons()
+                              : Column(
+                                  children: [
+                                    state.payoutMethod == PayoutMethod.instant
+                                        ? Row(
+                                            children: [
+                                              Expanded(
+                                                child: FilledButton.icon(
+                                                    icon: const Icon(
+                                                      Icons.flash_on_rounded,
+                                                      size: 16.0,
+                                                    ),
+                                                    onPressed: () {
+                                                      context
+                                                          .read<PayoutBloc>()
+                                                          .add(RequestPayout(
+                                                              payoutMethod:
+                                                                  PayoutMethod
+                                                                      .instant,
+                                                              user: context
+                                                                  .read<
+                                                                      ProfileBloc>()
+                                                                  .state
+                                                                  .user!,
+                                                              amountInCents: widget
+                                                                  .availableBalance));
+                                                    },
+                                                    label: Text(
+                                                        'Instant Payout ${convertCentsToCurrency(widget.availableBalance)}')),
+                                              ),
+                                            ],
+                                          )
+                                        : Row(
+                                            children: [
+                                              Expanded(
+                                                child: FilledButton(
+                                                    onPressed: () {
+                                                      context
+                                                          .read<PayoutBloc>()
+                                                          .add(RequestPayout(
+                                                              payoutMethod:
+                                                                  PayoutMethod
+                                                                      .standard,
+                                                              user: context
+                                                                  .read<
+                                                                      ProfileBloc>()
+                                                                  .state
+                                                                  .user!,
+                                                              amountInCents: widget
+                                                                  .availableBalance));
+                                                    },
+                                                    child: Text(
+                                                        'Standard Payout ${convertCentsToCurrency(widget.availableBalance)}')),
+                                              ),
+                                            ],
+                                          ),
+                                    TextButton(
+                                        onPressed: () {
+                                          context
+                                              .read<PayoutBloc>()
+                                              .add(ResetPayout());
+                                        },
+                                        child:
+                                            const Text('Change Payout Method')),
+                                  ],
+                                ))
+                      : Column(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Row(
                               children: [
-                                state.payoutMethod == PayoutMethod.instant
-                                    ? Row(
-                                        children: [
-                                          Expanded(
-                                            child: FilledButton.icon(
-                                                icon: const Icon(
-                                                  Icons.flash_on_rounded,
-                                                  size: 16.0,
-                                                ),
-                                                onPressed: () {
-                                                  context
-                                                      .read<PayoutBloc>()
-                                                      .add(RequestPayout(
-                                                          payoutMethod:
-                                                              PayoutMethod
-                                                                  .instant,
-                                                          user: context
-                                                              .read<
-                                                                  ProfileBloc>()
-                                                              .state
-                                                              .user!,
-                                                          amountInCents: widget
-                                                              .availableBalance));
-                                                },
-                                                label: Text(
-                                                    'Instant Payout ${convertCentsToCurrency(widget.availableBalance)}')),
-                                          ),
-                                        ],
-                                      )
-                                    : Row(
-                                        children: [
-                                          Expanded(
-                                            child: FilledButton(
-                                                onPressed: () {
-                                                  context
-                                                      .read<PayoutBloc>()
-                                                      .add(RequestPayout(
-                                                          payoutMethod:
-                                                              PayoutMethod
-                                                                  .standard,
-                                                          user: context
-                                                              .read<
-                                                                  ProfileBloc>()
-                                                              .state
-                                                              .user!,
-                                                          amountInCents: widget
-                                                              .availableBalance));
-                                                },
-                                                child: Text(
-                                                    'Standard Payout ${convertCentsToCurrency(widget.availableBalance)}')),
-                                          ),
-                                        ],
-                                      ),
-                                TextButton(
+                                Expanded(
+                                  child: FilledButton(
                                     onPressed: () {
-                                      context
-                                          .read<PayoutBloc>()
-                                          .add(ResetPayout());
+                                      context.read<PayoutBloc>().add(
+                                          RequestPayout(
+                                              payoutMethod:
+                                                  PayoutMethod.standard,
+                                              user: context
+                                                  .read<ProfileBloc>()
+                                                  .state
+                                                  .user!,
+                                              amountInCents:
+                                                  widget.availableBalance));
                                     },
-                                    child: const Text('Change Payout Method')),
+                                    child: Text(
+                                        'Payout ${convertCentsToCurrency(widget.availableBalance)}'),
+                                  ),
+                                ),
                               ],
-                            )),
+                            ),
+                            const GutterSmall(),
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Icon(
+                                  Icons.info_rounded,
+                                  color: Theme.of(context).colorScheme.primary,
+                                  size: 14.0,
+                                ),
+                                const GutterSmall(),
+                                Text('Processing takes 2 business days.',
+                                    textAlign: TextAlign.center,
+                                    style:
+                                        Theme.of(context).textTheme.bodySmall),
+                              ],
+                            )
+                          ],
+                        )
                 ],
               ),
             );

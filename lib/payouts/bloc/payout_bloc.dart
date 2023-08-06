@@ -20,21 +20,26 @@ class PayoutBloc extends Bloc<PayoutEvent, PayoutState> {
   void _onRequestPayout(RequestPayout event, Emitter<PayoutState> emit) async {
     emit(PayoutLoading());
     try {
-      // final payout = await _paymentsRepository.requestPayout(
-      //   stripeAccountId: event.user.stripeAccountId!,
-      //   amount: event.amountInCents,
-      //   payoutMethod: event.payoutMethod,
-      // );
-      final payout = Payout(
-        id: '1',
-        amount: 100,
-        currency: 'USD',
-        status: 'in_transit',
+      final payout = await _paymentsRepository.requestPayout(
+        stripeAccountId: event.user.stripeAccountId!,
+        amount: event.amountInCents,
+        payoutMethod: event.payoutMethod,
       );
+      // final payout = Payout(
+      //   id: '1',
+      //   amount: 100,
+      //   currency: 'USD',
+      //   status: 'in_transit',
+      // );
       await Future.delayed(const Duration(seconds: 2));
+
       emit(PayoutSuccess(payout: payout));
     } catch (e) {
-      emit(PayoutFailure(message: e.toString()));
+      emit(PayoutFailure(
+          message: 'Failed to request payout',
+          payoutMethod: PayoutMethod.standard,
+          amountInCents: 100,
+          user: event.user));
     }
   }
 

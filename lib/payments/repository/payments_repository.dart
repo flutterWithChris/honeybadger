@@ -302,7 +302,7 @@ class PaymentsRepository {
               'https://us-central1-honeybadger-817ee.cloudfunctions.net/createStripePayout'),
           body: {
             'accountId': stripeAccountId,
-            'amount': amount,
+            'amount': amount.toString(),
             'method': payoutMethod.toString().split('.').last,
           });
       print(response.body);

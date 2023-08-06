@@ -131,6 +131,7 @@ class PaymentsBloc extends Bloc<PaymentsEvent, PaymentsState>
         balance = results[1] as Balance;
         balanceTransactions = results[2] as List<BalanceTransaction>;
       }
+      print('Available payout methods: ${stripeAccount?.externalAccounts}}');
       emit(PaymentsLoaded(
           stripeAccount: stripeAccount,
           loginLink: loginLink,

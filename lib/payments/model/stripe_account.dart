@@ -20,6 +20,7 @@ class StripeAccount {
   final Map<String, dynamic>? futureRequirements;
   final bool? payoutsEnabled;
   final Map<String, dynamic>? settings;
+  final List<dynamic>? availablePayoutMethods;
 
   StripeAccount({
     this.id,
@@ -43,9 +44,15 @@ class StripeAccount {
     this.futureRequirements,
     this.payoutsEnabled,
     this.settings,
+    this.availablePayoutMethods,
   });
 
   factory StripeAccount.fromJson(Map<String, dynamic> json) {
+    var externalAccountsData = json['external_accounts']['data'] as List;
+    var availablePayoutMethodsList = externalAccountsData
+        .map((data) => data['available_payout_methods'] as List<dynamic>)
+        .toList();
+    print('External accounts data: $externalAccountsData');
     return StripeAccount(
       id: json['id'],
       businessType: json['business_type'],
@@ -68,6 +75,8 @@ class StripeAccount {
       futureRequirements: json['future_requirements'] as Map<String, dynamic>?,
       payoutsEnabled: json['payouts_enabled'],
       settings: json['settings'] as Map<String, dynamic>?,
+      availablePayoutMethods:
+          externalAccountsData[0]['available_payout_methods'] as List<dynamic>?,
     );
   }
 }
