@@ -5,20 +5,23 @@ import 'package:honeybadger/profile/review.dart';
 
 enum UserType { freelancer, client }
 
+enum CommunicationPreference { message, video, both }
+
 class User {
   String? id;
   String? firstName;
   String? lastName;
   String? email;
-  String? password;
+  String? company;
+  String? industry;
   double? rating;
   int? ratingCount;
   List<Review>? reviews;
   String? phoneNumber;
   String? address;
   String? title;
-  double? hourlyRate;
-  UserType userType = UserType.freelancer;
+  int? hourlyRate;
+  UserType? userType;
   String? city;
   String? state;
   String? zip;
@@ -32,13 +35,15 @@ class User {
   List<dynamic>? proposalIds;
   List<Skill>? skills;
   List<Category>? categories;
+  CommunicationPreference? communicationPreference;
 
   User({
     this.id,
     this.firstName,
     this.lastName,
     this.email,
-    this.password,
+    this.company,
+    this.industry,
     this.rating,
     this.ratingCount,
     this.reviews,
@@ -46,7 +51,7 @@ class User {
     this.address,
     this.title,
     this.hourlyRate,
-    this.userType = UserType.freelancer,
+    this.userType,
     this.city,
     this.state,
     this.zip,
@@ -60,15 +65,16 @@ class User {
     this.proposalIds,
     this.skills,
     this.categories,
+    this.communicationPreference,
   });
 
   User.fromDocument(DocumentSnapshot snap) {
     id = snap.id;
     firstName = snap['firstName'];
-
     lastName = snap['lastName'];
     email = snap['email'];
-    password = snap['password'];
+    company = snap['company'];
+    industry = snap['industry'];
     rating = snap['rating'];
     ratingCount = snap['ratingCount'];
     if (snap['reviews'] != null) {
@@ -107,6 +113,13 @@ class User {
         categories?.add(Category.fromJson(v));
       });
     }
+    if (snap['communicationPreference'] != null) {
+      communicationPreference = snap['communicationPreference'] == 'message'
+          ? CommunicationPreference.message
+          : snap['communicationPreference'] == 'video'
+              ? CommunicationPreference.video
+              : CommunicationPreference.both;
+    }
   }
 
   // To Document
@@ -115,7 +128,8 @@ class User {
       'firstName': firstName,
       'lastName': lastName,
       'email': email,
-      'password': password,
+      'company': company,
+      'industry': industry,
       'rating': rating,
       'ratingCount': ratingCount,
       'reviews': reviews?.map((v) => v.toJson()).toList(),
@@ -137,6 +151,12 @@ class User {
       'proposalIds': proposalIds,
       'skills': skills?.map((v) => v.toDocument()).toList(),
       'categories': categories?.map((v) => v.toDocument()).toList(),
+      'communicationPreference':
+          communicationPreference == CommunicationPreference.message
+              ? 'message'
+              : communicationPreference == CommunicationPreference.video
+                  ? 'video'
+                  : 'both'
     };
   }
 
@@ -146,14 +166,15 @@ class User {
     String? firstName,
     String? lastName,
     String? email,
-    String? password,
+    String? company,
+    String? industry,
     double? rating,
     int? ratingCount,
     List<Review>? reviews,
     String? phoneNumber,
     String? address,
     String? title,
-    double? hourlyRate,
+    int? hourlyRate,
     UserType? userType,
     String? city,
     String? state,
@@ -167,13 +188,15 @@ class User {
     List<String>? projectIds,
     List<Category>? categories,
     List<Skill>? skills,
+    CommunicationPreference? communicationPreference,
   }) {
     return User(
       id: id ?? this.id,
       firstName: firstName ?? this.firstName,
       lastName: lastName ?? this.lastName,
       email: email ?? this.email,
-      password: password ?? this.password,
+      company: company ?? this.company,
+      industry: industry ?? this.industry,
       rating: rating ?? this.rating,
       ratingCount: ratingCount ?? this.ratingCount,
       reviews: reviews ?? this.reviews,
@@ -194,6 +217,8 @@ class User {
       projectIds: projectIds ?? this.projectIds,
       categories: categories ?? this.categories,
       skills: skills ?? this.skills,
+      communicationPreference:
+          communicationPreference ?? this.communicationPreference,
     );
   }
 }

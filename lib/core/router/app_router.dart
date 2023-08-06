@@ -33,10 +33,13 @@ GoRouter goRouter = GoRouter(
   redirect: (context, state) async {
     bool loggedIn =
         context.read<AuthBloc>().state.status == AuthStatus.authenticated;
+    bool isOnboarding = state.matchedLocation.contains('onboarding');
     print('Logged in: $loggedIn');
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    bool onboarded = false;
-    // bool onboarded = prefs.getBool('onboarded') ?? false;
+    bool onboarded = prefs.getBool('onboarded') ?? false;
+    if (isOnboarding) {
+      return null;
+    }
     if (loggedIn == false) {
       return '/onboarding';
     }

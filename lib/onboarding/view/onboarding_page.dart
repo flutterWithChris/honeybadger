@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:honeybadger/onboarding/bloc/onboarding_bloc.dart';
+import 'package:honeybadger/onboarding/view/pages/client_industry/client_industry_page.dart';
 import 'package:honeybadger/onboarding/view/pages/payment_setup.dart';
 import 'package:honeybadger/onboarding/view/pages/profile_setup/profile_setup.dart';
 import 'package:honeybadger/onboarding/view/pages/skills_and_experience.dart';
@@ -16,17 +19,18 @@ class OnboardingPage extends StatefulWidget {
 }
 
 class _OnboardingPageState extends State<OnboardingPage> {
-  final PageController _pageController = PageController();
-  final int _currentPage = 0;
+  static final PageController _pageController = PageController();
+  static int _currentPage = 0;
+
   @override
   void initState() {
+    _pageController.addListener(() {
+      setState(() {
+        _currentPage = _pageController.page!.round();
+        print('Setting current page to $_currentPage');
+      });
+    });
     super.initState();
-    // _pageController.addListener(() {
-    //   setState(() {
-    //     _currentPage = _pageController.page!.round();
-    //     print('Current Page: $_currentPage');
-    //   });
-    // });
   }
 
   @override
@@ -48,7 +52,6 @@ class _OnboardingPageState extends State<OnboardingPage> {
               ),
             ),
             child: Container(
-              //  color: Theme.of(context).appBarTheme.backgroundColor,
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
@@ -71,10 +74,8 @@ class _OnboardingPageState extends State<OnboardingPage> {
                       effect: WormEffect(
                         dotHeight: 12,
                         dotWidth: 12,
-                        activeDotColor:
-                            Theme.of(context).colorScheme.primaryContainer,
-                        dotColor:
-                            Theme.of(context).colorScheme.tertiaryContainer,
+                        activeDotColor: Theme.of(context).indicatorColor,
+                        dotColor: Colors.grey.shade400,
                       ),
                     ),
                   ),
@@ -108,31 +109,92 @@ class _OnboardingPageState extends State<OnboardingPage> {
       body: Column(
         children: [
           Expanded(
-            child: PageView(
-              allowImplicitScrolling: true,
-              controller: _pageController,
-              children: [
-                WelcomePage(
-                  pageController: _pageController,
-                ),
-                // kIsWeb
-                //     ? WebSignupPage(
-                //         pageController: _pageController,
-                //         userType: widget.userType,
-                //       )
-                //    :
-                SignupPage(
-                  pageController: _pageController,
-                  userType: widget.userType,
-                ),
-                ProfileSetup(
-                  pageController: _pageController,
-                ),
-                SkillsAndExperiencePage(
-                  pageController: _pageController,
-                ),
-                PaymentSetupPage(pageController: _pageController),
-              ],
+            child: BlocConsumer<OnboardingBloc, OnboardingState>(
+              listenWhen: (previous, current) {
+                print('Previous: ${previous.user?.userType}');
+                print('Current: ${current.user?.userType}');
+                return previous.user != null &&
+                    previous.user!.userType.toString().trim() ==
+                        current.user?.userType.toString().trim();
+              },
+              listener: (context, state) {
+                print('Jumping to page $_currentPage');
+                _pageController.jumpToPage(_currentPage);
+              },
+              builder: (context, state) {
+                if (state.status == OnboardingStatus.failure) {
+                  return const Center(
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Text('Error Loading Onboarding!'),
+                      ],
+                    ),
+                  );
+                }
+                if (state.status == OnboardingStatus.initial ||
+                    state.status == OnboardingStatus.loaded ||
+                    state.status == OnboardingStatus.loading) {
+                  if (state.user != null &&
+                      state.user!.userType == UserType.client) {
+                    return PageView(
+                      allowImplicitScrolling: true,
+                      controller: _pageController,
+                      children: [
+                        WelcomePage(
+                          pageController: _pageController,
+                        ),
+                        // kIsWeb
+                        //     ? WebSignupPage(
+                        //         pageController: _pageController,
+                        //         userType: widget.userType,
+                        //       )
+                        //    :
+                        SignupPage(
+                          pageController: _pageController,
+                          userType: widget.userType,
+                        ),
+                        ProfileSetup(
+                          pageController: _pageController,
+                        ),
+                        ClientIndustryPage(
+                          pageController: _pageController,
+                        ),
+                      ],
+                    );
+                  } else {
+                    return PageView(
+                      allowImplicitScrolling: true,
+                      controller: _pageController,
+                      children: [
+                        WelcomePage(
+                          pageController: _pageController,
+                        ),
+                        // kIsWeb
+                        //     ? WebSignupPage(
+                        //         pageController: _pageController,
+                        //         userType: widget.userType,
+                        //       )
+                        //    :
+                        SignupPage(
+                          pageController: _pageController,
+                          userType: widget.userType,
+                        ),
+                        ProfileSetup(
+                          pageController: _pageController,
+                        ),
+                        SkillsAndExperiencePage(
+                          pageController: _pageController,
+                        ),
+                        PaymentSetupPage(pageController: _pageController),
+                      ],
+                    );
+                  }
+                }
+                return const Center(
+                  child: Text('Something went wrong!'),
+                );
+              },
             ),
           ),
         ],

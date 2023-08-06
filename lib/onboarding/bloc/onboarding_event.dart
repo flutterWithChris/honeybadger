@@ -20,3 +20,8 @@ class SetUserProfilePicture extends OnboardingEvent {
   final User user;
   SetUserProfilePicture(this.profilePicture, this.user);
 }
+
+class SetUserType extends OnboardingEvent {
+  final UserType userType;
+  SetUserType(this.userType);
+}

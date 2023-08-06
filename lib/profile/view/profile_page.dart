@@ -1,5 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:honeybadger/core/constants.dart';
+import 'package:honeybadger/profile/bloc/profile_bloc.dart';
+import 'package:honeybadger/profile/model/user.dart';
+import 'package:honeybadger/profile/view/mobile/mobile_client_profile_page.dart';
 import 'package:honeybadger/profile/view/tablet/tablet_profile_page.dart';
 
 import 'desktop/desktop_profile_page.dart';
@@ -10,6 +14,7 @@ class ProfilePage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    User? user = context.watch<ProfileBloc>().state.user;
     return LayoutBuilder(
       builder: (context, constraints) {
         if (constraints.maxWidth > desktopWidthConstraint) {
@@ -17,7 +22,11 @@ class ProfilePage extends StatelessWidget {
         } else if (constraints.maxWidth > tabletWidthConstraint) {
           return const TabletProfilePage();
         } else {
-          return const MobileProfilePage();
+          if (user?.userType == UserType.freelancer) {
+            return const MobileProfilePage();
+          } else {
+            return const MobileClientProfilePage(); // TODO: Client Profile Page
+          }
         }
       },
     );

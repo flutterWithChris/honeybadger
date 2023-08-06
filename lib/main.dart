@@ -21,6 +21,7 @@ import 'package:honeybadger/onboarding/view/pages/profile_setup/bloc/skills/bloc
 import 'package:honeybadger/payments/bloc/history/payment_history_bloc.dart';
 import 'package:honeybadger/payments/bloc/payments_bloc.dart';
 import 'package:honeybadger/payments/repository/payments_repository.dart';
+import 'package:honeybadger/payouts/bloc/payout_bloc.dart';
 import 'package:honeybadger/profile/bloc/profile_bloc.dart';
 import 'package:honeybadger/profile/portfolio/bloc/portfolio_bloc.dart';
 import 'package:honeybadger/profile/portfolio/repository/category_repository.dart';
@@ -43,7 +44,6 @@ void main() async {
   }
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
 
-  // await FirebaseAuth.instance.signOut();
 // Clear firebase cache
   await FirebaseFirestore.instance.clearPersistence();
 
@@ -206,179 +206,194 @@ class _MyAppState extends State<MyApp> {
             )..add(LoadPortfolio(
                 userId: context.read<AuthBloc>().state.user!.uid)),
           ),
+          BlocProvider(
+            create: (context) => PayoutBloc(
+              paymentsRepository: context.read<PaymentsRepository>(),
+            ),
+          )
         ],
-        child: MaterialApp.router(
-          scaffoldMessengerKey: scaffoldKey,
-          routeInformationParser: goRouter.routeInformationParser,
-          routerDelegate: goRouter.routerDelegate,
-          routeInformationProvider: goRouter.routeInformationProvider,
-          title: 'Honeybadger ',
-          debugShowCheckedModeBanner: false,
-// Theme config for FlexColorScheme version 7.2.x. Make sure you use
-// same or higher package version, but still same major version. If you
-// use a lower package version, some properties may not be supported.
-// In that case remove them after copying this theme to your app.
-          theme: FlexThemeData.light(
-            colors: const FlexSchemeColor(
-              primary: Color(0xFF1E2223),
-              primaryContainer: Color(0xffd0e4ff),
-              secondary: Color(0xffac3306),
-              secondaryContainer: Color(0xff97f0ff),
-              tertiary: Color(0xff006875),
-              tertiaryContainer: Color(0xff95f0ff),
-              appBarColor: Color(0xff97f0ff),
-              error: Color(0xffb00020),
+        child: Listener(
+          onPointerDown: (event) {
+            FocusScopeNode currentFocus = FocusScope.of(context);
+            if (!currentFocus.hasPrimaryFocus &&
+                currentFocus.focusedChild != null) {
+              //currentFocus.focusedChild!.unfocus();
+            }
+          },
+          child: MaterialApp.router(
+            scaffoldMessengerKey: scaffoldKey,
+            routeInformationParser: goRouter.routeInformationParser,
+            routerDelegate: goRouter.routerDelegate,
+            routeInformationProvider: goRouter.routeInformationProvider,
+            title: 'Honeybadger ',
+            debugShowCheckedModeBanner: false,
+            // Theme config for FlexColorScheme version 7.2.x. Make sure you use
+            // same or higher package version, but still same major version. If you
+            // use a lower package version, some properties may not be supported.
+            // In that case remove them after copying this theme to your app.
+            theme: FlexThemeData.light(
+              colors: const FlexSchemeColor(
+                primary: Color(0xFF1E2223),
+                primaryContainer: Color(0xffd0e4ff),
+                secondary: Color(0xffac3306),
+                secondaryContainer: Color(0xff97f0ff),
+                tertiary: Color(0xff006875),
+                tertiaryContainer: Color(0xff95f0ff),
+                appBarColor: Color(0xff97f0ff),
+                error: Color(0xffb00020),
+              ),
+              surfaceMode: FlexSurfaceMode.highScaffoldLowSurface,
+              blendLevel: 22,
+              appBarStyle: FlexAppBarStyle.background,
+              bottomAppBarElevation: 1.0,
+              lightIsWhite: true,
+              subThemesData: const FlexSubThemesData(
+                blendOnLevel: 10,
+                blendOnColors: false,
+                useTextTheme: true,
+                useM2StyleDividerInM3: true,
+                splashType: FlexSplashType.inkRipple,
+                defaultRadius: 16.0,
+                elevatedButtonSchemeColor: SchemeColor.onPrimaryContainer,
+                elevatedButtonSecondarySchemeColor:
+                    SchemeColor.primaryContainer,
+                segmentedButtonSchemeColor: SchemeColor.primary,
+                inputDecoratorUnfocusedHasBorder: false,
+                fabSchemeColor: SchemeColor.tertiary,
+                popupMenuRadius: 6.0,
+                popupMenuElevation: 4.0,
+                dialogElevation: 3.0,
+                dialogRadius: 20.0,
+                snackBarBackgroundSchemeColor: SchemeColor.inverseSurface,
+                drawerIndicatorSchemeColor: SchemeColor.primary,
+                bottomSheetRadius: 20.0,
+                bottomSheetElevation: 2.0,
+                bottomSheetModalElevation: 3.0,
+                bottomNavigationBarMutedUnselectedLabel: false,
+                bottomNavigationBarMutedUnselectedIcon: false,
+                bottomNavigationBarBackgroundSchemeColor:
+                    SchemeColor.surfaceVariant,
+                menuRadius: 6.0,
+                menuElevation: 4.0,
+                menuBarRadius: 0.0,
+                menuBarElevation: 1.0,
+                navigationBarSelectedLabelSchemeColor: SchemeColor.primary,
+                navigationBarMutedUnselectedLabel: false,
+                navigationBarSelectedIconSchemeColor: SchemeColor.background,
+                navigationBarMutedUnselectedIcon: false,
+                navigationBarIndicatorSchemeColor: SchemeColor.primary,
+                navigationBarIndicatorOpacity: 1.00,
+                navigationBarBackgroundSchemeColor: SchemeColor.background,
+                navigationBarElevation: 1.0,
+                navigationRailSelectedLabelSchemeColor: SchemeColor.primary,
+                navigationRailMutedUnselectedLabel: false,
+                navigationRailSelectedIconSchemeColor: SchemeColor.background,
+                navigationRailMutedUnselectedIcon: false,
+                navigationRailIndicatorSchemeColor: SchemeColor.primary,
+                navigationRailIndicatorOpacity: 1.00,
+              ),
+              keyColors: const FlexKeyColors(
+                useTertiary: true,
+                keepPrimary: true,
+                keepSecondary: true,
+                keepTertiary: true,
+              ),
+              tones: FlexTones.highContrast(Brightness.light)
+                  .onMainsUseBW()
+                  .onSurfacesUseBW()
+                  .surfacesUseBW(),
+              visualDensity: FlexColorScheme.comfortablePlatformDensity,
+              useMaterial3: true,
+              swapLegacyOnMaterial3: true,
+              // To use the Playground font, add GoogleFonts package and uncomment
+              // fontFamily: GoogleFonts.notoSans().fontFamily,
             ),
-            surfaceMode: FlexSurfaceMode.highScaffoldLowSurface,
-            blendLevel: 22,
-            appBarStyle: FlexAppBarStyle.background,
-            bottomAppBarElevation: 1.0,
-            lightIsWhite: true,
-            subThemesData: const FlexSubThemesData(
-              blendOnLevel: 10,
-              blendOnColors: false,
-              useTextTheme: true,
-              useM2StyleDividerInM3: true,
-              splashType: FlexSplashType.inkRipple,
-              defaultRadius: 16.0,
-              elevatedButtonSchemeColor: SchemeColor.onPrimaryContainer,
-              elevatedButtonSecondarySchemeColor: SchemeColor.primaryContainer,
-              segmentedButtonSchemeColor: SchemeColor.primary,
-              inputDecoratorUnfocusedHasBorder: false,
-              fabSchemeColor: SchemeColor.tertiary,
-              popupMenuRadius: 6.0,
-              popupMenuElevation: 4.0,
-              dialogElevation: 3.0,
-              dialogRadius: 20.0,
-              snackBarBackgroundSchemeColor: SchemeColor.inverseSurface,
-              drawerIndicatorSchemeColor: SchemeColor.primary,
-              bottomSheetRadius: 20.0,
-              bottomSheetElevation: 2.0,
-              bottomSheetModalElevation: 3.0,
-              bottomNavigationBarMutedUnselectedLabel: false,
-              bottomNavigationBarMutedUnselectedIcon: false,
-              bottomNavigationBarBackgroundSchemeColor:
-                  SchemeColor.surfaceVariant,
-              menuRadius: 6.0,
-              menuElevation: 4.0,
-              menuBarRadius: 0.0,
-              menuBarElevation: 1.0,
-              navigationBarSelectedLabelSchemeColor: SchemeColor.primary,
-              navigationBarMutedUnselectedLabel: false,
-              navigationBarSelectedIconSchemeColor: SchemeColor.background,
-              navigationBarMutedUnselectedIcon: false,
-              navigationBarIndicatorSchemeColor: SchemeColor.primary,
-              navigationBarIndicatorOpacity: 1.00,
-              navigationBarBackgroundSchemeColor: SchemeColor.background,
-              navigationBarElevation: 1.0,
-              navigationRailSelectedLabelSchemeColor: SchemeColor.primary,
-              navigationRailMutedUnselectedLabel: false,
-              navigationRailSelectedIconSchemeColor: SchemeColor.background,
-              navigationRailMutedUnselectedIcon: false,
-              navigationRailIndicatorSchemeColor: SchemeColor.primary,
-              navigationRailIndicatorOpacity: 1.00,
+            darkTheme: FlexThemeData.dark(
+              scaffoldBackground: const Color.fromARGB(255, 0, 0, 0),
+              background: const Color.fromARGB(255, 18, 18, 18),
+              colors: const FlexSchemeColor(
+                primary: Colors.white,
+                primaryContainer: Color(0xffffffff),
+                secondary: Color(0xff00daf1),
+                secondaryContainer: Color(0xffffffff),
+                tertiary: Color(0xffffffff),
+                tertiaryContainer: Color(0xff004e59),
+                appBarColor: Color(0xffffffff),
+                error: Color(0xffb00020),
+              ),
+              //surface: Colors.transparent,
+              surfaceMode: FlexSurfaceMode.highScaffoldLowSurface,
+              blendLevel: 18,
+              appBarStyle: FlexAppBarStyle.background,
+              bottomAppBarElevation: 2.0,
+              darkIsTrueBlack: true,
+              subThemesData: const FlexSubThemesData(
+                blendOnLevel: 20,
+                useTextTheme: true,
+                useM2StyleDividerInM3: true,
+                splashType: FlexSplashType.inkRipple,
+                defaultRadius: 16.0,
+                elevatedButtonSchemeColor: SchemeColor.onPrimaryContainer,
+                elevatedButtonSecondarySchemeColor:
+                    SchemeColor.primaryContainer,
+                segmentedButtonSchemeColor: SchemeColor.primary,
+                inputDecoratorSchemeColor: SchemeColor.primary,
+                inputDecoratorBackgroundAlpha: 28,
+                inputDecoratorUnfocusedHasBorder: false,
+                fabSchemeColor: SchemeColor.tertiary,
+                popupMenuRadius: 6.0,
+                popupMenuElevation: 4.0,
+                dialogElevation: 3.0,
+                dialogRadius: 20.0,
+                snackBarBackgroundSchemeColor: SchemeColor.inverseSurface,
+                drawerIndicatorSchemeColor: SchemeColor.primary,
+                bottomSheetRadius: 20.0,
+                bottomSheetElevation: 2.0,
+                bottomSheetModalElevation: 3.0,
+                bottomNavigationBarMutedUnselectedLabel: false,
+                bottomNavigationBarMutedUnselectedIcon: false,
+                bottomNavigationBarBackgroundSchemeColor:
+                    SchemeColor.surfaceVariant,
+                menuRadius: 6.0,
+                menuElevation: 4.0,
+                menuBarRadius: 0.0,
+                menuBarElevation: 1.0,
+                navigationBarSelectedLabelSchemeColor: SchemeColor.primary,
+                navigationBarMutedUnselectedLabel: false,
+                navigationBarSelectedIconSchemeColor: SchemeColor.background,
+                navigationBarMutedUnselectedIcon: false,
+                navigationBarIndicatorSchemeColor: SchemeColor.primary,
+                navigationBarIndicatorOpacity: 1.00,
+                navigationBarBackgroundSchemeColor: SchemeColor.background,
+                navigationBarElevation: 1.0,
+                navigationRailSelectedLabelSchemeColor: SchemeColor.primary,
+                navigationRailMutedUnselectedLabel: false,
+                navigationRailSelectedIconSchemeColor: SchemeColor.background,
+                navigationRailMutedUnselectedIcon: false,
+                navigationRailIndicatorSchemeColor: SchemeColor.primary,
+                navigationRailIndicatorOpacity: 1.00,
+              ),
+              keyColors: const FlexKeyColors(
+                useTertiary: true,
+                keepPrimary: true,
+                keepTertiary: true,
+                keepPrimaryContainer: true,
+                keepSecondaryContainer: true,
+              ),
+              tones: FlexTones.highContrast(Brightness.dark)
+                  .onMainsUseBW()
+                  .onSurfacesUseBW(),
+              //  .surfacesUseBW(),
+              visualDensity: FlexColorScheme.comfortablePlatformDensity,
+              useMaterial3: true,
+              swapLegacyOnMaterial3: true,
+              // To use the Playground font, add GoogleFonts package and uncomment
+              // fontFamily: GoogleFonts.notoSans().fontFamily,
             ),
-            keyColors: const FlexKeyColors(
-              useTertiary: true,
-              keepPrimary: true,
-              keepSecondary: true,
-              keepTertiary: true,
-            ),
-            tones: FlexTones.highContrast(Brightness.light)
-                .onMainsUseBW()
-                .onSurfacesUseBW()
-                .surfacesUseBW(),
-            visualDensity: FlexColorScheme.comfortablePlatformDensity,
-            useMaterial3: true,
-            swapLegacyOnMaterial3: true,
-            // To use the Playground font, add GoogleFonts package and uncomment
-            // fontFamily: GoogleFonts.notoSans().fontFamily,
+            // If you do not have a themeMode switch, uncomment this line
+            // to let the device system mode control the theme mode:
+            // themeMode: ThemeMode.system,
           ),
-          darkTheme: FlexThemeData.dark(
-            scaffoldBackground: const Color.fromARGB(255, 0, 0, 0),
-            background: const Color.fromARGB(255, 18, 18, 18),
-            colors: const FlexSchemeColor(
-              primary: Colors.white,
-              primaryContainer: Color(0xffffffff),
-              secondary: Color(0xff00daf1),
-              secondaryContainer: Color(0xffffffff),
-              tertiary: Color(0xffffffff),
-              tertiaryContainer: Color(0xff004e59),
-              appBarColor: Color(0xffffffff),
-              error: Color(0xffb00020),
-            ),
-            //surface: Colors.transparent,
-            surfaceMode: FlexSurfaceMode.highScaffoldLowSurface,
-            blendLevel: 18,
-            appBarStyle: FlexAppBarStyle.background,
-            bottomAppBarElevation: 2.0,
-            darkIsTrueBlack: true,
-
-            subThemesData: const FlexSubThemesData(
-              blendOnLevel: 20,
-              useTextTheme: true,
-              useM2StyleDividerInM3: true,
-              splashType: FlexSplashType.inkRipple,
-              defaultRadius: 16.0,
-              elevatedButtonSchemeColor: SchemeColor.onPrimaryContainer,
-              elevatedButtonSecondarySchemeColor: SchemeColor.primaryContainer,
-              segmentedButtonSchemeColor: SchemeColor.primary,
-              inputDecoratorSchemeColor: SchemeColor.primary,
-              inputDecoratorBackgroundAlpha: 28,
-              inputDecoratorUnfocusedHasBorder: false,
-              fabSchemeColor: SchemeColor.tertiary,
-              popupMenuRadius: 6.0,
-              popupMenuElevation: 4.0,
-              dialogElevation: 3.0,
-              dialogRadius: 20.0,
-              snackBarBackgroundSchemeColor: SchemeColor.inverseSurface,
-              drawerIndicatorSchemeColor: SchemeColor.primary,
-              bottomSheetRadius: 20.0,
-              bottomSheetElevation: 2.0,
-              bottomSheetModalElevation: 3.0,
-              bottomNavigationBarMutedUnselectedLabel: false,
-              bottomNavigationBarMutedUnselectedIcon: false,
-              bottomNavigationBarBackgroundSchemeColor:
-                  SchemeColor.surfaceVariant,
-              menuRadius: 6.0,
-              menuElevation: 4.0,
-              menuBarRadius: 0.0,
-              menuBarElevation: 1.0,
-              navigationBarSelectedLabelSchemeColor: SchemeColor.primary,
-              navigationBarMutedUnselectedLabel: false,
-              navigationBarSelectedIconSchemeColor: SchemeColor.background,
-              navigationBarMutedUnselectedIcon: false,
-              navigationBarIndicatorSchemeColor: SchemeColor.primary,
-              navigationBarIndicatorOpacity: 1.00,
-              navigationBarBackgroundSchemeColor: SchemeColor.background,
-              navigationBarElevation: 1.0,
-              navigationRailSelectedLabelSchemeColor: SchemeColor.primary,
-              navigationRailMutedUnselectedLabel: false,
-              navigationRailSelectedIconSchemeColor: SchemeColor.background,
-              navigationRailMutedUnselectedIcon: false,
-              navigationRailIndicatorSchemeColor: SchemeColor.primary,
-              navigationRailIndicatorOpacity: 1.00,
-            ),
-            keyColors: const FlexKeyColors(
-              useTertiary: true,
-              keepPrimary: true,
-              keepTertiary: true,
-              keepPrimaryContainer: true,
-              keepSecondaryContainer: true,
-            ),
-            tones: FlexTones.highContrast(Brightness.dark)
-                .onMainsUseBW()
-                .onSurfacesUseBW(),
-            //  .surfacesUseBW(),
-            visualDensity: FlexColorScheme.comfortablePlatformDensity,
-            useMaterial3: true,
-            swapLegacyOnMaterial3: true,
-            // To use the Playground font, add GoogleFonts package and uncomment
-            // fontFamily: GoogleFonts.notoSans().fontFamily,
-          ),
-// If you do not have a themeMode switch, uncomment this line
-// to let the device system mode control the theme mode:
-// themeMode: ThemeMode.system,
         ),
       ),
     );

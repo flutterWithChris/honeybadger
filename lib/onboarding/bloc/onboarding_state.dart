@@ -6,14 +6,16 @@ enum OnboardingStatus { initial, loading, loaded, failure }
 class OnboardingState extends Equatable {
   final OnboardingStatus status;
   final User? user;
-  const OnboardingState({required this.status, this.user});
+  UserType? userType;
+  OnboardingState({required this.status, this.user, this.userType});
 
   factory OnboardingState.initial() {
-    return const OnboardingState(status: OnboardingStatus.initial);
+    return OnboardingState(
+        status: OnboardingStatus.initial, userType: UserType.freelancer);
   }
 
   factory OnboardingState.loading() {
-    return const OnboardingState(status: OnboardingStatus.loading);
+    return OnboardingState(status: OnboardingStatus.loading);
   }
 
   factory OnboardingState.loaded(User user) {
@@ -21,16 +23,18 @@ class OnboardingState extends Equatable {
   }
 
   factory OnboardingState.failure() {
-    return const OnboardingState(status: OnboardingStatus.failure);
+    return OnboardingState(status: OnboardingStatus.failure);
   }
 
   OnboardingState copyWith({
     OnboardingStatus? status,
     User? user,
+    UserType? userType,
   }) {
     return OnboardingState(
       status: status ?? this.status,
       user: user ?? this.user,
+      userType: userType ?? this.userType,
     );
   }
 

@@ -11,11 +11,18 @@ import 'package:image_picker/image_picker.dart';
 class UserRepository extends BaseUserRepository {
   final FirebaseFirestore _firebaseFirestore = FirebaseFirestore.instance;
   final FirebaseStorage _firebaseStorage = FirebaseStorage.instance;
+  String getUserPath(User user) {
+    if (user.userType == UserType.freelancer) {
+      return 'freelancers';
+    } else {
+      return 'clients';
+    }
+  }
 
   @override
   Future<void> createUser(User user) {
     return _firebaseFirestore
-        .collection('users')
+        .collection(getUserPath(user))
         .doc(user.id)
         .set(user.toDocument());
   }
@@ -26,30 +33,66 @@ class UserRepository extends BaseUserRepository {
   }
 
   @override
-  Future<User> getUser(String userId) async {
-    return _firebaseFirestore
-        .collection('users')
-        .doc(userId)
-        .get()
-        .then((doc) => User.fromDocument(doc));
+  Future<User?> getUser(User user) async {
+    try {
+      return _firebaseFirestore
+          .collection(getUserPath(user))
+          .doc(user.id)
+          .get()
+          .then((doc) => doc.exists ? User.fromDocument(doc) : null);
+    } on FirebaseException catch (e) {
+      print(e);
+      scaffoldKey.currentState!.showSnackBar(const SnackBar(
+        backgroundColor: Colors.red,
+        content: Text(
+          'An error occurred while getting your profile.',
+          style: TextStyle(color: Colors.white),
+        ),
+      ));
+      return null;
+    }
   }
 
   /// Get user as a stream
   @override
-  Stream<User> getUserAsStream(String userId) {
-    return _firebaseFirestore
-        .collection('users')
-        .doc(userId)
-        .snapshots()
-        .map((doc) => User.fromDocument(doc));
+  Stream<User> getUserAsStream(User user) {
+    try {
+      return _firebaseFirestore
+          .collection(getUserPath(user))
+          .doc(user.id)
+          .snapshots()
+          .map((doc) => User.fromDocument(doc));
+    } catch (e) {
+      print(e);
+      scaffoldKey.currentState!.showSnackBar(const SnackBar(
+        backgroundColor: Colors.red,
+        content: Text(
+          'An error occurred while getting your profile.',
+          style: TextStyle(color: Colors.white),
+        ),
+      ));
+      return const Stream.empty();
+    }
   }
 
   @override
   Future<void> updateUser(User user) {
-    return _firebaseFirestore
-        .collection('users')
-        .doc(user.id)
-        .update(user.toDocument());
+    try {
+      return _firebaseFirestore
+          .collection('users')
+          .doc(user.id)
+          .update(user.toDocument());
+    } on FirebaseException catch (e) {
+      print(e);
+      scaffoldKey.currentState!.showSnackBar(const SnackBar(
+        backgroundColor: Colors.red,
+        content: Text(
+          'An error occurred while updating your profile.',
+          style: TextStyle(color: Colors.white),
+        ),
+      ));
+      return Future<void>.value();
+    }
   }
 
   @override

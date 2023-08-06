@@ -5,7 +5,6 @@ import 'package:honeybadger/auth/bloc/auth_bloc.dart';
 import 'package:honeybadger/core/constants.dart';
 import 'package:honeybadger/onboarding/bloc/onboarding_bloc.dart';
 import 'package:honeybadger/onboarding/view/pages/profile_setup/bloc/skills/bloc/skill_search_bloc.dart';
-import 'package:honeybadger/profile/bloc/profile_bloc.dart';
 import 'package:honeybadger/profile/model/portfolio_project.dart';
 import 'package:honeybadger/profile/model/skill.dart';
 import 'package:honeybadger/profile/portfolio/bloc/portfolio_bloc.dart';
@@ -431,13 +430,31 @@ class _SkillsAndExperiencePageState extends State<SkillsAndExperiencePage> {
                   },
                 ),
                 const GutterLarge(),
-                context.read<PortfolioBloc>().state.projects != null &&
-                        context.read<PortfolioBloc>().state.projects!.isNotEmpty
-                    ? FilledButton(onPressed: () {}, child: const Text('Next'))
-                    : OutlinedButton(
-                        onPressed: () {
+                (context.read<PortfolioBloc>().state.projects != null &&
+                            context
+                                .read<PortfolioBloc>()
+                                .state
+                                .projects!
+                                .isNotEmpty) ||
+                        selectedSkills.isNotEmpty
+                    ? FilledButton(
+                        onPressed: () async {
                           context.read<OnboardingBloc>().add(UpdateUser(
                               currentUser!.copyWith(skills: selectedSkills)));
+                          await widget.pageController.nextPage(
+                            duration: const Duration(milliseconds: 400),
+                            curve: Curves.easeInOut,
+                          );
+                        },
+                        child: const Text('Next'))
+                    : OutlinedButton(
+                        onPressed: () async {
+                          context.read<OnboardingBloc>().add(UpdateUser(
+                              currentUser!.copyWith(skills: selectedSkills)));
+                          await widget.pageController.nextPage(
+                            duration: const Duration(milliseconds: 400),
+                            curve: Curves.easeInOut,
+                          );
                         },
                         child: const Text('Skip for now'))
               ]);
@@ -488,7 +505,7 @@ class PortfolioCard extends StatelessWidget {
                       end: Alignment.bottomCenter,
                       colors: [
                         Colors.transparent,
-                        Colors.black.withOpacity(0.5),
+                        Colors.black.withOpacity(0.6),
                       ],
                     ),
                   ),
@@ -502,9 +519,11 @@ class PortfolioCard extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(project.title!,
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
                           style: Theme.of(context)
                               .textTheme
-                              .headlineSmall!
+                              .titleMedium!
                               .copyWith(color: Colors.white)),
                     ],
                   ),

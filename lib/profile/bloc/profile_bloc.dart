@@ -24,20 +24,21 @@ class ProfileBloc extends Bloc<ProfileEvent, ProfileState> {
     on<UpdateProfile>(_onUpdateProfile);
     on<DeleteProfile>(_onDeleteProfile);
 
-    _authSubscription = _authBloc.stream.listen((state) {
-      print('Profile Bloc received Auth State: $state');
-      if (state.status == AuthStatus.authenticated) {
-        add(LoadProfile());
-      }
-    });
+    // _authSubscription = _authBloc.stream.listen((state) {
+    //   print('Profile Bloc received Auth State: $state');
+    //   if (state.status == AuthStatus.authenticated) {
+    //     add(LoadProfile());
+    //   }
+    // });
   }
   void _onLoadProfile(LoadProfile event, Emitter<ProfileState> emit) async {
     emit(ProfileLoading());
     try {
       await emit.forEach(
-        _userRepository.getUserAsStream(_authBloc.state.user!.uid),
+        _userRepository.getUserAsStream(User(id: _authBloc.state.user!.uid)),
         onData: (data) {
           //   _paymentsBloc.add(LoadPayments(user: data));
+          print('Profile Loaded: ${data.userType}');
           return ProfileLoaded(data);
         },
         onError: (error, stackTrace) {

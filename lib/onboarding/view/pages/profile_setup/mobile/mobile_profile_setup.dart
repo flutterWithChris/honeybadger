@@ -1,5 +1,6 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_gutter/flutter_gutter.dart';
@@ -80,6 +81,7 @@ class _MobileProfileSetupState extends State<MobileProfileSetup> {
             ),
             const Gutter(),
             Flex(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
               direction: Axis.horizontal,
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -142,7 +144,7 @@ class _MobileProfileSetupState extends State<MobileProfileSetup> {
                     children: [
                       Row(
                         children: [
-                          Flexible(
+                          Expanded(
                             child: TextFormField(
                               validator: (value) {
                                 if (value == null || value.isEmpty) {
@@ -160,7 +162,7 @@ class _MobileProfileSetupState extends State<MobileProfileSetup> {
                             ),
                           ),
                           const Gutter(),
-                          Flexible(
+                          Expanded(
                             child: TextFormField(
                               validator: (value) {
                                 if (value == null || value.isEmpty) {
@@ -225,13 +227,14 @@ class _MobileProfileSetupState extends State<MobileProfileSetup> {
                   validator: (value) {
                     if (value == null || value.isEmpty) {
                       return 'Please enter your hourly rate.';
-                    } else if (double.tryParse(value) == null) {
-                      return 'Please enter a valid hourly rate.';
+                    } else if (int.tryParse(value) == null) {
+                      return 'Please enter a whole number.';
                     }
                     return null;
                   },
                   controller: hourlyRateController,
                   keyboardType: TextInputType.number,
+                  inputFormatters: [FilteringTextInputFormatter.digitsOnly],
                   decoration: const InputDecoration(
                     label: Text('Hourly Rate'),
                     hintText: '40',
@@ -429,7 +432,7 @@ class _MobileProfileSetupState extends State<MobileProfileSetup> {
                 }
                 return null;
               },
-              scrollPadding: const EdgeInsets.only(bottom: 150.0),
+              scrollPadding: const EdgeInsets.only(bottom: 200.0),
               controller: bioController,
               textCapitalization: TextCapitalization.sentences,
               minLines: 6,
@@ -448,22 +451,24 @@ class _MobileProfileSetupState extends State<MobileProfileSetup> {
 
                   if (_profileFormKey.currentState!.validate() &&
                       categoryIsValid) {
-                    context.read<OnboardingBloc>().add(UpdateUser(
-                        context.read<OnboardingBloc>().state.user!.copyWith(
-                              firstName: firstNameController.value.text.trim(),
-                              lastName: lastNameController.value.text.trim(),
-                              email: emailController.value.text.trim(),
-                              phoneNumber:
-                                  phoneNumberController.value.text.trim(),
-                              title: titleController.value.text.trim(),
-                              hourlyRate: double.parse(
-                                  hourlyRateController.value.text.trim()),
-                              address: addressController.value.text.trim(),
-                              city: cityController.value.text.trim(),
-                              state: stateController.value.text.trim(),
-                              bio: bioController.value.text.trim(),
-                              categories: selectedCategories,
-                            )));
+                    context.read<OnboardingBloc>().add(UpdateUser(context
+                        .read<OnboardingBloc>()
+                        .state
+                        .user!
+                        .copyWith(
+                          firstName: firstNameController.value.text.trim(),
+                          lastName: lastNameController.value.text.trim(),
+                          email: emailController.value.text.trim(),
+                          phoneNumber: phoneNumberController.value.text.trim(),
+                          title: titleController.value.text.trim(),
+                          hourlyRate:
+                              int.parse(hourlyRateController.value.text.trim()),
+                          address: addressController.value.text.trim(),
+                          city: cityController.value.text.trim(),
+                          state: stateController.value.text.trim(),
+                          bio: bioController.value.text.trim(),
+                          categories: selectedCategories,
+                        )));
                     await widget.pageController.nextPage(
                         duration: const Duration(milliseconds: 500),
                         curve: Curves.ease);

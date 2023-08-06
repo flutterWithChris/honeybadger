@@ -18,9 +18,18 @@ class OnboardingBloc extends Bloc<OnboardingEvent, OnboardingState> {
       try {
         emit(OnboardingState.loading());
         // TODO: Reenable this
-        //  await _userRepository.createUser(event.user);
-        emit(OnboardingState.loaded(event.user));
+        // Check if user exists
+        User? user = await _userRepository.getUser(event.user);
+        if (user != null) {
+          print('User exists');
+          emit(OnboardingState.loaded(user));
+        } else {
+          print('User does not exist');
+          await _userRepository.createUser(event.user);
+          emit(OnboardingState.loaded(event.user));
+        }
       } catch (e) {
+        print(e);
         emit(OnboardingState.failure());
       }
     });
@@ -43,6 +52,16 @@ class OnboardingBloc extends Bloc<OnboardingEvent, OnboardingState> {
                 photoUrl: profilePictureUrl,
               )))
             : emit(OnboardingState.failure());
+      } catch (e) {
+        emit(OnboardingState.failure());
+      }
+    });
+    on<SetUserType>((event, emit) async {
+      try {
+        var previousState = state;
+        emit(OnboardingState.loading());
+        userType = event.userType;
+        emit(OnboardingState.initial());
       } catch (e) {
         emit(OnboardingState.failure());
       }

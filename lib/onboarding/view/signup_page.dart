@@ -42,6 +42,8 @@ class _SignupPageState extends State<SignupPage> {
               body: BlocConsumer<SignupCubit, SignupState>(
             listener: (context, state) async {
               if (state.status == SignupStatus.success) {
+                print(
+                    'Creating profile with type: ${onboardingState.userType}');
                 context.read<OnboardingBloc>().add(StartOnboarding(User(
                       id: state.user!.uid,
                       userType: context.read<OnboardingBloc>().userType,
@@ -82,7 +84,7 @@ class _SignupPageState extends State<SignupPage> {
                   state.status == SignupStatus.error) {
                 return Center(
                   child: Theme(
-                    data: ThemeData(
+                    data: Theme.of(context).copyWith(
                         filledButtonTheme: FilledButtonThemeData(
                             style: Theme.of(context)
                                 .filledButtonTheme
@@ -188,7 +190,8 @@ class _SignupPageState extends State<SignupPage> {
                             child: const Text(
                                 'Already have an account? Sign in.')),
                         //   const GutterSmall(),
-                        const UserTypeInputChip(),
+
+                        const UserTypeInputChip()
                       ],
                     ),
                   ),
@@ -247,11 +250,19 @@ class _UserTypeInputChipState extends State<UserTypeInputChip> {
           return const Center(child: CircularProgressIndicator());
         } else if (state.status == OnboardingStatus.loaded ||
             state.status == OnboardingStatus.initial) {
+          User? user = context.read<OnboardingBloc>().state.user;
           return PopupMenuButton(
+            position: PopupMenuPosition.under,
             onSelected: (value) {
-              setState(() {
-                context.read<OnboardingBloc>().userType = value;
-              });
+              User? user = context.read<OnboardingBloc>().state.user;
+              if (user != null) {
+                context
+                    .read<OnboardingBloc>()
+                    .add(UpdateUser(user.copyWith(userType: value)));
+              }
+
+              print('Setting user type to $value');
+              context.read<OnboardingBloc>().add(SetUserType(value));
             },
             itemBuilder: (context) => [
               const PopupMenuItem(
@@ -265,11 +276,13 @@ class _UserTypeInputChipState extends State<UserTypeInputChip> {
             ],
             child: Chip(
                 avatar: const Icon(Icons.arrow_drop_down),
-                label: Text(parseEnumName(context
-                    .watch<OnboardingBloc>()
-                    .userType
-                    .toString()
-                    .capitalize))),
+                label: Text(user?.userType != null
+                    ? parseEnumName(user!.userType!.toString())
+                    : parseEnumName(context
+                        .read<OnboardingBloc>()
+                        .userType
+                        .toString()
+                        .capitalize))),
           );
         } else {
           return const Center(child: Text('Something went wrong!'));

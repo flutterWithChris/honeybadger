@@ -8,6 +8,7 @@ import 'package:flutter_stripe/flutter_stripe.dart';
 import 'package:honeybadger/core/constants.dart';
 import 'package:honeybadger/payments/model/balance.dart';
 import 'package:honeybadger/payments/model/balance_transaction.dart';
+import 'package:honeybadger/payouts/model/payout.dart';
 import 'package:honeybadger/payments/model/stripe_account.dart';
 import 'package:http/http.dart' as http;
 import 'package:url_launcher/url_launcher.dart';
@@ -290,5 +291,28 @@ class PaymentsRepository {
     }
   }
 
-  /// initPaymentSheet
+  /// Payout
+  Future<Payout> requestPayout(
+      {required String stripeAccountId,
+      required int amount,
+      required PayoutMethod payoutMethod}) async {
+    try {
+      final response = await http.post(
+          Uri.parse(
+              'https://us-central1-honeybadger-817ee.cloudfunctions.net/createStripePayout'),
+          body: {
+            'accountId': stripeAccountId,
+            'amount': amount,
+            'method': payoutMethod.toString().split('.').last,
+          });
+      print(response.body);
+      final jsonResponse = jsonDecode(response.body);
+      log(jsonResponse.toString());
+      print(jsonResponse.toString());
+      return Payout.fromJson(jsonResponse);
+    } catch (e) {
+      log(e.toString());
+      rethrow;
+    }
+  }
 }

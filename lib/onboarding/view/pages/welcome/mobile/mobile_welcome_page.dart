@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_gutter/flutter_gutter.dart';
+import 'package:honeybadger/onboarding/view/signup_page.dart';
 
 import '../../../../../profile/model/user.dart';
 import '../../../../bloc/onboarding_bloc.dart';
@@ -14,9 +15,9 @@ class MobileWelcomePage extends StatefulWidget {
 }
 
 class _MobileWelcomePageState extends State<MobileWelcomePage> {
-  UserType _userType = UserType.freelancer;
   @override
   Widget build(BuildContext context) {
+    UserType userType = context.watch<OnboardingBloc>().userType;
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 24.0),
       child: Scaffold(
@@ -53,13 +54,10 @@ class _MobileWelcomePageState extends State<MobileWelcomePage> {
                             position: PopupMenuPosition.under,
                             onSelected: (value) {
                               setState(() {
-                                if (value == 'Freelancer') {
-                                  _userType = UserType.freelancer;
-                                } else if (value == 'Client') {
-                                  _userType = UserType.client;
-                                }
                                 context.read<OnboardingBloc>().userType =
-                                    _userType;
+                                    value == 'Freelancer'
+                                        ? UserType.freelancer
+                                        : UserType.client;
                               });
                             },
                             shape: RoundedRectangleBorder(
@@ -68,7 +66,7 @@ class _MobileWelcomePageState extends State<MobileWelcomePage> {
                             elevation: 2.0,
                             constraints: const BoxConstraints(maxWidth: 400.0),
                             itemBuilder: (context) => [
-                                  _userType == UserType.client
+                                  userType == UserType.client
                                       ? PopupMenuItem(
                                           value: 'Freelancer',
                                           child: Text('Freelancer',
@@ -84,26 +82,9 @@ class _MobileWelcomePageState extends State<MobileWelcomePage> {
                                                   .headlineMedium),
                                         )
                                 ],
-                            child: SizedBox(
-                              height: 50,
-                              child: FittedBox(
-                                child: Chip(
-                                  avatar: const Icon(Icons.arrow_drop_down,
-                                      size: 36.0),
-                                  label: Row(
-                                    mainAxisSize: MainAxisSize.min,
-                                    children: [
-                                      Text(
-                                          _userType == UserType.freelancer
-                                              ? 'Freelancer'
-                                              : 'Client',
-                                          style: Theme.of(context)
-                                              .textTheme
-                                              .headlineLarge),
-                                    ],
-                                  ),
-                                ),
-                              ),
+                            child: const SizedBox(
+                              height: 60,
+                              child: FittedBox(child: UserTypeInputChip()),
                             )),
                       ),
                     )
@@ -121,7 +102,7 @@ class _MobileWelcomePageState extends State<MobileWelcomePage> {
                         ),
                         onPressed: () async {
                           print('Get Started Clicked');
-                          context.read<OnboardingBloc>().userType = _userType;
+                          context.read<OnboardingBloc>().userType = userType;
                           await widget.pageController?.nextPage(
                               duration: const Duration(milliseconds: 500),
                               curve: Curves.ease);

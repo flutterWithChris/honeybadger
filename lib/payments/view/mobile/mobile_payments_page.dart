@@ -2,12 +2,15 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_gutter/flutter_gutter.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:go_router/go_router.dart';
 import 'package:honeybadger/core/constants.dart';
 import 'package:honeybadger/core/extensions.dart';
 import 'package:honeybadger/core/presentation/system/main_navigation_bar.dart';
 import 'package:honeybadger/core/presentation/system/mobile_sliver_app_bar.dart';
 import 'package:honeybadger/payments/bloc/payments_bloc.dart';
 import 'package:honeybadger/payments/details/payment_details.dart';
+import 'package:honeybadger/payouts/bloc/payout_bloc.dart';
+import 'package:honeybadger/payouts/model/payout.dart';
 import 'package:honeybadger/profile/bloc/profile_bloc.dart';
 import 'package:jiffy/jiffy.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
@@ -148,6 +151,31 @@ class _MobilePaymentsPageState extends State<MobilePaymentsPage>
                           .map((e) => e.amount!)
                           .reduce((value, element) => value + element);
                     }
+                    // if (availableBalance > 0) {
+                    // showBottomSheet(
+                    //     context: context,
+                    //     builder: (context) {
+                    //       return Container(
+                    //         height: 200,
+                    //         color: Colors.amber,
+                    //         child: Center(
+                    //           child: Column(
+                    //             mainAxisAlignment: MainAxisAlignment.center,
+                    //             mainAxisSize: MainAxisSize.min,
+                    //             children: <Widget>[
+                    //               const Text('BottomSheet'),
+                    //               ElevatedButton(
+                    //                 child: const Text('Close BottomSheet'),
+                    //                 onPressed: () => Navigator.pop(context),
+                    //               )
+                    //             ],
+                    //           ),
+                    //         ),
+                    //       );
+                    //     },
+                    //   );
+                    // }
+
                     var pendingBalance = 0;
 
                     if (state.balance?.pending != null) {
@@ -218,27 +246,78 @@ class _MobilePaymentsPageState extends State<MobilePaymentsPage>
                               ),
                             ),
                             const Gutter(),
-                            FractionallySizedBox(
-                              widthFactor: 0.8,
-                              child: FilledButton.icon(
-                                  style: state.stripeAccount?.payoutsEnabled ==
-                                          false
-                                      ? FilledButton.styleFrom(
-                                          backgroundColor: Colors.red,
-                                          foregroundColor: Colors.white)
-                                      : null,
-                                  onPressed: () {
-                                    launchUrlString(state.loginLink!,
-                                        mode: LaunchMode.externalApplication);
-                                  },
-                                  icon: Icon(
-                                      state.stripeAccount?.payoutsEnabled ==
-                                              false
-                                          ? Icons.error_rounded
-                                          : Icons.dashboard,
-                                      size: 20.0),
-                                  label: const Text('View Dashboard')),
-                            ),
+                            availableBalance > 0
+                                ? Padding(
+                                    padding: const EdgeInsets.symmetric(
+                                        horizontal: 16.0),
+                                    child: Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.center,
+                                      children: [
+                                        const Spacer(),
+                                        Expanded(
+                                          flex: 7,
+                                          child: FilledButton.icon(
+                                              style: const ButtonStyle(
+                                                backgroundColor:
+                                                    MaterialStatePropertyAll(
+                                                        Colors.green),
+                                                foregroundColor:
+                                                    MaterialStatePropertyAll(
+                                                        Colors.white),
+                                              ),
+                                              onPressed: () {
+                                                showBottomSheet(
+                                                  context: context,
+                                                  builder: (context) {
+                                                    return PayoutMethodSheet(
+                                                      availableBalance:
+                                                          availableBalance,
+                                                    );
+                                                  },
+                                                );
+                                              },
+                                              icon: const Icon(
+                                                Icons.payments,
+                                                size: 14.0,
+                                              ),
+                                              label: const Text(
+                                                'Payout',
+                                              )),
+                                        ),
+                                        const Gutter(),
+                                        Flexible(
+                                            child: IconButton.filled(
+                                                onPressed: () {},
+                                                icon: const Icon(
+                                                    Icons.dashboard)))
+                                      ],
+                                    ),
+                                  )
+                                : FractionallySizedBox(
+                                    widthFactor: 0.8,
+                                    child: FilledButton.icon(
+                                        style: state.stripeAccount
+                                                    ?.payoutsEnabled ==
+                                                false
+                                            ? FilledButton.styleFrom(
+                                                backgroundColor: Colors.red,
+                                                foregroundColor: Colors.white)
+                                            : null,
+                                        onPressed: () {
+                                          launchUrlString(state.loginLink!,
+                                              mode: LaunchMode
+                                                  .externalApplication);
+                                        },
+                                        icon: Icon(
+                                            state.stripeAccount
+                                                        ?.payoutsEnabled ==
+                                                    false
+                                                ? Icons.error_rounded
+                                                : Icons.dashboard,
+                                            size: 20.0),
+                                        label: const Text('View Dashboard')),
+                                  ),
                             state.stripeAccount?.payoutsEnabled == false
                                 ? Padding(
                                     padding: const EdgeInsets.fromLTRB(
@@ -407,8 +486,10 @@ class _MobilePaymentsPageState extends State<MobilePaymentsPage>
                                         //     extra: paymentsState
                                         //         .balanceTransactions![index]);
                                         showBottomSheet(
+                                            enableDrag: true,
                                             context: context,
                                             builder: (context) => BottomSheet(
+                                                  showDragHandle: true,
                                                   animationController:
                                                       AnimationController(
                                                     vsync: this,
@@ -789,5 +870,307 @@ class _MobilePaymentsPageState extends State<MobilePaymentsPage>
             ],
           ),
         ));
+  }
+}
+
+class PayoutMethodSheet extends StatefulWidget {
+  final int availableBalance;
+  const PayoutMethodSheet({
+    required this.availableBalance,
+    super.key,
+  });
+
+  @override
+  State<PayoutMethodSheet> createState() => _PayoutMethodSheetState();
+}
+
+class _PayoutMethodSheetState extends State<PayoutMethodSheet> {
+  @override
+  Widget build(BuildContext context) {
+    return DraggableScrollableSheet(
+      expand: false,
+      initialChildSize: context.watch<PayoutBloc>().state is PayoutStarted
+          ? 0.26
+          : context.watch<PayoutBloc>().state is PayoutInitial
+              ? 0.23
+              : 0.2,
+      minChildSize: 0.2,
+      builder: (context, controller) => BlocBuilder<PayoutBloc, PayoutState>(
+        builder: (context, state) {
+          if (state is PayoutLoading) {
+            return Padding(
+                padding: const EdgeInsets.symmetric(
+                    vertical: 24.0, horizontal: 24.0),
+                child: Center(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Text(
+                        'Processing Payout...',
+                        style: Theme.of(context).textTheme.titleLarge,
+                      ),
+                      const Gutter(),
+                      const LinearProgressIndicator(),
+                    ],
+                  ),
+                ));
+          }
+          if (state is PayoutFailure) {
+            return Padding(
+              padding:
+                  const EdgeInsets.symmetric(horizontal: 24.0, vertical: 16.0),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.start,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                mainAxisSize: MainAxisSize.max,
+                children: <Widget>[
+                  Row(
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      const Icon(Icons.error_rounded,
+                          color: Colors.red, size: 24.0),
+                      const Gutter(),
+                      Text(
+                        'Payout Failed',
+                        style: Theme.of(context).textTheme.headlineMedium,
+                      ),
+                    ],
+                  ),
+                  const GutterSmall(),
+                  const Row(
+                    children: [
+                      Text('There was an issue processing your payout.'),
+                    ],
+                  ),
+                  const Gutter(),
+                  Row(
+                    children: [
+                      Expanded(
+                        child: FilledButton.icon(
+                          style: FilledButton.styleFrom(
+                              backgroundColor: Colors.red,
+                              foregroundColor: Colors.white),
+                          onPressed: () => Navigator.of(context).pop(),
+                          icon: const Icon(Icons.refresh_rounded, size: 20.0),
+                          label: const Text('Retry'),
+                        ),
+                      ),
+                    ],
+                  )
+                ],
+              ),
+            );
+          }
+          if (state is PayoutSuccess) {
+            return Padding(
+              padding:
+                  const EdgeInsets.symmetric(horizontal: 24.0, vertical: 16.0),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.start,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                mainAxisSize: MainAxisSize.max,
+                children: <Widget>[
+                  Row(
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      const Icon(Icons.check_circle_rounded,
+                          color: Colors.green, size: 24.0),
+                      const Gutter(),
+                      Text(
+                        'Payout Sent',
+                        style: Theme.of(context).textTheme.headlineMedium,
+                      ),
+                    ],
+                  ),
+                  const GutterSmall(),
+                  const Row(
+                    children: [
+                      Text('Your payout has been sent to your bank account.'),
+                    ],
+                  ),
+                  const Gutter(),
+                  Row(
+                    children: [
+                      Expanded(
+                        child: FilledButton(
+                          onPressed: () {
+                            context.read<PayoutBloc>().add(ResetPayout());
+                            context.pop();
+                          },
+                          child: const Text('Close'),
+                        ),
+                      ),
+                    ],
+                  )
+                ],
+              ),
+            );
+          }
+          if (state is PayoutInitial || state is PayoutStarted) {
+            return Padding(
+              padding:
+                  const EdgeInsets.symmetric(horizontal: 24.0, vertical: 16.0),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.start,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                mainAxisSize: MainAxisSize.max,
+                children: <Widget>[
+                  Row(
+                    crossAxisAlignment: CrossAxisAlignment.end,
+                    children: [
+                      Text(
+                        'Payout Balance',
+                        style: Theme.of(context).textTheme.headlineMedium,
+                      ),
+                      const Spacer(),
+                      Text(
+                        convertCentsToCurrency(widget.availableBalance),
+                        style: Theme.of(context).textTheme.headlineSmall,
+                      ),
+                    ],
+                  ),
+                  const GutterSmall(),
+                  const Row(
+                    children: [
+                      Text('Choose between instant or standard payouts.'),
+                    ],
+                  ),
+                  const Gutter(),
+                  AnimatedSwitcher(
+                      duration: const Duration(milliseconds: 400),
+                      child: state.payoutMethod == null
+                          ? const PayoutMethodButtons()
+                          : Column(
+                              children: [
+                                state.payoutMethod == PayoutMethod.instant
+                                    ? Row(
+                                        children: [
+                                          Expanded(
+                                            child: FilledButton.icon(
+                                                icon: const Icon(
+                                                  Icons.flash_on_rounded,
+                                                  size: 16.0,
+                                                ),
+                                                onPressed: () {
+                                                  context
+                                                      .read<PayoutBloc>()
+                                                      .add(RequestPayout(
+                                                          payoutMethod:
+                                                              PayoutMethod
+                                                                  .instant,
+                                                          user: context
+                                                              .read<
+                                                                  ProfileBloc>()
+                                                              .state
+                                                              .user!,
+                                                          amountInCents: widget
+                                                              .availableBalance));
+                                                },
+                                                label: Text(
+                                                    'Instant Payout ${convertCentsToCurrency(widget.availableBalance)}')),
+                                          ),
+                                        ],
+                                      )
+                                    : Row(
+                                        children: [
+                                          Expanded(
+                                            child: FilledButton(
+                                                onPressed: () {
+                                                  context
+                                                      .read<PayoutBloc>()
+                                                      .add(RequestPayout(
+                                                          payoutMethod:
+                                                              PayoutMethod
+                                                                  .standard,
+                                                          user: context
+                                                              .read<
+                                                                  ProfileBloc>()
+                                                              .state
+                                                              .user!,
+                                                          amountInCents: widget
+                                                              .availableBalance));
+                                                },
+                                                child: Text(
+                                                    'Standard Payout ${convertCentsToCurrency(widget.availableBalance)}')),
+                                          ),
+                                        ],
+                                      ),
+                                TextButton(
+                                    onPressed: () {
+                                      context
+                                          .read<PayoutBloc>()
+                                          .add(ResetPayout());
+                                    },
+                                    child: const Text('Change Payout Method')),
+                              ],
+                            )),
+                ],
+              ),
+            );
+          } else {
+            return const Center(child: Text('Something went wrong...'));
+          }
+        },
+      ),
+    );
+  }
+}
+
+class PayoutMethodButtons extends StatelessWidget {
+  const PayoutMethodButtons({
+    super.key,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      children: [
+        Expanded(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              FilledButton.icon(
+                  icon: const Icon(
+                    Icons.flash_on_rounded,
+                    size: 16.0,
+                  ),
+                  label: const Text('Instant'),
+                  onPressed: () {
+                    context.read<PayoutBloc>().add(
+                        const StartPayout(payoutMethod: PayoutMethod.instant));
+                  }),
+              const GutterTiny(),
+              Text(
+                '1% fee',
+                textAlign: TextAlign.center,
+                style: Theme.of(context).textTheme.bodySmall,
+              ),
+            ],
+          ),
+        ),
+        const Gutter(),
+        Expanded(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              FilledButton(
+                child: const Text('Standard'),
+                onPressed: () {
+                  context.read<PayoutBloc>().add(
+                      const StartPayout(payoutMethod: PayoutMethod.standard));
+                },
+              ),
+              const GutterTiny(),
+              Text(
+                '2 biz days',
+                textAlign: TextAlign.center,
+                style: Theme.of(context).textTheme.bodySmall,
+              ),
+            ],
+          ),
+        ),
+      ],
+    );
   }
 }
