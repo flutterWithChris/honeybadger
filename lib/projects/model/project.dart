@@ -14,6 +14,12 @@ class Project {
   String? id;
   String? clientId;
   String? clientName;
+  double? clientRating;
+  int? clientReviewCount;
+  int? clientTotalSpend;
+  String? clientLocation;
+  String? clientProfilePicture;
+  String? clientIndustry;
   String? freelancerId;
   String? freelancerName;
   String? title;
@@ -46,6 +52,12 @@ class Project {
     this.id,
     this.clientId,
     this.clientName,
+    this.clientRating,
+    this.clientReviewCount,
+    this.clientTotalSpend,
+    this.clientLocation,
+    this.clientProfilePicture,
+    this.clientIndustry,
     this.freelancerId,
     this.freelancerName,
     this.title,
@@ -80,6 +92,12 @@ class Project {
     String? id,
     String? clientId,
     String? clientName,
+    double? clientRating,
+    int? clientReviewCount,
+    int? clientTotalSpend,
+    String? clientLocation,
+    String? clientProfilePicture,
+    String? clientIndustry,
     String? freelancerId,
     String? freelancerName,
     String? title,
@@ -112,6 +130,12 @@ class Project {
       id: id ?? this.id,
       clientId: clientId ?? clientId,
       clientName: clientName ?? clientName,
+      clientRating: clientRating ?? clientRating,
+      clientReviewCount: clientReviewCount ?? clientReviewCount,
+      clientTotalSpend: clientTotalSpend ?? clientTotalSpend,
+      clientLocation: clientLocation ?? clientLocation,
+      clientProfilePicture: clientProfilePicture ?? clientProfilePicture,
+      clientIndustry: clientIndustry ?? clientIndustry,
       freelancerId: freelancerId ?? freelancerId,
       freelancerName: freelancerName ?? freelancerName,
       title: title ?? title,
@@ -148,6 +172,12 @@ class Project {
       'id': id,
       'clientId': clientId,
       'clientName': clientName,
+      'clientRating': clientRating,
+      'clientReviewCount': clientReviewCount,
+      'clientTotalSpend': clientTotalSpend,
+      'clientLocation': clientLocation,
+      'clientProfilePicture': clientProfilePicture,
+      'clientIndustry': clientIndustry,
       'freelancerId': freelancerId,
       'freelancerName': freelancerName,
       'title': title,
@@ -185,6 +215,12 @@ class Project {
     id = snap.id;
     clientId = snap['clientId'];
     clientName = snap['clientName'];
+    clientRating = snap['clientRating'];
+    clientReviewCount = snap['clientReviewCount'];
+    clientTotalSpend = snap['clientTotalSpend'];
+    clientLocation = snap['clientLocation'];
+    clientProfilePicture = snap['clientProfilePicture'];
+    clientIndustry = snap['clientIndustry'];
     freelancerId = snap['freelancerId'];
     freelancerName = snap['freelancerName'];
     title = snap['title'];

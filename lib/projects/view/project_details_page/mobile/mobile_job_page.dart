@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -227,7 +228,6 @@ class _MobileProjectDetailsPageState extends State<MobileProjectDetailsPage> {
                           style: Theme.of(context).textTheme.bodyMedium),
                     ),
                   ),
-
                   context.watch<ProposalBloc>().state is ProposalStarted
                       ? const Padding(
                           padding: EdgeInsets.only(top: 16.0),
@@ -237,92 +237,154 @@ class _MobileProjectDetailsPageState extends State<MobileProjectDetailsPage> {
                   CreateProposalSection(
                     widget: widget,
                   ),
-                  ExpansionTile(
-                    tilePadding: EdgeInsets.zero,
-                    backgroundColor: Theme.of(context).colorScheme.surface,
-                    title: Row(
-                      //mainAxisSize: MainAxisSize.min,
+                  IgnorePointer(
+                    ignoring:
+                        widget.project.clientTotalSpend == null ? true : false,
+                    child: ExpansionTile(
+                      trailing: widget.project.clientTotalSpend != null
+                          ? null
+                          : const SizedBox(),
+                      tilePadding: EdgeInsets.zero,
+                      backgroundColor: Theme.of(context).colorScheme.surface,
+                      leading: widget.project.clientProfilePicture != null
+                          ? CircleAvatar(
+                              radius: 20,
+                              backgroundImage: CachedNetworkImageProvider(
+                                  widget.project.clientProfilePicture!),
+                            )
+                          : const Icon(Icons.person_rounded),
+                      title: Row(
+                        //mainAxisSize: MainAxisSize.min,
+                        children: [
+                          // Padding(
+                          //   padding: const EdgeInsets.only(right: 16.0),
+                          //   child: CircleAvatar(
+                          //       radius: 14,
+                          //       child: widget.project.client!.photoUrl == null ||
+                          //               widget.project.client!.photoUrl!.isEmpty
+                          //           ? const Icon(Icons.person, size: 20)
+                          //           : CachedNetworkImage(
+                          //               imageUrl:
+                          //                   widget.project.client!.photoUrl!)),
+                          // ),
+                          Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
+                                children: [
+                                  Text(
+                                    widget.project.clientName!.split(' ')[0],
+                                    style:
+                                        Theme.of(context).textTheme.titleLarge,
+                                  ),
+                                  const GutterSmall(),
+                                  const Text('-'),
+                                  const GutterSmall(),
+                                  if (widget.project.clientRating != null)
+                                    Row(
+                                      mainAxisSize: MainAxisSize.min,
+                                      mainAxisAlignment: MainAxisAlignment.end,
+                                      children: [
+                                        Icon(
+                                          MdiIcons.star,
+                                          color: Colors.yellow[600],
+                                          size: 16.0,
+                                        ),
+                                        const GutterTiny(),
+                                        Text.rich(TextSpan(
+                                            text:
+                                                '${widget.project.clientRating.toString()} ',
+                                            children: [
+                                              TextSpan(
+                                                  text:
+                                                      '(${widget.project.clientReviewCount.toString()})',
+                                                  style: Theme.of(context)
+                                                      .textTheme
+                                                      .bodySmall)
+                                            ])),
+                                      ],
+                                    )
+                                  else
+                                    Text('No reviews yet',
+                                        style: Theme.of(context)
+                                            .textTheme
+                                            .bodySmall),
+                                ],
+                              ),
+                              Row(
+                                children: [
+                                  Icon(MdiIcons.mapMarkerOutline, size: 14.0),
+                                  const GutterTiny(),
+                                  Text('${widget.project.clientLocation}',
+                                      style: Theme.of(context)
+                                          .textTheme
+                                          .bodyMedium),
+                                ],
+                              ),
+                            ],
+                          ),
+                        ],
+                      ),
                       children: [
-                        // Padding(
-                        //   padding: const EdgeInsets.only(right: 16.0),
-                        //   child: CircleAvatar(
-                        //       radius: 14,
-                        //       child: widget.project.client!.photoUrl == null ||
-                        //               widget.project.client!.photoUrl!.isEmpty
-                        //           ? const Icon(Icons.person, size: 20)
-                        //           : CachedNetworkImage(
-                        //               imageUrl:
-                        //                   widget.project.client!.photoUrl!)),
-                        // ),
-                        Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        if (widget.project.clientTotalSpend != null)
+                          Padding(
+                            padding: const EdgeInsets.only(
+                                left: 16.0, bottom: 8.0, right: 16.0),
+                            child: Wrap(
+                              spacing: 8.0,
+                              crossAxisAlignment: WrapCrossAlignment.center,
                               children: [
-                                Text(
-                                  widget.project.clientName!.split(' ')[0],
-                                  style: Theme.of(context).textTheme.titleLarge,
+                                Row(
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
+                                    Text('Total Spend:',
+                                        style: Theme.of(context)
+                                            .textTheme
+                                            .titleSmall),
+                                    const GutterTiny(),
+                                    Text(
+                                        convertIntToCurrency(
+                                            widget.project.clientTotalSpend!),
+                                        style: Theme.of(context)
+                                            .textTheme
+                                            .bodyMedium),
+                                  ],
                                 ),
-                                const GutterSmall(),
-                                const Text('-'),
-                                const GutterSmall(),
-                                // if (widget.project.client!.rating != null)
-                                //   Row(
-                                //     mainAxisSize: MainAxisSize.min,
-                                //     mainAxisAlignment: MainAxisAlignment.end,
-                                //     children: [
-                                //       Icon(
-                                //         MdiIcons.star,
-                                //         color: Colors.yellow[600],
-                                //         size: 16.0,
-                                //       ),
-                                //       const GutterTiny(),
-                                //       Text.rich(TextSpan(
-                                //           text:
-                                //               '${widget.project.client!.rating.toString()} ',
-                                //           children: [
-                                //             TextSpan(
-                                //                 text:
-                                //                     '(${widget.project.client!.ratingCount.toString()})',
-                                //                 style: Theme.of(context)
-                                //                     .textTheme
-                                //                     .bodySmall)
-                                //           ])),
-                                //     ],
-                                //   )
+                                if (widget.project.clientIndustry != null)
+                                  Row(
+                                    mainAxisSize: MainAxisSize.min,
+                                    children: [
+                                      Text('Industry:',
+                                          style: Theme.of(context)
+                                              .textTheme
+                                              .titleSmall),
+                                      const GutterTiny(),
+                                      Text('${widget.project.clientIndustry}',
+                                          style: Theme.of(context)
+                                              .textTheme
+                                              .bodyMedium),
+                                    ],
+                                  ),
                               ],
                             ),
-                            Row(
-                              children: [
-                                Icon(MdiIcons.mapMarkerOutline, size: 14.0),
-                                const GutterTiny(),
-                                // Text(
-                                //     '${widget.project.client!.city!}, ${widget.project.client!.state!}',
-                                //     style:
-                                //         Theme.of(context).textTheme.bodyMedium),
-                              ],
-                            ),
-                          ],
-                        ),
+                          ),
+                        const GutterTiny(),
                       ],
                     ),
-                    children: const [],
                   ),
                   // Text('Client', style: Theme.of(context).textTheme.titleSmall),
                   ExpansionTile(
                     tilePadding: EdgeInsets.zero,
                     expandedAlignment: Alignment.center,
                     backgroundColor: Theme.of(context).colorScheme.surface,
-                    title: Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Icon(MdiIcons.tools, size: 24.0),
-                        const Gutter(),
-                        Text('Skills',
-                            style: Theme.of(context).textTheme.titleLarge),
-                      ],
+                    leading: Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                      child: Icon(MdiIcons.tools, size: 24.0),
                     ),
+                    title: Text('Skills',
+                        style: Theme.of(context).textTheme.titleLarge),
                     children: [
                       Padding(
                         padding: const EdgeInsets.only(
@@ -352,15 +414,12 @@ class _MobileProjectDetailsPageState extends State<MobileProjectDetailsPage> {
                       tilePadding: EdgeInsets.zero,
                       expandedAlignment: Alignment.center,
                       backgroundColor: Theme.of(context).colorScheme.surface,
-                      title: Row(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          Icon(MdiIcons.tagText, size: 24.0),
-                          const Gutter(),
-                          Text('Tags',
-                              style: Theme.of(context).textTheme.titleLarge),
-                        ],
+                      leading: Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                        child: Icon(MdiIcons.tagText, size: 24.0),
                       ),
+                      title: Text('Tags',
+                          style: Theme.of(context).textTheme.titleLarge),
                       children: [
                         Padding(
                           padding: const EdgeInsets.only(bottom: 16.0),

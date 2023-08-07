@@ -55,6 +55,7 @@ class SearchBloc extends Bloc<SearchEvent, SearchState> {
           print('Search Bloc received Projects: $data');
           return SearchLoaded(projects: data);
         }, onError: (error, stackTrace) {
+          print('Search Bloc received Error: $error');
           return SearchError();
         });
       } else {
