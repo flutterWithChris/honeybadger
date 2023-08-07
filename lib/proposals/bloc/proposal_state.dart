@@ -2,10 +2,12 @@ part of 'proposal_bloc.dart';
 
 abstract class ProposalState extends Equatable {
   final Proposal? proposal;
-  const ProposalState({this.proposal});
+  final List<Proposal>? proposals;
+  final List<Proposal>? draftProposals;
+  const ProposalState({this.proposal, this.proposals, this.draftProposals});
 
   @override
-  List<Object?> get props => [proposal];
+  List<Object?> get props => [proposal, proposals, draftProposals];
 }
 
 class ProposalLoading extends ProposalState {}
@@ -33,12 +35,15 @@ class ProposalStarted extends ProposalState {
 }
 
 class ProposalsLoaded extends ProposalState {
+  @override
   final List<Proposal> proposals;
+  @override
+  final List<Proposal> draftProposals;
 
-  const ProposalsLoaded(this.proposals);
+  const ProposalsLoaded(this.proposals, this.draftProposals);
 
   @override
-  List<Object?> get props => [proposals];
+  List<Object?> get props => [proposals, draftProposals];
 }
 
 class ProposalSaving extends ProposalState {

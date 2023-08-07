@@ -23,26 +23,50 @@ class ProposalBloc extends Bloc<ProposalsEvent, ProposalState> {
     on<LoadProposal>((event, emit) async {
       if (state is ProposalLoading == false) emit(ProposalLoading());
       Proposal? currentProposal;
-      currentProposal = await _proposalRepository.fetchProposal(
-          event.projectId, event.userId);
-      emit(ProposalLoaded(currentProposal));
+      await emit.forEach(
+        _proposalRepository.fetchProposal(event.projectId, event.userId),
+        onData: (data) {
+          if (data != null) {
+            print('Found proposal: ${data.id}');
+            if (data.status == ProposalStatus.draft) {
+              return ProposalStarted(proposal: data);
+            } else {
+              return ProposalLoaded(data);
+            }
+          } else {
+            print('No proposal found');
+            return ProposalLoaded(data);
+          }
+        },
+      );
     });
     on<LoadProposals>((event, emit) async {
       if (state is ProposalLoading == false) emit(ProposalLoading());
-      List<Proposal>? proposals;
-      proposals =
-          await _proposalRepository.fetchProposalsByProject(event.projectId);
-      emit(ProposalsLoaded(proposals));
+      await emit.forEach(
+        _proposalRepository.fetchProposalsByFreelancerId(event.userId),
+        onData: (data) {
+          List<Proposal> proposals = data.toList();
+          List<Proposal> draftProposals = data
+              .where((element) => element.status == ProposalStatus.draft)
+              .toList();
+          return ProposalsLoaded(proposals, draftProposals);
+        },
+      );
     });
-    on<StartProposal>((event, emit) {
-      emit(ProposalStarted(proposal: Proposal(jobId: event.jobId)));
+    on<StartProposal>((event, emit) async {
+      emit(ProposalLoading());
+      String proposalId =
+          await _proposalRepository.createProposal(event.proposal);
+
+      emit(ProposalStarted(proposal: event.proposal.copyWith(id: proposalId)));
     });
     on<AutoSaveProposal>((event, emit) async {
       try {
         final proposal = event.proposal.copyWith(savedAt: DateTime.now());
         emit(ProposalSaving(proposal: proposal));
         await Future.delayed(const Duration(milliseconds: 1000));
-        // Proposal proposal =  await _proposalRepository.saveProposal(event.proposal);
+
+        await _proposalRepository.updateProposal(event.proposal);
         emit(ProposalStarted(proposal: proposal));
       } catch (e) {
         print(e);
@@ -135,11 +159,27 @@ class ProposalBloc extends Bloc<ProposalsEvent, ProposalState> {
     on<UpdateMilestone>((event, emit) async {
       if (state is ProposalStarted) {
         final proposal = state.proposal;
-        final index = proposal?.milestones?.indexOf(event.milestone);
-        proposal?.milestones?[index!] = event.milestone;
-        emit(ProposalStarted(proposal: proposal));
+        // replace the milestone with the updated one
+        List<Milestone> milestones = proposal?.milestones ?? [];
+        milestones
+            .removeWhere((milestone) => milestone.id == event.milestone.id);
+        milestones.add(event.milestone);
+        Proposal updatedProposal = proposal!.copyWith(milestones: milestones);
+        emit(ProposalStarted(
+            proposal: updatedProposal.copyWith(savedAt: DateTime.now())));
       }
     });
+    on<UpdateDescription>((event, emit) async {
+      if (state is ProposalStarted) {
+        final proposal = state.proposal;
+        // replace the milestone with the updated one
+        String description = event.description;
+        Proposal updatedProposal = proposal!.copyWith(description: description);
+        emit(ProposalStarted(
+            proposal: updatedProposal.copyWith(savedAt: DateTime.now())));
+      }
+    });
+
     on<DeleteMilestone>((event, emit) async {
       if (state is ProposalStarted) {
         final proposal = state.proposal;

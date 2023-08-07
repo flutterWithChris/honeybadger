@@ -142,5 +142,7 @@ class SearchRepository {
   void dispose() {
     categoryHitsSearcher.dispose();
     hitsSearcher.dispose();
+    skillsHitsSearcher.dispose();
+    freelancerHitsSearcher.dispose();
   }
 }

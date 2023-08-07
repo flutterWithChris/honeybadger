@@ -93,7 +93,7 @@ class PaymentsBloc extends Bloc<PaymentsEvent, PaymentsState>
       email: event.client.email!,
       amount: 100.0,
       freelancerStripeId: event.freelancer.stripeAccountId!,
-      description: 'Payment for ${event.proposal.jobName}',
+      description: 'Payment for ${event.proposal.projectName}',
       metadata: {
         'proposalId': event.proposal.id,
         'clientId': event.client.id,

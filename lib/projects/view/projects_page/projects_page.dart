@@ -4,6 +4,7 @@ import 'package:flutter_gutter/flutter_gutter.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:go_router/go_router.dart';
 import 'package:honeybadger/core/presentation/system/main_navigation_bar.dart';
+import 'package:honeybadger/profile/bloc/profile_bloc.dart';
 import 'package:honeybadger/projects/bloc/projects_bloc.dart';
 import 'package:honeybadger/projects/view/widgets/project_status_chip.dart';
 import 'package:honeybadger/proposals/bloc/proposal_bloc.dart';
@@ -127,9 +128,8 @@ class ActiveProjectsTab extends StatelessWidget {
                     child: Text(project.description!),
                   ),
                   onTap: () {
-                    context
-                        .read<ProposalBloc>()
-                        .add(LoadProposals(project.id!));
+                    context.read<ProposalBloc>().add(LoadProposals(project.id!,
+                        context.read<ProfileBloc>().state.user!.id!));
                     context.push('/project/${project.id}', extra: project);
                   }),
             ),

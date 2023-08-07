@@ -420,13 +420,7 @@ class _MobileClientSearchPageState extends State<MobileClientSearchPage> {
                     (context, index) => Column(
                       children: [
                         index == 0 ? const Divider() : const SizedBox(),
-                        index == 0 ? const GutterSmall() : const SizedBox(),
-                        Padding(
-                          padding: const EdgeInsets.only(bottom: 8.0),
-                          child: FreelancerCard(
-                              freelancer: state.freelancers![index]),
-                        ),
-                        const Divider(),
+                        FreelancerCard(freelancer: state.freelancers![index]),
                       ],
                     ),
                   ),
@@ -460,11 +454,12 @@ class FreelancerCard extends StatelessWidget {
           // );
         },
         child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16.0),
+            padding: const EdgeInsets.fromLTRB(8.0, 0.0, 8.0, 0.0),
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               mainAxisSize: MainAxisSize.min,
               children: [
+                const GutterTiny(),
                 Row(crossAxisAlignment: CrossAxisAlignment.center, children: [
                   ClipRRect(
                     borderRadius: BorderRadius.circular(16.0),
@@ -529,6 +524,7 @@ class FreelancerCard extends StatelessWidget {
                                         ),
                                         avatar: Icon(
                                           MdiIcons.shimmer,
+                                          color: Colors.amber[600],
                                           size: 16.0,
                                           // color: Colors.amber[600],
                                         ),
@@ -599,7 +595,9 @@ class FreelancerCard extends StatelessWidget {
                             const GutterSmall(),
                       ),
                     ),
-                  )
+                  ),
+                const GutterSmall(),
+                const Divider(),
               ],
             )));
   }

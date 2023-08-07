@@ -28,23 +28,18 @@ class _SearchPageState extends State<SearchPage> {
 
   @override
   Widget build(BuildContext context) {
-    return BlocListener<ProfileBloc, ProfileState>(
-      listener: (context, state) {
-        // TODO: implement listener
-      },
-      child: LayoutBuilder(builder: (context, constraints) {
-        if (constraints.maxWidth > desktopWidthConstraint) {
-          return const DesktopSearchPage();
-        } else if (constraints.maxWidth > tabletWidthConstraint) {
-          return const TabletSearchPage();
-        } else {
-          if (context.read<ProfileBloc>().state.user?.userType ==
-              UserType.client) {
-            return const MobileClientSearchPage();
-          }
-          return const MobileSearchPage();
+    return LayoutBuilder(builder: (context, constraints) {
+      if (constraints.maxWidth > desktopWidthConstraint) {
+        return const DesktopSearchPage();
+      } else if (constraints.maxWidth > tabletWidthConstraint) {
+        return const TabletSearchPage();
+      } else {
+        if (context.watch<ProfileBloc>().state.user?.userType ==
+            UserType.client) {
+          return const MobileClientSearchPage();
         }
-      }),
-    );
+        return const MobileSearchPage();
+      }
+    });
   }
 }

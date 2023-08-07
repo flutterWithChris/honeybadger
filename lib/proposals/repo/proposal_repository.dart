@@ -5,14 +5,19 @@ import 'package:honeybadger/proposals/model/proposal.dart';
 
 class ProposalRepository {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
-  Future<Proposal?> fetchProposal(String projectId, String proposalId) async {
+  Stream<Proposal?> fetchProposal(String projectId, String userId) {
     try {
-      _firestore
-          .collection('projects')
-          .doc(projectId)
+      return _firestore
           .collection('proposals')
-          .doc(proposalId)
-          .get();
+          .where('projectId', isEqualTo: projectId)
+          .where('freelancerId', isEqualTo: userId)
+          .snapshots()
+          .map((snapshot) {
+        if (snapshot.docs.isNotEmpty) {
+          return Proposal.fromDocument(snapshot.docs.first);
+        }
+        return null;
+      });
     } on FirebaseException catch (e) {
       print(e);
       scaffoldKey.currentState!.showSnackBar(
@@ -22,17 +27,15 @@ class ProposalRepository {
         ),
       );
     }
-    return null;
+    return const Stream.empty();
   }
 
-  Future<void> sendProposal(Proposal proposal) async {
+  Future<String> createProposal(Proposal proposal) async {
     try {
-      _firestore
-          .collection('projects')
-          .doc(proposal.jobId)
-          .collection('proposals')
-          .doc(proposal.id)
-          .set(proposal.toJson());
+      var docRef = _firestore.collection('proposals').doc();
+
+      await docRef.set(proposal.toDocument());
+      return docRef.id;
     } on FirebaseException catch (e) {
       print(e);
       scaffoldKey.currentState!.showSnackBar(
@@ -41,17 +44,23 @@ class ProposalRepository {
           backgroundColor: Colors.redAccent,
         ),
       );
+      rethrow;
     }
   }
 
-  Future<Proposal?> updateProposal(Proposal proposal) async {
+  Future<void> updateProposal(Proposal proposal) async {
     try {
       _firestore
-          .collection('projects')
-          .doc(proposal.jobId)
           .collection('proposals')
-          .doc(proposal.id)
-          .set(proposal.toJson(), SetOptions(merge: true));
+          .where('projectId', isEqualTo: proposal.projectId)
+          .where('freelancerId', isEqualTo: proposal.freelancerId)
+          .get()
+          .then((value) => value.docs.forEach((element) {
+                _firestore
+                    .collection('proposals')
+                    .doc(element.id)
+                    .update(proposal.toDocument());
+              }));
     } on FirebaseException catch (e) {
       print(e);
       scaffoldKey.currentState!.showSnackBar(
@@ -60,18 +69,13 @@ class ProposalRepository {
           backgroundColor: Colors.redAccent,
         ),
       );
+      rethrow;
     }
-    return null;
   }
 
   Future<Proposal?> deleteProposal(Proposal proposal) async {
     try {
-      _firestore
-          .collection('projects')
-          .doc(proposal.jobId)
-          .collection('proposals')
-          .doc(proposal.id)
-          .delete();
+      _firestore.collection('proposals').doc(proposal.id).delete();
     } on FirebaseException catch (e) {
       print(e);
       scaffoldKey.currentState!.showSnackBar(
@@ -88,15 +92,15 @@ class ProposalRepository {
     return null;
   }
 
-  Future<List<Proposal>> fetchSentProposals(String freelancerId) async {
+  Stream<List<Proposal>> fetchSentProposals(String freelancerId) {
     try {
-      return await _firestore
-          .collection('users')
-          .doc(freelancerId)
+      return _firestore
           .collection('proposals')
-          .get()
-          .then((value) =>
-              value.docs.map((e) => Proposal.fromJson(e.data())).toList());
+          .where('freelancerId', isEqualTo: freelancerId)
+          .where('status', isEqualTo: 'sent')
+          .snapshots()
+          .map((event) =>
+              event.docs.map((e) => Proposal.fromDocument(e)).toList());
     } on FirebaseException catch (e) {
       print(e);
       scaffoldKey.currentState!.showSnackBar(
@@ -105,20 +109,41 @@ class ProposalRepository {
           backgroundColor: Colors.redAccent,
         ),
       );
-      return [];
+      return const Stream.empty();
+    }
+  }
+
+  Stream<List<Proposal>> fetchDraftProposals(String freelancerId) {
+    try {
+      return _firestore
+          .collection('proposals')
+          .where('freelancerId', isEqualTo: freelancerId)
+          .where('status', isEqualTo: 'draft')
+          .snapshots()
+          .map((event) =>
+              event.docs.map((e) => Proposal.fromDocument(e)).toList());
+    } on FirebaseException catch (e) {
+      print(e);
+      scaffoldKey.currentState!.showSnackBar(
+        const SnackBar(
+          content: Text('Error fetching proposals'),
+          backgroundColor: Colors.redAccent,
+        ),
+      );
+      return const Stream.empty();
     }
   }
 
   /// Fetch proposals by job id, ignoring those that are draft
-  Future<List<Proposal>> fetchProposalsByProject(String projectId) async {
+  Stream<List<Proposal>?> fetchProposalsByProject(String projectId) {
     try {
-      return await _firestore
-          .collection('projects')
-          .doc(projectId)
+      return _firestore
           .collection('proposals')
-          .get()
-          .then((value) =>
-              value.docs.map((e) => Proposal.fromJson(e.data())).toList());
+          .where('projectId', isEqualTo: projectId)
+          .where('status', isNotEqualTo: ProposalStatus.draft.toString())
+          .snapshots()
+          .map((event) =>
+              event.docs.map((e) => Proposal.fromDocument(e)).toList());
     } on FirebaseException catch (e) {
       print(e);
       scaffoldKey.currentState!.showSnackBar(
@@ -127,35 +152,18 @@ class ProposalRepository {
           backgroundColor: Colors.redAccent,
         ),
       );
-      return [];
+      return const Stream.empty();
     }
   }
 
-  Future<List<Proposal>> fetchProposalsByFreelancerId(
-      String freelancerId) async {
+  Stream<List<Proposal>> fetchProposalsByFreelancerId(String freelancerId) {
     try {
-      /// Get list of sent proposals for freelancer
-      /// use the project & proposal ids to get the proposals
-      /// from the projects collection
-      List<Proposal> freelancerProposals = await _firestore
-          .collection('users')
-          .doc(freelancerId)
+      return _firestore
           .collection('proposals')
-          .get()
-          .then((value) =>
-              value.docs.map((e) => Proposal.fromJson(e.data())).toList());
-      List<Proposal> proposals = [];
-      for (var proposal in freelancerProposals) {
-        await _firestore
-            .collection('projects')
-            .doc(proposal.jobId)
-            .collection(proposal.id!)
-            .get()
-            .then((value) =>
-                value.docs.map((e) => Proposal.fromJson(e.data())).toList())
-            .then((value) => proposals.addAll(value));
-      }
-      return proposals;
+          .where('freelancerId', isEqualTo: freelancerId)
+          .snapshots()
+          .map((event) =>
+              event.docs.map((e) => Proposal.fromDocument(e)).toList());
     } on FirebaseException catch (e) {
       print(e);
       scaffoldKey.currentState!.showSnackBar(
@@ -164,32 +172,32 @@ class ProposalRepository {
           backgroundColor: Colors.redAccent,
         ),
       );
+      return const Stream.empty();
+    }
+
+    // Future<List<Proposal>> fetchProposalsByClientId(String clientId) async {
+    //   try {
+    //     final response = await supabaseClient
+    //         .from('proposals')
+    //         .select()
+    //         .eq('client', clientId)
+    //         .order('createdAt', ascending: false);
+    //     return response.data!.map((e) => Proposal.fromJson(e)).toList();
+    //   } on FirebaseException catch (e) {
+    //     print(e);
+    //     scaffoldKey.currentState!.showSnackBar(
+    //       const SnackBar(
+    //         content: Text('Error fetching proposals'),
+    //         backgroundColor: Colors.redAccent,
+    //       ),
+    //     );
+    //     return [];
+    //   }
+    // }
+
+    Future<List<Proposal>> fetchProposalsByStatus(
+        String jobId, ProposalStatus status) async {
       return [];
     }
-  }
-
-  // Future<List<Proposal>> fetchProposalsByClientId(String clientId) async {
-  //   try {
-  //     final response = await supabaseClient
-  //         .from('proposals')
-  //         .select()
-  //         .eq('client', clientId)
-  //         .order('createdAt', ascending: false);
-  //     return response.data!.map((e) => Proposal.fromJson(e)).toList();
-  //   } on FirebaseException catch (e) {
-  //     print(e);
-  //     scaffoldKey.currentState!.showSnackBar(
-  //       const SnackBar(
-  //         content: Text('Error fetching proposals'),
-  //         backgroundColor: Colors.redAccent,
-  //       ),
-  //     );
-  //     return [];
-  //   }
-  // }
-
-  Future<List<Proposal>> fetchProposalsByStatus(
-      String jobId, ProposalStatus status) async {
-    return [];
   }
 }

@@ -5,6 +5,7 @@ import 'package:equatable/equatable.dart';
 import 'package:honeybadger/auth/bloc/auth_bloc.dart';
 import 'package:honeybadger/profile/model/user.dart';
 import 'package:honeybadger/profile/repository/user_respository.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 part 'profile_event.dart';
 part 'profile_state.dart';
@@ -24,12 +25,16 @@ class ProfileBloc extends Bloc<ProfileEvent, ProfileState> {
     on<UpdateProfile>(_onUpdateProfile);
     on<DeleteProfile>(_onDeleteProfile);
 
-    // _authSubscription = _authBloc.stream.listen((state) {
-    //   print('Profile Bloc received Auth State: $state');
-    //   if (state.status == AuthStatus.authenticated) {
-    //     add(LoadProfile());
-    //   }
-    // });
+    _authSubscription = _authBloc.stream.listen((state) async {
+      print('Profile Bloc received Auth State: $state');
+      if (state.status == AuthStatus.authenticated) {
+        SharedPreferences prefs = await SharedPreferences.getInstance();
+        bool? onboarded = prefs.getBool('onboarded');
+        if (onboarded == true) {
+          add(LoadProfile());
+        }
+      }
+    });
   }
   void _onLoadProfile(LoadProfile event, Emitter<ProfileState> emit) async {
     emit(ProfileLoading());

@@ -1,25 +1,27 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+
 import 'milestone.dart';
 
 enum ProposalStatus { draft, sent, accepted, rejected, completed }
 
 class Proposal {
-  final String? id;
-  final ProposalStatus? status;
-  final String? title;
-  final String? description;
-  final double? budgetTotal;
-  final double? budgetHourly;
-  final List<Milestone>? milestones;
-  final String? clientId;
-  final String? clientName;
-  final String? freelancerId;
-  final String? freelancerName;
-  final String? jobId;
-  final String? jobName;
-  final DateTime? createdAt;
-  final DateTime? updatedAt;
-  final DateTime? sentAt;
-  final DateTime? savedAt;
+  String? id;
+  ProposalStatus? status;
+  String? title;
+  String? description;
+  int? budgetTotal;
+  int? budgetHourly;
+  List<Milestone>? milestones;
+  String? clientId;
+  String? clientName;
+  String? freelancerId;
+  String? freelancerName;
+  String? projectId;
+  String? projectName;
+  DateTime? createdAt;
+  DateTime? updatedAt;
+  DateTime? sentAt;
+  DateTime? savedAt;
 
   Proposal({
     this.id,
@@ -33,30 +35,30 @@ class Proposal {
     this.clientName,
     this.freelancerId,
     this.freelancerName,
-    this.jobId,
-    this.jobName,
+    this.projectId,
+    this.projectName,
     this.createdAt,
     this.updatedAt,
     this.sentAt,
     this.savedAt,
   });
 
-  //toJson
-  Map<String, dynamic> toJson() {
+// toDocument
+  Map<String, dynamic> toDocument() {
     return {
       'id': id,
-      'status': status,
+      'status': status.toString().split('.').last,
       'title': title,
       'description': description,
       'budgetTotal': budgetTotal,
       'budgetHourly': budgetHourly,
-      'milestones': milestones,
+      'milestones': milestones?.map((e) => e.toJson()).toList(),
       'clientId': clientId,
       'clientName': clientName,
       'freelancerId': freelancerId,
       'freelancerName': freelancerName,
-      'jobId': jobId,
-      'jobName': jobName,
+      'projectId': projectId,
+      'projectName': projectName,
       'createdAt': createdAt,
       'updatedAt': updatedAt,
       'sentAt': sentAt,
@@ -64,27 +66,29 @@ class Proposal {
     };
   }
 
-  // fromJson
-  factory Proposal.fromJson(Map<String, dynamic> json) {
-    return Proposal(
-      id: json['id'] as String?,
-      status: json['status'] as ProposalStatus?,
-      title: json['title'] as String?,
-      description: json['description'] as String?,
-      budgetTotal: json['budgetTotal'] as double?,
-      budgetHourly: json['budgetHourly'] as double?,
-      milestones: json['milestones'] as List<Milestone>?,
-      clientId: json['clientId'] as String?,
-      clientName: json['clientName'] as String?,
-      freelancerId: json['freelancerId'] as String?,
-      freelancerName: json['freelancerName'] as String?,
-      jobId: json['jobId'] as String?,
-      jobName: json['jobName'] as String?,
-      createdAt: json['createdAt'] as DateTime?,
-      updatedAt: json['updatedAt'] as DateTime?,
-      sentAt: json['sentAt'] as DateTime?,
-      savedAt: json['savedAt'] as DateTime?,
-    );
+// fromDocument
+  Proposal.fromDocument(DocumentSnapshot snap) {
+    id = snap.id;
+    status = ProposalStatus.values
+        .firstWhere((e) => e.toString().split('.').last == snap['status']);
+    title = snap['title'];
+    description = snap['description'];
+    budgetTotal = snap['budgetTotal'];
+    budgetHourly = snap['budgetHourly'];
+    milestones = snap['milestones'] != null
+        ? List<Milestone>.from(
+            snap['milestones'].map((e) => Milestone.fromJson(e)))
+        : null;
+    clientId = snap['clientId'];
+    clientName = snap['clientName'];
+    freelancerId = snap['freelancerId'];
+    freelancerName = snap['freelancerName'];
+    projectId = snap['projectId'];
+    projectName = snap['projectName'];
+    createdAt = snap['createdAt']?.toDate();
+    updatedAt = snap['updatedAt']?.toDate();
+    sentAt = snap['sentAt']?.toDate();
+    savedAt = snap['savedAt']?.toDate();
   }
 
   Proposal copyWith({
@@ -92,15 +96,15 @@ class Proposal {
     ProposalStatus? status,
     String? title,
     String? description,
-    double? budgetTotal,
-    double? budgetHourly,
+    int? budgetTotal,
+    int? budgetHourly,
     List<Milestone>? milestones,
     String? clientId,
     String? clientName,
     String? freelancerId,
     String? freelancerName,
-    String? jobId,
-    String? jobName,
+    String? projectId,
+    String? projectName,
     DateTime? createdAt,
     DateTime? updatedAt,
     DateTime? sentAt,
@@ -118,8 +122,8 @@ class Proposal {
       clientName: clientName ?? this.clientName,
       freelancerId: freelancerId ?? this.freelancerId,
       freelancerName: freelancerName ?? this.freelancerName,
-      jobId: jobId ?? this.jobId,
-      jobName: jobName ?? this.jobName,
+      projectId: projectId ?? this.projectId,
+      projectName: projectName ?? this.projectName,
       createdAt: createdAt ?? this.createdAt,
       updatedAt: updatedAt ?? this.updatedAt,
       sentAt: sentAt ?? this.sentAt,

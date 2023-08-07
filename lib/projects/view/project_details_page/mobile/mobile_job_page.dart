@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_gutter/flutter_gutter.dart';
@@ -18,6 +19,7 @@ import 'package:intl/intl.dart';
 import 'package:jiffy/jiffy.dart';
 import 'package:loading_animation_widget/loading_animation_widget.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
+import 'package:uuid/uuid.dart';
 
 import '../../../model/project.dart';
 
@@ -231,7 +233,6 @@ class _MobileProjectDetailsPageState extends State<MobileProjectDetailsPage> {
                       : const Gutter(),
                   CreateProposalSection(
                     widget: widget,
-                    proposalController: _proposalController,
                   ),
                   const Gutter(),
                   ExpansionTile(
@@ -387,19 +388,28 @@ class _MobileProjectDetailsPageState extends State<MobileProjectDetailsPage> {
   }
 }
 
-class CreateProposalSection extends StatelessWidget {
+class CreateProposalSection extends StatefulWidget {
   const CreateProposalSection({
     super.key,
     required this.widget,
-    required TextEditingController proposalController,
-  }) : _proposalController = proposalController;
+  });
 
   final MobileProjectDetailsPage widget;
-  final TextEditingController _proposalController;
+
+  @override
+  State<CreateProposalSection> createState() => _CreateProposalSectionState();
+}
+
+class _CreateProposalSectionState extends State<CreateProposalSection> {
+  final TextEditingController _proposalController = TextEditingController();
+  final TextEditingController _rateController = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
     return BlocBuilder<ProposalBloc, ProposalState>(builder: (context, state) {
+      if (state is ProposalStarted) {
+        _proposalController.text = state.proposal?.description ?? '';
+      }
       return AnimatedSwitcher(
           // transitionBuilder:
           //     (child, primaryAnimation, secondaryAnimation) {
@@ -438,7 +448,7 @@ class CreateProposalSection extends StatelessWidget {
                   ? Column(
                       mainAxisSize: MainAxisSize.min,
                       children: [
-                        widget.project.projectType == ProjectType.fixed
+                        widget.widget.project.projectType == ProjectType.fixed
                             ? Flexible(
                                 child: Theme(
                                   data: Theme.of(context).copyWith(
@@ -465,8 +475,9 @@ class CreateProposalSection extends StatelessWidget {
                                           onPressed: () {
                                             context.read<ProposalBloc>().add(
                                                 AddMilestone(Milestone(
-                                                    projectId:
-                                                        widget.project.id!)));
+                                                    id: const Uuid().v4(),
+                                                    projectId: widget
+                                                        .widget.project.id!)));
                                           },
                                           icon: Icon(MdiIcons.plusCircle,
                                               size: 20.0),
@@ -478,7 +489,7 @@ class CreateProposalSection extends StatelessWidget {
                                       state.proposal?.milestones != null &&
                                               state.proposal!.milestones!
                                                   .isNotEmpty &&
-                                              _lastSavedAt != null
+                                              state.proposal?.savedAt != null
                                           ? const Column(
                                               mainAxisSize: MainAxisSize.min,
                                               children: [
@@ -609,7 +620,7 @@ class CreateProposalSection extends StatelessWidget {
                                   ),
                                 ),
                               )
-                            : const Flexible(
+                            : Flexible(
                                 child: Row(
                                   mainAxisSize: MainAxisSize.min,
                                   children: [
@@ -617,8 +628,9 @@ class CreateProposalSection extends StatelessWidget {
                                       child: SizedBox(
                                         width: 160.0,
                                         child: TextField(
+                                          controller: _rateController,
                                           keyboardType: TextInputType.number,
-                                          decoration: InputDecoration(
+                                          decoration: const InputDecoration(
                                             label: Text('Hourly Rate'),
                                             prefixText: '\$',
                                             suffixText: '/hr',
@@ -626,7 +638,7 @@ class CreateProposalSection extends StatelessWidget {
                                         ),
                                       ),
                                     ),
-                                    Spacer(
+                                    const Spacer(
                                       flex: 2,
                                     ),
                                   ],
@@ -635,8 +647,12 @@ class CreateProposalSection extends StatelessWidget {
                         const GutterSmall(),
                         Flexible(
                           child: TextField(
+                              controller: _proposalController,
                               scrollPadding: const EdgeInsets.only(bottom: 200),
                               onChanged: (value) {
+                                context
+                                    .read<ProposalBloc>()
+                                    .add(UpdateDescription(value));
                                 _startAutosaveTimer(context);
                               },
                               textCapitalization: TextCapitalization.sentences,
@@ -707,7 +723,7 @@ class CreateProposalSection extends StatelessWidget {
                                                                           state
                                                                               .proposal!
                                                                               .copyWith(
-                                                                            id: widget.project.id!,
+                                                                            id: widget.widget.project.id!,
                                                                             description:
                                                                                 _proposalController.text,
                                                                             freelancerId:
@@ -715,9 +731,9 @@ class CreateProposalSection extends StatelessWidget {
                                                                             freelancerName:
                                                                                 context.read<ProfileBloc>().state.user!.firstName,
                                                                             clientId:
-                                                                                widget.project.clientId,
+                                                                                widget.widget.project.clientId,
                                                                             clientName:
-                                                                                widget.project.clientName,
+                                                                                widget.widget.project.clientName,
                                                                           ),
                                                                         ),
                                                                       );
@@ -849,9 +865,24 @@ class CreateProposalSection extends StatelessWidget {
                       children: [
                         FilledButton.icon(
                           onPressed: () {
-                            context
-                                .read<ProposalBloc>()
-                                .add(StartProposal(widget.project.id!));
+                            context.read<ProposalBloc>().add(StartProposal(
+                                widget.widget.project.id!,
+                                Proposal(
+                                  projectId: widget.widget.project.id!,
+                                  description: _proposalController.text,
+                                  freelancerId: context
+                                      .read<ProfileBloc>()
+                                      .state
+                                      .user!
+                                      .id,
+                                  freelancerName: context
+                                      .read<ProfileBloc>()
+                                      .state
+                                      .user!
+                                      .firstName,
+                                  clientId: widget.widget.project.clientId,
+                                  clientName: widget.widget.project.clientName,
+                                )));
                           },
                           icon: Icon(MdiIcons.lightningBolt),
                           label: const Text('Create Proposal'),
@@ -905,8 +936,9 @@ class AutoSaveStatusWidget extends StatelessWidget {
                 Icon(MdiIcons.contentSaveCheck,
                     size: 14.0, color: Theme.of(context).colorScheme.secondary),
                 const GutterTiny(),
-                Text('Auto-Saved · ${_lastSavedAtString!}',
-                    style: Theme.of(context).textTheme.bodySmall),
+                if (_lastSavedAtString != null)
+                  Text('Auto-Saved · ${_lastSavedAtString!}',
+                      style: Theme.of(context).textTheme.bodySmall),
               ],
             );
           }
@@ -937,11 +969,11 @@ void _save(BuildContext context) {
 }
 
 void _setAutoSaveTimestamp(BuildContext context) {
-  _lastSavedAt = context.read<ProposalBloc>().state.proposal!.savedAt;
+  _lastSavedAt = DateTime.now();
   _lastSavedAtString = Jiffy.parseFromDateTime(_lastSavedAt!).fromNow();
 }
 
-class MilestoneEntry extends StatelessWidget {
+class MilestoneEntry extends StatefulWidget {
   final Proposal? proposal;
   final Milestone milestone;
   const MilestoneEntry({
@@ -949,6 +981,33 @@ class MilestoneEntry extends StatelessWidget {
     required this.milestone,
     super.key,
   });
+
+  @override
+  State<MilestoneEntry> createState() => _MilestoneEntryState();
+}
+
+class _MilestoneEntryState extends State<MilestoneEntry> {
+  final TextEditingController _titleController = TextEditingController();
+  final TextEditingController _descriptionController = TextEditingController();
+  final TextEditingController _amountController = TextEditingController();
+  final TextEditingController _startDateController = TextEditingController();
+  final TextEditingController _dueDateController = TextEditingController();
+  @override
+  void initState() {
+    // TODO: implement initState
+    _titleController.text = widget.milestone.title ?? '';
+    _descriptionController.text = widget.milestone.description ?? '';
+    _amountController.text = widget.milestone.amount != null
+        ? widget.milestone.amount!.toString()
+        : '';
+    _startDateController.text = widget.milestone.startDate != null
+        ? Jiffy.parseFromDateTime(widget.milestone.startDate!).yMMMMd
+        : '';
+    _dueDateController.text = widget.milestone.dueDate != null
+        ? Jiffy.parseFromDateTime(widget.milestone.dueDate!).yMMMMd
+        : '';
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -1008,23 +1067,41 @@ class MilestoneEntry extends StatelessWidget {
                             Expanded(
                               flex: 2,
                               child: TextField(
+                                controller: _titleController,
                                 onChanged: (value) {
+                                  context.read<ProposalBloc>().add(
+                                      UpdateMilestone(widget.milestone
+                                          .copyWith(title: value)));
                                   _startAutosaveTimer(context);
                                 },
                                 textCapitalization: TextCapitalization.words,
-                                decoration:
-                                    const InputDecoration(label: Text('Name')),
+                                decoration: const InputDecoration(
+                                    label: Text('Title'),
+                                    hintText: 'e.g. Design Phase',
+                                    floatingLabelBehavior:
+                                        FloatingLabelBehavior.always),
                               ),
                             ),
                             const GutterSmall(),
                             Expanded(
                                 child: TextField(
+                              controller: _amountController,
                               onChanged: (value) {
+                                context.read<ProposalBloc>().add(
+                                    UpdateMilestone(widget.milestone
+                                        .copyWith(amount: int.parse(value))));
                                 _startAutosaveTimer(context);
                               },
                               keyboardType: TextInputType.number,
+                              inputFormatters: [
+                                FilteringTextInputFormatter.digitsOnly
+                              ],
                               decoration: const InputDecoration(
-                                  prefixText: '\$', label: Text('Budget')),
+                                  prefixText: '\$',
+                                  label: Text('Budget'),
+                                  hintText: 'e.g. \$1000',
+                                  floatingLabelBehavior:
+                                      FloatingLabelBehavior.always),
                             )),
                           ],
                         ),
@@ -1034,21 +1111,67 @@ class MilestoneEntry extends StatelessWidget {
                           children: [
                             Flexible(
                               child: TextField(
+                                readOnly: true,
+                                controller: _startDateController,
+                                onTap: () {
+                                  showDatePicker(
+                                          context: context,
+                                          initialDate: DateTime.now(),
+                                          firstDate: DateTime.now(),
+                                          lastDate: DateTime.now()
+                                              .add(const Duration(days: 365)))
+                                      .then((value) {
+                                    if (value != null) {
+                                      context.read<ProposalBloc>().add(
+                                          UpdateMilestone(widget.milestone
+                                              .copyWith(startDate: value)));
+                                      _startDateController.text =
+                                          Jiffy.parseFromDateTime(value).yMMMMd;
+                                      _startAutosaveTimer(context);
+                                    }
+                                  });
+                                },
                                 onChanged: (value) {
                                   _startAutosaveTimer(context);
                                 },
                                 decoration: const InputDecoration(
-                                    label: Text('Start Date')),
+                                    label: Text('Start Date'),
+                                    hintText: 'Select a date',
+                                    floatingLabelBehavior:
+                                        FloatingLabelBehavior.always),
                               ),
                             ),
                             const GutterSmall(),
                             Flexible(
                               child: TextField(
+                                readOnly: true,
+                                controller: _dueDateController,
+                                onTap: () {
+                                  showDatePicker(
+                                          context: context,
+                                          initialDate: DateTime.now(),
+                                          firstDate: DateTime.now(),
+                                          lastDate: DateTime.now()
+                                              .add(const Duration(days: 365)))
+                                      .then((value) {
+                                    if (value != null) {
+                                      context.read<ProposalBloc>().add(
+                                          UpdateMilestone(widget.milestone
+                                              .copyWith(dueDate: value)));
+                                      _dueDateController.text =
+                                          Jiffy.parseFromDateTime(value).yMMMMd;
+                                      _startAutosaveTimer(context);
+                                    }
+                                  });
+                                },
                                 onChanged: (value) {
                                   _startAutosaveTimer(context);
                                 },
                                 decoration: const InputDecoration(
-                                    label: Text('End Date')),
+                                    label: Text('End Date'),
+                                    hintText: 'Select a date',
+                                    floatingLabelBehavior:
+                                        FloatingLabelBehavior.always),
                               ),
                             ),
                           ],

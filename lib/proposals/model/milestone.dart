@@ -2,7 +2,7 @@ class Milestone {
   final String? id;
   final String? title;
   final String? description;
-  final double? amount;
+  final int? amount;
   final bool? isPaid;
   final bool? isCompleted;
   final DateTime? paidAt;
@@ -35,7 +35,7 @@ class Milestone {
     final String? id,
     final String? title,
     final String? description,
-    final double? amount,
+    final int? amount,
     final bool? isPaid,
     final bool? isCompleted,
     final DateTime? paidAt,
@@ -91,7 +91,7 @@ class Milestone {
       id: json['id'] as String?,
       title: json['title'] as String?,
       description: json['description'] as String?,
-      amount: json['amount'] as double?,
+      amount: json['amount'] as int?,
       isPaid: json['isPaid'] as bool?,
       isCompleted: json['isCompleted'] as bool?,
       paidAt: json['paidAt'] == null

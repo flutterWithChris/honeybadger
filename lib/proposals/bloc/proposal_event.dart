@@ -16,20 +16,22 @@ class LoadProposal extends ProposalsEvent {
 
 class LoadProposals extends ProposalsEvent {
   final String projectId;
+  final String userId;
 
-  const LoadProposals(this.projectId);
+  const LoadProposals(this.projectId, this.userId);
 
   @override
-  List<Object?> get props => [projectId];
+  List<Object?> get props => [projectId, userId];
 }
 
 class StartProposal extends ProposalsEvent {
   final String jobId;
+  final Proposal proposal;
 
-  const StartProposal(this.jobId);
+  const StartProposal(this.jobId, this.proposal);
 
   @override
-  List<Object?> get props => [jobId];
+  List<Object?> get props => [jobId, proposal];
 }
 
 class AutoSaveProposal extends ProposalsEvent {
@@ -122,4 +124,13 @@ class DeleteMilestone extends ProposalsEvent {
 
   @override
   List<Object?> get props => [milestone];
+}
+
+class UpdateDescription extends ProposalsEvent {
+  final String description;
+
+  const UpdateDescription(this.description);
+
+  @override
+  List<Object?> get props => [description];
 }

@@ -902,9 +902,24 @@ class CreateProposalSection extends StatelessWidget {
                       children: [
                         FilledButton.icon(
                           onPressed: () {
-                            context
-                                .read<ProposalBloc>()
-                                .add(StartProposal(widget.project.id!));
+                            context.read<ProposalBloc>().add(StartProposal(
+                                widget.project.id!,
+                                Proposal(
+                                  projectId: widget.project.id!,
+                                  description: _proposalController.text,
+                                  freelancerId: context
+                                      .read<ProfileBloc>()
+                                      .state
+                                      .user!
+                                      .id,
+                                  freelancerName: context
+                                      .read<ProfileBloc>()
+                                      .state
+                                      .user!
+                                      .firstName,
+                                  clientId: widget.project.clientId,
+                                  clientName: widget.project.clientName,
+                                )));
                           },
                           icon: Icon(MdiIcons.lightningBolt),
                           label: const Text('Create Proposal'),
