@@ -48,6 +48,31 @@ class ProposalRepository {
     }
   }
 
+  Future<void> sendProposal(Proposal proposal) async {
+    try {
+      await _firestore
+          .collection('proposals')
+          .where('projectId', isEqualTo: proposal.projectId)
+          .where('freelancerId', isEqualTo: proposal.freelancerId)
+          .get()
+          .then((value) => value.docs.forEach((element) async {
+                await _firestore
+                    .collection('proposals')
+                    .doc(element.id)
+                    .update(proposal.toDocument());
+              }));
+    } on FirebaseException catch (e) {
+      print(e);
+      scaffoldKey.currentState!.showSnackBar(
+        const SnackBar(
+          content: Text('Error sending proposal'),
+          backgroundColor: Colors.redAccent,
+        ),
+      );
+      rethrow;
+    }
+  }
+
   Future<void> updateProposal(Proposal proposal) async {
     try {
       _firestore

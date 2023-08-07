@@ -6,7 +6,7 @@ import 'package:honeybadger/proposals/model/milestone.dart';
 import 'package:honeybadger/proposals/model/proposal.dart';
 import 'package:honeybadger/message/bloc/messages_bloc.dart';
 import 'package:honeybadger/proposals/repo/proposal_repository.dart';
-import 'package:stream_chat_flutter/stream_chat_flutter.dart';
+import 'package:list_ext/list_ext.dart';
 
 part 'proposal_event.dart';
 part 'proposal_state.dart';
@@ -74,37 +74,48 @@ class ProposalBloc extends Bloc<ProposalsEvent, ProposalState> {
       }
     });
     on<SendProposal>((event, emit) async {
-      if (state is ProposalStarted) {
-        try {
-          final newProposal = event.proposal;
-          await Future.delayed(const Duration(seconds: 1));
-          // await _proposalRepository.sendProposal(newProposal);
-          // _messagesBloc.add(event)
-          _messagesBloc.add(
-            SendMessage(
-                message: Message(
-                    text:
-                        'You have a new proposal from ${newProposal.freelancerName}',
-                    user: User(
-                      id: newProposal.freelancerId!,
-                      name: newProposal.freelancerName,
-                      role: 'Freelancer',
-                    ),
-                    createdAt: DateTime.now(),
-                    mentionedUsers: [User(id: newProposal.clientId!)])),
-          );
-          emit(ProposalSent(newProposal));
-        } catch (e) {
-          scaffoldKey.currentState!.showSnackBar(const SnackBar(
-            behavior: SnackBarBehavior.floating,
-            content: Text(
-              'Error Sending Proposal!',
-              style: TextStyle(color: Colors.white),
-            ),
-            backgroundColor: Colors.red,
-          ));
-          emit(ProposalsError());
-        }
+      emit(ProposalSending(event.proposal));
+      try {
+        final newProposal = event.proposal;
+        await _proposalRepository.sendProposal(newProposal);
+        // _messagesBloc.add(event)
+        // _messagesBloc.add(
+        //   SendMessage(
+        //       message: Message(
+        //           text:
+        //               'You have a new proposal from ${newProposal.freelancerName}',
+        //           user: User(
+        //             id: newProposal.freelancerId!,
+        //             name: newProposal.freelancerName,
+        //             role: 'Freelancer',
+        //           ),
+        //           createdAt: DateTime.now(),
+        //           mentionedUsers: [User(id: newProposal.clientId!)])),
+        // );
+        // emit(ProposalSent(newProposal));
+        scaffoldKey.currentState!.showSnackBar(const SnackBar(
+          behavior: SnackBarBehavior.floating,
+          content: Text('Proposal Sent!'),
+          backgroundColor: Colors.green,
+          // action: SnackBarAction(
+          //   label: 'Undo',
+          //   onPressed: () {
+
+          //   },
+          // ),
+        ));
+        await Future.delayed(const Duration(seconds: 2),
+            () => emit(ProposalLoaded(newProposal)));
+      } catch (e) {
+        scaffoldKey.currentState!.showSnackBar(const SnackBar(
+          behavior: SnackBarBehavior.floating,
+          content: Text(
+            'Error Sending Proposal!',
+            style: TextStyle(color: Colors.white),
+          ),
+          backgroundColor: Colors.red,
+        ));
+        emit(ProposalsError());
       }
     });
     on<UpdateProposal>((event, emit) async {
@@ -158,15 +169,32 @@ class ProposalBloc extends Bloc<ProposalsEvent, ProposalState> {
     });
     on<UpdateMilestone>((event, emit) async {
       if (state is ProposalStarted) {
-        final proposal = state.proposal;
+        int? updatedBudget;
+        final proposal = state.proposal!;
+
         // replace the milestone with the updated one
-        List<Milestone> milestones = proposal?.milestones ?? [];
-        milestones
-            .removeWhere((milestone) => milestone.id == event.milestone.id);
+        List<Milestone> milestones = proposal.milestones ?? [];
+        Milestone? milestone = milestones.firstWhereOrNull(
+            (milestone) => milestone.id == event.milestone.id);
+        int? lastMilestoneAmount = milestone?.amount;
+        print('Last Milestone Amount: $lastMilestoneAmount');
+        milestones.remove(milestone); // remove the old milestone from the list
         milestones.add(event.milestone);
-        Proposal updatedProposal = proposal!.copyWith(milestones: milestones);
-        emit(ProposalStarted(
-            proposal: updatedProposal.copyWith(savedAt: DateTime.now())));
+        // Update the budget, if the milestone has an amount
+        // if the milestone has no amount, then we subtract the amount from the budget
+        if (event.milestone.amount != null) {
+          updatedBudget = proposal.milestones!
+              .map((e) => e.amount)
+              .reduce((value, element) => value! + element!);
+          print('Updated Budget: $updatedBudget');
+        } else {
+          updatedBudget = proposal.budgetTotal! - lastMilestoneAmount!;
+          print('Updated Budget: $updatedBudget');
+        }
+
+        Proposal updatedProposal = proposal.copyWith(
+            milestones: milestones, budgetTotal: updatedBudget);
+        emit(ProposalStarted(proposal: updatedProposal));
       }
     });
     on<UpdateDescription>((event, emit) async {

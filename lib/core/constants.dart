@@ -32,6 +32,12 @@ String convertIntToMoney(int number) {
   }
 }
 
+// conver int to currency
+String convertIntToCurrency(int number) {
+  NumberFormat formatter = NumberFormat.simpleCurrency(decimalDigits: 0);
+  return formatter.format(number);
+}
+
 // Convert double to curency format
 String convertDoubleToString(double number) {
   NumberFormat formatter = NumberFormat.simpleCurrency(decimalDigits: 2);

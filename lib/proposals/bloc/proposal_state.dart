@@ -107,3 +107,13 @@ class ProposalSelected extends ProposalState {
 }
 
 class ProposalUnselected extends ProposalState {}
+
+class ProposalSending extends ProposalState {
+  @override
+  final Proposal proposal;
+
+  const ProposalSending(this.proposal);
+
+  @override
+  List<Object?> get props => [proposal];
+}
