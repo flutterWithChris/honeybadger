@@ -321,8 +321,18 @@ class MilestoneTimeline extends StatelessWidget {
                 ),
                 children: [
                   Text(
-                    proposal.milestones![i].description ??
-                        'Here\'s an example description of what we will achieve in this milestone. What will I deliver to you?',
+                    //  proposal.milestones![i].description ??
+                    // 'Here\'s an example description of what we will achieve in this milestone. What will I deliver to you?',
+                    i == 0
+                        ? 'This marks the start of the project. I will begin working towards the next milestone.'
+                        : i == 1
+                            ? 'All screens & visual elements complete. Using mock data to simulate functionality.'
+                            : i == 2
+                                ? 'Database is built and connected to the app. Displaying real data & connecting to APIs.'
+                                : i == 3
+                                    ? 'Begin beta testing the app for bugs & issues. While preparing for release to the app stores.'
+                                    : 'Null',
+
                     style: Theme.of(context).textTheme.bodySmall,
                   ),
                 ],

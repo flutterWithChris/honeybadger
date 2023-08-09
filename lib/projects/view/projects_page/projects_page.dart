@@ -110,56 +110,29 @@ class ActiveProjectsTab extends StatelessWidget {
                     mainAxisSize: MainAxisSize.min,
                     children: [
                       Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        mainAxisAlignment: MainAxisAlignment.start,
                         children: [
-                          Expanded(
-                            flex: 5,
-                            child: Text(
-                              project.title!,
-                              // style: Theme.of(context).textTheme.titleMedium,
-                              maxLines: 2,
-                              overflow: TextOverflow.ellipsis,
-                            ),
-                          ),
                           if (unreadProposalCount != 0)
-                            Flexible(
-                              child: Padding(
-                                padding: const EdgeInsets.only(
-                                  bottom: 8.0,
-                                ),
-                                child: Row(
-                                  mainAxisAlignment: MainAxisAlignment.start,
-                                  children: [
-                                    SizedBox(
-                                      height: 32.0,
-                                      child: FittedBox(
-                                        child: Chip(
-                                          backgroundColor:
-                                              Theme.of(context).indicatorColor,
-                                          padding: EdgeInsets.zero,
-                                          labelPadding: const EdgeInsets.only(
-                                              right: 16.0),
-                                          visualDensity: VisualDensity.compact,
-                                          side: BorderSide.none,
-                                          avatar: const CircleAvatar(
-                                            radius: 4.0,
-                                            backgroundColor: Colors.lightBlue,
-                                          ),
-                                          label: Text(
-                                            '$unreadProposalCount',
-                                            style: TextStyle(
-                                              fontWeight: FontWeight.bold,
-                                              color: Theme.of(context)
-                                                  .scaffoldBackgroundColor,
-                                            ),
-                                          ),
-                                        ),
-                                      ),
-                                    ),
-                                  ],
-                                ),
+                            Padding(
+                              padding: const EdgeInsets.only(
+                                  right: 8.0, bottom: 2.0),
+                              child: Badge.count(
+                                padding:
+                                    const EdgeInsets.symmetric(horizontal: 8.0),
+                                backgroundColor:
+                                    Theme.of(context).indicatorColor,
+                                count: unreadProposalCount,
+                                alignment: Alignment.topCenter,
+                                offset: const Offset(0, 1),
                               ),
                             ),
+                          Text(
+                            project.title!,
+                            // style: Theme.of(context).textTheme.titleMedium,
+                            maxLines: 2,
+                            overflow: TextOverflow.ellipsis,
+                          ),
                         ],
                       ),
                     ],
