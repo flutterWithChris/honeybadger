@@ -87,21 +87,25 @@ class PaymentsBloc extends Bloc<PaymentsEvent, PaymentsState>
 
   void _onSendPayment(SendPayment event, Emitter<PaymentsState> emit) async {
     emit(PaymentsLoading());
-
-    await _paymentsRepository.initPaymentSheet(
-      event.context,
-      email: event.client.email!,
-      amount: event.amount,
-      freelancerStripeAccountId: event.freelancerStripeAccountId,
-      description: 'Payment for ${event.proposal.projectName}',
-      metadata: {
-        'proposalId': event.proposal.id,
-        'clientId': event.client.id,
-        'clientName': '${event.client.firstName} ${event.client.lastName}',
-        'freelancerId': event.freelancerId,
-      },
-    );
-    emit(PaymentSent());
+    try {
+      await _paymentsRepository.initPaymentSheet(
+        event.context,
+        email: event.client.email!,
+        amount: event.amount,
+        freelancerStripeAccountId: event.freelancerStripeAccountId,
+        description: 'Payment for ${event.proposal.projectName}',
+        metadata: {
+          'proposalId': event.proposal.id,
+          'clientId': event.client.id,
+          'clientName': '${event.client.firstName} ${event.client.lastName}',
+          'freelancerId': event.freelancerId,
+        },
+      );
+      emit(PaymentSent());
+    } catch (e) {
+      print('Payment Error: $e');
+      emit(PaymentsError(message: e.toString()));
+    }
   }
 
   void _onLoadPayments(LoadPayments event, Emitter<PaymentsState> emit) async {

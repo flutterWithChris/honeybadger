@@ -2,9 +2,11 @@ import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:flutter/material.dart';
 import 'package:honeybadger/core/constants.dart';
+import 'package:honeybadger/message/bloc/messages_bloc.dart';
+import 'package:honeybadger/projects/model/project.dart';
+import 'package:honeybadger/projects/repository/projects_repository.dart';
 import 'package:honeybadger/proposals/model/milestone.dart';
 import 'package:honeybadger/proposals/model/proposal.dart';
-import 'package:honeybadger/message/bloc/messages_bloc.dart';
 import 'package:honeybadger/proposals/repo/proposal_repository.dart';
 import 'package:list_ext/list_ext.dart';
 
@@ -14,11 +16,14 @@ part 'proposal_state.dart';
 class ProposalBloc extends Bloc<ProposalsEvent, ProposalState> {
   final ProposalRepository _proposalRepository;
   final MessagesBloc _messagesBloc;
+  final ProjectsRepository _projectsRepository;
   ProposalBloc(
       {required ProposalRepository proposalRepository,
-      required MessagesBloc messagesBloc})
+      required MessagesBloc messagesBloc,
+      required ProjectsRepository projectsRepository})
       : _proposalRepository = proposalRepository,
         _messagesBloc = messagesBloc,
+        _projectsRepository = projectsRepository,
         super(ProposalLoading()) {
     on<LoadProposal>((event, emit) async {
       if (state is ProposalLoading == false) emit(ProposalLoading());
@@ -116,6 +121,38 @@ class ProposalBloc extends Bloc<ProposalsEvent, ProposalState> {
           backgroundColor: Colors.red,
         ));
         emit(ProposalsError());
+      }
+    });
+    on<AcceptProposal>((event, emit) async {
+      try {
+        if (state is ProposalLoaded) {
+          final newProposal = event.proposal;
+          await _proposalRepository.acceptProposal(newProposal);
+          await _projectsRepository.updateProjectStatus(
+              event.proposal.projectId!, ProjectStatus.inProgress);
+          await Future.delayed(const Duration(seconds: 1));
+          emit(ProposalLoaded(newProposal));
+        }
+      } catch (e) {
+        print(e);
+        scaffoldKey.currentState!.showSnackBar(const SnackBar(
+          behavior: SnackBarBehavior.floating,
+          content: Text(
+            'Error Accepting Proposal!',
+            style: TextStyle(color: Colors.white),
+          ),
+          backgroundColor: Colors.red,
+        ));
+        emit(ProposalsError());
+      }
+    });
+    on<FundMilestone>((event, emit) async {
+      if (state is ProposalLoaded) {
+        final newProposal = event.proposal;
+        await _proposalRepository.updateMilestone(
+            event.proposal, event.milestone.copyWith());
+        await Future.delayed(const Duration(seconds: 1));
+        emit(ProposalLoaded(newProposal));
       }
     });
     on<UpdateProposal>((event, emit) async {

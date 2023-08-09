@@ -178,6 +178,25 @@ class ProjectsRepository {
     }
   }
 
+  Future<void> updateProjectStatus(
+      String projectId, ProjectStatus projectStatus) async {
+    try {
+      return await _firestore
+          .collection('projects')
+          .doc(projectId)
+          .update({'status': projectStatus.toString().split('.').last});
+    } on FirebaseException catch (e) {
+      print(e);
+      scaffoldKey.currentState!.showSnackBar(
+        const SnackBar(
+          backgroundColor: Colors.red,
+          behavior: SnackBarBehavior.floating,
+          content: Text('Error updating project'),
+        ),
+      );
+    }
+  }
+
   Future<void> deleteProject(String projectId) async {
     try {
       return await _firestore.collection('projects').doc(projectId).delete();

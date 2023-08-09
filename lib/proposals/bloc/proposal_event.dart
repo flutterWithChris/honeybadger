@@ -90,6 +90,16 @@ class AcceptProposal extends ProposalsEvent {
   List<Object?> get props => [proposal];
 }
 
+class FundMilestone extends ProposalsEvent {
+  final Proposal proposal;
+  final Milestone milestone;
+
+  const FundMilestone(this.milestone, this.proposal);
+
+  @override
+  List<Object?> get props => [milestone, proposal];
+}
+
 class DeclineProposal extends ProposalsEvent {
   final Proposal proposal;
 

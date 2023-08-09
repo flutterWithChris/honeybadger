@@ -51,6 +51,7 @@ class _SignupPageState extends State<SignupPage> {
                       firstName: state.user!.displayName?.split(' ')[0],
                       lastName: state.user!.displayName?.split(' ')[1],
                       photoUrl: state.user!.photoURL,
+                      createdAt: DateTime.now(),
                     )));
 
                 ScaffoldMessenger.of(context).showSnackBar(

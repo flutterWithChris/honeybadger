@@ -5,6 +5,7 @@ class Milestone {
   final int? amount;
   final bool? isPaid;
   final bool? isCompleted;
+  final bool? funded;
   final DateTime? paidAt;
   final DateTime? completedAt;
   final DateTime? startDate;
@@ -21,6 +22,7 @@ class Milestone {
     this.amount,
     this.isPaid,
     this.isCompleted,
+    this.funded,
     this.paidAt,
     this.completedAt,
     this.startDate,
@@ -38,6 +40,7 @@ class Milestone {
     final int? amount,
     final bool? isPaid,
     final bool? isCompleted,
+    final bool? funded,
     final DateTime? paidAt,
     final DateTime? completedAt,
     final DateTime? startDate,
@@ -53,6 +56,7 @@ class Milestone {
       description: description ?? this.description,
       amount: amount ?? this.amount,
       isPaid: isPaid ?? this.isPaid,
+      funded: funded ?? this.funded,
       isCompleted: isCompleted ?? this.isCompleted,
       paidAt: paidAt ?? this.paidAt,
       completedAt: completedAt ?? this.completedAt,
@@ -73,6 +77,7 @@ class Milestone {
       'description': description,
       'amount': amount,
       'isPaid': isPaid,
+      'funded': funded,
       'isCompleted': isCompleted,
       'paidAt': paidAt?.toIso8601String(),
       'completedAt': completedAt?.toIso8601String(),
@@ -93,6 +98,7 @@ class Milestone {
       description: json['description'] as String?,
       amount: json['amount'] as int?,
       isPaid: json['isPaid'] as bool?,
+      funded: json['funded'] as bool?,
       isCompleted: json['isCompleted'] as bool?,
       paidAt: json['paidAt'] == null
           ? null
@@ -119,6 +125,6 @@ class Milestone {
 
   @override
   String toString() {
-    return 'Milestone(id: $id, title: $title, description: $description, amount: $amount, isPaid: $isPaid, isCompleted: $isCompleted, paidAt: $paidAt, completedAt: $completedAt, startDate: $startDate, dueDate: $dueDate, createdAt: $createdAt, updatedAt: $updatedAt, proposalId: $proposalId, projectId: $projectId)';
+    return 'Milestone(id: $id, title: $title, description: $description, amount: $amount, isPaid: $isPaid, funded: $funded, isCompleted: $isCompleted, paidAt: $paidAt, completedAt: $completedAt, startDate: $startDate, dueDate: $dueDate, createdAt: $createdAt, updatedAt: $updatedAt, proposalId: $proposalId, projectId: $projectId)';
   }
 }

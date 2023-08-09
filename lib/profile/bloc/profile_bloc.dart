@@ -47,6 +47,7 @@ class ProfileBloc extends Bloc<ProfileEvent, ProfileState> {
           return ProfileLoaded(data);
         },
         onError: (error, stackTrace) {
+          print(stackTrace);
           return ProfileError(error.toString());
         },
       );

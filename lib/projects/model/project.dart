@@ -191,10 +191,10 @@ class Project {
       'skills': skills,
       'tags': tags,
       'category': category,
-      'projectType': projectType.toString(),
-      'status': status.toString(),
-      'duration': duration.toString(),
-      'visibility': visibility,
+      'projectType': projectType.toString().split('.').last,
+      'status': status.toString().split('.').last,
+      'duration': duration.toString().split('.').last,
+      'visibility': visibility.toString().split('.').last,
       'budget': budget,
       'createdAt': createdAt?.toIso8601String(),
       'updatedAt': updatedAt?.toIso8601String(),
@@ -235,18 +235,18 @@ class Project {
     skills = snap['skills'];
     tags = snap['tags'];
     category = snap['category'];
-    projectType = snap['projectType'] == 'ProjectType.hourly'
+    projectType = snap['projectType'] == 'hourly'
         ? ProjectType.hourly
         : ProjectType.fixed;
-    status = snap['status'] == 'ProjectStatus.open'
+    status = snap['status'] == 'open'
         ? ProjectStatus.open
-        : snap['status'] == 'ProjectStatus.closed'
+        : snap['status'] == 'closed'
             ? ProjectStatus.closed
             : ProjectStatus.inProgress;
-    duration = snap['duration'] == 'ProjectDuration.oneTime'
+    duration = snap['duration'] == 'oneTime'
         ? ProjectDuration.oneTime
         : ProjectDuration.recurring;
-    visibility = snap['visibility'] == 'ProjectVisibility.public'
+    visibility = snap['visibility'] == 'public'
         ? ProjectVisibility.public
         : ProjectVisibility.private;
     budget = snap['budget'];

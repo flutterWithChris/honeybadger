@@ -25,7 +25,8 @@ class OnboardingBloc extends Bloc<OnboardingEvent, OnboardingState> {
           emit(OnboardingState.loaded(user));
         } else {
           print('User does not exist');
-          await _userRepository.createUser(event.user);
+          //  TODO: ***Reenable this***
+          // await _userRepository.createUser(event.user);
           emit(OnboardingState.loaded(event.user));
         }
       } catch (e) {

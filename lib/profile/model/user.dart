@@ -18,6 +18,7 @@ class User {
   double? rating;
   int? ratingCount;
   List<Review>? reviews;
+  int? jobsCompleted;
   String? phoneNumber;
   String? address;
   String? title;
@@ -48,6 +49,7 @@ class User {
     this.rating,
     this.ratingCount,
     this.reviews,
+    this.jobsCompleted,
     this.phoneNumber,
     this.address,
     this.title,
@@ -84,6 +86,7 @@ class User {
         reviews?.add(Review.fromJson(v));
       });
     }
+    jobsCompleted = snap['jobsCompleted'];
     phoneNumber = snap['phoneNumber'];
     address = snap['address'];
     title = snap['title'];
@@ -98,8 +101,8 @@ class User {
     photoUrl = snap['photoUrl'];
     bio = snap['bio'];
     stripeAccountId = snap['stripeAccountId'];
-    createdAt = snap['createdAt']?.toDate();
-    updatedAt = snap['updatedAt']?.toDate();
+    createdAt = DateTime.tryParse(snap['createdAt'] ?? '');
+    updatedAt = DateTime.tryParse(snap['updatedAt'] ?? '');
     projectIds = snap['projectIds'];
     proposalIds = snap['proposalIds'];
     if (snap['skills'] != null) {
@@ -134,6 +137,7 @@ class User {
       'rating': rating,
       'ratingCount': ratingCount,
       'reviews': reviews?.map((v) => v.toJson()).toList(),
+      'jobsCompleted': jobsCompleted,
       'phoneNumber': phoneNumber,
       'address': address,
       'title': title,
@@ -172,6 +176,7 @@ class User {
     double? rating,
     int? ratingCount,
     List<Review>? reviews,
+    int? jobsCompleted,
     String? phoneNumber,
     String? address,
     String? title,
@@ -201,6 +206,7 @@ class User {
       rating: rating ?? this.rating,
       ratingCount: ratingCount ?? this.ratingCount,
       reviews: reviews ?? this.reviews,
+      jobsCompleted: jobsCompleted ?? this.jobsCompleted,
       phoneNumber: phoneNumber ?? this.phoneNumber,
       address: address ?? this.address,
       title: title ?? this.title,

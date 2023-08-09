@@ -166,8 +166,10 @@ class _MyAppState extends State<MyApp> {
           ),
           BlocProvider<ProposalBloc>(
             create: (context) => ProposalBloc(
-                messagesBloc: context.read<MessagesBloc>(),
-                proposalRepository: context.read<ProposalRepository>()),
+              messagesBloc: context.read<MessagesBloc>(),
+              proposalRepository: context.read<ProposalRepository>(),
+              projectsRepository: context.read<ProjectsRepository>(),
+            ),
           ),
           BlocProvider(
               lazy: false,

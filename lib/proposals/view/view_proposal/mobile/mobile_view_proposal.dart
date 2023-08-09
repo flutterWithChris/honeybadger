@@ -7,6 +7,7 @@ import 'package:honeybadger/core/presentation/system/main_navigation_bar.dart';
 import 'package:honeybadger/core/presentation/system/mobile_sliver_app_bar.dart';
 import 'package:honeybadger/payments/bloc/payments_bloc.dart';
 import 'package:honeybadger/profile/bloc/profile_bloc.dart';
+import 'package:honeybadger/proposals/bloc/proposal_bloc.dart';
 import 'package:honeybadger/proposals/model/proposal.dart';
 import 'package:jiffy/jiffy.dart';
 import 'package:loading_animation_widget/loading_animation_widget.dart';
@@ -19,6 +20,8 @@ class MobileViewProposalPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    proposal.milestones!.sort((a, b) => a.dueDate!.compareTo(b.dueDate!));
+
     return Scaffold(
         bottomNavigationBar: const MainBottomNavBar(),
         body: CustomScrollView(
@@ -161,7 +164,16 @@ class MobileViewProposalPage extends StatelessWidget {
                     ),
                     MilestoneTimeline(proposal: proposal),
                     const GutterTiny(),
-                    BlocBuilder<PaymentsBloc, PaymentsState>(
+                    BlocConsumer<PaymentsBloc, PaymentsState>(
+                      listener: (context, state) {
+                        if (state is PaymentSent) {
+                          context
+                              .read<ProposalBloc>()
+                              .add(AcceptProposal(proposal));
+                          context.read<ProposalBloc>().add(FundMilestone(
+                              proposal.milestones!.first, proposal));
+                        }
+                      },
                       builder: (context, state) {
                         if (state is PaymentsError) {
                           return FilledButton.icon(
@@ -192,20 +204,51 @@ class MobileViewProposalPage extends StatelessWidget {
                             },
                           );
                         }
-                        return FilledButton.icon(
-                          icon: Icon(MdiIcons.cashCheck),
-                          label: const Text('Accept & Fund Milestone'),
-                          onPressed: () {
-                            context.read<PaymentsBloc>().add(SendPayment(
-                                amount: proposal.milestones!.first.amount!,
-                                description: 'Milestone: ${proposal.title}',
-                                client: context.read<ProfileBloc>().state.user!,
-                                freelancerId: proposal.freelancerId!,
-                                freelancerStripeAccountId:
-                                    proposal.freelancerStripeAccountId!,
-                                proposal: proposal,
-                                context: context));
-                          },
+                        return Column(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Row(
+                              children: [
+                                Expanded(
+                                  child: FilledButton.icon(
+                                    icon: Icon(MdiIcons.cashCheck),
+                                    label: const Text(
+                                        'Accept & Fund First Milestone'),
+                                    onPressed: () {
+                                      context.read<PaymentsBloc>().add(
+                                          SendPayment(
+                                              amount: (proposal.milestones!
+                                                          .first.amount! *
+                                                      1.05)
+                                                  .round(),
+                                              description:
+                                                  'Milestone: ${proposal.title}',
+                                              client: context
+                                                  .read<ProfileBloc>()
+                                                  .state
+                                                  .user!,
+                                              freelancerId:
+                                                  proposal.freelancerId!,
+                                              freelancerStripeAccountId: proposal
+                                                  .freelancerStripeAccountId!,
+                                              proposal: proposal,
+                                              context: context));
+                                    },
+                                  ),
+                                ),
+                              ],
+                            ),
+                            const GutterTiny(),
+                            Text(
+                              'A 5% fee will be added',
+                              style: Theme.of(context)
+                                  .textTheme
+                                  .bodySmall
+                                  ?.copyWith(
+                                    fontStyle: FontStyle.italic,
+                                  ),
+                            ),
+                          ],
                         );
                       },
                     ),

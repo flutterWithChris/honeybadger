@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:honeybadger/core/constants.dart';
+import 'package:honeybadger/proposals/model/milestone.dart';
 import 'package:honeybadger/proposals/model/proposal.dart';
 
 class ProposalRepository {
@@ -66,6 +67,56 @@ class ProposalRepository {
       scaffoldKey.currentState!.showSnackBar(
         const SnackBar(
           content: Text('Error sending proposal'),
+          backgroundColor: Colors.redAccent,
+        ),
+      );
+      rethrow;
+    }
+  }
+
+  Future<void> acceptProposal(Proposal proposal) async {
+    try {
+      await _firestore
+          .collection('proposals')
+          .where('projectId', isEqualTo: proposal.projectId)
+          .where('freelancerId', isEqualTo: proposal.freelancerId)
+          .get()
+          .then((value) => value.docs.forEach((element) async {
+                await _firestore.collection('proposals').doc(element.id).update(
+                    proposal
+                        .copyWith(status: ProposalStatus.accepted)
+                        .toDocument());
+              }));
+    } on FirebaseException catch (e) {
+      print(e);
+      scaffoldKey.currentState!.showSnackBar(
+        const SnackBar(
+          content: Text('Error accepting proposal'),
+          backgroundColor: Colors.redAccent,
+        ),
+      );
+      rethrow;
+    }
+  }
+
+  Future<void> updateMilestone(Proposal proposal, Milestone milestone) async {
+    try {
+      await _firestore
+          .collection('proposals')
+          .where('projectId', isEqualTo: proposal.projectId)
+          .where('freelancerId', isEqualTo: proposal.freelancerId)
+          .get()
+          .then((value) => value.docs.forEach((element) async {
+                await _firestore.collection('proposals').doc(element.id).update(
+                    proposal
+                        .copyWith(milestones: proposal.milestones)
+                        .toDocument());
+              }));
+    } catch (e) {
+      print(e);
+      scaffoldKey.currentState!.showSnackBar(
+        const SnackBar(
+          content: Text('Error updating milestone'),
           backgroundColor: Colors.redAccent,
         ),
       );

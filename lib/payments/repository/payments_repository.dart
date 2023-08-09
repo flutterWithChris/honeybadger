@@ -8,8 +8,8 @@ import 'package:flutter_stripe/flutter_stripe.dart';
 import 'package:honeybadger/core/constants.dart';
 import 'package:honeybadger/payments/model/balance.dart';
 import 'package:honeybadger/payments/model/balance_transaction.dart';
-import 'package:honeybadger/payouts/model/payout.dart';
 import 'package:honeybadger/payments/model/stripe_account.dart';
+import 'package:honeybadger/payouts/model/payout.dart';
 import 'package:http/http.dart' as http;
 import 'package:url_launcher/url_launcher.dart';
 
@@ -160,7 +160,7 @@ class PaymentsRepository {
       required String freelancerStripeAccountId,
       required String description,
       required Map<String, dynamic> metadata}) async {
-    print('MEtadata: ${jsonEncode(metadata)}');
+    print('Metadata: ${jsonEncode(metadata)}');
     try {
       final response = await http.post(
           Uri.parse(

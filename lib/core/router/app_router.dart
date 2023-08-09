@@ -38,7 +38,9 @@ GoRouter goRouter = GoRouter(
     bool isOnboarding = state.matchedLocation.contains('onboarding');
     print('Logged in: $loggedIn');
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    bool onboarded = prefs.getBool('onboarded') ?? false;
+    // TODO: **IMPORTANT** Change this back
+    // bool onboarded = prefs.getBool('onboarded') ?? false;
+    bool onboarded = true;
     if (isOnboarding) {
       return null;
     }

@@ -11,11 +11,11 @@ import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:honeybadger/core/constants.dart';
 import 'package:honeybadger/core/presentation/system/main_navigation_bar.dart';
 import 'package:honeybadger/core/presentation/system/mobile_sliver_app_bar.dart';
+import 'package:honeybadger/profile/bloc/profile_bloc.dart';
 import 'package:honeybadger/projects/view/widgets/project_status_chip.dart';
+import 'package:honeybadger/proposals/bloc/proposal_bloc.dart';
 import 'package:honeybadger/proposals/model/milestone.dart';
 import 'package:honeybadger/proposals/model/proposal.dart';
-import 'package:honeybadger/profile/bloc/profile_bloc.dart';
-import 'package:honeybadger/proposals/bloc/proposal_bloc.dart';
 import 'package:intl/intl.dart';
 import 'package:jiffy/jiffy.dart';
 import 'package:loading_animation_widget/loading_animation_widget.dart';
@@ -540,7 +540,8 @@ class _CreateProposalSectionState extends State<CreateProposalSection> {
                                                 AddMilestone(Milestone(
                                                     id: const Uuid().v4(),
                                                     projectId: widget
-                                                        .widget.project.id!)));
+                                                        .widget.project.id!,
+                                                    funded: false)));
                                           },
                                           icon: Icon(MdiIcons.plusCircle,
                                               size: 20.0),
