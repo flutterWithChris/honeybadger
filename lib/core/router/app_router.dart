@@ -22,6 +22,8 @@ import 'package:honeybadger/projects/model/project.dart';
 import 'package:honeybadger/projects/view/project_details_page/project_page.dart';
 import 'package:honeybadger/projects/view/projects_page/projects_page.dart';
 import 'package:honeybadger/proposals/create/view/create_proposal_page.dart';
+import 'package:honeybadger/proposals/model/proposal.dart';
+import 'package:honeybadger/proposals/view/view_proposal.dart';
 import 'package:honeybadger/search/view/search_page.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:stream_chat_flutter/stream_chat_flutter.dart';
@@ -98,6 +100,17 @@ GoRouter goRouter = GoRouter(
               project: state.extra as Project,
             ),
           ),
+          GoRoute(
+              path: 'proposals/:proposalId',
+              name: 'proposals',
+              builder: (
+                context,
+                state,
+              ) {
+                return ViewProposalPage(
+                  proposal: state.extra as Proposal,
+                );
+              }),
         ]),
     GoRoute(
       path: '/projects',

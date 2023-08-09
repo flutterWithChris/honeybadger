@@ -1,10 +1,12 @@
 part of 'projects_bloc.dart';
 
 abstract class ProjectsState extends Equatable {
-  const ProjectsState();
+  final List<Project>? projects;
+  final Project? project;
+  const ProjectsState({this.projects, this.project});
 
   @override
-  List<Object> get props => [];
+  List<Object?> get props => [projects, project];
 }
 
 class ProjectsInitial extends ProjectsState {}

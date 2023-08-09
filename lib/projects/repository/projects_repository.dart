@@ -58,6 +58,31 @@ class ProjectsRepository {
     }
   }
 
+  // Get project from list of project ids as future
+  Future<List<Project>> getProjectsFromIdsFuture(
+      List<String> projectIds) async {
+    try {
+      var snapshot = await _firestore
+          .collection('projects')
+          .where('id', whereIn: projectIds)
+          .get();
+
+      return snapshot.docs.map((doc) {
+        return Project.fromDocument(doc);
+      }).toList();
+    } on FirebaseException catch (e) {
+      print(e);
+      scaffoldKey.currentState!.showSnackBar(
+        const SnackBar(
+          backgroundColor: Colors.red,
+          behavior: SnackBarBehavior.floating,
+          content: Text('Error loading projects'),
+        ),
+      );
+      return [];
+    }
+  }
+
   Stream<Project>? getProject(String projectId) {
     try {
       return _firestore

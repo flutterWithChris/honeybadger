@@ -91,14 +91,14 @@ class PaymentsBloc extends Bloc<PaymentsEvent, PaymentsState>
     await _paymentsRepository.initPaymentSheet(
       event.context,
       email: event.client.email!,
-      amount: 100.0,
-      freelancerStripeId: event.freelancer.stripeAccountId!,
+      amount: event.amount,
+      freelancerStripeAccountId: event.freelancerStripeAccountId,
       description: 'Payment for ${event.proposal.projectName}',
       metadata: {
         'proposalId': event.proposal.id,
         'clientId': event.client.id,
         'clientName': '${event.client.firstName} ${event.client.lastName}',
-        'freelancerId': event.freelancer.id,
+        'freelancerId': event.freelancerId,
       },
     );
     emit(PaymentSent());

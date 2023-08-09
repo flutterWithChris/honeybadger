@@ -1,11 +1,13 @@
 import 'dart:async';
 
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_gutter/flutter_gutter.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
+import 'package:go_router/go_router.dart';
 import 'package:honeybadger/core/constants.dart';
 import 'package:honeybadger/core/presentation/system/main_navigation_bar.dart';
 import 'package:honeybadger/core/presentation/system/mobile_sliver_app_bar.dart';
@@ -75,7 +77,8 @@ class _MobileClientProjectDetailsPageState
           slivers: [
             const MobileSliverAppBar(),
             SliverPadding(
-              padding: const EdgeInsets.symmetric(horizontal: 16.0),
+              padding: const EdgeInsets.only(
+                  left: 16, right: 16, top: 16, bottom: 8),
               sliver: SliverToBoxAdapter(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -101,26 +104,41 @@ class _MobileClientProjectDetailsPageState
                             style: Theme.of(context).textTheme.headlineSmall),
                       ),
                     ),
-                    const GutterSmall(),
+                    // const GutterSmall(),
                   ],
                 ),
               ),
             ),
-            const SliverToBoxAdapter(
-              child: TabBar(tabs: [
-                Tab(
+            SliverToBoxAdapter(
+              child: TabBar(padding: EdgeInsets.zero, tabs: [
+                widget.project.unreadProposalCount! > 0
+                    ? Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Badge(
+                            label: Text(
+                              widget.project.unreadProposalCount.toString(),
+                            ),
+                          ),
+                          const GutterSmall(),
+                          const Tab(
+                            text: 'Proposals',
+                          ),
+                        ],
+                      )
+                    : const Tab(
+                        text: 'Proposals',
+                      ),
+                const Tab(
                   text: 'Details',
-                ),
-                Tab(
-                  text: 'Proposals',
                 ),
               ]),
             ),
             SliverFillRemaining(
               child: TabBarView(
                 children: [
-                  DetailsTab(project: widget.project),
                   ProposalsTab(project: widget.project),
+                  DetailsTab(project: widget.project),
                 ],
               ),
             ),
@@ -155,45 +173,105 @@ class _ProposalsTabState extends State<ProposalsTab> {
               child: Text('Something went wrong. Please try again later.'));
         }
         if (state is ProposalsLoaded) {
+          //print(DateTime(2023, 8, 7, 1, 54).toIso8601String());
+
           if (state.proposals.isNotEmpty) {
-            return ListView(
-              children: [
-                for (Proposal proposal in state.proposals)
-                  Slidable(
-                    endActionPane: ActionPane(
-                      motion: const DrawerMotion(),
+            return ListView.separated(
+              itemCount: state.proposals.length,
+              padding: const EdgeInsets.symmetric(vertical: 8.0),
+              itemBuilder: (context, index) {
+                Proposal proposal = state.proposals[index];
+                print(proposal.sentAt);
+                return Slidable(
+                  endActionPane: ActionPane(
+                    motion: const DrawerMotion(),
+                    children: [
+                      SlidableAction(
+                        borderRadius:
+                            const BorderRadius.all(Radius.circular(16.0)),
+                        label: 'Delete',
+                        onPressed: (context) {
+                          context
+                              .read<ProposalBloc>()
+                              .add(DeleteProposal(proposal));
+                        },
+                        backgroundColor: Colors.redAccent,
+                        foregroundColor: Colors.white,
+                        icon: Icons.delete_outline,
+                      ),
+                    ],
+                  ),
+                  child: ListTile(
+                    onTap: () {
+                      context.push(
+                          '/project/${widget.project.id}/proposals/${proposal.id}',
+                          extra: proposal);
+                    },
+                    leading: Row(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      mainAxisSize: MainAxisSize.min,
                       children: [
-                        SlidableAction(
-                          borderRadius:
-                              const BorderRadius.all(Radius.circular(16.0)),
-                          label: 'Delete',
-                          onPressed: (context) {
-                            context
-                                .read<ProposalBloc>()
-                                .add(DeleteProposal(proposal));
-                          },
-                          backgroundColor: Colors.redAccent,
-                          foregroundColor: Colors.white,
-                          icon: Icons.delete_outline,
+                        Container(
+                          width: 48.0,
+                          height: 48.0,
+                          decoration: BoxDecoration(
+                            color: Colors.blue,
+                            borderRadius: BorderRadius.circular(16.0),
+                            image: DecorationImage(
+                              image: CachedNetworkImageProvider(
+                                proposal.freelancerAvatar!,
+                              ),
+                              fit: BoxFit.cover,
+                            ),
+                          ),
+                          child: proposal.freelancerAvatar == null
+                              ? Text(proposal.freelancerName![0])
+                              : null,
                         ),
                       ],
                     ),
-                    child: ListTile(
-                      onTap: () {
-                        Navigator.of(context).pushNamed(
-                            '/projects/${widget.project.id}/proposals/${proposal.id}');
-                      },
-                      title: Text(proposal.freelancerName!),
-                      subtitle: Text(
-                          '${proposal.milestones?.length} milestones • ${proposal.createdAt != null ? Jiffy.parseFromDateTime(proposal.createdAt!).fromNow() : 'N/A'}'),
-                      trailing: Text(NumberFormat.simpleCurrency(
-                              decimalDigits: 0,
-                              locale:
-                                  Localizations.localeOf(context).toString())
-                          .format(proposal.budgetTotal)),
+
+                    // CircleAvatar(
+                    //   backgroundColor: Colors.blue,
+                    //   backgroundImage: CachedNetworkImageProvider(
+                    //     proposal.freelancerAvatar!,
+                    //   ),
+                    //   child: proposal.freelancerAvatar == null
+                    //       ? Text(proposal.freelancerName![0])
+                    //       : null,
+                    // ),
+                    title: Row(
+                      children: [
+                        Text(proposal.freelancerName!),
+                        if (proposal.viewed == false) const GutterSmall(),
+                        if (proposal.viewed == false)
+                          Container(
+                            width: 8.0,
+                            height: 8.0,
+                            decoration: BoxDecoration(
+                              color: Colors.blue,
+                              borderRadius: BorderRadius.circular(16.0),
+                            ),
+                          ),
+                      ],
                     ),
+                    isThreeLine: true,
+                    subtitle: Text(
+                      '${proposal.milestones?.length} milestones • ${proposal.sentAt != null ? Jiffy.parseFromDateTime(proposal.sentAt!).fromNow() : 'N/A'}\n${proposal.description}}',
+                      maxLines: 3,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                    trailing: Text(
+                        NumberFormat.simpleCurrency(
+                                decimalDigits: 0,
+                                locale:
+                                    Localizations.localeOf(context).toString())
+                            .format(proposal.budgetTotal),
+                        style: Theme.of(context).textTheme.bodyMedium),
                   ),
-              ],
+                );
+              },
+              separatorBuilder: (context, index) => const Divider(),
             );
           } else {
             return Center(
@@ -214,23 +292,6 @@ class _ProposalsTabState extends State<ProposalsTab> {
         return Container();
       },
     );
-    if (widget.project.proposalCount == 0) {
-      return Center(
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Icon(MdiIcons.fileDocumentOutline,
-                size: 64.0, color: Theme.of(context).colorScheme.secondary),
-            const Gutter(),
-            Text('No proposals yet.',
-                style: Theme.of(context).textTheme.bodyMedium),
-          ],
-        ),
-      );
-    }
-    return ListView(
-      children: const [],
-    );
   }
 }
 
@@ -250,7 +311,7 @@ class _DetailsTabState extends State<DetailsTab> {
       locale: Localizations.localeOf(context).toString(),
     );
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 8.0),
+      padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
       child: ListView(
           padding: const EdgeInsets.symmetric(vertical: 8.0),
           children: [
@@ -766,7 +827,7 @@ class CreateProposalSection extends StatelessWidget {
                                                                             freelancerId:
                                                                                 context.read<ProfileBloc>().state.user!.id,
                                                                             freelancerName:
-                                                                                context.read<ProfileBloc>().state.user!.firstName,
+                                                                                '${context.read<ProfileBloc>().state.user!.firstName} ${context.read<ProfileBloc>().state.user!.lastName}',
                                                                             clientId:
                                                                                 widget.project.clientId,
                                                                             clientName:

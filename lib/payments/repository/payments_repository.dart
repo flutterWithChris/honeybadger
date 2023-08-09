@@ -156,8 +156,8 @@ class PaymentsRepository {
   /// Initialize payment sheet
   Future<void> initPaymentSheet(context,
       {required String email,
-      required double amount,
-      required String freelancerStripeId,
+      required int amount,
+      required String freelancerStripeAccountId,
       required String description,
       required Map<String, dynamic> metadata}) async {
     print('MEtadata: ${jsonEncode(metadata)}');
@@ -168,7 +168,8 @@ class PaymentsRepository {
           body: {
             'amount': (amount * 100).toString(),
             'email': email,
-            //'description': description,
+            'description': description,
+            'freelancerStripeAccountId': freelancerStripeAccountId,
             // 'metadata': jsonEncode(metadata),
           });
 

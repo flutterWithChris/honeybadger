@@ -41,6 +41,7 @@ class Project {
   int? hoursPerWeek;
   int? hoursTotal;
   int? proposalCount;
+  int? unreadProposalCount;
   int? viewCount;
   int? interviewCount;
   DateTime? lastViewed;
@@ -79,6 +80,7 @@ class Project {
     this.hoursPerWeek,
     this.hoursTotal,
     this.proposalCount,
+    this.unreadProposalCount,
     this.viewCount,
     this.interviewCount,
     this.lastViewed,
@@ -119,6 +121,7 @@ class Project {
     int? hoursPerWeek,
     int? hoursTotal,
     int? proposalCount,
+    int? unreadProposalCount,
     int? viewCount,
     int? interviewCount,
     DateTime? lastViewed,
@@ -157,6 +160,7 @@ class Project {
       hoursPerWeek: hoursPerWeek ?? hoursPerWeek,
       hoursTotal: hoursTotal ?? hoursTotal,
       proposalCount: proposalCount ?? proposalCount,
+      unreadProposalCount: unreadProposalCount ?? unreadProposalCount,
       viewCount: viewCount ?? viewCount,
       interviewCount: interviewCount ?? interviewCount,
       lastViewed: lastViewed ?? lastViewed,
@@ -198,9 +202,10 @@ class Project {
       'weekEstimate': weekEstimate,
       'hoursPerWeek': hoursPerWeek,
       'hoursTotal': hoursTotal,
-      'proposalCount': proposalCount,
-      'viewCount': viewCount,
-      'interviewCount': interviewCount,
+      'proposalCount': proposalCount ?? 0,
+      'unreadProposalCount': unreadProposalCount ?? 0,
+      'viewCount': viewCount ?? 0,
+      'interviewCount': interviewCount ?? 0,
       'lastViewed': lastViewed,
       'startDate': startDate?.toIso8601String(),
       'endDate': endDate?.toIso8601String(),
@@ -258,6 +263,7 @@ class Project {
     hoursPerWeek = snap['hoursPerWeek'];
     hoursTotal = snap['hoursTotal'];
     proposalCount = snap['proposalCount'];
+    unreadProposalCount = snap['unreadProposalCount'];
     viewCount = snap['viewCount'];
     interviewCount = snap['interviewCount'];
     lastViewed = snap['lastViewed'] == null

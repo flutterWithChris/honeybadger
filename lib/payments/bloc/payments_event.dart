@@ -47,15 +47,30 @@ class FinishSetupPaymentAccount extends PaymentsEvent {
 
 class SendPayment extends PaymentsEvent {
   Proposal proposal;
+  int amount;
+  String description;
   User client;
-  User freelancer;
+  String freelancerStripeAccountId;
+  String freelancerId;
+
   BuildContext context;
   SendPayment(
-      {required this.client,
-      required this.freelancer,
+      {required this.amount,
+      required this.client,
+      required this.freelancerStripeAccountId,
+      required this.freelancerId,
       required this.proposal,
+      required this.description,
       required this.context});
   @override
   // TODO: implement props
-  List<Object?> get props => [user, proposal, client, freelancer];
+  List<Object?> get props => [
+        user,
+        proposal,
+        client,
+        freelancerStripeAccountId,
+        freelancerId,
+        description,
+        amount
+      ];
 }

@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
+import 'package:honeybadger/projects/bloc/projects_bloc.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 
 class MainBottomNavBar extends StatefulWidget {
@@ -46,9 +48,42 @@ class _MainBottomNavBarState extends State<MainBottomNavBar> {
             selectedIcon: Icon(MdiIcons.home),
             label: 'Home',
           ),
+          // TODO: Make badges work for freelancers
           NavigationDestination(
-            icon: Icon(MdiIcons.folderOutline),
-            selectedIcon: Icon(MdiIcons.folder),
+            icon: BlocBuilder<ProjectsBloc, ProjectsState>(
+              builder: (context, state) {
+                if (state is ProjectsLoaded) {
+                  int unreadProposalCount = state.projects
+                      .where((element) => element.unreadProposalCount! > 0)
+                      .length;
+                  if (unreadProposalCount > 0) {
+                    return Badge(
+                      label: Text(unreadProposalCount.toString()),
+                      backgroundColor: Theme.of(context).colorScheme.primary,
+                      child: Icon(MdiIcons.folderOutline),
+                    );
+                  }
+                }
+                return Icon(MdiIcons.folderOutline);
+              },
+            ),
+            selectedIcon: BlocBuilder<ProjectsBloc, ProjectsState>(
+              builder: (context, state) {
+                if (state is ProjectsLoaded) {
+                  int unreadProposalCount = state.projects
+                      .where((element) => element.unreadProposalCount! > 0)
+                      .length;
+                  if (unreadProposalCount > 0) {
+                    return Badge(
+                      label: Text(unreadProposalCount.toString()),
+                      backgroundColor: Theme.of(context).colorScheme.tertiary,
+                      child: Icon(MdiIcons.folder),
+                    );
+                  }
+                }
+                return Icon(MdiIcons.folder);
+              },
+            ),
             label: 'Projects',
           ),
           NavigationDestination(

@@ -16,12 +16,15 @@ class Proposal {
   String? clientName;
   String? freelancerId;
   String? freelancerName;
+  String? freelancerAvatar;
+  String? freelancerStripeAccountId;
   String? projectId;
   String? projectName;
   DateTime? createdAt;
   DateTime? updatedAt;
   DateTime? sentAt;
   DateTime? savedAt;
+  bool? viewed;
 
   Proposal({
     this.id,
@@ -35,12 +38,15 @@ class Proposal {
     this.clientName,
     this.freelancerId,
     this.freelancerName,
+    this.freelancerAvatar,
+    this.freelancerStripeAccountId,
     this.projectId,
     this.projectName,
     this.createdAt,
     this.updatedAt,
     this.sentAt,
     this.savedAt,
+    this.viewed,
   });
 
 // toDocument
@@ -57,12 +63,15 @@ class Proposal {
       'clientName': clientName,
       'freelancerId': freelancerId,
       'freelancerName': freelancerName,
+      'freelancerAvatar': freelancerAvatar,
+      'freelancerStripeAccountId': freelancerStripeAccountId,
       'projectId': projectId,
       'projectName': projectName,
-      'createdAt': createdAt,
-      'updatedAt': updatedAt,
-      'sentAt': sentAt,
-      'savedAt': savedAt,
+      'createdAt': createdAt?.toIso8601String(),
+      'updatedAt': updatedAt?.toIso8601String(),
+      'sentAt': sentAt?.toIso8601String(),
+      'savedAt': savedAt?.toIso8601String(),
+      'viewed': viewed ?? false,
     };
   }
 
@@ -83,12 +92,15 @@ class Proposal {
     clientName = snap['clientName'];
     freelancerId = snap['freelancerId'];
     freelancerName = snap['freelancerName'];
+    freelancerAvatar = snap['freelancerAvatar'];
+    freelancerStripeAccountId = snap['freelancerStripeAccountId'];
     projectId = snap['projectId'];
     projectName = snap['projectName'];
-    createdAt = snap['createdAt']?.toDate();
-    updatedAt = snap['updatedAt']?.toDate();
-    sentAt = snap['sentAt']?.toDate();
-    savedAt = snap['savedAt']?.toDate();
+    createdAt = DateTime.tryParse(snap['createdAt'] ?? '');
+    updatedAt = DateTime.tryParse(snap['updatedAt'] ?? '');
+    sentAt = DateTime.tryParse(snap['sentAt'] ?? '');
+    savedAt = DateTime.tryParse(snap['savedAt'] ?? '');
+    viewed = snap['viewed'] ?? false;
   }
 
   Proposal copyWith({
@@ -103,12 +115,15 @@ class Proposal {
     String? clientName,
     String? freelancerId,
     String? freelancerName,
+    String? freelancerAvatar,
+    String? freelancerStripeAccountId,
     String? projectId,
     String? projectName,
     DateTime? createdAt,
     DateTime? updatedAt,
     DateTime? sentAt,
     DateTime? savedAt,
+    bool? viewed,
   }) {
     return Proposal(
       id: id ?? this.id,
@@ -122,12 +137,16 @@ class Proposal {
       clientName: clientName ?? this.clientName,
       freelancerId: freelancerId ?? this.freelancerId,
       freelancerName: freelancerName ?? this.freelancerName,
+      freelancerAvatar: freelancerAvatar ?? this.freelancerAvatar,
+      freelancerStripeAccountId:
+          freelancerStripeAccountId ?? this.freelancerStripeAccountId,
       projectId: projectId ?? this.projectId,
       projectName: projectName ?? this.projectName,
       createdAt: createdAt ?? this.createdAt,
       updatedAt: updatedAt ?? this.updatedAt,
       sentAt: sentAt ?? this.sentAt,
       savedAt: savedAt ?? this.savedAt,
+      viewed: viewed ?? this.viewed,
     );
   }
 }

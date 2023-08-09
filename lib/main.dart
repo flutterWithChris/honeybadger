@@ -176,9 +176,9 @@ class _MyAppState extends State<MyApp> {
                   paymentsRepository: context.read<PaymentsRepository>())),
           BlocProvider(
             create: (context) => ProjectsBloc(
-                projectsRepository: context.read<ProjectsRepository>())
-              ..add(
-                  LoadProjects(user: context.read<ProfileBloc>().state.user!)),
+              projectsRepository: context.read<ProjectsRepository>(),
+              profileBloc: context.read<ProfileBloc>(),
+            ),
           ),
           BlocProvider(
             lazy: false,

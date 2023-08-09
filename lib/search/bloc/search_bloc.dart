@@ -34,45 +34,47 @@ class SearchBloc extends Bloc<SearchEvent, SearchState> {
       }
     });
     on<LoadSearch>((event, emit) async {
-      emit(SearchLoading());
-      // TODO: Set default query to user's skills
-      if (_profileBloc.state.user?.userType == UserType.freelancer) {
-        _searchRepository.setQuery(event.query ?? '', 'projects');
+      try {
+        emit(SearchLoading());
+        return;
+        // TODO: Set default query to user's skills
+        if (_profileBloc.state.user?.userType == UserType.freelancer) {
+          _searchRepository.setQuery(event.query ?? '', 'projects');
 
-        // Get search results, then fetch the projects or freelancers
-        final value =
-            await _searchRepository.getSearchResults('projects').first;
+          // Get search results, then fetch the projects or freelancers
+          final value =
+              await _searchRepository.getSearchResults('projects').first;
 
-        List<String> projectIds = [];
-        for (Hit hit in value.hits) {
-          print('Hit found: ${hit.toString()}');
-          projectIds.add(hit['objectID']);
+          List<String> projectIds = [];
+          for (Hit hit in value.hits) {
+            print('Hit found: ${hit.toString()}');
+            projectIds.add(hit['objectID']);
+          }
+          print('Search Bloc received Project Ids: $projectIds');
+
+          final projects =
+              await _projectsRepository.getProjectsFromIdsFuture(projectIds);
+
+          emit(SearchLoaded(projects: projects));
+        } else {
+          _searchRepository.setQuery(event.query ?? '', 'freelancers');
+
+          final value =
+              await _searchRepository.getSearchResults('freelancers').first;
+
+          List<User> freelancers = [];
+
+          for (Hit hit in value.hits) {
+            print('Hit found: ${hit.toString()}');
+            freelancers.add(User.fromAlgoliaSearch(hit));
+          }
+
+          emit(SearchLoaded(freelancers: freelancers));
+          print('Search Bloc received Freelancer Ids: $freelancers');
         }
-        print('Search Bloc received Project Ids: $projectIds');
-
-        await emit.forEach(_projectsRepository.getProjectsFromIds(projectIds),
-            onData: (data) {
-          print('Search Bloc received Projects: $data');
-          return SearchLoaded(projects: data);
-        }, onError: (error, stackTrace) {
-          print('Search Bloc received Error: $error');
-          return SearchError();
-        });
-      } else {
-        _searchRepository.setQuery(event.query ?? '', 'freelancers');
-
-        final value =
-            await _searchRepository.getSearchResults('freelancers').first;
-
-        List<User> freelancers = [];
-
-        for (Hit hit in value.hits) {
-          print('Hit found: ${hit.toString()}');
-          freelancers.add(User.fromAlgoliaSearch(hit));
-        }
-
-        emit(SearchLoaded(freelancers: freelancers));
-        print('Search Bloc received Freelancer Ids: $freelancers');
+      } catch (e) {
+        print('Search Bloc received Error: $e');
+        emit(SearchError());
       }
     });
   }

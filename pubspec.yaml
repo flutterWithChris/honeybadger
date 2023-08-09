@@ -79,6 +79,7 @@ dependencies:
   refresh: ^1.0.1
   algolia_helper_flutter: ^0.3.3
   flutter_link_previewer: ^3.2.2
+  timeline_tile: ^2.0.0
 
 
 dev_dependencies:

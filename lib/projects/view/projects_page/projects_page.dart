@@ -6,7 +6,6 @@ import 'package:go_router/go_router.dart';
 import 'package:honeybadger/core/presentation/system/main_navigation_bar.dart';
 import 'package:honeybadger/profile/bloc/profile_bloc.dart';
 import 'package:honeybadger/projects/bloc/projects_bloc.dart';
-import 'package:honeybadger/projects/view/widgets/project_status_chip.dart';
 import 'package:honeybadger/proposals/bloc/proposal_bloc.dart';
 
 import '../../../core/presentation/system/mobile_jobs_app_bar.dart';
@@ -99,28 +98,70 @@ class ActiveProjectsTab extends StatelessWidget {
         itemCount: projects.length,
         itemBuilder: (context, index) {
           final project = projects[index];
+          int unreadProposalCount = project.unreadProposalCount ?? 0;
           return Card(
             child: Padding(
-              padding: const EdgeInsets.symmetric(vertical: 8.0),
+              padding: const EdgeInsets.symmetric(
+                vertical: 8.0,
+              ),
               child: ListTile(
                   visualDensity: VisualDensity.comfortable,
-                  title: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  title: Column(
+                    mainAxisSize: MainAxisSize.min,
                     children: [
-                      Expanded(
-                        flex: 3,
-                        child: Text(
-                          project.title!,
-                          style: Theme.of(context).textTheme.titleMedium,
-                          maxLines: 2,
-                          overflow: TextOverflow.ellipsis,
-                        ),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Expanded(
+                            flex: 5,
+                            child: Text(
+                              project.title!,
+                              // style: Theme.of(context).textTheme.titleMedium,
+                              maxLines: 2,
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                          ),
+                          if (unreadProposalCount != 0)
+                            Flexible(
+                              child: Padding(
+                                padding: const EdgeInsets.only(
+                                  bottom: 8.0,
+                                ),
+                                child: Row(
+                                  mainAxisAlignment: MainAxisAlignment.start,
+                                  children: [
+                                    SizedBox(
+                                      height: 32.0,
+                                      child: FittedBox(
+                                        child: Chip(
+                                          backgroundColor:
+                                              Theme.of(context).indicatorColor,
+                                          padding: EdgeInsets.zero,
+                                          labelPadding: const EdgeInsets.only(
+                                              right: 16.0),
+                                          visualDensity: VisualDensity.compact,
+                                          side: BorderSide.none,
+                                          avatar: const CircleAvatar(
+                                            radius: 4.0,
+                                            backgroundColor: Colors.lightBlue,
+                                          ),
+                                          label: Text(
+                                            '$unreadProposalCount',
+                                            style: TextStyle(
+                                              fontWeight: FontWeight.bold,
+                                              color: Theme.of(context)
+                                                  .scaffoldBackgroundColor,
+                                            ),
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ),
+                        ],
                       ),
-                      Flexible(
-                          child: SizedBox(
-                              height: 34.0,
-                              child: FittedBox(
-                                  child: ProjectStatusChip(project: project)))),
                     ],
                   ),
                   subtitle: Padding(

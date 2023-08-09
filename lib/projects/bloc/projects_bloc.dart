@@ -1,5 +1,8 @@
+import 'dart:async';
+
 import 'package:equatable/equatable.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:honeybadger/profile/bloc/profile_bloc.dart';
 import 'package:honeybadger/profile/model/user.dart';
 import 'package:honeybadger/projects/model/project.dart';
 import 'package:honeybadger/projects/repository/projects_repository.dart';
@@ -9,11 +12,21 @@ part 'projects_state.dart';
 
 class ProjectsBloc extends Bloc<ProjectsEvent, ProjectsState> {
   Project project = Project();
+  final ProfileBloc _profileBloc;
+  StreamSubscription? _profileSubscription;
   final ProjectsRepository _projectsRepository;
   ProjectsBloc({
     required ProjectsRepository projectsRepository,
+    required ProfileBloc profileBloc,
   })  : _projectsRepository = projectsRepository,
+        _profileBloc = profileBloc,
         super(ProjectsInitial()) {
+    _profileSubscription = _profileBloc.stream.listen((state) {
+      print('Projects Bloc received Profile State: $state');
+      if (state is ProfileLoaded) {
+        add(LoadProjects(user: state.user));
+      }
+    });
     on<LoadProjects>(_onLoadProjects);
     on<LoadProject>(_onLoadProject);
     on<CreateProject>(_onCreateProject);

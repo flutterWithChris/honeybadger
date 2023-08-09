@@ -1088,11 +1088,13 @@ class _CreateProposalSectionState extends State<CreateProposalSection> {
                                                   .state
                                                   .user!
                                                   .id,
-                                              freelancerName: context
+                                              freelancerStripeAccountId: context
                                                   .read<ProfileBloc>()
                                                   .state
                                                   .user!
-                                                  .firstName,
+                                                  .stripeAccountId,
+                                              freelancerName:
+                                                  '${context.read<ProfileBloc>().state.user!.firstName} ${context.read<ProfileBloc>().state.user!.lastName}',
                                               clientId: widget
                                                   .widget.project.clientId,
                                               clientName: widget
