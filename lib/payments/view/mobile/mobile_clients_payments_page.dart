@@ -1,5 +1,5 @@
-import 'package:flex_color_scheme/flex_color_scheme.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_gutter/flutter_gutter.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
@@ -8,12 +8,15 @@ import 'package:honeybadger/core/constants.dart';
 import 'package:honeybadger/core/extensions.dart';
 import 'package:honeybadger/core/presentation/system/main_navigation_bar.dart';
 import 'package:honeybadger/core/presentation/system/mobile_sliver_app_bar.dart';
+import 'package:honeybadger/globals.dart';
 import 'package:honeybadger/payments/bloc/payments_bloc.dart';
+import 'package:honeybadger/payments/model/charge.dart';
 import 'package:honeybadger/payouts/bloc/payout_bloc.dart';
 import 'package:honeybadger/payouts/model/payout.dart';
 import 'package:honeybadger/profile/bloc/profile_bloc.dart';
-import 'package:jiffy/jiffy.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
+import 'package:stream_chat_flutter/stream_chat_flutter.dart';
+import 'package:url_launcher/url_launcher_string.dart';
 
 class MobileClientPaymentsPage extends StatefulWidget {
   const MobileClientPaymentsPage({super.key});
@@ -88,15 +91,15 @@ class _MobileClientPaymentsPageState extends State<MobileClientPaymentsPage>
           // spring:
           //     const SpringDescription(mass: 60, stiffness: 100, damping: 500),
           onRefresh: () async {
-            context.read<PaymentsBloc>().add(LoadBalanceAndTransactions(
-                user: context.read<ProfileBloc>().state.user!));
+            context.read<PaymentsBloc>().add(
+                LoadCharges(user: context.read<ProfileBloc>().state.user!));
           },
           child: CustomScrollView(
             slivers: [
               const MobileSliverAppBar(),
               SliverToBoxAdapter(
                 child: Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                  padding: const EdgeInsets.only(top: 16.0, left: 16.0),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
@@ -213,25 +216,28 @@ class _MobileClientPaymentsPageState extends State<MobileClientPaymentsPage>
                                       onTap: () {
                                         // context.go(
                                         //     '/payments/details/${paymentsState.charges![index].id}',
-                                        //     extra: paymentsState
-                                        //         .charges![index]);
-                                        // TODO: Reenable this
-                                        // showBottomSheet(
-                                        //     enableDrag: true,
-                                        //     context: context,
-                                        //     builder: (context) =>
-                                        //         DraggableScrollableSheet(
-                                        //           expand: false,
-                                        //           initialChildSize: 0.21,
-                                        //           minChildSize: 0.2,
-                                        //           builder: (context,
-                                        //                   scrollController) =>
-                                        //               PaymentDetailsPage(
-                                        //                   balanceTransaction:
-                                        //                       paymentsState
-                                        //                               .charges![
-                                        //                           index]),
-                                        //         ));
+                                        //     extra:
+                                        //         paymentsState.charges![index]);
+                                        //  TODO: Reenable this
+                                        showBottomSheet(
+                                            enableDrag: true,
+                                            context: context,
+                                            builder: (context) =>
+                                                DraggableScrollableSheet(
+                                                  expand: false,
+                                                  initialChildSize: paymentsState
+                                                              .charges![index]
+                                                              .failureMessage !=
+                                                          null
+                                                      ? 0.28
+                                                      : .26,
+                                                  minChildSize: 0.18,
+                                                  builder: (context,
+                                                          scrollController) =>
+                                                      ChargeDetailsSheet(
+                                                          charge: paymentsState
+                                                              .charges![index]),
+                                                ));
                                       },
                                       leading: paymentsState
                                                   .charges![index].status ==
@@ -288,7 +294,7 @@ class _MobileClientPaymentsPageState extends State<MobileClientPaymentsPage>
                                                             .charges![index]
                                                             .status
                                                             .toString()
-                                                            .capitalize,
+                                                            .capitalize(),
                                                         style: Theme.of(context)
                                                             .textTheme
                                                             .bodyMedium
@@ -603,6 +609,293 @@ class _MobileClientPaymentsPageState extends State<MobileClientPaymentsPage>
             ],
           ),
         ));
+  }
+}
+
+class ChargeDetailsSheet extends StatefulWidget {
+  final Charge charge;
+  const ChargeDetailsSheet({super.key, required this.charge});
+
+  @override
+  State<ChargeDetailsSheet> createState() => _ChargeDetailsSheetState();
+}
+
+class _ChargeDetailsSheetState extends State<ChargeDetailsSheet> {
+  bool _expandId = false;
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 8.0),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          const GutterSmall(),
+          Row(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.end,
+                children: [
+                  Text(
+                    '${parseDateFromSecondsSinceEpoch(widget.charge.created!).yMMMd} · ${parseDateFromSecondsSinceEpoch(widget.charge.created!).jm}',
+                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(),
+                  ),
+                  // Text(
+                  //   Jiffy.parse(payment.paymentDate!).jm,
+                  //   style: Theme.of(context)
+                  //       .textTheme
+                  //       .bodyMedium
+                  //       ?.copyWith(),
+                  // ),
+                ],
+              ),
+              ChargeStatusChip(charge: widget.charge),
+              // PaymentStatusChip(balanceTransaction: balanceTransaction),
+            ],
+          ),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text(
+                  convertCentsToCurrency(
+                    widget.charge.amount!,
+                  ),
+                  style: Theme.of(context)
+                      .textTheme
+                      .headlineMedium
+                      ?.copyWith(fontWeight: FontWeight.bold)),
+              Text(
+                  'Fee: ${convertCentsToCurrency((widget.charge.applicationFeeAmount! / 2).round())}'),
+            ],
+          ),
+          if (widget.charge.failureMessage != null)
+            Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                const GutterTiny(),
+                Row(
+                  children: [
+                    const Icon(Icons.error_rounded,
+                        color: Colors.red, size: 16.0),
+                    const GutterTiny(),
+                    Text.rich(
+                      TextSpan(
+                        text: 'Failure Reason: ',
+                        children: [
+                          TextSpan(
+                            text: widget.charge.failureMessage ?? 'None',
+                            style: Theme.of(context)
+                                .textTheme
+                                .bodyMedium
+                                ?.copyWith(fontWeight: FontWeight.normal),
+                          ),
+                        ],
+                        style: const TextStyle(fontWeight: FontWeight.bold),
+                      ),
+                    ),
+                  ],
+                ),
+              ],
+            ),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              // IconButton(
+              //   style: IconButton.styleFrom(
+              //     fixedSize: const Size(34, 34),
+              //     minimumSize: const Size(34, 34),
+              //   ),
+              //   icon: const Icon(Icons.copy, size: 16.0),
+              //   onPressed: () {},
+              // ),
+              widget.charge.description == null
+                  ? Container()
+                  : Flexible(
+                      child: Text(widget.charge.description!,
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                          style:
+                              Theme.of(context).textTheme.bodyMedium?.copyWith(
+                                    color: Theme.of(context).brightness ==
+                                            Brightness.light
+                                        ? Colors.grey[700]
+                                        : Colors.grey[300],
+                                  )),
+                    ),
+              Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  IconButton(
+                    style: IconButton.styleFrom(
+                      fixedSize: const Size(28, 28),
+                      minimumSize: const Size(28, 28),
+                      padding: EdgeInsets.zero,
+                    ),
+                    icon: const Icon(Icons.copy, size: 14.0),
+                    onPressed: () {
+                      Clipboard.setData(ClipboardData(text: widget.charge.id!));
+                    },
+                  ),
+                  Material(
+                    type: MaterialType.transparency,
+                    child: InkWell(
+                      borderRadius: BorderRadius.circular(16.0),
+                      onTap: () {
+                        setState(() {
+                          _expandId = !_expandId;
+                        });
+                      },
+                      child: AnimatedContainer(
+                        duration: const Duration(milliseconds: 100),
+                        width: _expandId ? 254 : 90,
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(16.0),
+                          color: Theme.of(context).scaffoldBackgroundColor,
+                        ),
+                        // padding: EdgeInsets.zero,
+                        // visualDensity: VisualDensity.compact,
+                        // side: BorderSide.none,
+                        // backgroundColor:
+                        //     Theme.of(context).scaffoldBackgroundColor,
+                        child: Padding(
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 8.0, vertical: 4.0),
+                          child: Row(
+                            children: [
+                              AnimatedContainer(
+                                duration: const Duration(milliseconds: 100),
+                                width: _expandId ? 220 : 58,
+                                child: Text.rich(
+                                  TextSpan(
+                                    text: 'ID: ',
+                                    children: <TextSpan>[
+                                      TextSpan(
+                                          text: widget.charge.id!,
+                                          style: Theme.of(context)
+                                              .textTheme
+                                              .bodySmall),
+                                    ],
+                                    style: Theme.of(context)
+                                        .textTheme
+                                        .bodySmall
+                                        ?.copyWith(
+                                          fontWeight: FontWeight.bold,
+                                        ),
+                                  ),
+                                  maxLines: 1,
+                                  overflow: TextOverflow.fade,
+                                  softWrap: false,
+                                ),
+                              ),
+                              const Icon(Icons.chevron_right_rounded,
+                                  size: 16.0),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ],
+          ),
+          const GutterTiny(),
+          Row(
+            children: [
+              // Flexible(
+              //   child: PopupMenuButton(
+              //     offset: const Offset(20.0, 0),
+              //     position: PopupMenuPosition.under,
+              //     icon: const Icon(Icons.more_vert),
+              //     itemBuilder: (context) => [
+              //       const PopupMenuItem(
+              //         value: 'Refund',
+              //         child: Row(
+              //           children: [
+              //             Icon(Icons.money_off, size: 16.0),
+              //             GutterSmall(),
+              //             Text('Refund'),
+              //           ],
+              //         ),
+              //       ),
+              //     ],
+              //     onSelected: (value) {},
+              //   ),
+              // ),
+              //const Gutter(),
+              Expanded(
+                child: FilledButton.icon(
+                    onPressed: () async {
+                      await launchUrlString(widget.charge.receiptUrl!,
+                          mode: LaunchMode.externalApplication);
+                    },
+                    icon: Icon(MdiIcons.archiveEye, size: 16.0),
+                    label: const Text('View Transaction')),
+              ),
+            ],
+          ),
+          // const GutterTiny(),
+          // Padding(
+          //   padding: const EdgeInsets.symmetric(horizontal: 8.0),
+          //   child: Text('Project Details',
+          //       style: Theme.of(context).textTheme.headlineSmall),
+          // ),
+          // const Gutter(),
+          // Padding(
+          //   padding: const EdgeInsets.symmetric(horizontal: 8.0),
+          //   child: Text.rich(
+          //     TextSpan(
+          //       text: 'Project: ',
+          //       children: <TextSpan>[
+          //         TextSpan(
+          //             text: payment.projectTitle,
+          //             style: Theme.of(context).textTheme.bodyLarge),
+          //       ],
+          //       style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+          //             fontWeight: FontWeight.bold,
+          //           ),
+          //     ),
+          //   ),
+          // ),
+        ],
+      ),
+    );
+  }
+}
+
+class ChargeStatusChip extends StatelessWidget {
+  final Charge charge;
+  const ChargeStatusChip({super.key, required this.charge});
+
+  @override
+  Widget build(BuildContext context) {
+    return Chip(
+      visualDensity: VisualDensity.compact,
+      side: BorderSide.none,
+      avatar: Icon(
+        charge.status == 'succeeded'
+            ? Icons.check_circle_rounded
+            : charge.status == 'failed'
+                ? Icons.error_rounded
+                : Icons.help_rounded,
+        size: 16.0,
+        color: Colors.white,
+      ),
+      label: Text(
+        charge.status!.capitalize(),
+        style: Theme.of(context)
+            .textTheme
+            .bodySmall
+            ?.copyWith(color: Colors.white, fontWeight: FontWeight.bold),
+      ),
+      backgroundColor: charge.status == 'succeeded'
+          ? Colors.green[500]
+          : charge.status == 'failed'
+              ? Colors.red[500]
+              : Colors.grey[500],
+    );
   }
 }
 

@@ -30,6 +30,10 @@ Jiffy parseBalanceTransactionDate(BalanceTransaction balanceTransaction) {
       balanceTransaction.created! * 1000);
 }
 
+Jiffy parseDateFromSecondsSinceEpoch(int secondsSinceEpoch) {
+  return Jiffy.parseFromMillisecondsSinceEpoch(secondsSinceEpoch * 1000);
+}
+
 Future<Size> _getImageSize(String imageUrl, BuildContext context) async {
   final Completer<Size> completer = Completer<Size>();
   final Image image = Image.network(imageUrl);
