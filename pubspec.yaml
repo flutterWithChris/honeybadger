@@ -80,6 +80,7 @@ dependencies:
   algolia_helper_flutter: ^0.3.3
   flutter_link_previewer: ^3.2.2
   timeline_tile: ^2.0.0
+  file_picker: ^5.3.3
 
 
 dev_dependencies:

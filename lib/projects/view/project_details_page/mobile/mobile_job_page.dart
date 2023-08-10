@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:file_picker/file_picker.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -8,6 +9,7 @@ import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_gutter/flutter_gutter.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
+import 'package:go_router/go_router.dart';
 import 'package:honeybadger/core/constants.dart';
 import 'package:honeybadger/core/presentation/system/main_navigation_bar.dart';
 import 'package:honeybadger/core/presentation/system/mobile_sliver_app_bar.dart';
@@ -16,6 +18,8 @@ import 'package:honeybadger/projects/view/widgets/project_status_chip.dart';
 import 'package:honeybadger/proposals/bloc/proposal_bloc.dart';
 import 'package:honeybadger/proposals/model/milestone.dart';
 import 'package:honeybadger/proposals/model/proposal.dart';
+import 'package:honeybadger/proposals/view/view_proposal/mobile/active_proposal_tab.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
 import 'package:jiffy/jiffy.dart';
 import 'package:loading_animation_widget/loading_animation_widget.dart';
@@ -40,6 +44,7 @@ class MobileProjectDetailsPage extends StatefulWidget {
 
 class _MobileProjectDetailsPageState extends State<MobileProjectDetailsPage> {
   final bool _writingProposal = false;
+  Proposal? _proposal;
 
   final _proposalController = TextEditingController();
 
@@ -69,380 +74,690 @@ class _MobileProjectDetailsPageState extends State<MobileProjectDetailsPage> {
 
   @override
   Widget build(BuildContext context) {
+    _proposal = context.watch<ProposalBloc>().state.proposal;
+
     final NumberFormat numberFormat = NumberFormat.simpleCurrency(
       decimalDigits: 0,
       locale: Localizations.localeOf(context).toString(),
     );
     return Scaffold(
       bottomNavigationBar: const MainBottomNavBar(),
-      body: CustomScrollView(
-        slivers: [
-          const MobileSliverAppBar(),
-          SliverList(
-              delegate: SliverChildListDelegate([
-            Padding(
-              padding: const EdgeInsets.all(16.0),
+      body: DefaultTabController(
+        length: 2,
+        child: CustomScrollView(
+          slivers: [
+            const MobileSliverAppBar(),
+            SliverToBoxAdapter(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Hero(
-                    tag: '${widget.project.id}-category',
-                    child: Material(
-                      color: Colors.transparent,
-                      child: Text(widget.project.category!,
-                          style: Theme.of(context)
-                              .textTheme
-                              .bodyMedium
-                              ?.copyWith(fontStyle: FontStyle.italic)),
+                  Padding(
+                    padding: const EdgeInsets.only(
+                        left: 16.0, right: 16.0, top: 16.0),
+                    child: Hero(
+                      tag: '${widget.project.id}-category',
+                      child: Material(
+                        color: Colors.transparent,
+                        child: Text(widget.project.category!,
+                            style: Theme.of(context)
+                                .textTheme
+                                .bodyMedium
+                                ?.copyWith(fontStyle: FontStyle.italic)),
+                      ),
                     ),
                   ),
                   const GutterSmall(),
-                  Hero(
-                    tag: '${widget.project.id}-title',
-                    child: Material(
-                      color: Colors.transparent,
-                      child: Text(widget.project.title!,
-                          style: Theme.of(context).textTheme.headlineSmall),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                    child: Hero(
+                      tag: '${widget.project.id}-title',
+                      child: Material(
+                        color: Colors.transparent,
+                        child: Text(widget.project.title!,
+                            style: Theme.of(context).textTheme.headlineSmall),
+                      ),
                     ),
                   ),
                   const GutterSmall(),
-
-                  Row(
-                    children: [
-                      widget.project.startDate != null
-                          ? Text.rich(
-                              TextSpan(
-                                  text: 'Start:  ',
-                                  children: [
-                                    TextSpan(
-                                        text: Jiffy.parseFromDateTime(
-                                                widget.project.startDate!)
-                                            .yMMMMd,
-                                        style: const TextStyle(
-                                            fontWeight: FontWeight.normal))
-                                  ],
-                                  style: const TextStyle(
-                                      fontWeight: FontWeight.bold)),
-                            )
-                          : const Text.rich(
-                              TextSpan(
-                                  text: 'Start:  ',
-                                  children: [
-                                    TextSpan(
-                                        text: 'N/A',
-                                        style: TextStyle(
-                                            fontWeight: FontWeight.normal))
-                                  ],
-                                  style:
-                                      TextStyle(fontWeight: FontWeight.bold)),
-                            ),
-                      const GutterSmall(),
-                      widget.project.endDate != null
-                          ? Text.rich(
-                              TextSpan(
-                                  text: 'End:  ',
-                                  children: [
-                                    TextSpan(
-                                        text: Jiffy.parseFromDateTime(
-                                                widget.project.endDate!)
-                                            .yMMMMd,
-                                        style: const TextStyle(
-                                            fontWeight: FontWeight.normal))
-                                  ],
-                                  style: const TextStyle(
-                                      fontWeight: FontWeight.bold)),
-                            )
-                          : const Text.rich(
-                              TextSpan(
-                                  text: 'End:  ',
-                                  children: [
-                                    TextSpan(
-                                        text: 'N/A',
-                                        style: TextStyle(
-                                            fontWeight: FontWeight.normal))
-                                  ],
-                                  style:
-                                      TextStyle(fontWeight: FontWeight.bold)),
-                            ),
-                    ],
-                  ),
-
-                  const GutterSmall(),
-                  Wrap(
-                    spacing: 16.0,
-                    runSpacing: 8.0,
-                    crossAxisAlignment: WrapCrossAlignment.center,
-                    children: [
-                      Hero(
-                        tag: '${widget.project.id}-budget',
-                        child: Material(
-                          color: Colors.transparent,
-                          type: MaterialType.transparency,
-                          child: Chip(
-                            visualDensity: VisualDensity.compact,
-                            padding: EdgeInsets.zero,
-                            side: BorderSide.none,
-                            elevation: 1,
-                            backgroundColor: Theme.of(context).primaryColor,
-                            label: Text(
-                                numberFormat.format(widget.project.budget),
-                                maxLines: 1,
-                                overflow: TextOverflow.ellipsis,
-                                style: Theme.of(context)
-                                    .textTheme
-                                    .titleSmall
-                                    ?.copyWith(
-                                      fontWeight: FontWeight.bold,
-                                      color: Theme.of(context)
-                                          .colorScheme
-                                          .onPrimary,
-                                    )),
-                          ),
-                        ),
-                      ),
-                      Chip(
-                        visualDensity: VisualDensity.compact,
-                        padding: EdgeInsets.zero,
-                        label: Row(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            Icon(MdiIcons.cashLock, size: 16.0),
-                            const GutterSmall(),
-                            Text(
-                                parseEnumName(
-                                    widget.project.projectType.toString()),
-                                style: Theme.of(context).textTheme.bodyMedium),
-                          ],
-                        ),
-                      ),
-                      ProjectStatusChip(project: widget.project)
-                    ],
-                  ),
-                  const Gutter(),
-                  Hero(
-                    tag: '${widget.project.id}-description',
-                    child: Material(
-                      color: Colors.transparent,
-                      type: MaterialType.transparency,
-                      child: Text(widget.project.description!,
-                          style: Theme.of(context).textTheme.bodyMedium),
-                    ),
-                  ),
-                  context.watch<ProposalBloc>().state is ProposalStarted
-                      ? const Padding(
-                          padding: EdgeInsets.only(top: 16.0),
-                          child: Divider(),
-                        )
-                      : const Gutter(),
-                  CreateProposalSection(
-                    widget: widget,
-                  ),
-                  IgnorePointer(
-                    ignoring:
-                        widget.project.clientTotalSpend == null ? true : false,
-                    child: ExpansionTile(
-                      trailing: widget.project.clientTotalSpend != null
-                          ? null
-                          : const SizedBox(),
-                      tilePadding: EdgeInsets.zero,
-                      backgroundColor: Theme.of(context).colorScheme.surface,
-                      leading: widget.project.clientProfilePicture != null
-                          ? CircleAvatar(
-                              radius: 20,
-                              backgroundImage: CachedNetworkImageProvider(
-                                  widget.project.clientProfilePicture!),
-                            )
-                          : const Icon(Icons.person_rounded),
-                      title: Row(
-                        //mainAxisSize: MainAxisSize.min,
-                        children: [
-                          // Padding(
-                          //   padding: const EdgeInsets.only(right: 16.0),
-                          //   child: CircleAvatar(
-                          //       radius: 14,
-                          //       child: widget.project.client!.photoUrl == null ||
-                          //               widget.project.client!.photoUrl!.isEmpty
-                          //           ? const Icon(Icons.person, size: 20)
-                          //           : CachedNetworkImage(
-                          //               imageUrl:
-                          //                   widget.project.client!.photoUrl!)),
-                          // ),
-                          Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Row(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceBetween,
-                                children: [
-                                  Text(
-                                    widget.project.clientName!.split(' ')[0],
-                                    style:
-                                        Theme.of(context).textTheme.titleLarge,
-                                  ),
-                                  const GutterSmall(),
-                                  const Text('-'),
-                                  const GutterSmall(),
-                                  if (widget.project.clientRating != null)
-                                    Row(
-                                      mainAxisSize: MainAxisSize.min,
-                                      mainAxisAlignment: MainAxisAlignment.end,
-                                      children: [
-                                        Icon(
-                                          MdiIcons.star,
-                                          color: Colors.yellow[600],
-                                          size: 16.0,
-                                        ),
-                                        const GutterTiny(),
-                                        Text.rich(TextSpan(
-                                            text:
-                                                '${widget.project.clientRating.toString()} ',
-                                            children: [
-                                              TextSpan(
-                                                  text:
-                                                      '(${widget.project.clientReviewCount.toString()})',
-                                                  style: Theme.of(context)
-                                                      .textTheme
-                                                      .bodySmall)
-                                            ])),
-                                      ],
-                                    )
-                                  else
-                                    Text('No reviews yet',
-                                        style: Theme.of(context)
-                                            .textTheme
-                                            .bodySmall),
-                                ],
-                              ),
-                              Row(
-                                children: [
-                                  Icon(MdiIcons.mapMarkerOutline, size: 14.0),
-                                  const GutterTiny(),
-                                  Text('${widget.project.clientLocation}',
-                                      style: Theme.of(context)
-                                          .textTheme
-                                          .bodyMedium),
-                                ],
-                              ),
-                            ],
-                          ),
-                        ],
-                      ),
-                      children: [
-                        if (widget.project.clientTotalSpend != null)
-                          Padding(
-                            padding: const EdgeInsets.only(
-                                left: 16.0, bottom: 8.0, right: 16.0),
-                            child: Wrap(
-                              spacing: 8.0,
-                              crossAxisAlignment: WrapCrossAlignment.center,
+                  TabBar(padding: EdgeInsets.zero, tabs: [
+                    if (_proposal?.status == ProposalStatus.accepted)
+                      const Tab(text: 'Active Proposal')
+                    else
+                      widget.project.unreadProposalCount! > 0
+                          ? Row(
+                              mainAxisSize: MainAxisSize.min,
                               children: [
-                                Row(
-                                  mainAxisSize: MainAxisSize.min,
-                                  children: [
-                                    Text('Total Spend:',
-                                        style: Theme.of(context)
-                                            .textTheme
-                                            .titleSmall),
-                                    const GutterTiny(),
-                                    Text(
-                                        convertIntToCurrency(
-                                            widget.project.clientTotalSpend!),
-                                        style: Theme.of(context)
-                                            .textTheme
-                                            .bodyMedium),
-                                  ],
-                                ),
-                                if (widget.project.clientIndustry != null)
-                                  Row(
-                                    mainAxisSize: MainAxisSize.min,
-                                    children: [
-                                      Text('Industry:',
-                                          style: Theme.of(context)
-                                              .textTheme
-                                              .titleSmall),
-                                      const GutterTiny(),
-                                      Text('${widget.project.clientIndustry}',
-                                          style: Theme.of(context)
-                                              .textTheme
-                                              .bodyMedium),
-                                    ],
+                                Badge(
+                                  label: Text(
+                                    widget.project.unreadProposalCount
+                                        .toString(),
                                   ),
-                              ],
-                            ),
-                          ),
-                        const GutterTiny(),
-                      ],
-                    ),
-                  ),
-                  // Text('Client', style: Theme.of(context).textTheme.titleSmall),
-                  ExpansionTile(
-                    tilePadding: EdgeInsets.zero,
-                    expandedAlignment: Alignment.center,
-                    backgroundColor: Theme.of(context).colorScheme.surface,
-                    leading: Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 8.0),
-                      child: Icon(MdiIcons.tools, size: 24.0),
-                    ),
-                    title: Text('Skills',
-                        style: Theme.of(context).textTheme.titleLarge),
-                    children: [
-                      Padding(
-                        padding: const EdgeInsets.only(
-                            left: 16.0, bottom: 16.0, right: 16.0),
-                        child: Row(
-                          children: [
-                            Wrap(
-                              spacing: 8.0,
-                              crossAxisAlignment: WrapCrossAlignment.center,
-                              alignment: WrapAlignment.start,
-                              children: [
-                                for (String skill in widget.project.skills!)
-                                  Chip(
-                                    padding: EdgeInsets.zero,
-                                    label: Text(skill),
-                                  ),
-                              ],
-                            ),
-                          ],
-                        ),
-                      )
-                    ],
-                  ),
-                  if (widget.project.tags != null &&
-                      widget.project.tags!.isNotEmpty)
-                    ExpansionTile(
-                      tilePadding: EdgeInsets.zero,
-                      expandedAlignment: Alignment.center,
-                      backgroundColor: Theme.of(context).colorScheme.surface,
-                      leading: Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 8.0),
-                        child: Icon(MdiIcons.tagText, size: 24.0),
-                      ),
-                      title: Text('Tags',
-                          style: Theme.of(context).textTheme.titleLarge),
-                      children: [
-                        Padding(
-                          padding: const EdgeInsets.only(bottom: 16.0),
-                          child: Wrap(
-                            spacing: 8.0,
-                            crossAxisAlignment: WrapCrossAlignment.center,
-                            alignment: WrapAlignment.start,
-                            runAlignment: WrapAlignment.start,
-                            children: [
-                              for (String tag in widget.project.tags!)
-                                Chip(
-                                  padding: EdgeInsets.zero,
-                                  label: Text(tag),
                                 ),
-                            ],
-                          ),
-                        )
-                      ],
+                                const GutterSmall(),
+                                const Tab(
+                                  text: 'Proposals',
+                                ),
+                              ],
+                            )
+                          : const Tab(
+                              text: 'Proposals',
+                            ),
+                    const Tab(
+                      text: 'Details',
                     ),
+                  ]),
                 ],
               ),
             ),
-          ])),
+            SliverFillRemaining(
+              child: TabBarView(children: [
+                FreelancerActiveProposalTab(
+                    project: widget.project, proposal: _proposal!),
+                ProjectDetailsTab(project: widget.project),
+              ]),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class ProjectDetailsTab extends StatefulWidget {
+  final Project project;
+
+  const ProjectDetailsTab({super.key, required this.project});
+
+  @override
+  State<ProjectDetailsTab> createState() => _ProjectDetailsTabState();
+}
+
+class _ProjectDetailsTabState extends State<ProjectDetailsTab> {
+  @override
+  Widget build(BuildContext context) {
+    return ListView(
+      padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+      children: [
+        Wrap(
+          spacing: 16.0,
+          runSpacing: 8.0,
+          crossAxisAlignment: WrapCrossAlignment.center,
+          children: [
+            Hero(
+              tag: '${widget.project.id}-budget',
+              child: Material(
+                color: Colors.transparent,
+                type: MaterialType.transparency,
+                child: Chip(
+                  visualDensity: VisualDensity.compact,
+                  padding: EdgeInsets.zero,
+                  side: BorderSide.none,
+                  elevation: 1,
+                  backgroundColor: Theme.of(context).primaryColor,
+                  label: Text(
+                      convertIntToCurrency(widget.project.budget!.toInt()),
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: Theme.of(context).textTheme.titleSmall?.copyWith(
+                            fontWeight: FontWeight.bold,
+                            color: Theme.of(context).colorScheme.onPrimary,
+                          )),
+                ),
+              ),
+            ),
+            Chip(
+              visualDensity: VisualDensity.compact,
+              padding: EdgeInsets.zero,
+              label: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Icon(MdiIcons.cashLock, size: 16.0),
+                  const GutterSmall(),
+                  Text(parseEnumName(widget.project.projectType.toString()),
+                      style: Theme.of(context).textTheme.bodyMedium),
+                ],
+              ),
+            ),
+            ProjectStatusChip(project: widget.project)
+          ],
+        ),
+        const GutterSmall(),
+        // Row(
+        //   children: [
+        //     widget.project.startDate != null
+        //         ? Text.rich(
+        //             TextSpan(
+        //                 text: 'Start:  ',
+        //                 children: [
+        //                   TextSpan(
+        //                       text: Jiffy.parseFromDateTime(
+        //                               widget.project.startDate!)
+        //                           .yMMMMd,
+        //                       style: const TextStyle(
+        //                           fontWeight: FontWeight.normal))
+        //                 ],
+        //                 style: const TextStyle(fontWeight: FontWeight.bold)),
+        //           )
+        //         : const Text.rich(
+        //             TextSpan(
+        //                 text: 'Start:  ',
+        //                 children: [
+        //                   TextSpan(
+        //                       text: 'N/A',
+        //                       style: TextStyle(fontWeight: FontWeight.normal))
+        //                 ],
+        //                 style: TextStyle(fontWeight: FontWeight.bold)),
+        //           ),
+        //     const GutterSmall(),
+        //     widget.project.endDate != null
+        //         ? Text.rich(
+        //             TextSpan(
+        //                 text: 'End:  ',
+        //                 children: [
+        //                   TextSpan(
+        //                       text: Jiffy.parseFromDateTime(
+        //                               widget.project.endDate!)
+        //                           .yMMMMd,
+        //                       style: const TextStyle(
+        //                           fontWeight: FontWeight.normal))
+        //                 ],
+        //                 style: const TextStyle(fontWeight: FontWeight.bold)),
+        //           )
+        //         : const Text.rich(
+        //             TextSpan(
+        //                 text: 'End:  ',
+        //                 children: [
+        //                   TextSpan(
+        //                       text: 'N/A',
+        //                       style: TextStyle(fontWeight: FontWeight.normal))
+        //                 ],
+        //                 style: TextStyle(fontWeight: FontWeight.bold)),
+        //           ),
+        //   ],
+        // ),
+        //const GutterSmall(),
+        Text('Project Description',
+            style: Theme.of(context).textTheme.titleMedium),
+        const GutterTiny(),
+        Hero(
+          tag: '${widget.project.id}-description',
+          child: Material(
+            color: Colors.transparent,
+            type: MaterialType.transparency,
+            child: Text(widget.project.description!,
+                style: Theme.of(context).textTheme.bodyMedium),
+          ),
+        ),
+        context.watch<ProposalBloc>().state is ProposalStarted
+            ? const Padding(
+                padding: EdgeInsets.only(top: 16.0),
+                child: Divider(),
+              )
+            : const Gutter(),
+        if (widget.project.status == ProjectStatus.open)
+          CreateProposalSection(
+            project: widget.project,
+          ),
+        IgnorePointer(
+          ignoring: widget.project.clientTotalSpend == null ? true : false,
+          child: ExpansionTile(
+            trailing: widget.project.clientTotalSpend != null
+                ? null
+                : const SizedBox(),
+            tilePadding: EdgeInsets.zero,
+            backgroundColor: Theme.of(context).colorScheme.surface,
+            leading: widget.project.clientProfilePicture != null
+                ? CircleAvatar(
+                    radius: 20,
+                    backgroundImage: CachedNetworkImageProvider(
+                        widget.project.clientProfilePicture!),
+                  )
+                : const Icon(Icons.person_rounded),
+            title: Row(
+              //mainAxisSize: MainAxisSize.min,
+              children: [
+                // Padding(
+                //   padding: const EdgeInsets.only(right: 16.0),
+                //   child: CircleAvatar(
+                //       radius: 14,
+                //       child: widget.project.client!.photoUrl == null ||
+                //               widget.project.client!.photoUrl!.isEmpty
+                //           ? const Icon(Icons.person, size: 20)
+                //           : CachedNetworkImage(
+                //               imageUrl:
+                //                   widget.project.client!.photoUrl!)),
+                // ),
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text(
+                          widget.project.clientName!.split(' ')[0],
+                          style: Theme.of(context).textTheme.titleLarge,
+                        ),
+                        const GutterSmall(),
+                        const Text('-'),
+                        const GutterSmall(),
+                        if (widget.project.clientRating != null)
+                          Row(
+                            mainAxisSize: MainAxisSize.min,
+                            mainAxisAlignment: MainAxisAlignment.end,
+                            children: [
+                              Icon(
+                                MdiIcons.star,
+                                color: Colors.yellow[600],
+                                size: 16.0,
+                              ),
+                              const GutterTiny(),
+                              Text.rich(TextSpan(
+                                  text:
+                                      '${widget.project.clientRating.toString()} ',
+                                  children: [
+                                    TextSpan(
+                                        text:
+                                            '(${widget.project.clientReviewCount.toString()})',
+                                        style: Theme.of(context)
+                                            .textTheme
+                                            .bodySmall)
+                                  ])),
+                            ],
+                          )
+                        else
+                          Text('No reviews yet',
+                              style: Theme.of(context).textTheme.bodySmall),
+                      ],
+                    ),
+                    Row(
+                      children: [
+                        Icon(MdiIcons.mapMarkerOutline, size: 14.0),
+                        const GutterTiny(),
+                        Text('${widget.project.clientLocation}',
+                            style: Theme.of(context).textTheme.bodyMedium),
+                      ],
+                    ),
+                  ],
+                ),
+              ],
+            ),
+            children: [
+              if (widget.project.clientTotalSpend != null)
+                Padding(
+                  padding: const EdgeInsets.only(
+                      left: 16.0, bottom: 8.0, right: 16.0),
+                  child: Wrap(
+                    spacing: 8.0,
+                    crossAxisAlignment: WrapCrossAlignment.center,
+                    children: [
+                      Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Text('Total Spend:',
+                              style: Theme.of(context).textTheme.titleSmall),
+                          const GutterTiny(),
+                          Text(
+                              convertIntToCurrency(
+                                  widget.project.clientTotalSpend!),
+                              style: Theme.of(context).textTheme.bodyMedium),
+                        ],
+                      ),
+                      if (widget.project.clientIndustry != null)
+                        Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Text('Industry:',
+                                style: Theme.of(context).textTheme.titleSmall),
+                            const GutterTiny(),
+                            Text('${widget.project.clientIndustry}',
+                                style: Theme.of(context).textTheme.bodyMedium),
+                          ],
+                        ),
+                    ],
+                  ),
+                ),
+              const GutterTiny(),
+            ],
+          ),
+        ),
+        // Text('Client', style: Theme.of(context).textTheme.titleSmall),
+        ExpansionTile(
+          tilePadding: EdgeInsets.zero,
+          expandedAlignment: Alignment.center,
+          backgroundColor: Theme.of(context).colorScheme.surface,
+          leading: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 8.0),
+            child: Icon(MdiIcons.tools, size: 24.0),
+          ),
+          title: Text('Skills', style: Theme.of(context).textTheme.titleLarge),
+          children: [
+            Padding(
+              padding:
+                  const EdgeInsets.only(left: 16.0, bottom: 16.0, right: 16.0),
+              child: Row(
+                children: [
+                  Wrap(
+                    spacing: 8.0,
+                    crossAxisAlignment: WrapCrossAlignment.center,
+                    alignment: WrapAlignment.start,
+                    children: [
+                      for (String skill in widget.project.skills!)
+                        Chip(
+                          padding: EdgeInsets.zero,
+                          label: Text(skill),
+                        ),
+                    ],
+                  ),
+                ],
+              ),
+            )
+          ],
+        ),
+        if (widget.project.tags != null && widget.project.tags!.isNotEmpty)
+          ExpansionTile(
+            tilePadding: EdgeInsets.zero,
+            expandedAlignment: Alignment.center,
+            backgroundColor: Theme.of(context).colorScheme.surface,
+            leading: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 8.0),
+              child: Icon(MdiIcons.tagText, size: 24.0),
+            ),
+            title: Text('Tags', style: Theme.of(context).textTheme.titleLarge),
+            children: [
+              Padding(
+                padding: const EdgeInsets.only(bottom: 16.0),
+                child: Wrap(
+                  spacing: 8.0,
+                  crossAxisAlignment: WrapCrossAlignment.center,
+                  alignment: WrapAlignment.start,
+                  runAlignment: WrapAlignment.start,
+                  children: [
+                    for (String tag in widget.project.tags!)
+                      Chip(
+                        padding: EdgeInsets.zero,
+                        label: Text(tag),
+                      ),
+                  ],
+                ),
+              )
+            ],
+          ),
+      ],
+    );
+  }
+}
+
+class FreelancerActiveProposalTab extends StatefulWidget {
+  final Project project;
+  final Proposal proposal;
+  const FreelancerActiveProposalTab(
+      {super.key, required this.project, required this.proposal});
+
+  @override
+  State<FreelancerActiveProposalTab> createState() =>
+      _FreelancerActiveProposalTabState();
+}
+
+class _FreelancerActiveProposalTabState
+    extends State<FreelancerActiveProposalTab> {
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.all(16.0),
+      child: ListView(
+        padding: EdgeInsets.zero,
+        children: [
+          Row(
+            children: [
+              const Icon(Icons.timeline),
+              const Gutter(),
+              Text('Milestones', style: Theme.of(context).textTheme.titleLarge),
+            ],
+          ),
+          MilestoneTimeline(proposal: widget.proposal),
+          const GutterTiny(),
+          if (widget.project.status == ProjectStatus.inProgress &&
+              widget.proposal.status == ProposalStatus.accepted)
+            Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Row(
+                  children: [
+                    Expanded(
+                      child: FilledButton.icon(
+                        icon: Icon(MdiIcons.progressCheck),
+                        label: const Text('Submit Work & Request Payment'),
+                        onPressed: () {
+                          context.push(
+                              '/project/${widget.project.id}/submit-work',
+                              extra: {
+                                0: widget.project,
+                                1: widget.proposal,
+                              });
+                        },
+                      ),
+                    ),
+                  ],
+                ),
+                const Gutter(),
+              ],
+            ),
+          Text('Description', style: Theme.of(context).textTheme.titleLarge),
+          const GutterSmall(),
+          Text(widget.proposal.description!),
+        ],
+      ),
+    );
+  }
+}
+
+class SubmitWorkDialog extends StatefulWidget {
+  final Project project;
+  final Proposal proposal;
+  const SubmitWorkDialog(
+      {super.key, required this.project, required this.proposal});
+
+  @override
+  State<SubmitWorkDialog> createState() => _SubmitWorkDialogState();
+}
+
+class _SubmitWorkDialogState extends State<SubmitWorkDialog> {
+  final TextEditingController _descriptionController = TextEditingController();
+  final TextEditingController _fileTitleController = TextEditingController();
+  final List<(String?, FilePickerResult?, XFile?)> _files = [];
+  @override
+  Widget build(BuildContext context) {
+    for (var element in _files) {
+      print(element.$2!.files.first.bytes);
+    }
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('Submit Work'),
+      ),
+      body: ListView(
+        padding: const EdgeInsets.all(16.0),
+        children: [
+          // Text('Submit Work', style: Theme.of(context).textTheme.titleLarge),
+          // const GutterSmall(),
+          Text(
+              'You can submit work to your client for review and request payment for the milestone.',
+              style: Theme.of(context).textTheme.bodyMedium),
+          const Gutter(),
+          Text('Work Description',
+              style: Theme.of(context).textTheme.titleMedium),
+          const GutterSmall(),
+          TextField(
+            controller: _descriptionController,
+            minLines: 5,
+            maxLines: 7,
+            decoration: const InputDecoration(
+                hintText: 'Enter a description of the work you are submitting'),
+          ),
+          const Gutter(),
+          Text('Work Files', style: Theme.of(context).textTheme.titleMedium),
+          const GutterSmall(),
+          Row(
+            children: [
+              Expanded(
+                child: TextField(
+                  controller: _fileTitleController,
+                  decoration: const InputDecoration(
+                      hintText:
+                          'Give your work a title (e.g. "Logo Design Mockup")'),
+                ),
+              ),
+              const Gutter(),
+              IconButton(
+                onPressed: () async {
+                  showModalBottomSheet(
+                    context: context,
+                    builder: (context) {
+                      // Bottom sheet to choose either images or files
+                      return SizedBox(
+                        height: 180,
+                        child: Column(
+                          children: [
+                            Padding(
+                              padding: const EdgeInsets.only(
+                                  left: 16.0, top: 24.0, bottom: 8.0),
+                              child: Row(
+                                mainAxisAlignment: MainAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    'Choose a file type',
+                                    style:
+                                        Theme.of(context).textTheme.titleMedium,
+                                  ),
+                                ],
+                              ),
+                            ),
+                            ListTile(
+                              leading: const Icon(Icons.image),
+                              title: const Text('Images'),
+                              onTap: () {
+                                Navigator.pop(context);
+                              },
+                            ),
+                            ListTile(
+                              leading: const Icon(Icons.attach_file),
+                              title: const Text('Files'),
+                              onTap: () async {
+                                Navigator.pop(context);
+                                final FilePickerResult? file =
+                                    await FilePicker.platform.pickFiles(
+                                  allowMultiple: true,
+                                  type: FileType.custom,
+                                  allowedExtensions: [
+                                    'jpg',
+                                    'pdf',
+                                    'csv',
+                                    'jpeg',
+                                    'heic',
+                                    'doc',
+                                    'docx',
+                                    'png'
+                                  ],
+                                );
+                                if (file != null) {
+                                  setState(() {
+                                    _fileTitleController.value.text.isNotEmpty
+                                        ? _files.add((
+                                            _fileTitleController.value.text,
+                                            file,
+                                            null
+                                          ))
+                                        : _files.add((null, file, null));
+                                  });
+                                } else {
+                                  scaffoldKey.currentState!
+                                      .showSnackBar(const SnackBar(
+                                          behavior: SnackBarBehavior.floating,
+                                          content: Row(
+                                            children: [
+                                              Icon(Icons.error,
+                                                  color: Colors.red,
+                                                  size: 20.0),
+                                              GutterSmall(),
+                                              Text('No file selected.'),
+                                            ],
+                                          ),
+                                          duration: Duration(seconds: 2)));
+                                }
+                              },
+                            ),
+                          ],
+                        ),
+                      );
+                    },
+                  );
+                },
+                icon: const Icon(Icons.attach_file),
+              ),
+            ],
+          ),
+          const Gutter(),
+          if (_files.isNotEmpty)
+            Column(
+              children: [
+                for (var file in _files)
+                  Slidable(
+                    endActionPane: ActionPane(
+                      motion: const DrawerMotion(),
+                      children: [
+                        SlidableAction(
+                          borderRadius:
+                              const BorderRadius.all(Radius.circular(16.0)),
+                          label: 'Delete',
+                          onPressed: (context) {
+                            setState(() {
+                              _files.removeWhere((element) => element == file);
+                            });
+                          },
+                          backgroundColor: Colors.redAccent,
+                          foregroundColor: Colors.white,
+                          icon: Icons.delete_outline,
+                        ),
+                      ],
+                    ),
+                    child: ListTile(
+                      leading: file.$2?.files.first.extension == 'pdf'
+                          ? const Icon(Icons.picture_as_pdf)
+                          : file.$2?.files.first.bytes != null
+                              ? Image.memory(
+                                  file.$2!.files.first.bytes!,
+                                  width: 40.0,
+                                  height: 40.0,
+                                )
+                              : const Icon(Icons.image),
+                      title: Text(file.$1 ?? 'No title'),
+                      subtitle: Text('${file.$2?.files.length} Files'),
+                      trailing: const Icon(Icons.file_present),
+                    ),
+                  ),
+              ],
+            ),
+          Row(
+            children: [
+              Expanded(
+                child: FilledButton.icon(
+                  icon: Icon(MdiIcons.progressCheck),
+                  label: const Text('Submit Work & Request Payment'),
+                  onPressed: () {
+                    showDialog(
+                        context: context,
+                        builder: (context) {
+                          return Dialog.fullscreen(
+                            child: SubmitWorkDialog(
+                              project: widget.project,
+                              proposal: widget.proposal,
+                            ),
+                          );
+                        });
+                  },
+                ),
+              ),
+            ],
+          ),
         ],
       ),
     );
@@ -450,12 +765,11 @@ class _MobileProjectDetailsPageState extends State<MobileProjectDetailsPage> {
 }
 
 class CreateProposalSection extends StatefulWidget {
+  final Project project;
   const CreateProposalSection({
+    required this.project,
     super.key,
-    required this.widget,
   });
-
-  final MobileProjectDetailsPage widget;
 
   @override
   State<CreateProposalSection> createState() => _CreateProposalSectionState();
@@ -511,7 +825,7 @@ class _CreateProposalSectionState extends State<CreateProposalSection> {
                   ? Column(
                       mainAxisSize: MainAxisSize.min,
                       children: [
-                        widget.widget.project.projectType == ProjectType.fixed
+                        widget.project.projectType == ProjectType.fixed
                             ? Flexible(
                                 child: Theme(
                                   data: Theme.of(context).copyWith(
@@ -539,8 +853,8 @@ class _CreateProposalSectionState extends State<CreateProposalSection> {
                                             context.read<ProposalBloc>().add(
                                                 AddMilestone(Milestone(
                                                     id: const Uuid().v4(),
-                                                    projectId: widget
-                                                        .widget.project.id!,
+                                                    projectId:
+                                                        widget.project.id!,
                                                     funded: false)));
                                           },
                                           icon: Icon(MdiIcons.plusCircle,
@@ -896,8 +1210,7 @@ class _CreateProposalSectionState extends State<CreateProposalSection> {
                       ? Column(
                           mainAxisSize: MainAxisSize.min,
                           children: [
-                            widget.widget.project.projectType ==
-                                    ProjectType.fixed
+                            widget.project.projectType == ProjectType.fixed
                                 ? Flexible(
                                     child: Theme(
                                       data: Theme.of(context).copyWith(
@@ -1078,10 +1391,9 @@ class _CreateProposalSectionState extends State<CreateProposalSection> {
                                     context
                                         .read<ProposalBloc>()
                                         .add(StartProposal(
-                                            widget.widget.project.id!,
+                                            widget.project.id!,
                                             Proposal(
-                                              projectId:
-                                                  widget.widget.project.id!,
+                                              projectId: widget.project.id!,
                                               description:
                                                   _proposalController.text,
                                               freelancerId: context
@@ -1096,10 +1408,9 @@ class _CreateProposalSectionState extends State<CreateProposalSection> {
                                                   .stripeAccountId,
                                               freelancerName:
                                                   '${context.read<ProfileBloc>().state.user!.firstName} ${context.read<ProfileBloc>().state.user!.lastName}',
-                                              clientId: widget
-                                                  .widget.project.clientId,
-                                              clientName: widget
-                                                  .widget.project.clientName,
+                                              clientId: widget.project.clientId,
+                                              clientName:
+                                                  widget.project.clientName,
                                             )));
                                   },
                                   icon: Icon(MdiIcons.lightningBolt),

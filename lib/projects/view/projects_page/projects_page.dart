@@ -245,8 +245,8 @@ class ActiveProjectsTab extends StatelessWidget {
                     child: Text(project.description!),
                   ),
                   onTap: () {
-                    context.read<ProposalBloc>().add(LoadProposals(
-                        project, context.read<ProfileBloc>().state.user!.id!));
+                    context.read<ProposalBloc>().add(LoadProposal(project.id!,
+                        context.read<ProfileBloc>().state.user!.id!));
                     context.push('/project/${project.id}', extra: project);
                   }),
             ),

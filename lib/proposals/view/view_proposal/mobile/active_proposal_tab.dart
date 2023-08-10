@@ -315,6 +315,7 @@ class MilestoneTimeline extends StatelessWidget {
     // Order milestones by date
     proposal.milestones!.sort((a, b) => a.dueDate!.compareTo(b.dueDate!));
     return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         for (int i = 0; i < proposal.milestones!.length; i++)
           TimelineTile(
@@ -338,25 +339,26 @@ class MilestoneTimeline extends StatelessWidget {
                             size: 12.0, color: Colors.white),
                       )
                     : Padding(
-                        padding: const EdgeInsets.only(top: 2.0, left: 5.0),
+                        padding: const EdgeInsets.only(top: 2.0, left: 5.3),
                         child: Text(
                           '${i + 1}',
                           style: Theme.of(context)
                               .textTheme
                               .bodySmall
                               ?.copyWith(
-                                  color: Theme.of(context)
-                                      .scaffoldBackgroundColor),
+                                  color:
+                                      Theme.of(context).scaffoldBackgroundColor,
+                                  fontWeight: FontWeight.bold),
                         ),
                       ),
               ),
               color: Theme.of(context).primaryColor,
-              padding: const EdgeInsets.all(6),
+              padding: const EdgeInsets.symmetric(vertical: 6.0),
             ),
             endChild: Padding(
-              padding: const EdgeInsets.only(left: 0.0),
+              padding: const EdgeInsets.only(left: 8.0),
               child: ExpansionTile(
-                tilePadding: const EdgeInsets.only(left: 16.0, bottom: 0),
+                tilePadding: const EdgeInsets.only(left: 8.0, bottom: 0),
                 childrenPadding:
                     const EdgeInsets.only(left: 16.0, bottom: 16.0),
                 expandedAlignment: Alignment.topLeft,
