@@ -25,6 +25,14 @@ class LoadBalanceAndTransactions extends PaymentsEvent {
   List<Object?> get props => [user];
 }
 
+class LoadCharges extends PaymentsEvent {
+  @override
+  final User user;
+  const LoadCharges({required this.user});
+  @override
+  List<Object?> get props => [user];
+}
+
 class SetupPaymentAccount extends PaymentsEvent {
   @override
   User user;

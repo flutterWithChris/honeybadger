@@ -1,3 +1,4 @@
+import 'package:flex_color_scheme/flex_color_scheme.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_gutter/flutter_gutter.dart';
@@ -8,13 +9,11 @@ import 'package:honeybadger/core/extensions.dart';
 import 'package:honeybadger/core/presentation/system/main_navigation_bar.dart';
 import 'package:honeybadger/core/presentation/system/mobile_sliver_app_bar.dart';
 import 'package:honeybadger/payments/bloc/payments_bloc.dart';
-import 'package:honeybadger/payments/details/payment_details.dart';
 import 'package:honeybadger/payouts/bloc/payout_bloc.dart';
 import 'package:honeybadger/payouts/model/payout.dart';
 import 'package:honeybadger/profile/bloc/profile_bloc.dart';
 import 'package:jiffy/jiffy.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
-import 'package:url_launcher/url_launcher_string.dart';
 
 class MobileClientPaymentsPage extends StatefulWidget {
   const MobileClientPaymentsPage({super.key});
@@ -95,234 +94,22 @@ class _MobileClientPaymentsPageState extends State<MobileClientPaymentsPage>
           child: CustomScrollView(
             slivers: [
               const MobileSliverAppBar(),
-              BlocBuilder<PaymentsBloc, PaymentsState>(
-                builder: (context, state) {
-                  if (state.stripeAccountStatus ==
-                      StripeAccountStatus.notCreated) {
-                    // Create not setup page
-                    return SliverPadding(
-                      padding: const EdgeInsets.symmetric(horizontal: 24.0),
-                      sliver: SliverFillRemaining(
-                        child: Center(
-                          child: Column(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Icon(Icons.money_off,
-                                  size: 72.0,
-                                  color: Theme.of(context).brightness ==
-                                          Brightness.light
-                                      ? Colors.grey[500]
-                                      : Colors.grey[600]),
-                              const Gutter(),
-                              Text('You haven\'t sent a payment yet!',
-                                  style: Theme.of(context)
-                                      .textTheme
-                                      .bodyLarge
-                                      ?.copyWith(
-                                          color: Theme.of(context).brightness ==
-                                                  Brightness.light
-                                              ? Colors.grey[500]
-                                              : Colors.grey[600])),
-                            ],
-                          ),
-                        ),
+              SliverToBoxAdapter(
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        'Payments',
+                        style: Theme.of(context).textTheme.headlineMedium,
                       ),
-                    );
-                  }
-                  if (state is PaymentsLoaded && state.loginLink != null) {
-                    var availableBalance = 0;
-                    if (state.balance?.available != null) {
-                      availableBalance = state.balance!.available!
-                          .map((e) => e.amount!)
-                          .reduce((value, element) => value + element);
-                    }
-                    // if (availableBalance > 0) {
-                    // showBottomSheet(
-                    //     context: context,
-                    //     builder: (context) {
-                    //       return Container(
-                    //         height: 200,
-                    //         color: Colors.amber,
-                    //         child: Center(
-                    //           child: Column(
-                    //             mainAxisAlignment: MainAxisAlignment.center,
-                    //             mainAxisSize: MainAxisSize.min,
-                    //             children: <Widget>[
-                    //               const Text('BottomSheet'),
-                    //               ElevatedButton(
-                    //                 child: const Text('Close BottomSheet'),
-                    //                 onPressed: () => Navigator.pop(context),
-                    //               )
-                    //             ],
-                    //           ),
-                    //         ),
-                    //       );
-                    //     },
-                    //   );
-                    // }
-
-                    var pendingBalance = 0;
-
-                    if (state.balance?.pending != null) {
-                      pendingBalance = state.balance!.pending!
-                          .map((e) => e.amount!)
-                          .reduce((value, element) => value + element);
-                    }
-
-                    return SliverPadding(
-                      padding: const EdgeInsets.symmetric(vertical: 16.0),
-                      sliver: SliverToBoxAdapter(
-                        child: Column(
-                          children: [
-                            Padding(
-                              padding:
-                                  const EdgeInsets.symmetric(horizontal: 16.0),
-                              child: Row(
-                                children: [
-                                  Text(
-                                    'Payments',
-                                    style: Theme.of(context)
-                                        .textTheme
-                                        .headlineMedium,
-                                  ),
-                                ],
-                              ),
-                            ),
-                            const Gutter(),
-                            availableBalance > 0
-                                ? Padding(
-                                    padding: const EdgeInsets.symmetric(
-                                        horizontal: 16.0),
-                                    child: Row(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.center,
-                                      children: [
-                                        Flexible(
-                                            child: IconButton.filled(
-                                                onPressed: () {},
-                                                icon: const Icon(
-                                                    Icons.dashboard))),
-                                        const Gutter(),
-                                        Expanded(
-                                          flex: 7,
-                                          child: FilledButton.icon(
-                                              onPressed: () {
-                                                showBottomSheet(
-                                                  context: context,
-                                                  builder: (context) {
-                                                    return PayoutMethodSheet(
-                                                      availableBalance:
-                                                          availableBalance,
-                                                    );
-                                                  },
-                                                );
-                                              },
-                                              icon: const Icon(
-                                                Icons.payments,
-                                                size: 14.0,
-                                              ),
-                                              label: Text(
-                                                'Payout ${convertCentsToCurrency(availableBalance)}',
-                                              )),
-                                        ),
-                                        const Spacer(),
-                                      ],
-                                    ),
-                                  )
-                                : FractionallySizedBox(
-                                    widthFactor: 0.8,
-                                    child: FilledButton.icon(
-                                        style: state.stripeAccount
-                                                    ?.payoutsEnabled ==
-                                                false
-                                            ? FilledButton.styleFrom(
-                                                backgroundColor: Colors.red,
-                                                foregroundColor: Colors.white)
-                                            : null,
-                                        onPressed: () {
-                                          launchUrlString(state.loginLink!,
-                                              mode: LaunchMode
-                                                  .externalApplication);
-                                        },
-                                        icon: Icon(
-                                            state.stripeAccount
-                                                        ?.payoutsEnabled ==
-                                                    false
-                                                ? Icons.error_rounded
-                                                : Icons.dashboard,
-                                            size: 20.0),
-                                        label: const Text('View Dashboard')),
-                                  ),
-                            state.stripeAccount?.payoutsEnabled == false
-                                ? Padding(
-                                    padding: const EdgeInsets.fromLTRB(
-                                        16.0, 8.0, 16.0, 0.0),
-                                    child: Card(
-                                      elevation: 0,
-                                      color: Theme.of(context)
-                                          .colorScheme
-                                          .surfaceVariant,
-                                      child: const Padding(
-                                        padding: EdgeInsets.all(16.0),
-                                        child: Text.rich(
-                                          TextSpan(
-                                              text:
-                                                  'Payouts are currently disabled on your account! ',
-                                              style: TextStyle(
-                                                fontWeight: FontWeight.bold,
-                                              ),
-                                              children: [
-                                                TextSpan(
-                                                    text:
-                                                        ' Please visit the dashboard to fix any issues.',
-                                                    style: TextStyle(
-                                                      fontWeight:
-                                                          FontWeight.normal,
-                                                    ))
-                                              ]),
-                                          textAlign: TextAlign.center,
-                                        ),
-                                      ),
-                                    ),
-                                  )
-                                : const SizedBox(),
-                          ],
-                        ),
-                      ),
-                    );
-                  }
-                  if (state is PaymentsLoaded &&
-                      state.stripeAccountStatus ==
-                          StripeAccountStatus.complete &&
-                      state.loginLink == null) {
-                    return SliverPadding(
-                      padding: const EdgeInsets.symmetric(vertical: 8.0),
-                      sliver: SliverToBoxAdapter(
-                        child: FractionallySizedBox(
-                          widthFactor: 0.8,
-                          child: FilledButton.icon(
-                              style: FilledButton.styleFrom(
-                                  backgroundColor: Colors.red),
-                              onPressed: () {
-                                context.read<PaymentsBloc>().add(
-                                      LoadPayments(
-                                          user: context
-                                              .read<ProfileBloc>()
-                                              .state
-                                              .user!),
-                                    );
-                              },
-                              icon: const Icon(Icons.error_rounded, size: 20.0),
-                              label: const Text('Refresh Dashboard')),
-                        ),
-                      ),
-                    );
-                  }
-                  return const SliverToBoxAdapter(
-                    child: SizedBox(),
-                  );
-                },
+                      const Gutter(),
+                    ],
+                  ),
+                ),
               ),
+
               BlocBuilder<PaymentsBloc, PaymentsState>(
                   builder: (context, paymentsState) {
                 if (paymentsState is PaymentsError) {
@@ -366,8 +153,8 @@ class _MobileClientPaymentsPageState extends State<MobileClientPaymentsPage>
                 if (paymentsState is PaymentsLoaded &&
                     paymentsState.stripeAccountStatus ==
                         StripeAccountStatus.complete) {
-                  if (paymentsState.balanceTransactions == null ||
-                      paymentsState.balanceTransactions!.isEmpty) {
+                  if (paymentsState.charges == null ||
+                      paymentsState.charges!.isEmpty) {
                     return SliverFillRemaining(
                       child: Center(
                         child: Column(
@@ -394,26 +181,26 @@ class _MobileClientPaymentsPageState extends State<MobileClientPaymentsPage>
                       ),
                     );
                   }
-                  if (paymentsState.balanceTransactions != null &&
-                      paymentsState.balanceTransactions!.isNotEmpty) {
+                  if (paymentsState.charges != null &&
+                      paymentsState.charges!.isNotEmpty) {
                     return SliverPadding(
                       padding: const EdgeInsets.symmetric(horizontal: 0.0),
                       sliver: SliverList(
                         delegate: SliverChildBuilderDelegate(
                           (context, index) {
-                            DateTime availableDate =
-                                Jiffy.parseFromMillisecondsSinceEpoch(
-                                        paymentsState
-                                                .balanceTransactions![index]
-                                                .availableOn! *
-                                            1000)
-                                    .dateTime;
+                            // DateTime availableDate =
+                            //     Jiffy.parseFromMillisecondsSinceEpoch(
+                            //             paymentsState
+                            //                     .charges![index]
+                            //                     .availableOn! *
+                            //                 1000)
+                            //         .dateTime;
 
-                            String transactionType =
-                                paymentsState.balanceTransactions![index].type!;
-                            if (transactionType == 'transfer') {
-                              transactionType = 'Payment';
-                            }
+                            // String transactionType =
+                            //     paymentsState.charges![index].type!;
+                            // if (transactionType == 'transfer') {
+                            //   transactionType = 'Payment';
+                            // }
                             return Column(
                               children: [
                                 index == 0 ? const Divider() : const SizedBox(),
@@ -425,51 +212,38 @@ class _MobileClientPaymentsPageState extends State<MobileClientPaymentsPage>
                                     child: ListTile(
                                       onTap: () {
                                         // context.go(
-                                        //     '/payments/details/${paymentsState.balanceTransactions![index].id}',
+                                        //     '/payments/details/${paymentsState.charges![index].id}',
                                         //     extra: paymentsState
-                                        //         .balanceTransactions![index]);
-                                        showBottomSheet(
-                                            enableDrag: true,
-                                            context: context,
-                                            builder: (context) =>
-                                                DraggableScrollableSheet(
-                                                  expand: false,
-                                                  initialChildSize: 0.21,
-                                                  minChildSize: 0.2,
-                                                  builder: (context,
-                                                          scrollController) =>
-                                                      PaymentDetailsPage(
-                                                          balanceTransaction:
-                                                              paymentsState
-                                                                      .balanceTransactions![
-                                                                  index]),
-                                                ));
+                                        //         .charges![index]);
+                                        // TODO: Reenable this
+                                        // showBottomSheet(
+                                        //     enableDrag: true,
+                                        //     context: context,
+                                        //     builder: (context) =>
+                                        //         DraggableScrollableSheet(
+                                        //           expand: false,
+                                        //           initialChildSize: 0.21,
+                                        //           minChildSize: 0.2,
+                                        //           builder: (context,
+                                        //                   scrollController) =>
+                                        //               PaymentDetailsPage(
+                                        //                   balanceTransaction:
+                                        //                       paymentsState
+                                        //                               .charges![
+                                        //                           index]),
+                                        //         ));
                                       },
                                       leading: paymentsState
-                                                      .balanceTransactions![
-                                                          index]
-                                                      .status ==
-                                                  'available' ||
-                                              paymentsState
-                                                      .balanceTransactions![
-                                                          index]
-                                                      .status ==
-                                                  'paid'
+                                                  .charges![index].status ==
+                                              'succeeded'
                                           ? Icon(
                                               MdiIcons.checkBold,
                                               size: 20.0,
                                               color: Colors.green,
                                             )
                                           : paymentsState
-                                                          .balanceTransactions![
-                                                              index]
-                                                          .status ==
-                                                      'pending' ||
-                                                  paymentsState
-                                                          .balanceTransactions![
-                                                              index]
-                                                          .status ==
-                                                      'in_transit'
+                                                      .charges![index].status ==
+                                                  'pending'
                                               ? const Icon(
                                                   Icons.pending,
                                                   size: 20.0,
@@ -480,71 +254,73 @@ class _MobileClientPaymentsPageState extends State<MobileClientPaymentsPage>
                                                   size: 20.0,
                                                   color: Colors.red,
                                                 ),
-                                      title: Row(
-                                        children: [
-                                          Text(
-                                              transactionType
-                                                  .replaceAll('_', ' ')
-                                                  .toTitleCase(),
-                                              maxLines: 1,
-                                              overflow: TextOverflow.ellipsis,
-                                              style: Theme.of(context)
-                                                  .textTheme
-                                                  .titleMedium
-                                                  ?.copyWith(
-                                                      fontWeight:
-                                                          FontWeight.bold)),
-                                          const GutterSmall(),
-                                          paymentsState
-                                                          .balanceTransactions![
-                                                              index]
-                                                          .availableOn !=
-                                                      null &&
-                                                  availableDate
-                                                      .isAfter(DateTime.now())
-                                              ? Flexible(
-                                                  child: Text(
-                                                    'Available on ${Jiffy.parseFromMillisecondsSinceEpoch(paymentsState.balanceTransactions![index].availableOn! * 1000).MMMd}',
-                                                    maxLines: 1,
-                                                    overflow:
-                                                        TextOverflow.ellipsis,
-                                                    style: Theme.of(context)
-                                                        .textTheme
-                                                        .bodySmall
-                                                        ?.copyWith(
-                                                            color: Theme.of(context)
-                                                                        .brightness ==
-                                                                    Brightness
-                                                                        .light
-                                                                ? Colors
-                                                                    .grey[500]
-                                                                : Colors
-                                                                    .grey[600]),
-                                                  ),
-                                                )
-                                              : const GutterTiny(),
-                                        ],
-                                      ),
                                       subtitle: paymentsState
-                                                  .balanceTransactions?[index]
-                                                  .description !=
-                                              null
-                                          ? Text(
+                                                      .charges![index].status ==
+                                                  'pending' ||
                                               paymentsState
-                                                  .balanceTransactions![index]
-                                                  .description!,
-                                              maxLines: 1,
-                                              overflow: TextOverflow.ellipsis,
-                                              style: Theme.of(context)
-                                                  .textTheme
-                                                  .bodySmall!
-                                                  .copyWith(
-                                                      color: Theme.of(context)
-                                                                  .brightness ==
-                                                              Brightness.light
-                                                          ? Colors.grey[500]
-                                                          : Colors.grey[600]))
+                                                      .charges![index].status ==
+                                                  'failed'
+                                          ? Row(
+                                              children: [
+                                                SizedBox(
+                                                  height: 30.0,
+                                                  child: FittedBox(
+                                                    child: Chip(
+                                                      visualDensity:
+                                                          VisualDensity.compact,
+                                                      side: BorderSide.none,
+                                                      padding: const EdgeInsets
+                                                              .symmetric(
+                                                          horizontal: 4.0),
+                                                      avatar: Icon(paymentsState
+                                                                  .charges![
+                                                                      index]
+                                                                  .status ==
+                                                              'pending'
+                                                          ? Icons.pending
+                                                          : Icons
+                                                              .error_rounded),
+                                                      labelPadding:
+                                                          const EdgeInsets.only(
+                                                              right: 12.0),
+                                                      label: Text(
+                                                        paymentsState
+                                                            .charges![index]
+                                                            .status
+                                                            .toString()
+                                                            .capitalize,
+                                                        style: Theme.of(context)
+                                                            .textTheme
+                                                            .bodyMedium
+                                                            ?.copyWith(
+                                                                fontSize: 16,
+                                                                fontWeight:
+                                                                    FontWeight
+                                                                        .bold,
+                                                                color: Colors
+                                                                    .white),
+                                                      ),
+                                                      backgroundColor:
+                                                          paymentsState
+                                                                      .charges![
+                                                                          index]
+                                                                      .status ==
+                                                                  'pending'
+                                                              ? Colors.grey
+                                                              : Colors.red,
+                                                    ),
+                                                  ),
+                                                ),
+                                              ],
+                                            )
                                           : null,
+                                      title: Text(
+                                        paymentsState
+                                                .charges![index].description ??
+                                            'Payment',
+                                        maxLines: 1,
+                                        overflow: TextOverflow.ellipsis,
+                                      ),
                                       // TODO: Add payment status widge
                                       trailing: Column(
                                         crossAxisAlignment:
@@ -553,8 +329,7 @@ class _MobileClientPaymentsPageState extends State<MobileClientPaymentsPage>
                                         children: [
                                           Text(
                                             convertCentsToCurrency(paymentsState
-                                                .balanceTransactions![index]
-                                                .net!),
+                                                .charges![index].amount!),
                                             style: Theme.of(context)
                                                 .textTheme
                                                 .titleMedium
@@ -570,8 +345,7 @@ class _MobileClientPaymentsPageState extends State<MobileClientPaymentsPage>
                                           Text(
                                             Jiffy.parseFromMillisecondsSinceEpoch(
                                                     paymentsState
-                                                            .balanceTransactions![
-                                                                index]
+                                                            .charges![index]
                                                             .created! *
                                                         1000)
                                                 .fromNow(),
@@ -594,7 +368,7 @@ class _MobileClientPaymentsPageState extends State<MobileClientPaymentsPage>
                               ],
                             );
                           },
-                          childCount: paymentsState.balanceTransactions!.length,
+                          childCount: paymentsState.charges!.length,
                         ),
                       ),
                     );

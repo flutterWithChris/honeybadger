@@ -9,12 +9,14 @@ class PaymentsState extends Equatable {
   final StripeAccountStatus? stripeAccountStatus;
   final Balance? balance;
   final List<BalanceTransaction>? balanceTransactions;
+  final List<Charge>? charges;
   const PaymentsState({
     this.stripeAccount,
     this.stripeAccountStatus,
     this.loginLink,
     this.balance,
     this.balanceTransactions,
+    this.charges,
   });
 
   @override
@@ -23,7 +25,8 @@ class PaymentsState extends Equatable {
         stripeAccountStatus,
         loginLink,
         balance,
-        balanceTransactions
+        balanceTransactions,
+        charges
       ];
 
   // copyWith
@@ -33,6 +36,7 @@ class PaymentsState extends Equatable {
     String? loginLink,
     Balance? balance,
     List<BalanceTransaction>? balanceTransactions,
+    List<Charge>? charges,
   }) {
     return PaymentsState(
       stripeAccount: stripeAccount ?? this.stripeAccount,
@@ -40,6 +44,7 @@ class PaymentsState extends Equatable {
       loginLink: loginLink ?? this.loginLink,
       balance: balance ?? this.balance,
       balanceTransactions: balanceTransactions ?? this.balanceTransactions,
+      charges: charges ?? this.charges,
     );
   }
 }
@@ -59,12 +64,15 @@ class PaymentsLoaded extends PaymentsState {
   final Balance? balance;
   @override
   final List<BalanceTransaction>? balanceTransactions;
+  @override
+  final List<Charge>? charges;
   const PaymentsLoaded(
       {this.stripeAccount,
       this.loginLink,
       this.stripeAccountStatus,
       this.balance,
-      this.balanceTransactions});
+      this.balanceTransactions,
+      this.charges});
   @override
   // TODO: implement props
   List<Object?> get props => [
@@ -72,7 +80,8 @@ class PaymentsLoaded extends PaymentsState {
         loginLink,
         stripeAccountStatus,
         balance,
-        balanceTransactions
+        balanceTransactions,
+        charges
       ];
 }
 

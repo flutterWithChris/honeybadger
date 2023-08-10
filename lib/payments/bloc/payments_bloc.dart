@@ -5,6 +5,7 @@ import 'package:equatable/equatable.dart';
 import 'package:flutter/material.dart';
 import 'package:honeybadger/payments/model/balance.dart';
 import 'package:honeybadger/payments/model/balance_transaction.dart';
+import 'package:honeybadger/payments/model/charge.dart';
 import 'package:honeybadger/payments/model/stripe_account.dart';
 import 'package:honeybadger/payments/repository/payments_repository.dart';
 import 'package:honeybadger/profile/bloc/profile_bloc.dart';
@@ -31,6 +32,7 @@ class PaymentsBloc extends Bloc<PaymentsEvent, PaymentsState>
     on<LoadPayments>(_onLoadPayments);
     on<SendPayment>(_onSendPayment);
     on<LoadBalanceAndTransactions>(_onLoadBalanceAndTransactions);
+    on<LoadCharges>(_onLoadCharges);
     _profileSubscription = _profileBloc.stream.listen((profileState) {
       print('Profile State: $profileState');
       if (profileState is ProfileLoaded && state is PaymentsInitial) {
@@ -88,7 +90,7 @@ class PaymentsBloc extends Bloc<PaymentsEvent, PaymentsState>
   void _onSendPayment(SendPayment event, Emitter<PaymentsState> emit) async {
     emit(PaymentsLoading());
     try {
-      await _paymentsRepository.initPaymentSheet(
+      String? customerId = await _paymentsRepository.initPaymentSheet(
         event.context,
         email: event.client.email!,
         amount: (event.amount * 1.05).round(),
@@ -102,6 +104,12 @@ class PaymentsBloc extends Bloc<PaymentsEvent, PaymentsState>
           'freelancerId': event.freelancerId,
         },
       );
+      if (_profileBloc.state.user!.stripeAccountId == null ||
+          _profileBloc.state.user!.stripeAccountId!.isEmpty) {
+        _profileBloc.add(UpdateProfile(
+            user: _profileBloc.state.user!
+                .copyWith(stripeAccountId: customerId)));
+      }
       emit(PaymentSent());
     } catch (e) {
       print('Payment Error: $e');
@@ -115,42 +123,67 @@ class PaymentsBloc extends Bloc<PaymentsEvent, PaymentsState>
     Balance? balance;
     List<BalanceTransaction>? balanceTransactions;
     String? loginLink;
-    if (event.user.stripeAccountId != null &&
-        event.user.stripeAccountId!.isNotEmpty) {
-      stripeAccount = await _paymentsRepository
-          .fetchStripeAccount(event.user.stripeAccountId!);
-      // bool stripeSetupComplete =
-      //     (stripeAccount?.requirements?['currently_due'] as List?)?.isEmpty ??
-      //         true;
-      bool stripeSetupComplete = stripeAccount?.detailsSubmitted ?? true;
-      if (stripeSetupComplete == true) {
-        var futures = [
-          _paymentsRepository.getLoginLink(event.user.stripeAccountId!),
-          _paymentsRepository.getBalance(event.user.stripeAccountId!),
-          _paymentsRepository.getBalanceTransactions(
-            event.user.stripeAccountId!,
-          ),
-        ];
-        var results = await Future.wait(futures);
-        loginLink = results[0] as String;
-        balance = results[1] as Balance;
-        balanceTransactions = results[2] as List<BalanceTransaction>;
+    try {
+      if (_profileBloc.state.user!.userType! == UserType.freelancer) {
+        if (event.user.stripeAccountId != null &&
+            event.user.stripeAccountId!.isNotEmpty) {
+          stripeAccount = await _paymentsRepository
+              .fetchStripeAccount(event.user.stripeAccountId!);
+          // bool stripeSetupComplete =
+          //     (stripeAccount?.requirements?['currently_due'] as List?)?.isEmpty ??
+          //         true;
+          bool stripeSetupComplete = stripeAccount?.detailsSubmitted ?? true;
+          if (stripeSetupComplete == true) {
+            var futures = [
+              _paymentsRepository.getLoginLink(event.user.stripeAccountId!),
+              _paymentsRepository.getBalance(event.user.stripeAccountId!),
+              _paymentsRepository.getBalanceTransactions(
+                event.user.stripeAccountId!,
+              ),
+            ];
+            var results = await Future.wait(futures);
+            loginLink = results[0] as String;
+            balance = results[1] as Balance;
+            balanceTransactions = results[2] as List<BalanceTransaction>;
+          }
+          print(
+              'Available payout methods: ${stripeAccount?.externalAccounts}}');
+          emit(PaymentsLoaded(
+              stripeAccount: stripeAccount,
+              loginLink: loginLink,
+              stripeAccountStatus: stripeSetupComplete
+                  ? StripeAccountStatus.complete
+                  : StripeAccountStatus.incomplete,
+              balance: balance,
+              balanceTransactions: balanceTransactions));
+          return;
+        } else {
+          emit(const PaymentsLoaded(
+              stripeAccountStatus: StripeAccountStatus.notCreated));
+          print('There is no stripe account');
+          return;
+        }
+      } else {
+        // TODO: Load Client Charges
+        if (event.user.stripeAccountId != null) {
+          List<Charge> charges = await _paymentsRepository.getCharges(
+              stripeAccountId: event.user.stripeAccountId!);
+          emit(PaymentsLoaded(
+              stripeAccountStatus: StripeAccountStatus.complete,
+              charges: charges));
+        } else {
+          emit(const PaymentsLoaded(
+              stripeAccountStatus: StripeAccountStatus.notCreated));
+          print('There is no stripe account');
+          return;
+        }
+
+        print('There is no stripe account');
+        return;
       }
-      print('Available payout methods: ${stripeAccount?.externalAccounts}}');
-      emit(PaymentsLoaded(
-          stripeAccount: stripeAccount,
-          loginLink: loginLink,
-          stripeAccountStatus: stripeSetupComplete
-              ? StripeAccountStatus.complete
-              : StripeAccountStatus.incomplete,
-          balance: balance,
-          balanceTransactions: balanceTransactions));
-      return;
-    } else {
-      emit(const PaymentsLoaded(
-          stripeAccountStatus: StripeAccountStatus.notCreated));
-      print('There is no stripe account');
-      return;
+    } catch (e) {
+      print('Error: $e');
+      emit(PaymentsError(message: e.toString()));
     }
   }
 
@@ -183,6 +216,22 @@ class PaymentsBloc extends Bloc<PaymentsEvent, PaymentsState>
           stripeAccountStatus: StripeAccountStatus.notCreated));
       print('There is no stripe account');
       return;
+    }
+  }
+
+  void _onLoadCharges(LoadCharges event, Emitter<PaymentsState> emit) async {
+    try {
+      emit(PaymentsLoading());
+      List<Charge> charges = await _paymentsRepository.getCharges(
+          stripeAccountId: event.user.stripeAccountId!);
+      emit(PaymentsLoaded(
+          stripeAccountStatus: StripeAccountStatus.notCreated,
+          charges: charges));
+      print('There is no stripe account');
+      return;
+    } catch (e) {
+      print('Error: $e');
+      emit(PaymentsError(message: e.toString()));
     }
   }
 

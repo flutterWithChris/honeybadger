@@ -8,6 +8,7 @@ import 'package:flutter_stripe/flutter_stripe.dart';
 import 'package:honeybadger/core/constants.dart';
 import 'package:honeybadger/payments/model/balance.dart';
 import 'package:honeybadger/payments/model/balance_transaction.dart';
+import 'package:honeybadger/payments/model/charge.dart';
 import 'package:honeybadger/payments/model/stripe_account.dart';
 import 'package:honeybadger/payouts/model/payout.dart';
 import 'package:http/http.dart' as http;
@@ -154,7 +155,7 @@ class PaymentsRepository {
   }
 
   /// Initialize payment sheet
-  Future<void> initPaymentSheet(context,
+  Future<String?> initPaymentSheet(context,
       {required String email,
       required int amount,
       required int applicationFeeAmount,
@@ -196,10 +197,16 @@ class PaymentsRepository {
 
       scaffoldKey.currentState!.showSnackBar(
         const SnackBar(
-          content: Text('Payment Successful!'),
+          backgroundColor: Colors.green,
+          behavior: SnackBarBehavior.floating,
+          content: Text('Payment Successful!',
+              style: TextStyle(color: Colors.white)),
           duration: Duration(seconds: 2),
         ),
       );
+
+      // return customer
+      return jsonResponse['customer'];
     } catch (e) {
       log(e.toString());
       if (e is StripeException) {
@@ -225,6 +232,7 @@ class PaymentsRepository {
           ),
         );
       }
+      rethrow;
     }
   }
 
@@ -288,6 +296,53 @@ class PaymentsRepository {
       List<BalanceTransaction> transactionsList =
           transactions.map((i) => BalanceTransaction.fromJson(i)).toList();
       return transactionsList;
+    } catch (e) {
+      log(e.toString());
+      rethrow;
+    }
+  }
+
+  Future<List<Charge>> getCharges({required String stripeAccountId}) async {
+    try {
+      final response = await http.post(
+          Uri.parse(
+              'https://us-central1-honeybadger-817ee.cloudfunctions.net/getStripeCharges'),
+          body: {
+            'accountId': stripeAccountId,
+          });
+      print(response.body);
+      final jsonResponse = jsonDecode(response.body);
+      log(jsonResponse.toString());
+      print(jsonResponse.toString());
+      var charges = jsonResponse['charges']['data'] as List;
+      List<Charge> chargesList =
+          charges.map((i) => Charge.fromJson(i)).toList();
+      return chargesList;
+    } catch (e) {
+      log(e.toString());
+      rethrow;
+    }
+  }
+
+  Future<List<Charge>> getChargesPaginated(
+      {required String stripeAccountId,
+      required String startingAfterId}) async {
+    try {
+      final response = await http.post(
+          Uri.parse(
+              'https://us-central1-honeybadger-817ee.cloudfunctions.net/getStripeCharges'),
+          body: {
+            'accountId': stripeAccountId,
+            'startingAfter': startingAfterId,
+          });
+      print(response.body);
+      final jsonResponse = jsonDecode(response.body);
+      log(jsonResponse.toString());
+      print(jsonResponse.toString());
+      var charges = jsonResponse['charges']['data'] as List;
+      List<Charge> chargesList =
+          charges.map((i) => Charge.fromJson(i)).toList();
+      return chargesList;
     } catch (e) {
       log(e.toString());
       rethrow;
