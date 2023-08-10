@@ -28,7 +28,7 @@ class ProjectStatusChip extends StatelessWidget {
               radius: 4,
             ),
             Text(parseEnumName(project.status.toString()),
-                style: Theme.of(context).textTheme.bodyLarge),
+                style: Theme.of(context).textTheme.bodyMedium),
           ]),
     );
   }

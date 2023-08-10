@@ -91,7 +91,8 @@ class PaymentsBloc extends Bloc<PaymentsEvent, PaymentsState>
       await _paymentsRepository.initPaymentSheet(
         event.context,
         email: event.client.email!,
-        amount: event.amount,
+        amount: (event.amount * 1.05).round(),
+        applicationFeeAmount: (event.amount * 0.10).round(),
         freelancerStripeAccountId: event.freelancerStripeAccountId,
         description: 'Payment for ${event.proposal.projectName}',
         metadata: {

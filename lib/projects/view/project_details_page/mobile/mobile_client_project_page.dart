@@ -16,8 +16,10 @@ import 'package:honeybadger/proposals/model/milestone.dart';
 import 'package:honeybadger/proposals/model/proposal.dart';
 import 'package:honeybadger/profile/bloc/profile_bloc.dart';
 import 'package:honeybadger/proposals/bloc/proposal_bloc.dart';
+import 'package:honeybadger/proposals/view/view_proposal/mobile/active_proposal_tab.dart';
 import 'package:intl/intl.dart';
 import 'package:jiffy/jiffy.dart';
+import 'package:list_ext/list_ext.dart';
 import 'package:loading_animation_widget/loading_animation_widget.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 
@@ -69,6 +71,12 @@ class _MobileClientProjectDetailsPageState
 
   @override
   Widget build(BuildContext context) {
+    Proposal? acceptedProposal = context
+        .watch<ProposalBloc>()
+        .state
+        .proposals
+        ?.firstWhereOrNull(
+            (element) => element.id == widget.project.acceptedProposalId!);
     return Scaffold(
       bottomNavigationBar: const MainBottomNavBar(),
       body: DefaultTabController(
@@ -84,18 +92,18 @@ class _MobileClientProjectDetailsPageState
                   crossAxisAlignment: CrossAxisAlignment.start,
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    Hero(
-                      tag: '${widget.project.id}-category',
-                      child: Material(
-                        color: Colors.transparent,
-                        child: Text(widget.project.category!,
-                            style: Theme.of(context)
-                                .textTheme
-                                .bodyMedium
-                                ?.copyWith(fontStyle: FontStyle.italic)),
-                      ),
-                    ),
-                    const GutterSmall(),
+                    // Hero(
+                    //   tag: '${widget.project.id}-category',
+                    //   child: Material(
+                    //     color: Colors.transparent,
+                    //     child: Text(widget.project.category!,
+                    //         style: Theme.of(context)
+                    //             .textTheme
+                    //             .bodyMedium
+                    //             ?.copyWith(fontStyle: FontStyle.italic)),
+                    //   ),
+                    // ),
+                    // const GutterSmall(),
                     Hero(
                       tag: '${widget.project.id}-title',
                       child: Material(
@@ -111,24 +119,27 @@ class _MobileClientProjectDetailsPageState
             ),
             SliverToBoxAdapter(
               child: TabBar(padding: EdgeInsets.zero, tabs: [
-                widget.project.unreadProposalCount! > 0
-                    ? Row(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          Badge(
-                            label: Text(
-                              widget.project.unreadProposalCount.toString(),
+                if (acceptedProposal != null)
+                  const Tab(text: 'Active Proposal')
+                else
+                  widget.project.unreadProposalCount! > 0
+                      ? Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Badge(
+                              label: Text(
+                                widget.project.unreadProposalCount.toString(),
+                              ),
                             ),
-                          ),
-                          const GutterSmall(),
-                          const Tab(
-                            text: 'Proposals',
-                          ),
-                        ],
-                      )
-                    : const Tab(
-                        text: 'Proposals',
-                      ),
+                            const GutterSmall(),
+                            const Tab(
+                              text: 'Proposals',
+                            ),
+                          ],
+                        )
+                      : const Tab(
+                          text: 'Proposals',
+                        ),
                 const Tab(
                   text: 'Details',
                 ),
@@ -137,7 +148,10 @@ class _MobileClientProjectDetailsPageState
             SliverFillRemaining(
               child: TabBarView(
                 children: [
-                  ProposalsTab(project: widget.project),
+                  if (widget.project.status == ProjectStatus.open)
+                    ProposalsTab(project: widget.project)
+                  else if (acceptedProposal != null)
+                    ActiveProposalTab(proposal: acceptedProposal),
                   DetailsTab(project: widget.project),
                 ],
               ),

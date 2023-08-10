@@ -4,7 +4,7 @@ import '../../proposals/model/milestone.dart';
 
 enum ProjectType { hourly, fixed }
 
-enum ProjectStatus { open, closed, inProgress }
+enum ProjectStatus { open, closed, inProgress, completed }
 
 enum ProjectDuration { oneTime, recurring }
 
@@ -22,6 +22,7 @@ class Project {
   String? clientIndustry;
   String? freelancerId;
   String? freelancerName;
+  String? acceptedProposalId;
   String? title;
   String? description;
   String? deliverables;
@@ -61,6 +62,7 @@ class Project {
     this.clientIndustry,
     this.freelancerId,
     this.freelancerName,
+    this.acceptedProposalId,
     this.title,
     this.description,
     this.deliverables,
@@ -102,6 +104,7 @@ class Project {
     String? clientIndustry,
     String? freelancerId,
     String? freelancerName,
+    String? acceptedProposalId,
     String? title,
     String? description,
     String? deliverables,
@@ -141,6 +144,7 @@ class Project {
       clientIndustry: clientIndustry ?? clientIndustry,
       freelancerId: freelancerId ?? freelancerId,
       freelancerName: freelancerName ?? freelancerName,
+      acceptedProposalId: acceptedProposalId ?? acceptedProposalId,
       title: title ?? title,
       description: description ?? description,
       deliverables: deliverables ?? deliverables,
@@ -184,6 +188,7 @@ class Project {
       'clientIndustry': clientIndustry,
       'freelancerId': freelancerId,
       'freelancerName': freelancerName,
+      'acceptedProposalId': acceptedProposalId,
       'title': title,
       'description': description,
       'deliverables': deliverables,
@@ -228,6 +233,7 @@ class Project {
     clientIndustry = snap['clientIndustry'];
     freelancerId = snap['freelancerId'];
     freelancerName = snap['freelancerName'];
+    acceptedProposalId = snap['acceptedProposalId'];
     title = snap['title'];
     description = snap['description'];
     deliverables = snap['deliverables'];

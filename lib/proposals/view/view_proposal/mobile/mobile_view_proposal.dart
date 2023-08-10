@@ -10,6 +10,7 @@ import 'package:honeybadger/profile/bloc/profile_bloc.dart';
 import 'package:honeybadger/proposals/bloc/proposal_bloc.dart';
 import 'package:honeybadger/proposals/model/proposal.dart';
 import 'package:jiffy/jiffy.dart';
+import 'package:list_ext/list_ext.dart';
 import 'package:loading_animation_widget/loading_animation_widget.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'package:timeline_tile/timeline_tile.dart';
@@ -21,7 +22,14 @@ class MobileViewProposalPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     proposal.milestones!.sort((a, b) => a.dueDate!.compareTo(b.dueDate!));
-
+    print('Proposal: ${proposal.id}');
+    print(context.watch<ProposalBloc>().state.proposals.toString());
+    Proposal? currentProposal = context
+        .watch<ProposalBloc>()
+        .state
+        .proposals
+        ?.firstWhereOrNull((element) => element.id == proposal.id);
+    print('Current proposal: $currentProposal');
     return Scaffold(
         bottomNavigationBar: const MainBottomNavBar(),
         body: CustomScrollView(
@@ -32,6 +40,29 @@ class MobileViewProposalPage extends StatelessWidget {
               sliver: SliverList(
                 delegate: SliverChildListDelegate(
                   [
+                    if (currentProposal?.status == ProposalStatus.accepted)
+                      Row(
+                        children: [
+                          Chip(
+                              visualDensity: VisualDensity.compact,
+                              padding: const EdgeInsets.symmetric(
+                                  horizontal: 8.0, vertical: 0.0),
+                              labelPadding: const EdgeInsets.symmetric(
+                                  horizontal: 4.0, vertical: 0.0),
+                              side: BorderSide.none,
+                              backgroundColor: Colors.green,
+                              avatar: const Icon(
+                                Icons.check_circle_rounded,
+                                color: Colors.white,
+                              ),
+                              label: Text('Accepted',
+                                  style: Theme.of(context)
+                                      .textTheme
+                                      .titleSmall
+                                      ?.copyWith(color: Colors.white))),
+                        ],
+                      ),
+                    const GutterSmall(),
                     Text(
                       'Proposal from ${proposal.freelancerName!.split(' ').first}',
                       style: Theme.of(context).textTheme.titleLarge,
@@ -162,7 +193,7 @@ class MobileViewProposalPage extends StatelessWidget {
                             style: Theme.of(context).textTheme.titleLarge),
                       ],
                     ),
-                    MilestoneTimeline(proposal: proposal),
+                    MilestoneTimeline(proposal: currentProposal ?? proposal),
                     const GutterTiny(),
                     BlocConsumer<PaymentsBloc, PaymentsState>(
                       listener: (context, state) {
@@ -172,6 +203,15 @@ class MobileViewProposalPage extends StatelessWidget {
                               .add(AcceptProposal(proposal));
                           context.read<ProposalBloc>().add(FundMilestone(
                               proposal.milestones!.first, proposal));
+                          scaffoldKey.currentState!.showSnackBar(
+                            const SnackBar(
+                              content: Text('Payment sent!',
+                                  textAlign: TextAlign.center,
+                                  style: TextStyle(color: Colors.white)),
+                              backgroundColor: Colors.green,
+                              behavior: SnackBarBehavior.floating,
+                            ),
+                          );
                         }
                       },
                       builder: (context, state) {
@@ -204,52 +244,107 @@ class MobileViewProposalPage extends StatelessWidget {
                             },
                           );
                         }
-                        return Column(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            Row(
-                              children: [
-                                Expanded(
-                                  child: FilledButton.icon(
-                                    icon: Icon(MdiIcons.cashCheck),
-                                    label: const Text(
-                                        'Accept & Fund First Milestone'),
-                                    onPressed: () {
-                                      context.read<PaymentsBloc>().add(
-                                          SendPayment(
-                                              amount: (proposal.milestones!
-                                                          .first.amount! *
-                                                      1.05)
-                                                  .round(),
-                                              description:
-                                                  'Milestone: ${proposal.title}',
-                                              client: context
-                                                  .read<ProfileBloc>()
-                                                  .state
-                                                  .user!,
-                                              freelancerId:
-                                                  proposal.freelancerId!,
-                                              freelancerStripeAccountId: proposal
-                                                  .freelancerStripeAccountId!,
-                                              proposal: proposal,
-                                              context: context));
-                                    },
+                        bool milestoneWaitingForPayment = proposal.milestones!
+                            .any((element) =>
+                                element.funded == true &&
+                                element.isPaid != true);
+                        if (milestoneWaitingForPayment) {
+                          return Column(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Row(
+                                children: [
+                                  Expanded(
+                                    child: FilledButton.icon(
+                                      style: FilledButton.styleFrom(
+                                          backgroundColor: Colors.green),
+                                      icon: const Icon(
+                                        Icons.lock_open_rounded,
+                                        color: Colors.white,
+                                        size: 20.0,
+                                      ),
+                                      label: const Text(
+                                        'Release Milestone Payment',
+                                        style: TextStyle(color: Colors.white),
+                                      ),
+                                      onPressed: () {
+                                        context.read<PaymentsBloc>().add(SendPayment(
+                                            amount: proposal
+                                                .milestones!.first.amount!,
+                                            description:
+                                                'Milestone: ${proposal.title}',
+                                            client: context
+                                                .read<ProfileBloc>()
+                                                .state
+                                                .user!,
+                                            freelancerId:
+                                                proposal.freelancerId!,
+                                            freelancerStripeAccountId: proposal
+                                                .freelancerStripeAccountId!,
+                                            proposal: proposal,
+                                            context: context));
+                                      },
+                                    ),
                                   ),
-                                ),
-                              ],
-                            ),
-                            const GutterTiny(),
-                            Text(
-                              'A 5% fee will be added',
-                              style: Theme.of(context)
-                                  .textTheme
-                                  .bodySmall
-                                  ?.copyWith(
-                                    fontStyle: FontStyle.italic,
+                                ],
+                              ),
+                              // const GutterTiny(),
+                              // Text(
+                              //   'A 5% fee will be added',
+                              //   style: Theme.of(context)
+                              //       .textTheme
+                              //       .bodySmall
+                              //       ?.copyWith(
+                              //         fontStyle: FontStyle.italic,
+                              //       ),
+                              // ),
+                            ],
+                          );
+                        } else {
+                          return Column(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Row(
+                                children: [
+                                  Expanded(
+                                    child: FilledButton.icon(
+                                      icon: Icon(MdiIcons.cashCheck),
+                                      label: const Text(
+                                          'Accept & Fund First Milestone'),
+                                      onPressed: () {
+                                        context.read<PaymentsBloc>().add(SendPayment(
+                                            amount: proposal
+                                                .milestones!.first.amount!,
+                                            description:
+                                                'Milestone: ${proposal.title}',
+                                            client: context
+                                                .read<ProfileBloc>()
+                                                .state
+                                                .user!,
+                                            freelancerId:
+                                                proposal.freelancerId!,
+                                            freelancerStripeAccountId: proposal
+                                                .freelancerStripeAccountId!,
+                                            proposal: proposal,
+                                            context: context));
+                                      },
+                                    ),
                                   ),
-                            ),
-                          ],
-                        );
+                                ],
+                              ),
+                              const GutterTiny(),
+                              Text(
+                                'A 5% fee will be added',
+                                style: Theme.of(context)
+                                    .textTheme
+                                    .bodySmall
+                                    ?.copyWith(
+                                      fontStyle: FontStyle.italic,
+                                    ),
+                              ),
+                            ],
+                          );
+                        }
                       },
                     ),
                   ],
@@ -286,16 +381,28 @@ class MilestoneTimeline extends StatelessWidget {
               indicator: Container(
                 decoration: BoxDecoration(
                   shape: BoxShape.circle,
-                  color: Theme.of(context).primaryColor,
+                  color: proposal.milestones![i].funded == true
+                      ? Colors.green
+                      : Theme.of(context).primaryColor,
                 ),
-                child: Padding(
-                  padding: const EdgeInsets.only(top: 2.0, left: 5.0),
-                  child: Text(
-                    '${i + 1}',
-                    style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                        color: Theme.of(context).scaffoldBackgroundColor),
-                  ),
-                ),
+                child: proposal.milestones![i].funded == true
+                    ? Padding(
+                        padding: const EdgeInsets.only(bottom: 1.0),
+                        child: Icon(MdiIcons.checkBold,
+                            size: 12.0, color: Colors.white),
+                      )
+                    : Padding(
+                        padding: const EdgeInsets.only(top: 2.0, left: 5.0),
+                        child: Text(
+                          '${i + 1}',
+                          style: Theme.of(context)
+                              .textTheme
+                              .bodySmall
+                              ?.copyWith(
+                                  color: Theme.of(context)
+                                      .scaffoldBackgroundColor),
+                        ),
+                      ),
               ),
               color: Theme.of(context).primaryColor,
               padding: const EdgeInsets.all(6),
@@ -321,34 +428,48 @@ class MilestoneTimeline extends StatelessWidget {
                         ],
                       ),
                     ),
-                    SizedBox(
-                      height: 32.0,
-                      child: FittedBox(
-                        child: Chip(
-                          visualDensity: VisualDensity.compact,
-                          padding: EdgeInsets.zero,
-                          labelPadding: const EdgeInsets.symmetric(
-                              horizontal: 12.0, vertical: 0.0),
-                          side: BorderSide.none,
-                          backgroundColor: Theme.of(context).primaryColor,
-                          label: Text(
-                            convertIntToCurrency(
-                              proposal.milestones![i].amount!,
+                    Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        SizedBox(
+                          height: 32.0,
+                          child: FittedBox(
+                            child: Chip(
+                              visualDensity: VisualDensity.compact,
+                              padding: EdgeInsets.zero,
+                              labelPadding: const EdgeInsets.symmetric(
+                                  horizontal: 12.0, vertical: 0.0),
+                              side: BorderSide.none,
+                              backgroundColor:
+                                  proposal.milestones![i].funded == true
+                                      ? Colors.green
+                                      : Theme.of(context).primaryColor,
+                              label: Text(
+                                proposal.milestones![i].funded == true
+                                    ? 'Funded'
+                                    : convertIntToCurrency(
+                                        proposal.milestones![i].amount!,
+                                      ),
+                                style: Theme.of(context)
+                                    .textTheme
+                                    .titleSmall
+                                    ?.copyWith(
+                                      color:
+                                          proposal.milestones![i].funded == true
+                                              ? Colors.white
+                                              : Theme.of(context)
+                                                  .scaffoldBackgroundColor,
+                                    ),
+                              ),
                             ),
-                            style: Theme.of(context)
-                                .textTheme
-                                .bodyMedium
-                                ?.copyWith(
-                                  color:
-                                      Theme.of(context).scaffoldBackgroundColor,
-                                ),
                           ),
                         ),
-                      ),
+                      ],
                     ),
                   ],
                 ),
                 subtitle: Row(
+                  mainAxisSize: MainAxisSize.min,
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
                     Icon(Icons.calendar_today_rounded,

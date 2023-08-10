@@ -62,7 +62,8 @@ class MobilePaymentDetailsPage extends StatelessWidget {
                                     ? Colors.grey[700]
                                     : Colors.grey[300],
                           )),
-
+              Text(
+                  'Fee: ${convertCentsToCurrency((balanceTransaction.fee! / 2).round())}'),
               // payment.type == PaymentType.fixed
               //     ? Flexible(
               //         child: Row(

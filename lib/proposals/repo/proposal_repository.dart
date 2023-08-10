@@ -211,12 +211,13 @@ class ProposalRepository {
   }
 
   /// Fetch proposals by job id, ignoring those that are draft
-  Stream<List<Proposal>?> fetchProposalsByProject(String projectId) {
+  Stream<List<Proposal>?> fetchProposalsByStatus(
+      String projectId, ProposalStatus status) {
     try {
       return _firestore
           .collection('proposals')
           .where('projectId', isEqualTo: projectId)
-          .where('status', isNotEqualTo: ProposalStatus.draft.toString())
+          .where('status', isEqualTo: status.toString().split('.').last)
           .snapshots()
           .map((event) =>
               event.docs.map((e) => Proposal.fromDocument(e)).toList());

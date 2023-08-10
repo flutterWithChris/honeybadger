@@ -157,6 +157,7 @@ class PaymentsRepository {
   Future<void> initPaymentSheet(context,
       {required String email,
       required int amount,
+      required int applicationFeeAmount,
       required String freelancerStripeAccountId,
       required String description,
       required Map<String, dynamic> metadata}) async {
@@ -170,6 +171,7 @@ class PaymentsRepository {
             'email': email,
             'description': description,
             'freelancerStripeAccountId': freelancerStripeAccountId,
+            'applicationFeeAmount': (applicationFeeAmount * 100).toString(),
             // 'metadata': jsonEncode(metadata),
           });
 

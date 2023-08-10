@@ -3,6 +3,8 @@ import 'package:equatable/equatable.dart';
 import 'package:flutter/material.dart';
 import 'package:honeybadger/core/constants.dart';
 import 'package:honeybadger/message/bloc/messages_bloc.dart';
+import 'package:honeybadger/profile/bloc/profile_bloc.dart';
+import 'package:honeybadger/profile/model/user.dart';
 import 'package:honeybadger/projects/model/project.dart';
 import 'package:honeybadger/projects/repository/projects_repository.dart';
 import 'package:honeybadger/proposals/model/milestone.dart';
@@ -17,13 +19,16 @@ class ProposalBloc extends Bloc<ProposalsEvent, ProposalState> {
   final ProposalRepository _proposalRepository;
   final MessagesBloc _messagesBloc;
   final ProjectsRepository _projectsRepository;
+  final ProfileBloc _profileBloc;
   ProposalBloc(
       {required ProposalRepository proposalRepository,
       required MessagesBloc messagesBloc,
-      required ProjectsRepository projectsRepository})
+      required ProjectsRepository projectsRepository,
+      required ProfileBloc profileBloc})
       : _proposalRepository = proposalRepository,
         _messagesBloc = messagesBloc,
         _projectsRepository = projectsRepository,
+        _profileBloc = profileBloc,
         super(ProposalLoading()) {
     on<LoadProposal>((event, emit) async {
       if (state is ProposalLoading == false) emit(ProposalLoading());
@@ -47,6 +52,21 @@ class ProposalBloc extends Bloc<ProposalsEvent, ProposalState> {
     });
     on<LoadProposals>((event, emit) async {
       if (state is ProposalLoading == false) emit(ProposalLoading());
+      if (_profileBloc.state.user!.userType == UserType.client) {
+        await emit.forEach(
+          _proposalRepository.fetchProposalsByStatus(
+              event.project.id!,
+              event.project.status == ProjectStatus.inProgress
+                  ? ProposalStatus.accepted
+                  : ProposalStatus.sent),
+          onData: (data) {
+            List<Proposal> proposals = data?.toList() ?? [];
+
+            return ProposalsLoaded(proposals, const []);
+          },
+        );
+        return;
+      }
       await emit.forEach(
         _proposalRepository.fetchProposalsByFreelancerId(event.userId),
         onData: (data) {
@@ -124,15 +144,20 @@ class ProposalBloc extends Bloc<ProposalsEvent, ProposalState> {
       }
     });
     on<AcceptProposal>((event, emit) async {
+      emit(ProposalLoading());
       try {
-        if (state is ProposalLoaded) {
-          final newProposal = event.proposal;
-          await _proposalRepository.acceptProposal(newProposal);
-          await _projectsRepository.updateProjectStatus(
-              event.proposal.projectId!, ProjectStatus.inProgress);
-          await Future.delayed(const Duration(seconds: 1));
-          emit(ProposalLoaded(newProposal));
-        }
+        final newProposal = event.proposal;
+        await _proposalRepository.acceptProposal(newProposal);
+        await _projectsRepository.updateProjectStatus(
+            event.proposal.projectId!, ProjectStatus.inProgress);
+        await Future.delayed(const Duration(seconds: 1));
+        scaffoldKey.currentState!.showSnackBar(const SnackBar(
+          behavior: SnackBarBehavior.floating,
+          content:
+              Text('Proposal Accepted!', style: TextStyle(color: Colors.white)),
+          backgroundColor: Colors.green,
+        ));
+        emit(ProposalLoaded(newProposal));
       } catch (e) {
         print(e);
         scaffoldKey.currentState!.showSnackBar(const SnackBar(
@@ -150,7 +175,7 @@ class ProposalBloc extends Bloc<ProposalsEvent, ProposalState> {
       if (state is ProposalLoaded) {
         final newProposal = event.proposal;
         await _proposalRepository.updateMilestone(
-            event.proposal, event.milestone.copyWith());
+            event.proposal, event.milestone.copyWith(funded: true));
         await Future.delayed(const Duration(seconds: 1));
         emit(ProposalLoaded(newProposal));
       }

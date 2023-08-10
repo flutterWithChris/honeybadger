@@ -15,13 +15,13 @@ class LoadProposal extends ProposalsEvent {
 }
 
 class LoadProposals extends ProposalsEvent {
-  final String projectId;
+  final Project project;
   final String userId;
 
-  const LoadProposals(this.projectId, this.userId);
+  const LoadProposals(this.project, this.userId);
 
   @override
-  List<Object?> get props => [projectId, userId];
+  List<Object?> get props => [project, userId];
 }
 
 class StartProposal extends ProposalsEvent {
