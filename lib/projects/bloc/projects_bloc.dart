@@ -33,7 +33,7 @@ class ProjectsBloc extends Bloc<ProjectsEvent, ProjectsState> {
     on<UpdateProject>(_onUpdateProject);
   }
   void _onLoadProjects(LoadProjects event, Emitter<ProjectsState> emit) async {
-    emit(ProjectsLoading());
+    emit(ProjectsLoading(projects: state.projects));
     await emit.forEach(_projectsRepository.getProjects(event.user),
         onData: (data) {
       print('Projects Bloc received Projects State: $data');
@@ -64,7 +64,7 @@ class ProjectsBloc extends Bloc<ProjectsEvent, ProjectsState> {
 
   void _onUpdateProject(
       UpdateProject event, Emitter<ProjectsState> emit) async {
-    emit(ProjectsLoading());
+    emit(const ProjectsLoading());
     await Future.delayed(const Duration(seconds: 2));
     emit(ProjectUpdated(event.project));
   }

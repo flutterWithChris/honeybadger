@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:io';
 
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:file_picker/file_picker.dart';
@@ -13,13 +14,14 @@ import 'package:go_router/go_router.dart';
 import 'package:honeybadger/core/constants.dart';
 import 'package:honeybadger/core/presentation/system/main_navigation_bar.dart';
 import 'package:honeybadger/core/presentation/system/mobile_sliver_app_bar.dart';
+import 'package:honeybadger/globals.dart';
 import 'package:honeybadger/profile/bloc/profile_bloc.dart';
+import 'package:honeybadger/projects/bloc/projects_bloc.dart';
 import 'package:honeybadger/projects/view/widgets/project_status_chip.dart';
 import 'package:honeybadger/proposals/bloc/proposal_bloc.dart';
 import 'package:honeybadger/proposals/model/milestone.dart';
 import 'package:honeybadger/proposals/model/proposal.dart';
 import 'package:honeybadger/proposals/view/view_proposal/mobile/active_proposal_tab.dart';
-import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
 import 'package:jiffy/jiffy.dart';
 import 'package:loading_animation_widget/loading_animation_widget.dart';
@@ -552,10 +554,7 @@ class _FreelancerActiveProposalTabState
 }
 
 class SubmitWorkDialog extends StatefulWidget {
-  final Project project;
-  final Proposal proposal;
-  const SubmitWorkDialog(
-      {super.key, required this.project, required this.proposal});
+  const SubmitWorkDialog({super.key});
 
   @override
   State<SubmitWorkDialog> createState() => _SubmitWorkDialogState();
@@ -563,204 +562,389 @@ class SubmitWorkDialog extends StatefulWidget {
 
 class _SubmitWorkDialogState extends State<SubmitWorkDialog> {
   final TextEditingController _descriptionController = TextEditingController();
-  final TextEditingController _fileTitleController = TextEditingController();
-  final List<(String?, FilePickerResult?, XFile?)> _files = [];
+  final TextEditingController _urlFieldController = TextEditingController();
+  final List<PlatformFile> _files = [];
+  final List<PlatformFile> _images = [];
+  bool filesUploading = false;
+  final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+  static Project? project;
+
   @override
   Widget build(BuildContext context) {
-    for (var element in _files) {
-      print(element.$2!.files.first.bytes);
-    }
     return Scaffold(
       appBar: AppBar(
         title: const Text('Submit Work'),
       ),
-      body: ListView(
-        padding: const EdgeInsets.all(16.0),
-        children: [
-          // Text('Submit Work', style: Theme.of(context).textTheme.titleLarge),
-          // const GutterSmall(),
-          Text(
-              'You can submit work to your client for review and request payment for the milestone.',
-              style: Theme.of(context).textTheme.bodyMedium),
-          const Gutter(),
-          Text('Work Description',
-              style: Theme.of(context).textTheme.titleMedium),
-          const GutterSmall(),
-          TextField(
-            controller: _descriptionController,
-            minLines: 5,
-            maxLines: 7,
-            decoration: const InputDecoration(
-                hintText: 'Enter a description of the work you are submitting'),
-          ),
-          const Gutter(),
-          Text('Work Files', style: Theme.of(context).textTheme.titleMedium),
-          const GutterSmall(),
-          Row(
-            children: [
-              Expanded(
-                child: TextField(
-                  controller: _fileTitleController,
+      body:
+          BlocConsumer<ProposalBloc, ProposalState>(listener: (context, state) {
+        if (state is ProposalUpdated) {
+          context.pop();
+        }
+      }, builder: (context, state) {
+        if (state is ProposalsError) {
+          return const Center(
+            child: Text('Error loading Proposal...'),
+          );
+        } else if (state is ProposalLoading) {
+          Center(
+            heightFactor: 1.0,
+            child: LoadingAnimationWidget.staggeredDotsWave(
+                color: Theme.of(context).colorScheme.onSurface, size: 30.0),
+          );
+        } else if (state is ProposalLoaded) {
+          project = context.watch<ProjectsBloc>().state.projects?.firstWhere(
+              (element) => element.id == state.proposal!.projectId,
+              orElse: () => Project());
+          print('Project: $project');
+          return Form(
+            key: _formKey,
+            child: ListView(
+              padding: const EdgeInsets.all(16.0),
+              children: [
+                // Text('Submit Work', style: Theme.of(context).textTheme.titleLarge),
+                // const GutterSmall(),
+                Text(
+                    'You can submit work to your client for review and request payment for the milestone.',
+                    style: Theme.of(context).textTheme.bodyMedium),
+                const Gutter(),
+                Text('Work Description',
+                    style: Theme.of(context).textTheme.titleMedium),
+                const GutterSmall(),
+                TextFormField(
+                  validator: (value) {
+                    if (value == null || value.isEmpty) {
+                      return 'Please enter a description';
+                    }
+                    return null;
+                  },
+                  onTapOutside: (event) {
+                    FocusScope.of(context).unfocus();
+                  },
+                  controller: _descriptionController,
+                  minLines: 2,
+                  maxLines: 7,
                   decoration: const InputDecoration(
                       hintText:
-                          'Give your work a title (e.g. "Logo Design Mockup")'),
+                          'Enter a description of the work you are submitting'),
                 ),
-              ),
-              const Gutter(),
-              IconButton(
-                onPressed: () async {
-                  showModalBottomSheet(
-                    context: context,
-                    builder: (context) {
-                      // Bottom sheet to choose either images or files
-                      return SizedBox(
-                        height: 180,
-                        child: Column(
-                          children: [
-                            Padding(
-                              padding: const EdgeInsets.only(
-                                  left: 16.0, top: 24.0, bottom: 8.0),
-                              child: Row(
-                                mainAxisAlignment: MainAxisAlignment.start,
-                                children: [
-                                  Text(
-                                    'Choose a file type',
+                const GutterSmall(),
+                Text('URL', style: Theme.of(context).textTheme.titleMedium),
+                const GutterSmall(),
+                TextFormField(
+                  validator: (value) {
+                    if (value != null && value.isNotEmpty) {
+                      if (Uri.parse(value).isAbsolute == false) {
+                        return 'Please enter a valid URL. Must start with https://';
+                      }
+                    }
+                    return null;
+                  },
+                  controller: _urlFieldController,
+                  decoration: const InputDecoration(
+                      hintText:
+                          'e.g. https://github.com/username/project-name'),
+                ),
+                Row(
+                  children: [
+                    Text('Attachments',
+                        style: Theme.of(context).textTheme.titleMedium),
+                    const GutterTiny(),
+                    if (filesUploading == true)
+                      Padding(
+                        padding: const EdgeInsets.all(17.0),
+                        child: LoadingAnimationWidget.discreteCircle(
+                          size: 14.0,
+                          color: Theme.of(context).colorScheme.onSurface,
+                        ),
+                      )
+                    else
+                      IconButton(
+                        onPressed: () async {
+                          await showAttachmentTypeSheet(context);
+                        },
+                        icon: const Icon(Icons.add_circle_rounded),
+                      ),
+                  ],
+                ),
+                if (_files.isEmpty && _images.isEmpty)
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Container(
+                        height: 160,
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(16.0),
+                          border: Border.all(
+                              color: Theme.of(context).colorScheme.onSurface),
+                        ),
+                        child: InkWell(
+                          onTap: () async {
+                            await showAttachmentTypeSheet(context);
+                          },
+                          child: Padding(
+                            padding:
+                                const EdgeInsets.only(right: 16.0, bottom: 8.0),
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Icon(Icons.add_rounded,
+                                    color: Theme.of(context)
+                                        .colorScheme
+                                        .onSurface),
+                                const GutterSmall(),
+                                Text('Add Files',
                                     style:
-                                        Theme.of(context).textTheme.titleMedium,
-                                  ),
-                                ],
-                              ),
+                                        Theme.of(context).textTheme.bodyMedium),
+                              ],
                             ),
-                            ListTile(
-                              leading: const Icon(Icons.image),
-                              title: const Text('Images'),
-                              onTap: () {
-                                Navigator.pop(context);
-                              },
-                            ),
-                            ListTile(
-                              leading: const Icon(Icons.attach_file),
-                              title: const Text('Files'),
-                              onTap: () async {
-                                Navigator.pop(context);
-                                final FilePickerResult? file =
-                                    await FilePicker.platform.pickFiles(
-                                  allowMultiple: true,
-                                  type: FileType.custom,
-                                  allowedExtensions: [
-                                    'jpg',
-                                    'pdf',
-                                    'csv',
-                                    'jpeg',
-                                    'heic',
-                                    'doc',
-                                    'docx',
-                                    'png'
-                                  ],
-                                );
-                                if (file != null) {
-                                  setState(() {
-                                    _fileTitleController.value.text.isNotEmpty
-                                        ? _files.add((
-                                            _fileTitleController.value.text,
-                                            file,
-                                            null
-                                          ))
-                                        : _files.add((null, file, null));
-                                  });
-                                } else {
-                                  scaffoldKey.currentState!
-                                      .showSnackBar(const SnackBar(
-                                          behavior: SnackBarBehavior.floating,
-                                          content: Row(
-                                            children: [
-                                              Icon(Icons.error,
-                                                  color: Colors.red,
-                                                  size: 20.0),
-                                              GutterSmall(),
-                                              Text('No file selected.'),
-                                            ],
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+
+                if (_images.isNotEmpty)
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      SizedBox(
+                        height: 200.0,
+                        child: ListView.builder(
+                            shrinkWrap: true,
+                            itemCount: _images.length,
+                            scrollDirection: Axis.horizontal,
+                            itemBuilder: (context, index) {
+                              return Padding(
+                                padding: const EdgeInsets.only(
+                                    left: 16.0, right: 16.0, bottom: 16.0),
+                                child: Stack(
+                                  children: [
+                                    ClipRRect(
+                                      borderRadius: BorderRadius.circular(16.0),
+                                      child: Image.file(
+                                        File(_images[index].path!),
+                                      ),
+                                    ),
+                                    Positioned(
+                                      top: 8.0,
+                                      right: 8.0,
+                                      child: Container(
+                                        decoration: BoxDecoration(
+                                          color: Colors.black.withOpacity(0.5),
+                                          borderRadius:
+                                              BorderRadius.circular(16.0),
+                                        ),
+                                        child: InkWell(
+                                          onTap: () {
+                                            setState(() {
+                                              _images.removeAt(index);
+                                            });
+                                          },
+                                          child: const Padding(
+                                            padding: EdgeInsets.all(4.0),
+                                            child: Icon(
+                                              Icons.close_rounded,
+                                              size: 18.0,
+                                              color: Colors.white,
+                                            ),
                                           ),
-                                          duration: Duration(seconds: 2)));
-                                }
-                              },
-                            ),
+                                        ),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              );
+                            }),
+                      ),
+                    ],
+                  ),
+                if (_files.isNotEmpty || _images.isNotEmpty)
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      // Row(
+                      //   children: [
+                      //     Text('Files',
+                      //         style: Theme.of(context).textTheme.titleMedium),
+                      //     const GutterTiny(),
+                      //     IconButton(
+                      //       onPressed: () async {
+                      //         await showAttachmentTypeSheet(context);
+                      //       },
+                      //       icon: const Icon(Icons.add_circle_rounded),
+                      //     ),
+                      //   ],
+                      // ),
+                      if (_files.isNotEmpty)
+                        Column(
+                          children: [
+                            for (var file in _files)
+                              Slidable(
+                                  endActionPane: ActionPane(
+                                    motion: const StretchMotion(),
+                                    children: [
+                                      SlidableAction(
+                                        borderRadius: const BorderRadius.all(
+                                            Radius.circular(16.0)),
+                                        label: 'Delete',
+                                        onPressed: (context) {
+                                          setState(() {
+                                            _files.remove(file);
+                                          });
+                                        },
+                                        backgroundColor: Colors.redAccent,
+                                        foregroundColor: Colors.white,
+                                        icon: Icons.delete_outline,
+                                      ),
+                                    ],
+                                  ),
+                                  child: Card(
+                                    child: ListTile(
+                                      leading: file.extension == 'pdf'
+                                          ? const Icon(Icons.picture_as_pdf)
+                                          : const Icon(Icons.file_present),
+                                      title: Text(
+                                        file.name ?? 'No title',
+                                        maxLines: 1,
+                                        overflow: TextOverflow.ellipsis,
+                                      ),
+                                      subtitle: Text(formatBytes(file.size, 1)),
+                                      trailing: IconButton(
+                                        style: IconButton.styleFrom(
+                                            //   minimumSize: Size.zero,
+                                            // fixedSize: const Size(24, 24),
+                                            padding: EdgeInsets.zero),
+                                        onPressed: () {
+                                          setState(() {
+                                            _files.remove(file);
+                                          });
+                                        },
+                                        icon: const Icon(Icons.close_rounded),
+                                      ),
+                                    ),
+                                  )),
                           ],
                         ),
-                      );
-                    },
-                  );
-                },
-                icon: const Icon(Icons.attach_file),
-              ),
-            ],
-          ),
-          const Gutter(),
-          if (_files.isNotEmpty)
-            Column(
-              children: [
-                for (var file in _files)
-                  Slidable(
-                    endActionPane: ActionPane(
-                      motion: const DrawerMotion(),
-                      children: [
-                        SlidableAction(
-                          borderRadius:
-                              const BorderRadius.all(Radius.circular(16.0)),
-                          label: 'Delete',
-                          onPressed: (context) {
-                            setState(() {
-                              _files.removeWhere((element) => element == file);
-                            });
-                          },
-                          backgroundColor: Colors.redAccent,
-                          foregroundColor: Colors.white,
-                          icon: Icons.delete_outline,
-                        ),
-                      ],
-                    ),
-                    child: ListTile(
-                      leading: file.$2?.files.first.extension == 'pdf'
-                          ? const Icon(Icons.picture_as_pdf)
-                          : file.$2?.files.first.bytes != null
-                              ? Image.memory(
-                                  file.$2!.files.first.bytes!,
-                                  width: 40.0,
-                                  height: 40.0,
-                                )
-                              : const Icon(Icons.image),
-                      title: Text(file.$1 ?? 'No title'),
-                      subtitle: Text('${file.$2?.files.length} Files'),
-                      trailing: const Icon(Icons.file_present),
-                    ),
+                    ],
                   ),
+                const Gutter(),
+                Row(
+                  children: [
+                    Expanded(
+                      child: FilledButton.icon(
+                        icon: Icon(MdiIcons.progressCheck),
+                        label: const Text('Submit Work & Request Payment'),
+                        onPressed: () {
+                          if (_formKey.currentState!.validate()) {
+                            context.read<ProposalBloc>().add(SubmitWork(
+                                  proposal: state.proposal!,
+                                  milestone: state.proposal!.milestones!
+                                      .where((element) =>
+                                          element.id ==
+                                          state.proposal!.activeMilestoneId)
+                                      .first,
+                                  description:
+                                      _descriptionController.value.text,
+                                  files: _files,
+                                  images: _images,
+                                  urls: [_urlFieldController.value.text],
+                                ));
+                          } else {
+                            scaffoldKey.currentState!
+                                .showSnackBar(const SnackBar(
+                                    behavior: SnackBarBehavior.floating,
+                                    backgroundColor: Colors.red,
+                                    content: Row(
+                                      children: [
+                                        Icon(Icons.error,
+                                            color: Colors.white, size: 20.0),
+                                        GutterSmall(),
+                                        Text('Please correct any errors!',
+                                            style:
+                                                TextStyle(color: Colors.white)),
+                                      ],
+                                    ),
+                                    duration: Duration(seconds: 2)));
+                          }
+                        },
+                      ),
+                    ),
+                  ],
+                ),
               ],
             ),
-          Row(
+          );
+        }
+        return const Center(
+          child: Text('Something Went Wrong...'),
+        );
+      }),
+    );
+  }
+
+  Future<void> showAttachmentTypeSheet(BuildContext context) async {
+    final FilePickerResult? file = await FilePicker.platform.pickFiles(
+      allowMultiple: true,
+      type: FileType.any,
+      onFileLoading: (status) {
+        if (status == FilePickerStatus.picking) {
+          setState(() {
+            filesUploading = true;
+          });
+        } else if (status == FilePickerStatus.done) {
+          setState(() {
+            filesUploading = false;
+          });
+        }
+      },
+    );
+    if (file != null) {
+      // If any files are images, add them to the images list
+      // If any files are not images, add them to the files list
+      if (file.files.any((element) =>
+          element.extension == 'jpg' ||
+          element.extension == 'jpeg' ||
+          element.extension == 'png')) {
+        setState(() {
+          _urlFieldController.value.text.isNotEmpty
+              ? _images.addAll(file.files
+                  .where((element) =>
+                      element.extension == 'jpg' ||
+                      element.extension == 'jpeg' ||
+                      element.extension == 'png')
+                  .toList())
+              : _images.addAll(file.files
+                  .where((element) =>
+                      element.extension == 'jpg' ||
+                      element.extension == 'jpeg' ||
+                      element.extension == 'png')
+                  .toList());
+          file.files.removeWhere((element) =>
+              element.extension == 'jpg' ||
+              element.extension == 'jpeg' ||
+              element.extension == 'png');
+          if (file.files.isNotEmpty) {
+            _files.addAll(file.files);
+          }
+        });
+      } else {
+        setState(() {
+          _files.addAll(file.files);
+        });
+      }
+    } else {
+      scaffoldKey.currentState!.showSnackBar(const SnackBar(
+          behavior: SnackBarBehavior.floating,
+          content: Row(
             children: [
-              Expanded(
-                child: FilledButton.icon(
-                  icon: Icon(MdiIcons.progressCheck),
-                  label: const Text('Submit Work & Request Payment'),
-                  onPressed: () {
-                    showDialog(
-                        context: context,
-                        builder: (context) {
-                          return Dialog.fullscreen(
-                            child: SubmitWorkDialog(
-                              project: widget.project,
-                              proposal: widget.proposal,
-                            ),
-                          );
-                        });
-                  },
-                ),
-              ),
+              Icon(Icons.error, color: Colors.red, size: 20.0),
+              GutterSmall(),
+              Text('No file selected.'),
             ],
           ),
-        ],
-      ),
-    );
+          duration: Duration(seconds: 2)));
+    }
   }
 }
 

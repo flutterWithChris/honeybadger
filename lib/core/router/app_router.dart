@@ -22,6 +22,7 @@ import 'package:honeybadger/projects/model/project.dart';
 import 'package:honeybadger/projects/view/project_details_page/mobile/mobile_job_page.dart';
 import 'package:honeybadger/projects/view/project_details_page/project_page.dart';
 import 'package:honeybadger/projects/view/projects_page/projects_page.dart';
+import 'package:honeybadger/proposals/bloc/proposal_bloc.dart';
 import 'package:honeybadger/proposals/create/view/create_proposal_page.dart';
 import 'package:honeybadger/proposals/model/proposal.dart';
 import 'package:honeybadger/proposals/view/view_proposal.dart';
@@ -106,10 +107,7 @@ GoRouter goRouter = GoRouter(
           GoRoute(
               path: 'submit-work',
               name: 'submit-work',
-              builder: (context, state) => SubmitWorkDialog(
-                    project: (state.extra as Map)[0],
-                    proposal: (state.extra as Map)[1],
-                  )),
+              builder: (context, state) => const SubmitWorkDialog()),
           GoRoute(
               path: 'proposals/:proposalId',
               name: 'proposals',

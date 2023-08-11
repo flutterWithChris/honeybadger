@@ -1,3 +1,5 @@
+import 'package:honeybadger/projects/model/work_submission.dart';
+
 class Milestone {
   final String? id;
   final String? title;
@@ -14,6 +16,7 @@ class Milestone {
   final DateTime? updatedAt;
   final String? proposalId;
   final String? projectId;
+  final WorkSubmission? workSubmission;
 
   Milestone({
     this.id,
@@ -31,6 +34,7 @@ class Milestone {
     this.updatedAt,
     this.proposalId,
     this.projectId,
+    this.workSubmission,
   });
 
   Milestone copyWith({
@@ -49,6 +53,7 @@ class Milestone {
     final DateTime? updatedAt,
     final String? proposalId,
     final String? projectId,
+    final WorkSubmission? workSubmission,
   }) {
     return Milestone(
       id: id ?? this.id,
@@ -66,6 +71,7 @@ class Milestone {
       updatedAt: updatedAt ?? this.updatedAt,
       proposalId: proposalId ?? this.proposalId,
       projectId: projectId ?? this.projectId,
+      workSubmission: workSubmission ?? this.workSubmission,
     );
   }
 
@@ -87,6 +93,7 @@ class Milestone {
       'updatedAt': updatedAt?.toIso8601String(),
       'proposalId': proposalId,
       'projectId': projectId,
+      'workSubmission': workSubmission?.toJson(),
     };
   }
 
@@ -120,6 +127,10 @@ class Milestone {
           : DateTime.parse(json['updatedAt'] as String),
       proposalId: json['proposalId'] as String?,
       projectId: json['projectId'] as String?,
+      workSubmission: json['workSubmission'] == null
+          ? null
+          : WorkSubmission.fromJson(
+              json['workSubmission'] as Map<String, dynamic>),
     );
   }
 

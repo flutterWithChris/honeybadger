@@ -11,9 +11,18 @@ abstract class ProjectsState extends Equatable {
 
 class ProjectsInitial extends ProjectsState {}
 
-class ProjectsLoading extends ProjectsState {}
+class ProjectsLoading extends ProjectsState {
+  @override
+  final List<Project>? projects;
+
+  const ProjectsLoading({this.projects});
+
+  @override
+  List<Object?> get props => [projects];
+}
 
 class ProjectsLoaded extends ProjectsState {
+  @override
   final List<Project> projects;
 
   const ProjectsLoaded(this.projects);
@@ -23,6 +32,7 @@ class ProjectsLoaded extends ProjectsState {
 }
 
 class ProjectSending extends ProjectsState {
+  @override
   final Project project;
 
   const ProjectSending(this.project);
@@ -34,6 +44,7 @@ class ProjectSending extends ProjectsState {
 class ProjectLoading extends ProjectsState {}
 
 class ProjectCreated extends ProjectsState {
+  @override
   final Project project;
 
   const ProjectCreated(this.project);
@@ -43,6 +54,7 @@ class ProjectCreated extends ProjectsState {
 }
 
 class ProjectUpdated extends ProjectsState {
+  @override
   final Project project;
 
   const ProjectUpdated(this.project);
@@ -52,6 +64,7 @@ class ProjectUpdated extends ProjectsState {
 }
 
 class ProjectDeleted extends ProjectsState {
+  @override
   final Project project;
 
   const ProjectDeleted(this.project);

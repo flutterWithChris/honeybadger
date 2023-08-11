@@ -1,11 +1,19 @@
+import 'dart:io';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:file_picker/file_picker.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:honeybadger/core/constants.dart';
+import 'package:honeybadger/projects/model/work_submission.dart';
 import 'package:honeybadger/proposals/model/milestone.dart';
 import 'package:honeybadger/proposals/model/proposal.dart';
+import 'package:list_ext/list_ext.dart';
 
 class ProposalRepository {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+  final FirebaseStorage storage = FirebaseStorage.instance;
+  final Reference storageRef = FirebaseStorage.instance.ref();
   Stream<Proposal?> fetchProposal(String projectId, String userId) {
     try {
       return _firestore
@@ -99,7 +107,7 @@ class ProposalRepository {
     }
   }
 
-  Future<void> updateMilestone(Proposal proposal, Milestone milestone) async {
+  Future<void> updateMilestone(Proposal proposal) async {
     try {
       await _firestore
           .collection('proposals')
@@ -230,6 +238,84 @@ class ProposalRepository {
         ),
       );
       return const Stream.empty();
+    }
+  }
+
+  // Upload list of file picker files to firebase storage
+  Future<String>? uploadMilestoneFile(
+      Proposal proposal, Milestone milestone, PlatformFile files) async {
+    try {
+      final ref = storageRef.child(
+          'projects/${proposal.projectId}/proposals/${proposal.id}/milestones/${milestone.id}/files/${files.name}');
+      final uploadTask = ref.putFile(File(files.path!));
+      final snapshot = await uploadTask.whenComplete(() => null);
+      final url = await snapshot.ref.getDownloadURL();
+      return url;
+    } on FirebaseException catch (e) {
+      print(e);
+      scaffoldKey.currentState!.showSnackBar(
+        const SnackBar(
+          content: Text('Error uploading files'),
+          backgroundColor: Colors.redAccent,
+        ),
+      );
+      rethrow;
+    }
+  }
+
+// Upload milestone image to firebase storage
+  Future<String>? uploadMilestoneImage(
+      Proposal proposal, Milestone milestone, PlatformFile image) async {
+    try {
+      final ref = storageRef.child(
+          'projects/${proposal.projectId}/proposals/${proposal.id}/milestones/${milestone.id}/images/${image.name}');
+      final uploadTask = ref.putFile(File(image.path!));
+      final snapshot = await uploadTask.whenComplete(() => null);
+      final url = await snapshot.ref.getDownloadURL();
+      return url;
+    } on FirebaseException catch (e) {
+      print(e);
+      scaffoldKey.currentState!.showSnackBar(
+        const SnackBar(
+          content: Text('Error uploading image'),
+          backgroundColor: Colors.redAccent,
+        ),
+      );
+      rethrow;
+    }
+  }
+
+  // Submit milestone work
+  Future<void> submitWork(
+      Proposal proposal, Milestone milestone, WorkSubmission submission) async {
+    try {
+      await _firestore
+          .collection('proposals')
+          .where('projectId', isEqualTo: proposal.projectId)
+          .where('freelancerId', isEqualTo: proposal.freelancerId)
+          .get()
+          .then((value) => value.docs.forEach((element) async {
+                await _firestore
+                    .collection('proposals')
+                    .doc(element.id)
+                    .update(proposal
+                        .copyWith(
+                            milestones: proposal.milestones.copyWith(
+                          milestone.copyWith(
+                            workSubmission: submission,
+                          ),
+                        ))
+                        .toDocument());
+              }));
+    } on FirebaseException catch (e) {
+      print(e);
+      scaffoldKey.currentState!.showSnackBar(
+        const SnackBar(
+          content: Text('Error submitting work'),
+          backgroundColor: Colors.redAccent,
+        ),
+      );
+      rethrow;
     }
   }
 

@@ -23,7 +23,7 @@ class ProjectDetailsPage extends StatelessWidget {
         } else if (constraints.maxWidth > tabletWidthConstraint) {
           return TabletProjectDetailsPage(project: project);
         } else {
-          if (context.read<ProfileBloc>().state.user!.userType ==
+          if (context.watch<ProfileBloc>().state.user!.userType ==
               UserType.freelancer) {
             return MobileProjectDetailsPage(project: project);
           } else {

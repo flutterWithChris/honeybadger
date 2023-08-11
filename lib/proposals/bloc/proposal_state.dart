@@ -10,7 +10,15 @@ abstract class ProposalState extends Equatable {
   List<Object?> get props => [proposal, proposals, draftProposals];
 }
 
-class ProposalLoading extends ProposalState {}
+class ProposalLoading extends ProposalState {
+  @override
+  final Proposal? proposal;
+
+  const ProposalLoading({this.proposal});
+
+  @override
+  List<Object?> get props => [proposal];
+}
 
 class ProposalLoaded extends ProposalState {
   @override

@@ -144,3 +144,25 @@ class UpdateDescription extends ProposalsEvent {
   @override
   List<Object?> get props => [description];
 }
+
+class SubmitWork extends ProposalsEvent {
+  final Proposal proposal;
+  final Milestone milestone;
+  final String description;
+  final List<String>? urls;
+  final List<PlatformFile>? files;
+  final List<PlatformFile>? images;
+
+  const SubmitWork({
+    required this.proposal,
+    required this.milestone,
+    required this.description,
+    this.urls,
+    this.files,
+    this.images,
+  });
+
+  @override
+  List<Object?> get props =>
+      [proposal, milestone, description, urls, files, images];
+}

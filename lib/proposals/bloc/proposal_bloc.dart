@@ -1,11 +1,13 @@
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
+import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:honeybadger/core/constants.dart';
 import 'package:honeybadger/message/bloc/messages_bloc.dart';
 import 'package:honeybadger/profile/bloc/profile_bloc.dart';
 import 'package:honeybadger/profile/model/user.dart';
 import 'package:honeybadger/projects/model/project.dart';
+import 'package:honeybadger/projects/model/work_submission.dart';
 import 'package:honeybadger/projects/repository/projects_repository.dart';
 import 'package:honeybadger/proposals/model/milestone.dart';
 import 'package:honeybadger/proposals/model/proposal.dart';
@@ -29,9 +31,9 @@ class ProposalBloc extends Bloc<ProposalsEvent, ProposalState> {
         _messagesBloc = messagesBloc,
         _projectsRepository = projectsRepository,
         _profileBloc = profileBloc,
-        super(ProposalLoading()) {
+        super(const ProposalLoading()) {
     on<LoadProposal>((event, emit) async {
-      if (state is ProposalLoading == false) emit(ProposalLoading());
+      if (state is ProposalLoading == false) emit(const ProposalLoading());
       Proposal? currentProposal;
       await emit.forEach(
         _proposalRepository.fetchProposal(event.projectId, event.userId),
@@ -51,7 +53,7 @@ class ProposalBloc extends Bloc<ProposalsEvent, ProposalState> {
       );
     });
     on<LoadProposals>((event, emit) async {
-      if (state is ProposalLoading == false) emit(ProposalLoading());
+      if (state is ProposalLoading == false) emit(const ProposalLoading());
       if (_profileBloc.state.user!.userType == UserType.client) {
         await emit.forEach(
           _proposalRepository.fetchProposalsByStatus(
@@ -79,7 +81,7 @@ class ProposalBloc extends Bloc<ProposalsEvent, ProposalState> {
       );
     });
     on<StartProposal>((event, emit) async {
-      emit(ProposalLoading());
+      emit(const ProposalLoading());
       String proposalId =
           await _proposalRepository.createProposal(event.proposal);
 
@@ -144,7 +146,7 @@ class ProposalBloc extends Bloc<ProposalsEvent, ProposalState> {
       }
     });
     on<AcceptProposal>((event, emit) async {
-      emit(ProposalLoading());
+      emit(const ProposalLoading());
       try {
         final newProposal = event.proposal;
         await _proposalRepository.acceptProposal(newProposal);
@@ -173,11 +175,18 @@ class ProposalBloc extends Bloc<ProposalsEvent, ProposalState> {
     });
     on<FundMilestone>((event, emit) async {
       if (state is ProposalLoaded) {
-        final newProposal = event.proposal;
-        await _proposalRepository.updateMilestone(
-            event.proposal, event.milestone.copyWith(funded: true));
+        final proposal = event.proposal;
+        Proposal updatedProposal = proposal.copyWith(
+          milestones: proposal.milestones?.map((milestone) {
+            if (milestone.id == event.milestone.id) {
+              return milestone.copyWith(funded: true);
+            }
+            return milestone;
+          }).toList(),
+        );
+        await _proposalRepository.updateProposal(event.proposal);
         await Future.delayed(const Duration(seconds: 1));
-        emit(ProposalLoaded(newProposal));
+        emit(ProposalLoaded(updatedProposal));
       }
     });
     on<UpdateProposal>((event, emit) async {
@@ -218,7 +227,7 @@ class ProposalBloc extends Bloc<ProposalsEvent, ProposalState> {
         final proposal = state.proposal?.copyWith(
           milestones: [...(state.proposal?.milestones ?? []), event.milestone],
         );
-        emit(ProposalLoading());
+        emit(const ProposalLoading());
         print('PRoposal Milestones: ${proposal?.milestones?.toString()}');
         emit(ProposalStarted(proposal: proposal));
         scaffoldKey.currentState!.showSnackBar(
@@ -244,12 +253,14 @@ class ProposalBloc extends Bloc<ProposalsEvent, ProposalState> {
         milestones.add(event.milestone);
         // Update the budget, if the milestone has an amount
         // if the milestone has no amount, then we subtract the amount from the budget
-        if (event.milestone.amount != null) {
+        if (event.milestone.amount != null &&
+            event.milestone.amount != lastMilestoneAmount) {
           updatedBudget = proposal.milestones!
               .map((e) => e.amount)
               .reduce((value, element) => value! + element!);
           print('Updated Budget: $updatedBudget');
-        } else {
+        } else if (event.milestone.amount == null &&
+            event.milestone.amount != lastMilestoneAmount) {
           updatedBudget = proposal.budgetTotal! - lastMilestoneAmount!;
           print('Updated Budget: $updatedBudget');
         }
@@ -269,11 +280,10 @@ class ProposalBloc extends Bloc<ProposalsEvent, ProposalState> {
             proposal: updatedProposal.copyWith(savedAt: DateTime.now())));
       }
     });
-
     on<DeleteMilestone>((event, emit) async {
       if (state is ProposalStarted) {
         final proposal = state.proposal;
-        emit(ProposalLoading());
+        emit(const ProposalLoading());
         proposal?.milestones?.remove(event.milestone);
         emit(ProposalStarted(proposal: proposal));
         scaffoldKey.currentState!.showSnackBar(
@@ -287,6 +297,74 @@ class ProposalBloc extends Bloc<ProposalsEvent, ProposalState> {
                 textColor: Colors.white,
                 onPressed: () {},
               )),
+        );
+      }
+    });
+    on<SubmitWork>((event, emit) async {
+      emit(ProposalLoading(proposal: state.proposal));
+      if (state is ProposalLoaded) {
+        final proposal = state.proposal;
+        // Check if milestone files or images are present then upload in parallel
+        if (event.files != null || event.images != null) {
+          List<Future<String>?> fileFutures = [];
+          List<Future<String>?> imageFutures = [];
+          List<String>? fileUrls;
+          List<String>? imageUrls;
+          if (event.files != null) {
+            fileFutures.addAll(event.files!.map((file) => _proposalRepository
+                .uploadMilestoneFile(event.proposal, event.milestone, file)));
+            fileUrls =
+                await Future.wait(fileFutures.whereType<Future<String>>());
+          }
+
+          if (event.images != null) {
+            imageFutures.addAll(event.images!.map((image) => _proposalRepository
+                .uploadMilestoneImage(event.proposal, event.milestone, image)));
+            imageUrls =
+                await Future.wait(imageFutures.whereType<Future<String>>());
+          }
+
+          WorkSubmission workSubmission = WorkSubmission(
+            projectId: event.proposal.projectId,
+            proposalId: event.proposal.id,
+            milestoneId: event.milestone.id,
+            description: event.description,
+            files: fileUrls,
+            images: imageUrls,
+            urls: event.urls,
+            createdAt: DateTime.now(),
+          );
+          Proposal updatedProposal = proposal!.copyWith(
+            milestones: proposal.milestones?.map((milestone) {
+              if (milestone.id == event.milestone.id) {
+                return milestone.copyWith(workSubmission: workSubmission);
+              }
+              return milestone;
+            }).toList(),
+          );
+          emit(const ProposalLoading());
+          await _proposalRepository.updateProposal(updatedProposal);
+          emit(ProposalUpdated(updatedProposal));
+          scaffoldKey.currentState!.showSnackBar(
+            const SnackBar(
+              behavior: SnackBarBehavior.floating,
+              content: Text('Work Submitted!'),
+              backgroundColor: Colors.green,
+            ),
+          );
+          emit(ProposalLoaded(updatedProposal));
+          return;
+        }
+
+        emit(const ProposalLoading());
+        // await _proposalRepository.submitWork(proposal!, workSubmission);
+        emit(ProposalLoaded(proposal));
+        scaffoldKey.currentState!.showSnackBar(
+          const SnackBar(
+            behavior: SnackBarBehavior.floating,
+            content: Text('Work Submitted!'),
+            backgroundColor: Colors.green,
+          ),
         );
       }
     });

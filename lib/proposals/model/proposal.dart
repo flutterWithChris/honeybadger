@@ -12,6 +12,7 @@ class Proposal {
   int? budgetTotal;
   int? budgetHourly;
   List<Milestone>? milestones;
+  String? activeMilestoneId;
   String? clientId;
   String? clientName;
   String? freelancerId;
@@ -34,6 +35,7 @@ class Proposal {
     this.budgetTotal,
     this.budgetHourly,
     this.milestones,
+    this.activeMilestoneId,
     this.clientId,
     this.clientName,
     this.freelancerId,
@@ -59,6 +61,7 @@ class Proposal {
       'budgetTotal': budgetTotal,
       'budgetHourly': budgetHourly,
       'milestones': milestones?.map((e) => e.toJson()).toList(),
+      'activeMilestoneId': activeMilestoneId,
       'clientId': clientId,
       'clientName': clientName,
       'freelancerId': freelancerId,
@@ -88,6 +91,7 @@ class Proposal {
         ? List<Milestone>.from(
             snap['milestones'].map((e) => Milestone.fromJson(e)))
         : null;
+    activeMilestoneId = snap['activeMilestoneId'];
     clientId = snap['clientId'];
     clientName = snap['clientName'];
     freelancerId = snap['freelancerId'];
@@ -111,6 +115,7 @@ class Proposal {
     int? budgetTotal,
     int? budgetHourly,
     List<Milestone>? milestones,
+    String? activeMilestoneId,
     String? clientId,
     String? clientName,
     String? freelancerId,
@@ -133,6 +138,7 @@ class Proposal {
       budgetTotal: budgetTotal ?? this.budgetTotal,
       budgetHourly: budgetHourly ?? this.budgetHourly,
       milestones: milestones ?? this.milestones,
+      activeMilestoneId: activeMilestoneId ?? this.activeMilestoneId,
       clientId: clientId ?? this.clientId,
       clientName: clientName ?? this.clientName,
       freelancerId: freelancerId ?? this.freelancerId,
