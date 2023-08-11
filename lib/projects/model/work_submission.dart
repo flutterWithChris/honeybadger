@@ -8,7 +8,7 @@ class WorkSubmission {
   List<String>? files;
   List<String>? images;
   List<String>? urls;
-  DateTime? createdAt;
+  int? createdAt;
 
   WorkSubmission({
     this.id,
@@ -34,7 +34,7 @@ class WorkSubmission {
     List<String>? files,
     List<String>? images,
     List<String>? urls,
-    DateTime? createdAt,
+    int? createdAt,
   }) {
     return WorkSubmission(
       id: id ?? this.id,
@@ -61,28 +61,25 @@ class WorkSubmission {
         'files': files,
         'images': images,
         'urls': urls,
-        'created_at': createdAt,
+        'created_at': createdAt
       };
 
   // fromJson
   factory WorkSubmission.fromJson(Map<String, dynamic> json) => WorkSubmission(
-        id: json['id'] as String?,
-        projectId: json['project_id'] as String?,
-        userId: json['user_id'] as String?,
-        proposalId: json['proposal_id'] as String?,
-        milestoneId: json['milestone_id'] as String?,
-        description: json['description'] as String?,
-        files: json['files'] != null
-            ? (json['files'] as List<dynamic>).map((e) => e as String).toList()
-            : null,
-        images: json['images'] != null
-            ? (json['images'] as List<dynamic>).map((e) => e as String).toList()
-            : null,
-        urls: json['urls'] != null
-            ? (json['urls'] as List<dynamic>).map((e) => e as String).toList()
-            : null,
-        createdAt: json['created_at'] == null
-            ? null
-            : DateTime.parse(json['created_at'] as String),
-      );
+      id: json['id'] as String?,
+      projectId: json['project_id'] as String?,
+      userId: json['user_id'] as String?,
+      proposalId: json['proposal_id'] as String?,
+      milestoneId: json['milestone_id'] as String?,
+      description: json['description'] as String?,
+      files: json['files'] != null
+          ? (json['files'] as List<dynamic>).map((e) => e as String).toList()
+          : null,
+      images: json['images'] != null
+          ? (json['images'] as List<dynamic>).map((e) => e as String).toList()
+          : null,
+      urls: json['urls'] != null
+          ? (json['urls'] as List<dynamic>).map((e) => e as String).toList()
+          : null,
+      createdAt: json['created_at']);
 }

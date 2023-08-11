@@ -332,7 +332,7 @@ class MilestoneTimeline extends StatelessWidget {
                       ? Colors.green
                       : Theme.of(context).primaryColor,
                 ),
-                child: proposal.milestones![i].funded == true
+                child: proposal.milestones![i].isPaid == true
                     ? Padding(
                         padding: const EdgeInsets.only(bottom: 1.0),
                         child: Icon(MdiIcons.checkBold,
@@ -346,8 +346,12 @@ class MilestoneTimeline extends StatelessWidget {
                               .textTheme
                               .bodySmall
                               ?.copyWith(
-                                  color:
-                                      Theme.of(context).scaffoldBackgroundColor,
+                                  color: proposal.milestones![i].isPaid ==
+                                              true ||
+                                          proposal.milestones![i].funded == true
+                                      ? Colors.white
+                                      : Theme.of(context)
+                                          .scaffoldBackgroundColor,
                                   fontWeight: FontWeight.bold),
                         ),
                       ),
@@ -384,17 +388,42 @@ class MilestoneTimeline extends StatelessWidget {
                           child: FittedBox(
                             child: Chip(
                               visualDensity: VisualDensity.compact,
-                              padding: EdgeInsets.zero,
-                              labelPadding: const EdgeInsets.symmetric(
-                                  horizontal: 12.0, vertical: 0.0),
+                              padding: proposal.milestones![i].funded != true &&
+                                      proposal.milestones![i].isPaid != true
+                                  ? const EdgeInsets.only(left: 8.0, right: 8.0)
+                                  : const EdgeInsets.only(
+                                      left: 4.0, right: 8.0),
+                              labelPadding:
+                                  proposal.milestones![i].funded != true &&
+                                          proposal.milestones![i].isPaid != true
+                                      ? const EdgeInsets.only(right: 0.0)
+                                      : const EdgeInsets.only(
+                                          right: 4.0,
+                                        ),
                               side: BorderSide.none,
                               backgroundColor:
                                   proposal.milestones![i].funded == true
                                       ? Colors.green
                                       : Theme.of(context).primaryColor,
+                              avatar: proposal.milestones![i].funded == true
+                                  ? proposal.milestones![i].workSubmission !=
+                                              null &&
+                                          proposal.milestones![i].isPaid != true
+                                      ? Icon(MdiIcons.fileCheck)
+                                      : proposal.milestones![i].isPaid != true
+                                          ? Icon(MdiIcons.cashCheck)
+                                          : Icon(MdiIcons.checkBold)
+                                  : null,
                               label: Text(
                                 proposal.milestones![i].funded == true
-                                    ? 'Funded'
+                                    ? proposal.milestones![i].workSubmission !=
+                                                null &&
+                                            proposal.milestones![i].isPaid !=
+                                                true
+                                        ? 'Awaiting Review'
+                                        : proposal.milestones![i].isPaid != true
+                                            ? 'Funded'
+                                            : 'Completed'
                                     : convertIntToCurrency(
                                         proposal.milestones![i].amount!,
                                       ),
@@ -402,6 +431,7 @@ class MilestoneTimeline extends StatelessWidget {
                                     .textTheme
                                     .titleSmall
                                     ?.copyWith(
+                                      fontWeight: FontWeight.bold,
                                       color:
                                           proposal.milestones![i].funded == true
                                               ? Colors.white

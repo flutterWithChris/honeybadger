@@ -13,6 +13,8 @@ import 'package:honeybadger/proposals/model/milestone.dart';
 import 'package:honeybadger/proposals/model/proposal.dart';
 import 'package:honeybadger/proposals/repo/proposal_repository.dart';
 import 'package:list_ext/list_ext.dart';
+import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
+import 'package:stream_chat_flutter/stream_chat_flutter.dart';
 
 part 'proposal_event.dart';
 part 'proposal_state.dart';
@@ -301,9 +303,28 @@ class ProposalBloc extends Bloc<ProposalsEvent, ProposalState> {
       }
     });
     on<SubmitWork>((event, emit) async {
-      emit(ProposalLoading(proposal: state.proposal));
-      if (state is ProposalLoaded) {
+      try {
+        emit(ProposalLoading(proposal: state.proposal));
+        scaffoldKey.currentState!.showSnackBar(
+          const SnackBar(
+            behavior: SnackBarBehavior.floating,
+            content: Text('Submitting Work...'),
+          ),
+        );
+
         final proposal = state.proposal;
+
+        WorkSubmission workSubmission = WorkSubmission(
+          id: const Uuid().v4(),
+          projectId: event.proposal.projectId,
+          proposalId: event.proposal.id,
+          milestoneId: event.milestone.id,
+          description: event.description,
+          userId: _profileBloc.state.user!.id,
+          urls: event.urls,
+          createdAt: DateTime.now().millisecondsSinceEpoch,
+        );
+
         // Check if milestone files or images are present then upload in parallel
         if (event.files != null || event.images != null) {
           List<Future<String>?> fileFutures = [];
@@ -324,48 +345,46 @@ class ProposalBloc extends Bloc<ProposalsEvent, ProposalState> {
                 await Future.wait(imageFutures.whereType<Future<String>>());
           }
 
-          WorkSubmission workSubmission = WorkSubmission(
-            projectId: event.proposal.projectId,
-            proposalId: event.proposal.id,
-            milestoneId: event.milestone.id,
-            description: event.description,
-            files: fileUrls,
-            images: imageUrls,
-            urls: event.urls,
-            createdAt: DateTime.now(),
-          );
-          Proposal updatedProposal = proposal!.copyWith(
-            milestones: proposal.milestones?.map((milestone) {
-              if (milestone.id == event.milestone.id) {
-                return milestone.copyWith(workSubmission: workSubmission);
-              }
-              return milestone;
-            }).toList(),
-          );
-          emit(const ProposalLoading());
-          await _proposalRepository.updateProposal(updatedProposal);
-          emit(ProposalUpdated(updatedProposal));
-          scaffoldKey.currentState!.showSnackBar(
-            const SnackBar(
-              behavior: SnackBarBehavior.floating,
-              content: Text('Work Submitted!'),
-              backgroundColor: Colors.green,
-            ),
-          );
-          emit(ProposalLoaded(updatedProposal));
-          return;
+          workSubmission =
+              workSubmission.copyWith(files: fileUrls, images: imageUrls);
         }
 
-        emit(const ProposalLoading());
-        // await _proposalRepository.submitWork(proposal!, workSubmission);
-        emit(ProposalLoaded(proposal));
+        Proposal updatedProposal = proposal!.copyWith(
+          milestones: proposal.milestones?.map((milestone) {
+            if (milestone.id == event.milestone.id) {
+              return milestone.copyWith(workSubmission: workSubmission);
+            }
+            return milestone;
+          }).toList(),
+        );
+
+        await _proposalRepository.updateProposal(updatedProposal);
+        emit(ProposalUpdated(updatedProposal));
         scaffoldKey.currentState!.showSnackBar(
-          const SnackBar(
+          SnackBar(
             behavior: SnackBarBehavior.floating,
-            content: Text('Work Submitted!'),
+            content: Row(
+              children: [
+                Icon(MdiIcons.checkBold, color: Colors.white, size: 14.0),
+                const SizedBox(width: 8.0),
+                const Text('Work Submitted!',
+                    style: TextStyle(color: Colors.white)),
+              ],
+            ),
             backgroundColor: Colors.green,
           ),
         );
+        emit(ProposalLoaded(updatedProposal));
+      } catch (e) {
+        print(e);
+        scaffoldKey.currentState!.showSnackBar(
+          const SnackBar(
+            behavior: SnackBarBehavior.floating,
+            content: Text('Error Submitting Work!'),
+            backgroundColor: Colors.red,
+          ),
+        );
+        emit(ProposalsError());
       }
     });
   }

@@ -52,7 +52,7 @@ class MobileProjectsPage extends StatelessWidget {
             .isNotEmpty ??
         false;
     return DefaultTabController(
-      length: hasActiveProjects ? 3 : 2,
+      length: 3,
       child: CustomScrollView(
         slivers: [
           const MobileJobsSliverAppBar(),
@@ -76,7 +76,7 @@ class MobileProjectsPage extends StatelessWidget {
                               .where((element) =>
                                   element.status == ProjectStatus.inProgress)
                               .toList()),
-                    OpenProjectsTab(
+                    AppliedProjectsTab(
                         projects: state.projects
                             .where((element) =>
                                 element.status == ProjectStatus.open)
@@ -261,6 +261,102 @@ class ActiveProjectsTab extends StatelessWidget {
 class OpenProjectsTab extends StatelessWidget {
   final List<Project> projects;
   const OpenProjectsTab({
+    required this.projects,
+    super.key,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    if (projects.isEmpty) {
+      return Center(
+          child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Icon(FontAwesomeIcons.earthAmericas,
+              size: 72.0,
+              color: Theme.of(context).brightness == Brightness.light
+                  ? Colors.grey[500]
+                  : Colors.grey[600]),
+          const Gutter(),
+          Text('A world of opportunities..',
+              style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+                  color: Theme.of(context).brightness == Brightness.light
+                      ? Colors.grey[500]
+                      : Colors.grey[600])),
+          const Gutter(),
+          FilledButton(
+              // style: FilledButton.styleFrom(
+              //     foregroundColor: Colors.white),
+              onPressed: () => context.go('/search  '),
+              child: const Text(' Search Jobs'))
+        ],
+      ));
+    } else {
+      return ListView.separated(
+        padding: const EdgeInsets.symmetric(horizontal: 4.0, vertical: 16.0),
+        itemCount: projects.length,
+        itemBuilder: (context, index) {
+          final project = projects[index];
+          int unreadProposalCount = project.unreadProposalCount ?? 0;
+          return Card(
+            child: Padding(
+              padding: const EdgeInsets.symmetric(
+                vertical: 8.0,
+              ),
+              child: ListTile(
+                  visualDensity: VisualDensity.comfortable,
+                  title: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Row(
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        children: [
+                          if (unreadProposalCount != 0)
+                            Padding(
+                              padding: const EdgeInsets.only(
+                                  right: 8.0, bottom: 2.0),
+                              child: Badge.count(
+                                padding:
+                                    const EdgeInsets.symmetric(horizontal: 8.0),
+                                backgroundColor:
+                                    Theme.of(context).indicatorColor,
+                                count: unreadProposalCount,
+                                alignment: Alignment.topCenter,
+                                offset: const Offset(0, 1),
+                              ),
+                            ),
+                          Text(
+                            project.title!,
+                            // style: Theme.of(context).textTheme.titleMedium,
+                            maxLines: 2,
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
+                  subtitle: Padding(
+                    padding: const EdgeInsets.only(top: 2.0),
+                    child: Text(project.description!),
+                  ),
+                  onTap: () {
+                    context.read<ProposalBloc>().add(LoadProposals(
+                        project, context.read<ProfileBloc>().state.user!.id!));
+                    context.push('/project/${project.id}', extra: project);
+                  }),
+            ),
+          );
+        },
+        separatorBuilder: (context, index) => const GutterSmall(),
+      );
+    }
+  }
+}
+
+class AppliedProjectsTab extends StatelessWidget {
+  final List<Project> projects;
+  const AppliedProjectsTab({
     required this.projects,
     super.key,
   });

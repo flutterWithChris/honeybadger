@@ -24,6 +24,7 @@ import 'package:honeybadger/proposals/model/proposal.dart';
 import 'package:honeybadger/proposals/view/view_proposal/mobile/active_proposal_tab.dart';
 import 'package:intl/intl.dart';
 import 'package:jiffy/jiffy.dart';
+import 'package:list_ext/list_ext.dart';
 import 'package:loading_animation_widget/loading_animation_widget.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'package:uuid/uuid.dart';
@@ -46,7 +47,7 @@ class MobileProjectDetailsPage extends StatefulWidget {
 
 class _MobileProjectDetailsPageState extends State<MobileProjectDetailsPage> {
   final bool _writingProposal = false;
-  Proposal? _proposal;
+  static Proposal? _proposal;
 
   final _proposalController = TextEditingController();
 
@@ -151,12 +152,54 @@ class _MobileProjectDetailsPageState extends State<MobileProjectDetailsPage> {
                 ],
               ),
             ),
-            SliverFillRemaining(
-              child: TabBarView(children: [
-                FreelancerActiveProposalTab(
-                    project: widget.project, proposal: _proposal!),
-                ProjectDetailsTab(project: widget.project),
-              ]),
+            BlocBuilder<ProposalBloc, ProposalState>(
+              builder: (context, state) {
+                if (state is ProposalsError) {
+                  return SliverToBoxAdapter(
+                    child: Center(
+                      child: Column(
+                        children: [
+                          const Text('Error loading Proposal...'),
+                          const Gutter(),
+                          FilledButton.icon(
+                            icon: const Icon(Icons.refresh_rounded),
+                            label: const Text('Retry'),
+                            onPressed: () {
+                              context.read<ProposalBloc>().add(LoadProposal(
+                                  widget.project.id!,
+                                  context.read<ProfileBloc>().state.user!.id!));
+                            },
+                          ),
+                        ],
+                      ),
+                    ),
+                  );
+                }
+                if (state is ProposalLoading) {
+                  return SliverToBoxAdapter(
+                    child: Center(
+                      heightFactor: 1.0,
+                      child: LoadingAnimationWidget.staggeredDotsWave(
+                          color: Theme.of(context).colorScheme.onSurface,
+                          size: 30.0),
+                    ),
+                  );
+                }
+                if (state is ProposalLoaded) {
+                  return SliverFillRemaining(
+                    child: TabBarView(children: [
+                      FreelancerActiveProposalTab(
+                          project: widget.project, proposal: state.proposal!),
+                      ProjectDetailsTab(project: widget.project),
+                    ]),
+                  );
+                } else {
+                  return const Center(
+                    heightFactor: 1.0,
+                    child: Text('Something Went Wrong...'),
+                  );
+                }
+              },
             ),
           ],
         ),
@@ -504,6 +547,11 @@ class _FreelancerActiveProposalTabState
     extends State<FreelancerActiveProposalTab> {
   @override
   Widget build(BuildContext context) {
+    Milestone activeMilestone = widget.proposal.activeMilestoneId != null
+        ? widget.proposal.milestones!.firstWhere(
+            (element) => element.id == widget.proposal.activeMilestoneId)
+        : widget.proposal.milestones!.first;
+    bool activeMilestoneWorkSubmitted = activeMilestone.workSubmission != null;
     return Padding(
       padding: const EdgeInsets.all(16.0),
       child: ListView(
@@ -520,30 +568,76 @@ class _FreelancerActiveProposalTabState
           const GutterTiny(),
           if (widget.project.status == ProjectStatus.inProgress &&
               widget.proposal.status == ProposalStatus.accepted)
-            Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Row(
-                  children: [
-                    Expanded(
-                      child: FilledButton.icon(
-                        icon: Icon(MdiIcons.progressCheck),
-                        label: const Text('Submit Work & Request Payment'),
-                        onPressed: () {
-                          context.push(
-                              '/project/${widget.project.id}/submit-work',
-                              extra: {
-                                0: widget.project,
-                                1: widget.proposal,
-                              });
-                        },
+            if (activeMilestoneWorkSubmitted && activeMilestone.isPaid != true)
+              Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Row(
+                    children: [
+                      Expanded(
+                          child: SizedBox(
+                        // height: 80,
+                        child: Card(
+                          child: Padding(
+                            padding: const EdgeInsets.all(16.0),
+                            child: Center(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.center,
+                                children: [
+                                  Row(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: [
+                                      Icon(MdiIcons.fileCheck, size: 20.0),
+                                      const Gutter(),
+                                      Text('Work Submitted for Review',
+                                          style: Theme.of(context)
+                                              .textTheme
+                                              .titleMedium),
+                                    ],
+                                  ),
+                                  const GutterSmall(),
+                                  Text(
+                                      'You have submitted work for review. Please wait for your client to review your work and request payment.',
+                                      textAlign: TextAlign.center,
+                                      style: Theme.of(context)
+                                          .textTheme
+                                          .bodyMedium),
+                                ],
+                              ),
+                            ),
+                          ),
+                        ),
+                      )),
+                    ],
+                  ),
+                  const Gutter(),
+                ],
+              )
+            else
+              Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Row(
+                    children: [
+                      Expanded(
+                        child: FilledButton.icon(
+                          icon: Icon(MdiIcons.progressCheck),
+                          label: const Text('Submit Work & Request Payment'),
+                          onPressed: () {
+                            context.push(
+                                '/project/${widget.project.id}/submit-work',
+                                extra: {
+                                  0: widget.project,
+                                  1: widget.proposal,
+                                });
+                          },
+                        ),
                       ),
-                    ),
-                  ],
-                ),
-                const Gutter(),
-              ],
-            ),
+                    ],
+                  ),
+                  const Gutter(),
+                ],
+              ),
           Text('Description', style: Theme.of(context).textTheme.titleLarge),
           const GutterSmall(),
           Text(widget.proposal.description!),
@@ -571,6 +665,10 @@ class _SubmitWorkDialogState extends State<SubmitWorkDialog> {
 
   @override
   Widget build(BuildContext context) {
+    project = context.watch<ProjectsBloc>().state.projects?.firstWhereOrNull(
+        (element) =>
+            element.id ==
+            context.watch<ProposalBloc>().state.proposal?.projectId);
     return Scaffold(
       appBar: AppBar(
         title: const Text('Submit Work'),
@@ -585,16 +683,20 @@ class _SubmitWorkDialogState extends State<SubmitWorkDialog> {
           return const Center(
             child: Text('Error loading Proposal...'),
           );
-        } else if (state is ProposalLoading) {
-          Center(
-            heightFactor: 1.0,
-            child: LoadingAnimationWidget.staggeredDotsWave(
-                color: Theme.of(context).colorScheme.onSurface, size: 30.0),
+        }
+        if (state is ProposalLoading || project == null) {
+          return Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Center(
+                heightFactor: 1.0,
+                child: LoadingAnimationWidget.staggeredDotsWave(
+                    color: Theme.of(context).colorScheme.onSurface, size: 30.0),
+              ),
+            ],
           );
-        } else if (state is ProposalLoaded) {
-          project = context.watch<ProjectsBloc>().state.projects?.firstWhere(
-              (element) => element.id == state.proposal!.projectId,
-              orElse: () => Project());
+        }
+        if (state is ProposalLoaded && project != null) {
           print('Project: $project');
           return Form(
             key: _formKey,
@@ -621,6 +723,7 @@ class _SubmitWorkDialogState extends State<SubmitWorkDialog> {
                     FocusScope.of(context).unfocus();
                   },
                   controller: _descriptionController,
+                  textCapitalization: TextCapitalization.sentences,
                   minLines: 2,
                   maxLines: 7,
                   decoration: const InputDecoration(
@@ -631,6 +734,7 @@ class _SubmitWorkDialogState extends State<SubmitWorkDialog> {
                 Text('URL', style: Theme.of(context).textTheme.titleMedium),
                 const GutterSmall(),
                 TextFormField(
+                  textCapitalization: TextCapitalization.none,
                   validator: (value) {
                     if (value != null && value.isNotEmpty) {
                       if (Uri.parse(value).isAbsolute == false) {

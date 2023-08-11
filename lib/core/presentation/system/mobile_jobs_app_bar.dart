@@ -47,9 +47,6 @@ class MobileJobsSliverAppBar extends StatelessWidget {
               text: 'Active',
             ),
             Tab(
-              text: 'Saved',
-            ),
-            Tab(
               text: 'Applied',
             ),
             Tab(text: 'Completed')
