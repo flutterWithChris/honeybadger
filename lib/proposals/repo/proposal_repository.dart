@@ -4,10 +4,10 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
-import 'package:honeybadger/core/constants.dart';
-import 'package:honeybadger/projects/model/work_submission.dart';
-import 'package:honeybadger/proposals/model/milestone.dart';
-import 'package:honeybadger/proposals/model/proposal.dart';
+import 'package:OutsourcedX/core/constants.dart';
+import 'package:OutsourcedX/projects/model/work_submission.dart';
+import 'package:OutsourcedX/proposals/model/milestone.dart';
+import 'package:OutsourcedX/proposals/model/proposal.dart';
 import 'package:list_ext/list_ext.dart';
 
 class ProposalRepository {

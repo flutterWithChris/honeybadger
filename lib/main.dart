@@ -7,33 +7,33 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
-import 'package:honeybadger/auth/bloc/auth_bloc.dart';
-import 'package:honeybadger/auth/cubit/signup/signup_cubit.dart';
-import 'package:honeybadger/auth/repository/auth_repository.dart';
-import 'package:honeybadger/core/constants.dart';
-import 'package:honeybadger/core/router/app_router.dart';
-import 'package:honeybadger/firebase_options.dart';
-import 'package:honeybadger/message/bloc/messages_bloc.dart';
-import 'package:honeybadger/message/repository/message_repository.dart';
-import 'package:honeybadger/onboarding/bloc/onboarding_bloc.dart';
-import 'package:honeybadger/onboarding/view/pages/profile_setup/bloc/bloc/category_search_bloc.dart';
-import 'package:honeybadger/onboarding/view/pages/profile_setup/bloc/skills/bloc/skill_search_bloc.dart';
-import 'package:honeybadger/payments/bloc/history/payment_history_bloc.dart';
-import 'package:honeybadger/payments/bloc/payments_bloc.dart';
-import 'package:honeybadger/payments/repository/payments_repository.dart';
-import 'package:honeybadger/payouts/bloc/payout_bloc.dart';
-import 'package:honeybadger/profile/bloc/profile_bloc.dart';
-import 'package:honeybadger/profile/portfolio/bloc/portfolio_bloc.dart';
-import 'package:honeybadger/profile/portfolio/repository/category_repository.dart';
-import 'package:honeybadger/profile/portfolio/repository/portfiolio_repository.dart';
-import 'package:honeybadger/profile/portfolio/repository/skills_repository.dart';
-import 'package:honeybadger/profile/repository/user_respository.dart';
-import 'package:honeybadger/projects/bloc/projects_bloc.dart';
-import 'package:honeybadger/projects/repository/projects_repository.dart';
-import 'package:honeybadger/proposals/bloc/proposal_bloc.dart';
-import 'package:honeybadger/proposals/repo/proposal_repository.dart';
-import 'package:honeybadger/search/bloc/search_bloc.dart';
-import 'package:honeybadger/search/repository/search_repository.dart';
+import 'package:OutsourcedX/auth/bloc/auth_bloc.dart';
+import 'package:OutsourcedX/auth/cubit/signup/signup_cubit.dart';
+import 'package:OutsourcedX/auth/repository/auth_repository.dart';
+import 'package:OutsourcedX/core/constants.dart';
+import 'package:OutsourcedX/core/router/app_router.dart';
+import 'package:OutsourcedX/firebase_options.dart';
+import 'package:OutsourcedX/message/bloc/messages_bloc.dart';
+import 'package:OutsourcedX/message/repository/message_repository.dart';
+import 'package:OutsourcedX/onboarding/bloc/onboarding_bloc.dart';
+import 'package:OutsourcedX/onboarding/view/pages/profile_setup/bloc/bloc/category_search_bloc.dart';
+import 'package:OutsourcedX/onboarding/view/pages/profile_setup/bloc/skills/bloc/skill_search_bloc.dart';
+import 'package:OutsourcedX/payments/bloc/history/payment_history_bloc.dart';
+import 'package:OutsourcedX/payments/bloc/payments_bloc.dart';
+import 'package:OutsourcedX/payments/repository/payments_repository.dart';
+import 'package:OutsourcedX/payouts/bloc/payout_bloc.dart';
+import 'package:OutsourcedX/profile/bloc/profile_bloc.dart';
+import 'package:OutsourcedX/profile/portfolio/bloc/portfolio_bloc.dart';
+import 'package:OutsourcedX/profile/portfolio/repository/category_repository.dart';
+import 'package:OutsourcedX/profile/portfolio/repository/portfiolio_repository.dart';
+import 'package:OutsourcedX/profile/portfolio/repository/skills_repository.dart';
+import 'package:OutsourcedX/profile/repository/user_respository.dart';
+import 'package:OutsourcedX/projects/bloc/projects_bloc.dart';
+import 'package:OutsourcedX/projects/repository/projects_repository.dart';
+import 'package:OutsourcedX/proposals/bloc/proposal_bloc.dart';
+import 'package:OutsourcedX/proposals/repo/proposal_repository.dart';
+import 'package:OutsourcedX/search/bloc/search_bloc.dart';
+import 'package:OutsourcedX/search/repository/search_repository.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:uni_links/uni_links.dart';
 
@@ -391,7 +391,7 @@ class _MyAppState extends State<MyApp> {
               useMaterial3: true,
               swapLegacyOnMaterial3: true,
               // To use the Playground font, add GoogleFonts package and uncomment
-              // fontFamily: GoogleFonts.notoSans().fontFamily,
+              //  fontFamily: GoogleFonts.interTight().fontFamily,
             ),
             // If you do not have a themeMode switch, uncomment this line
             // to let the device system mode control the theme mode:

@@ -3,10 +3,10 @@ import 'dart:async';
 import 'package:collection/collection.dart' show IterableExtension;
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:honeybadger/message/channel_file_display_screen.dart';
-import 'package:honeybadger/message/localizations.dart';
-import 'package:honeybadger/message/media_display/channel_media_display_screen.dart';
-import 'package:honeybadger/message/pinned/pinned_messages_screen.dart';
+import 'package:OutsourcedX/message/channel_file_display_screen.dart';
+import 'package:OutsourcedX/message/localizations.dart';
+import 'package:OutsourcedX/message/media_display/channel_media_display_screen.dart';
+import 'package:OutsourcedX/message/pinned/pinned_messages_screen.dart';
 import 'package:stream_chat_flutter/stream_chat_flutter.dart';
 
 import '../channel_page.dart';

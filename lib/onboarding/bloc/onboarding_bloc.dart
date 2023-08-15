@@ -1,7 +1,7 @@
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
-import 'package:honeybadger/profile/model/user.dart';
-import 'package:honeybadger/profile/repository/user_respository.dart';
+import 'package:OutsourcedX/profile/model/user.dart';
+import 'package:OutsourcedX/profile/repository/user_respository.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:meta/meta.dart';
 
@@ -10,7 +10,7 @@ part 'onboarding_state.dart';
 
 class OnboardingBloc extends Bloc<OnboardingEvent, OnboardingState> {
   final UserRepository _userRepository;
-  UserType userType = UserType.freelancer;
+  UserType? userType;
   OnboardingBloc({required UserRepository userRepository})
       : _userRepository = userRepository,
         super(OnboardingState.initial()) {

@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_gutter/flutter_gutter.dart';
 import 'package:go_router/go_router.dart';
-import 'package:honeybadger/onboarding/bloc/onboarding_bloc.dart';
-import 'package:honeybadger/onboarding/view/pages/profile_setup/bloc/bloc/category_search_bloc.dart';
+import 'package:OutsourcedX/onboarding/bloc/onboarding_bloc.dart';
+import 'package:OutsourcedX/onboarding/view/pages/profile_setup/bloc/bloc/category_search_bloc.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../../../profile/model/category.dart';

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_gutter/flutter_gutter.dart';
 import 'package:go_router/go_router.dart';
-import 'package:honeybadger/search/view/widgets/project_card.dart';
+import 'package:OutsourcedX/search/view/widgets/project_card.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import '../../../core/constants.dart';
 import '../../../core/presentation/system/main_navigation_bar.dart';

@@ -1,14 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_gutter/flutter_gutter.dart';
-import 'package:honeybadger/auth/bloc/auth_bloc.dart';
-import 'package:honeybadger/core/constants.dart';
-import 'package:honeybadger/onboarding/bloc/onboarding_bloc.dart';
-import 'package:honeybadger/onboarding/view/pages/profile_setup/bloc/skills/bloc/skill_search_bloc.dart';
-import 'package:honeybadger/profile/model/portfolio_project.dart';
-import 'package:honeybadger/profile/model/skill.dart';
-import 'package:honeybadger/profile/portfolio/bloc/portfolio_bloc.dart';
-import 'package:honeybadger/profile/view/widgets/add_project_dialog.dart';
+import 'package:OutsourcedX/auth/bloc/auth_bloc.dart';
+import 'package:OutsourcedX/core/constants.dart';
+import 'package:OutsourcedX/onboarding/bloc/onboarding_bloc.dart';
+import 'package:OutsourcedX/onboarding/view/pages/profile_setup/bloc/skills/bloc/skill_search_bloc.dart';
+import 'package:OutsourcedX/profile/model/portfolio_project.dart';
+import 'package:OutsourcedX/profile/model/skill.dart';
+import 'package:OutsourcedX/profile/portfolio/bloc/portfolio_bloc.dart';
+import 'package:OutsourcedX/profile/view/widgets/add_project_dialog.dart';
 
 import '../../../profile/model/user.dart';
 

@@ -3,8 +3,8 @@ import 'dart:async';
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:firebase_auth/firebase_auth.dart' as auth;
-import 'package:honeybadger/auth/repository/auth_repository.dart';
-import 'package:honeybadger/core/router/app_router.dart';
+import 'package:OutsourcedX/auth/repository/auth_repository.dart';
+import 'package:OutsourcedX/core/router/app_router.dart';
 
 part 'auth_event.dart';
 part 'auth_state.dart';

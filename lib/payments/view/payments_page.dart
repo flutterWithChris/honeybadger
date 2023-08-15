@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:honeybadger/core/constants.dart';
-import 'package:honeybadger/payments/view/desktop/desktop_payments_page.dart';
-import 'package:honeybadger/payments/view/mobile/mobile_payments_page.dart';
-import 'package:honeybadger/payments/view/tablet/tablet_payments_page.dart';
-import 'package:honeybadger/profile/bloc/profile_bloc.dart';
+import 'package:OutsourcedX/core/constants.dart';
+import 'package:OutsourcedX/payments/view/desktop/desktop_payments_page.dart';
+import 'package:OutsourcedX/payments/view/mobile/mobile_payments_page.dart';
+import 'package:OutsourcedX/payments/view/tablet/tablet_payments_page.dart';
+import 'package:OutsourcedX/profile/bloc/profile_bloc.dart';
 
 import '../../profile/model/user.dart';
 import 'mobile/mobile_clients_payments_page.dart';

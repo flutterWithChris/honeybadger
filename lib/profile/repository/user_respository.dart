@@ -3,9 +3,9 @@ import 'dart:io';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
-import 'package:honeybadger/core/constants.dart';
-import 'package:honeybadger/profile/model/user.dart';
-import 'package:honeybadger/profile/repository/base_user_repository.dart';
+import 'package:OutsourcedX/core/constants.dart';
+import 'package:OutsourcedX/profile/model/user.dart';
+import 'package:OutsourcedX/profile/repository/base_user_repository.dart';
 import 'package:image_picker/image_picker.dart';
 
 class UserRepository extends BaseUserRepository {

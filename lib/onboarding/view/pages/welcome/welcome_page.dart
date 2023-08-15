@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:honeybadger/core/constants.dart';
-import 'package:honeybadger/onboarding/view/pages/welcome/desktop/desktop_welcome_page.dart';
-import 'package:honeybadger/onboarding/view/pages/welcome/mobile/mobile_welcome_page.dart';
-import 'package:honeybadger/onboarding/view/pages/welcome/tablet/tablet_welcome_page.dart';
+import 'package:OutsourcedX/core/constants.dart';
+import 'package:OutsourcedX/onboarding/view/pages/welcome/desktop/desktop_welcome_page.dart';
+import 'package:OutsourcedX/onboarding/view/pages/welcome/mobile/mobile_welcome_page.dart';
+import 'package:OutsourcedX/onboarding/view/pages/welcome/tablet/tablet_welcome_page.dart';
 
 class WelcomePage extends StatefulWidget {
   final PageController? pageController;

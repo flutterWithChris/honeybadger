@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:honeybadger/core/constants.dart';
-import 'package:honeybadger/profile/bloc/profile_bloc.dart';
-import 'package:honeybadger/profile/model/user.dart';
-import 'package:honeybadger/profile/view/mobile/mobile_client_profile_page.dart';
-import 'package:honeybadger/profile/view/tablet/tablet_profile_page.dart';
+import 'package:OutsourcedX/core/constants.dart';
+import 'package:OutsourcedX/profile/bloc/profile_bloc.dart';
+import 'package:OutsourcedX/profile/model/user.dart';
+import 'package:OutsourcedX/profile/view/mobile/mobile_client_profile_page.dart';
+import 'package:OutsourcedX/profile/view/tablet/tablet_profile_page.dart';
 
 import 'desktop/desktop_profile_page.dart';
 import 'mobile/mobile_profile_page.dart';

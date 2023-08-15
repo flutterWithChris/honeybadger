@@ -1,5 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:honeybadger/profile/model/skill.dart';
+import 'package:OutsourcedX/profile/model/skill.dart';
 
 class SkillsRepository {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;

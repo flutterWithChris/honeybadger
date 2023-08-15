@@ -2,10 +2,10 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_gutter/flutter_gutter.dart';
-import 'package:honeybadger/core/presentation/system/main_navigation_bar.dart';
-import 'package:honeybadger/core/presentation/system/mobile_sliver_app_bar.dart';
-import 'package:honeybadger/profile/bloc/profile_bloc.dart';
-import 'package:honeybadger/profile/model/user.dart';
+import 'package:OutsourcedX/core/presentation/system/main_navigation_bar.dart';
+import 'package:OutsourcedX/core/presentation/system/mobile_sliver_app_bar.dart';
+import 'package:OutsourcedX/profile/bloc/profile_bloc.dart';
+import 'package:OutsourcedX/profile/model/user.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 
 class MobileClientProfilePage extends StatelessWidget {

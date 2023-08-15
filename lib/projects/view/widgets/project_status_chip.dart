@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:honeybadger/core/constants.dart';
+import 'package:OutsourcedX/core/constants.dart';
 
 import '../../model/project.dart';
 

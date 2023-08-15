@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:honeybadger/core/constants.dart';
-import 'package:honeybadger/core/presentation/system/main_navigation_bar.dart';
-import 'package:honeybadger/message/app_bar/mobile_messages_app_bar.dart';
-import 'package:honeybadger/message/view/desktop/desktop_messages_page.dart';
-import 'package:honeybadger/message/view/mobile/mobile_messages_page.dart';
-import 'package:honeybadger/message/view/tablet/tablet_messages_page.dart';
+import 'package:OutsourcedX/core/constants.dart';
+import 'package:OutsourcedX/core/presentation/system/main_navigation_bar.dart';
+import 'package:OutsourcedX/message/app_bar/mobile_messages_app_bar.dart';
+import 'package:OutsourcedX/message/view/desktop/desktop_messages_page.dart';
+import 'package:OutsourcedX/message/view/mobile/mobile_messages_page.dart';
+import 'package:OutsourcedX/message/view/tablet/tablet_messages_page.dart';
 
 class MessagesPage extends StatelessWidget {
   const MessagesPage({super.key});

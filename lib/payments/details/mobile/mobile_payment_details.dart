@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_gutter/flutter_gutter.dart';
-import 'package:honeybadger/core/constants.dart';
-import 'package:honeybadger/globals.dart';
-import 'package:honeybadger/payments/model/balance_transaction.dart';
-import 'package:honeybadger/payments/view/widgets/payment_status_chip.dart';
+import 'package:OutsourcedX/core/constants.dart';
+import 'package:OutsourcedX/globals.dart';
+import 'package:OutsourcedX/payments/model/balance_transaction.dart';
+import 'package:OutsourcedX/payments/view/widgets/payment_status_chip.dart';
 
 class MobilePaymentDetailsPage extends StatelessWidget {
   final BalanceTransaction balanceTransaction;

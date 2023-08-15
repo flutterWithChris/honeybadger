@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:honeybadger/proposals/create/view/desktop/desktop_create_proposal_page.dart';
-import 'package:honeybadger/proposals/create/view/tablet/tablet_create_proposal_page.dart';
+import 'package:OutsourcedX/proposals/create/view/desktop/desktop_create_proposal_page.dart';
+import 'package:OutsourcedX/proposals/create/view/tablet/tablet_create_proposal_page.dart';
 
 import '../../../projects/model/project.dart';
 import '../../../core/constants.dart';

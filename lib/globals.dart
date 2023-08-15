@@ -2,7 +2,7 @@ import 'dart:async';
 import 'dart:math';
 
 import 'package:flutter/material.dart';
-import 'package:honeybadger/payments/model/balance_transaction.dart';
+import 'package:OutsourcedX/payments/model/balance_transaction.dart';
 import 'package:stream_chat_flutter/stream_chat_flutter.dart';
 import 'package:jose/jose.dart';
 

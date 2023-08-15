@@ -1,4 +1,4 @@
-import 'package:honeybadger/projects/model/work_submission.dart';
+import 'package:OutsourcedX/projects/model/work_submission.dart';
 
 class Milestone {
   final String? id;

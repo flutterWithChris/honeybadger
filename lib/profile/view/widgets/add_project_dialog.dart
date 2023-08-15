@@ -5,10 +5,10 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_gutter/flutter_gutter.dart';
 import 'package:flutter_link_previewer/flutter_link_previewer.dart';
 import 'package:go_router/go_router.dart';
-import 'package:honeybadger/auth/bloc/auth_bloc.dart';
-import 'package:honeybadger/core/constants.dart';
-import 'package:honeybadger/profile/model/portfolio_project.dart';
-import 'package:honeybadger/profile/portfolio/bloc/portfolio_bloc.dart';
+import 'package:OutsourcedX/auth/bloc/auth_bloc.dart';
+import 'package:OutsourcedX/core/constants.dart';
+import 'package:OutsourcedX/profile/model/portfolio_project.dart';
+import 'package:OutsourcedX/profile/portfolio/bloc/portfolio_bloc.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:jiffy/jiffy.dart';
 

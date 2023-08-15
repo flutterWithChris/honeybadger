@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 class MobileSliverAppBar extends StatelessWidget {
   const MobileSliverAppBar({super.key});
@@ -25,14 +26,11 @@ class MobileSliverAppBar extends StatelessWidget {
           //       : Colors.white,
           //   height: 18,
           // ),
-          Icon(
-            Icons.hive_outlined,
-            size: 30.0,
-            color: Theme.of(context).brightness == Brightness.light
-                ? Theme.of(context).colorScheme.primary
-                : Colors.white,
+
+          Text(
+            'OutsourcedX',
+            style: GoogleFonts.gloock(),
           ),
-          Text('Honeybadger', style: Theme.of(context).textTheme.titleLarge),
         ],
       ),
       actions: [

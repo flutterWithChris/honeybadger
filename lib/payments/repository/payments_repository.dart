@@ -5,12 +5,12 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_stripe/flutter_stripe.dart';
-import 'package:honeybadger/core/constants.dart';
-import 'package:honeybadger/payments/model/balance.dart';
-import 'package:honeybadger/payments/model/balance_transaction.dart';
-import 'package:honeybadger/payments/model/charge.dart';
-import 'package:honeybadger/payments/model/stripe_account.dart';
-import 'package:honeybadger/payouts/model/payout.dart';
+import 'package:OutsourcedX/core/constants.dart';
+import 'package:OutsourcedX/payments/model/balance.dart';
+import 'package:OutsourcedX/payments/model/balance_transaction.dart';
+import 'package:OutsourcedX/payments/model/charge.dart';
+import 'package:OutsourcedX/payments/model/stripe_account.dart';
+import 'package:OutsourcedX/payouts/model/payout.dart';
 import 'package:http/http.dart' as http;
 import 'package:url_launcher/url_launcher.dart';
 

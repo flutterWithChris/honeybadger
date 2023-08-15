@@ -26,7 +26,7 @@
      <!--#docregion android-queries-->
     </queries>
     <application
-        android:label="honeybadger"
+        android:label="OutsourcedX"
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher"
         android:enableOnBackInvokedCallback="true">

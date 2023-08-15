@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:honeybadger/core/constants.dart';
-import 'package:honeybadger/profile/bloc/profile_bloc.dart';
-import 'package:honeybadger/profile/model/user.dart';
-import 'package:honeybadger/projects/model/project.dart';
-import 'package:honeybadger/projects/view/project_details_page/mobile/mobile_client_project_page.dart';
-import 'package:honeybadger/projects/view/project_details_page/tablet/tablet_project_page.dart';
+import 'package:OutsourcedX/core/constants.dart';
+import 'package:OutsourcedX/profile/bloc/profile_bloc.dart';
+import 'package:OutsourcedX/profile/model/user.dart';
+import 'package:OutsourcedX/projects/model/project.dart';
+import 'package:OutsourcedX/projects/view/project_details_page/mobile/mobile_client_project_page.dart';
+import 'package:OutsourcedX/projects/view/project_details_page/tablet/tablet_project_page.dart';
 
 import 'desktop/desktop_job_page.dart';
 import 'mobile/mobile_job_page.dart';

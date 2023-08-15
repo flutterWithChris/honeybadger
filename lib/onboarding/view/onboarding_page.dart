@@ -1,13 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:honeybadger/onboarding/bloc/onboarding_bloc.dart';
-import 'package:honeybadger/onboarding/view/pages/client_industry/client_industry_page.dart';
-import 'package:honeybadger/onboarding/view/pages/payment_setup.dart';
-import 'package:honeybadger/onboarding/view/pages/profile_setup/profile_setup.dart';
-import 'package:honeybadger/onboarding/view/pages/skills_and_experience.dart';
-import 'package:honeybadger/onboarding/view/pages/welcome/welcome_page.dart';
-import 'package:honeybadger/onboarding/view/signup_page.dart';
-import 'package:honeybadger/profile/model/user.dart';
+import 'package:OutsourcedX/onboarding/bloc/onboarding_bloc.dart';
+import 'package:OutsourcedX/onboarding/view/pages/client_industry/client_industry_page.dart';
+import 'package:OutsourcedX/onboarding/view/pages/payment_setup.dart';
+import 'package:OutsourcedX/onboarding/view/pages/profile_setup/profile_setup.dart';
+import 'package:OutsourcedX/onboarding/view/pages/skills_and_experience.dart';
+import 'package:OutsourcedX/onboarding/view/pages/welcome/welcome_page.dart';
+import 'package:OutsourcedX/onboarding/view/signup_page.dart';
+import 'package:OutsourcedX/profile/model/user.dart';
+import 'package:go_router/go_router.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:smooth_page_indicator/smooth_page_indicator.dart';
 
 class OnboardingPage extends StatefulWidget {
@@ -35,77 +37,14 @@ class _OnboardingPageState extends State<OnboardingPage> {
 
   @override
   Widget build(BuildContext context) {
+    UserType? userType = context.watch<OnboardingBloc>().userType;
     return Scaffold(
       resizeToAvoidBottomInset: true,
       extendBody: true,
-      bottomNavigationBar: IgnorePointer(
-        ignoring: _currentPage == 0,
-        child: AnimatedOpacity(
-          duration: const Duration(milliseconds: 400),
-          curve: Curves.easeOutSine,
-          opacity: _currentPage > 0 ? 1 : 0,
-          child: Theme(
-            data: Theme.of(context).copyWith(
-              bottomNavigationBarTheme: const BottomNavigationBarThemeData(
-                backgroundColor: Colors.transparent,
-                elevation: 0,
-              ),
-            ),
-            child: Container(
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  // Flexible(
-                  //   child: TextButton(
-                  //       onPressed: () async {
-                  //         await _pageController.previousPage(
-                  //           duration: const Duration(milliseconds: 500),
-                  //           curve: Curves.ease,
-                  //         );
-                  //       },
-                  //       child: const Text('Back')),
-                  // ),
-                  // const Gutter(),
-                  SizedBox(
-                    height: 80,
-                    child: SmoothPageIndicator(
-                      controller: _pageController,
-                      count: 5,
-                      effect: WormEffect(
-                        dotHeight: 12,
-                        dotWidth: 12,
-                        activeDotColor: Theme.of(context).indicatorColor,
-                        dotColor: Colors.grey.shade400,
-                      ),
-                    ),
-                  ),
-                  // const Gutter(),
-                  // Flexible(
-                  //   child: TextButton(
-                  //       onPressed: () async {
-                  //         if (_currentPage == 4) {
-                  //           SharedPreferences prefs =
-                  //               await SharedPreferences.getInstance();
-                  //           prefs.setBool('onboarded', true).then((value) {
-                  //             context.go('/search');
-                  //             return value;
-                  //           });
-                  //           return;
-                  //         } else {
-                  //           await _pageController.nextPage(
-                  //             duration: const Duration(milliseconds: 500),
-                  //             curve: Curves.ease,
-                  //           );
-                  //         }
-                  //       },
-                  //       child: Text(_currentPage < 4 ? 'Next' : 'Finish')),
-                  // )
-                ],
-              ),
-            ),
-          ),
-        ),
-      ),
+      bottomNavigationBar: OnboardingPageButtons(
+          userType: userType,
+          currentPage: _currentPage,
+          pageController: _pageController),
       body: Column(
         children: [
           Expanded(
@@ -198,6 +137,93 @@ class _OnboardingPageState extends State<OnboardingPage> {
             ),
           ),
         ],
+      ),
+    );
+  }
+}
+
+class OnboardingPageButtons extends StatelessWidget {
+  const OnboardingPageButtons({
+    super.key,
+    required this.userType,
+    required int currentPage,
+    required PageController pageController,
+  })  : _currentPage = currentPage,
+        _pageController = pageController;
+
+  final UserType? userType;
+  final int _currentPage;
+  final PageController _pageController;
+
+  @override
+  Widget build(BuildContext context) {
+    return AnimatedOpacity(
+      duration: const Duration(milliseconds: 400),
+      curve: Curves.easeInOutSine,
+      opacity: userType != null && _currentPage == 0 ? 1 : 0,
+      child: Theme(
+        data: Theme.of(context).copyWith(
+          bottomNavigationBarTheme: const BottomNavigationBarThemeData(
+            backgroundColor: Colors.transparent,
+            elevation: 0,
+          ),
+        ),
+        child: Container(
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Expanded(
+                child: FractionallySizedBox(
+                  widthFactor: 0.618,
+                  child: OutlinedButton(
+                      onPressed: () async {
+                        await _pageController.previousPage(
+                          duration: const Duration(milliseconds: 500),
+                          curve: Curves.ease,
+                        );
+                      },
+                      child: const Text('Back')),
+                ),
+              ),
+              SizedBox(
+                height: 80,
+                child: SmoothPageIndicator(
+                  controller: _pageController,
+                  count: 5,
+                  effect: WormEffect(
+                    dotHeight: 12,
+                    dotWidth: 12,
+                    activeDotColor: Theme.of(context).indicatorColor,
+                    dotColor: Colors.grey.shade400,
+                  ),
+                ),
+              ),
+              Expanded(
+                child: FractionallySizedBox(
+                  widthFactor: 0.618,
+                  child: FilledButton(
+                      onPressed: () async {
+                        if (_currentPage == 4) {
+                          SharedPreferences prefs =
+                              await SharedPreferences.getInstance();
+                          prefs.setBool('onboarded', true).then((value) {
+                            context.go('/search');
+                            return value;
+                          });
+                          return;
+                        } else {
+                          await _pageController.nextPage(
+                            duration: const Duration(milliseconds: 500),
+                            curve: Curves.ease,
+                          );
+                        }
+                      },
+                      child: Text(_currentPage < 4 ? 'Next' : 'Finish')),
+                ),
+              )
+            ],
+          ),
+        ),
       ),
     );
   }

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:honeybadger/message/info_screens/chat_info_screen.dart';
-import 'package:honeybadger/message/thread_page.dart';
+import 'package:OutsourcedX/message/info_screens/chat_info_screen.dart';
+import 'package:OutsourcedX/message/thread_page.dart';
 import 'package:list_ext/list_ext.dart';
 import 'package:stream_chat_flutter/stream_chat_flutter.dart';
 

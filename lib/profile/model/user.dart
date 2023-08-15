@@ -1,8 +1,8 @@
 import 'package:algolia_helper_flutter/algolia_helper_flutter.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:honeybadger/profile/model/category.dart';
-import 'package:honeybadger/profile/model/skill.dart';
-import 'package:honeybadger/profile/review.dart';
+import 'package:OutsourcedX/profile/model/category.dart';
+import 'package:OutsourcedX/profile/model/skill.dart';
+import 'package:OutsourcedX/profile/review.dart';
 
 enum UserType { freelancer, client }
 

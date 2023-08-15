@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:honeybadger/core/constants.dart';
-import 'package:honeybadger/payments/details/desktop/desktop_payment_details.dart';
-import 'package:honeybadger/payments/details/mobile/mobile_payment_details.dart';
-import 'package:honeybadger/payments/details/tablet/tablet_payment_details.dart';
-import 'package:honeybadger/payments/model/balance_transaction.dart';
+import 'package:OutsourcedX/core/constants.dart';
+import 'package:OutsourcedX/payments/details/desktop/desktop_payment_details.dart';
+import 'package:OutsourcedX/payments/details/mobile/mobile_payment_details.dart';
+import 'package:OutsourcedX/payments/details/tablet/tablet_payment_details.dart';
+import 'package:OutsourcedX/payments/model/balance_transaction.dart';
 
 class PaymentDetailsPage extends StatelessWidget {
   final BalanceTransaction balanceTransaction;

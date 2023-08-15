@@ -1,9 +1,9 @@
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:flutter/material.dart';
-import 'package:honeybadger/core/constants.dart';
-import 'package:honeybadger/profile/model/portfolio_project.dart';
-import 'package:honeybadger/profile/portfolio/repository/portfiolio_repository.dart';
+import 'package:OutsourcedX/core/constants.dart';
+import 'package:OutsourcedX/profile/model/portfolio_project.dart';
+import 'package:OutsourcedX/profile/portfolio/repository/portfiolio_repository.dart';
 import 'package:image_picker/image_picker.dart';
 
 part 'portfolio_event.dart';

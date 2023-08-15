@@ -3,10 +3,10 @@ import 'dart:async';
 import 'package:algolia_helper_flutter/algolia_helper_flutter.dart';
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
-import 'package:honeybadger/profile/bloc/profile_bloc.dart';
-import 'package:honeybadger/projects/model/project.dart';
-import 'package:honeybadger/projects/repository/projects_repository.dart';
-import 'package:honeybadger/search/repository/search_repository.dart';
+import 'package:OutsourcedX/profile/bloc/profile_bloc.dart';
+import 'package:OutsourcedX/projects/model/project.dart';
+import 'package:OutsourcedX/projects/repository/projects_repository.dart';
+import 'package:OutsourcedX/search/repository/search_repository.dart';
 
 import '../../profile/model/user.dart';
 

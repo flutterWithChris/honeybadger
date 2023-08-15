@@ -2,10 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_gutter/flutter_gutter.dart';
 import 'package:go_router/go_router.dart';
-import 'package:honeybadger/core/presentation/system/main_navigation_bar.dart';
-import 'package:honeybadger/core/presentation/system/mobile_sliver_app_bar.dart';
-import 'package:honeybadger/payments/bloc/payments_bloc.dart';
-import 'package:honeybadger/profile/bloc/profile_bloc.dart';
+import 'package:OutsourcedX/core/presentation/system/main_navigation_bar.dart';
+import 'package:OutsourcedX/core/presentation/system/mobile_sliver_app_bar.dart';
+import 'package:OutsourcedX/payments/bloc/payments_bloc.dart';
+import 'package:OutsourcedX/profile/bloc/profile_bloc.dart';
 import 'package:loading_animation_widget/loading_animation_widget.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 

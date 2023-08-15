@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:honeybadger/core/presentation/system/main_navigation_bar.dart';
+import 'package:OutsourcedX/core/presentation/system/main_navigation_bar.dart';
 
 import '../../../../projects/model/project.dart';
 

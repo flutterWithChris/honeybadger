@@ -1,4 +1,4 @@
-import 'package:honeybadger/profile/model/user.dart';
+import 'package:OutsourcedX/profile/model/user.dart';
 import 'package:image_picker/image_picker.dart';
 
 abstract class BaseUserRepository {
