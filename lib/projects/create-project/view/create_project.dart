@@ -35,7 +35,7 @@ class _CreateProjectPageState extends State<CreateProjectPage> {
         bottomNavigationBar: const MainBottomNavBar(),
         body: CustomScrollView(
           slivers: [
-            const MobileSliverAppBar(),
+            MobileSliverAppBar(),
             BlocBuilder<ProjectsBloc, ProjectsState>(
               builder: (context, state) {
                 if (state is ProjectsError) {

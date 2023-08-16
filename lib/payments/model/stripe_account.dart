@@ -48,9 +48,9 @@ class StripeAccount {
   });
 
   factory StripeAccount.fromJson(Map<String, dynamic> json) {
-    var externalAccountsData = json['external_accounts']['data'] as List;
+    var externalAccountsData = json['external_accounts']['data'] as List?;
     var availablePayoutMethodsList = externalAccountsData
-        .map((data) => data['available_payout_methods'] as List<dynamic>)
+        ?.map((data) => data['available_payout_methods'] as List<dynamic>?)
         .toList();
     print('External accounts data: $externalAccountsData');
     return StripeAccount(
@@ -75,8 +75,10 @@ class StripeAccount {
       futureRequirements: json['future_requirements'] as Map<String, dynamic>?,
       payoutsEnabled: json['payouts_enabled'],
       settings: json['settings'] as Map<String, dynamic>?,
-      availablePayoutMethods:
-          externalAccountsData[0]['available_payout_methods'] as List<dynamic>?,
+      availablePayoutMethods: externalAccountsData != null &&
+              externalAccountsData.isNotEmpty
+          ? externalAccountsData[0]['available_payout_methods'] as List<dynamic>
+          : null,
     );
   }
 }

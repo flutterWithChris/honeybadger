@@ -83,7 +83,7 @@ class _MobileClientProjectDetailsPageState
         length: 2,
         child: CustomScrollView(
           slivers: [
-            const MobileSliverAppBar(),
+            MobileSliverAppBar(),
             SliverPadding(
               padding: const EdgeInsets.only(
                   left: 16, right: 16, top: 16, bottom: 8),

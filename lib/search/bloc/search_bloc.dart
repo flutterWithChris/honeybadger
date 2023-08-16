@@ -36,7 +36,6 @@ class SearchBloc extends Bloc<SearchEvent, SearchState> {
     on<LoadSearch>((event, emit) async {
       try {
         emit(SearchLoading());
-        return;
         // TODO: Set default query to user's skills
         if (_profileBloc.state.user?.userType == UserType.freelancer) {
           _searchRepository.setQuery(event.query ?? '', 'projects');

@@ -44,11 +44,10 @@ class PaymentsRepository {
           });
       print(response.body);
       final jsonResponse = jsonDecode(response.body);
-      log(jsonResponse.toString());
-      print(jsonResponse.toString());
+      log(jsonResponse['account'].toString());
       return StripeAccount.fromJson(jsonResponse['account']);
     } catch (e) {
-      log(e.toString());
+      log('**Error fetching stripe account: ${e.toString()}**');
       return null;
     }
   }

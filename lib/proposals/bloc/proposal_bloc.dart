@@ -34,6 +34,7 @@ class ProposalBloc extends Bloc<ProposalsEvent, ProposalState> {
         _projectsRepository = projectsRepository,
         _profileBloc = profileBloc,
         super(const ProposalLoading()) {
+    print('Proposal state: $state');
     on<LoadProposal>((event, emit) async {
       if (state is ProposalLoading == false) emit(const ProposalLoading());
       Proposal? currentProposal;

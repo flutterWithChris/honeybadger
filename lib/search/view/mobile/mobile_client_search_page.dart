@@ -48,7 +48,7 @@ class _MobileClientSearchPageState extends State<MobileClientSearchPage> {
       bottomNavigationBar: const MainBottomNavBar(),
       body: CustomScrollView(
         slivers: [
-          const MobileSliverAppBar(),
+          MobileSliverAppBar(),
           SliverToBoxAdapter(
             child: Padding(
               padding:

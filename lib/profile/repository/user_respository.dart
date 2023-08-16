@@ -12,6 +12,7 @@ class UserRepository extends BaseUserRepository {
   final FirebaseFirestore _firebaseFirestore = FirebaseFirestore.instance;
   final FirebaseStorage _firebaseStorage = FirebaseStorage.instance;
   String getUserPath(User user) {
+    print('Getting User for User Type: ${user.userType}');
     if (user.userType == UserType.freelancer) {
       return 'freelancers';
     } else {

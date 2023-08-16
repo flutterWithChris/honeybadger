@@ -4,6 +4,7 @@ import 'package:OutsourcedX/profile/model/user.dart';
 import 'package:OutsourcedX/profile/repository/user_respository.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:meta/meta.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 part 'onboarding_event.dart';
 part 'onboarding_state.dart';
@@ -16,6 +17,7 @@ class OnboardingBloc extends Bloc<OnboardingEvent, OnboardingState> {
         super(OnboardingState.initial()) {
     on<StartOnboarding>((event, emit) async {
       try {
+        SharedPreferences prefs = await SharedPreferences.getInstance();
         emit(OnboardingState.loading());
         // TODO: Reenable this
         // Check if user exists
@@ -23,10 +25,17 @@ class OnboardingBloc extends Bloc<OnboardingEvent, OnboardingState> {
         if (user != null) {
           print('User exists');
           emit(OnboardingState.loaded(user));
+          if (prefs.getString('userType') == null) {
+            await prefs.setString(
+                'userType', event.user.userType.toString().split('.').last);
+          }
         } else {
           print('User does not exist');
           //  TODO: ***Reenable this***
-          // await _userRepository.createUser(event.user);
+          await _userRepository.createUser(event.user);
+
+          await prefs.setString(
+              'userType', event.user.userType.toString().split('.').last);
           emit(OnboardingState.loaded(event.user));
         }
       } catch (e) {

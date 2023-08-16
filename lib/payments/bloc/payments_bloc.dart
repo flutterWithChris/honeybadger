@@ -132,8 +132,12 @@ class PaymentsBloc extends Bloc<PaymentsEvent, PaymentsState>
           // bool stripeSetupComplete =
           //     (stripeAccount?.requirements?['currently_due'] as List?)?.isEmpty ??
           //         true;
-          bool stripeSetupComplete = stripeAccount?.detailsSubmitted ?? true;
+          var currentDue = stripeAccount?.requirements;
+          print('Requirements: $currentDue');
+          bool? stripeSetupComplete =
+              (stripeAccount?.requirements?['currently_due'] as List?)?.isEmpty;
           if (stripeSetupComplete == true) {
+            print('Stripe setup complete: $stripeSetupComplete');
             var futures = [
               _paymentsRepository.getLoginLink(event.user.stripeAccountId!),
               _paymentsRepository.getBalance(event.user.stripeAccountId!),
@@ -146,12 +150,11 @@ class PaymentsBloc extends Bloc<PaymentsEvent, PaymentsState>
             balance = results[1] as Balance;
             balanceTransactions = results[2] as List<BalanceTransaction>;
           }
-          print(
-              'Available payout methods: ${stripeAccount?.externalAccounts}}');
+          print('Stripe setup complete: $stripeSetupComplete');
           emit(PaymentsLoaded(
               stripeAccount: stripeAccount,
               loginLink: loginLink,
-              stripeAccountStatus: stripeSetupComplete
+              stripeAccountStatus: stripeSetupComplete == true
                   ? StripeAccountStatus.complete
                   : StripeAccountStatus.incomplete,
               balance: balance,

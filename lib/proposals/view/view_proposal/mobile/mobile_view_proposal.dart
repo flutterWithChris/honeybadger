@@ -34,7 +34,7 @@ class MobileViewProposalPage extends StatelessWidget {
         bottomNavigationBar: const MainBottomNavBar(),
         body: CustomScrollView(
           slivers: [
-            const MobileSliverAppBar(),
+            MobileSliverAppBar(),
             SliverPadding(
               padding: const EdgeInsets.all(16.0),
               sliver: SliverList(

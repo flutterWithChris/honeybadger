@@ -37,13 +37,19 @@ class ProfileBloc extends Bloc<ProfileEvent, ProfileState> {
     });
   }
   void _onLoadProfile(LoadProfile event, Emitter<ProfileState> emit) async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    String? userTypePref = prefs.getString('userType');
+    UserType userType =
+        userTypePref == 'freelancer' ? UserType.freelancer : UserType.client;
     emit(ProfileLoading());
     try {
       await emit.forEach(
-        _userRepository.getUserAsStream(User(id: _authBloc.state.user!.uid)),
+        _userRepository.getUserAsStream(
+            User(id: _authBloc.state.user!.uid, userType: userType)),
         onData: (data) {
           //   _paymentsBloc.add(LoadPayments(user: data));
           print('Profile Loaded: ${data.userType}');
+          print('Profile stripe id Loaded: ${data.stripeAccountId}');
           return ProfileLoaded(data);
         },
         onError: (error, stackTrace) {

@@ -1,3 +1,4 @@
+import 'package:OutsourcedX/onboarding/bloc/onboarding_bloc.dart';
 import 'package:animations/animations.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
@@ -40,8 +41,8 @@ GoRouter goRouter = GoRouter(
     print('Logged in: $loggedIn');
     SharedPreferences prefs = await SharedPreferences.getInstance();
     // TODO: **IMPORTANT** Change this back
-    // bool onboarded = prefs.getBool('onboarded') ?? false;
-    bool onboarded = false;
+    bool onboarded = prefs.getBool('onboarded') ?? false;
+    //bool onboarded = false;
     if (isOnboarding) {
       return null;
     }
@@ -50,7 +51,7 @@ GoRouter goRouter = GoRouter(
     }
     if (onboarded == false) {
       if (state.matchedLocation.contains('stripe-confirmation')) {
-        return '/stripe-confirmation?${state.uri.query}';
+        return null;
       }
       return '/onboarding';
     }
@@ -172,9 +173,15 @@ GoRouter goRouter = GoRouter(
         path: '/stripe-confirmation',
         name: 'stripe-confirmation',
         builder: (context, state) {
-          if (context.read<ProfileBloc>().state.user != null) {
+          context.read<ProfileBloc>().add(LoadProfile());
+          if (context.read<OnboardingBloc>().state.user != null) {
             context.read<PaymentsBloc>().add(
-                LoadPayments(user: context.read<ProfileBloc>().state.user!));
+                LoadPayments(user: context.read<OnboardingBloc>().state.user!));
+          } else {
+            if (context.read<ProfileBloc>().state.user != null) {
+              context.read<PaymentsBloc>().add(
+                  LoadPayments(user: context.read<ProfileBloc>().state.user!));
+            }
           }
           print('State path params: ${state.uri.queryParameters}');
           return StripeConfirmationPage(

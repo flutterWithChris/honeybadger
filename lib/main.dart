@@ -46,10 +46,12 @@ void main() async {
 
 // Clear firebase cache
   await FirebaseFirestore.instance.clearPersistence();
+  //await FirebaseAuth.instance.signOut();
 
 // Clear  Shared Preferences
   SharedPreferences prefs = await SharedPreferences.getInstance();
-  await prefs.clear();
+  // prefs.setBool('onboarded', true);
+  // await prefs.clear();
 
   runApp(const MyApp());
 }

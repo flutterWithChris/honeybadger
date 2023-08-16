@@ -31,7 +31,7 @@ class MobileClientProfilePage extends StatelessWidget {
       bottomNavigationBar: const MainBottomNavBar(),
       body: CustomScrollView(
         slivers: [
-          const MobileSliverAppBar(),
+          MobileSliverAppBar(),
           BlocBuilder<ProfileBloc, ProfileState>(
             builder: (context, state) {
               if (state is ProfileError) {

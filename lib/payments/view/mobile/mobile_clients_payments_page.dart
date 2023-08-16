@@ -96,7 +96,7 @@ class _MobileClientPaymentsPageState extends State<MobileClientPaymentsPage>
           },
           child: CustomScrollView(
             slivers: [
-              const MobileSliverAppBar(),
+              MobileSliverAppBar(),
               SliverToBoxAdapter(
                 child: Padding(
                   padding: const EdgeInsets.only(top: 16.0, left: 16.0),

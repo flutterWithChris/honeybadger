@@ -245,7 +245,7 @@ class _MobileProfileSetupState extends State<MobileProfileSetup> {
                   inputFormatters: [FilteringTextInputFormatter.digitsOnly],
                   decoration: const InputDecoration(
                     label: Text('Hourly Rate'),
-                    hintText: '40',
+                    hintText: 'Enter hourly rate..',
                     prefixText: '\$',
                     suffixText: '/hr',
                     floatingLabelBehavior: FloatingLabelBehavior.always,

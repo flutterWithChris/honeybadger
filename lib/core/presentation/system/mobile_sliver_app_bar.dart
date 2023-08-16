@@ -2,7 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 class MobileSliverAppBar extends StatelessWidget {
-  const MobileSliverAppBar({super.key});
+  bool? noActions;
+  MobileSliverAppBar({this.noActions, super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -33,15 +34,17 @@ class MobileSliverAppBar extends StatelessWidget {
           ),
         ],
       ),
-      actions: [
-        Padding(
-          padding: const EdgeInsets.only(right: 12.0),
-          child: IconButton(
-            icon: const Icon(Icons.menu),
-            onPressed: () {},
-          ),
-        ),
-      ],
+      actions: noActions == true
+          ? null
+          : [
+              Padding(
+                padding: const EdgeInsets.only(right: 12.0),
+                child: IconButton(
+                  icon: const Icon(Icons.menu),
+                  onPressed: () {},
+                ),
+              ),
+            ],
     );
   }
 }

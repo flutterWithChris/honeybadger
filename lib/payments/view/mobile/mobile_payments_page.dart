@@ -93,7 +93,7 @@ class _MobilePaymentsPageState extends State<MobilePaymentsPage>
           },
           child: CustomScrollView(
             slivers: [
-              const MobileSliverAppBar(),
+              MobileSliverAppBar(),
               BlocBuilder<PaymentsBloc, PaymentsState>(
                 builder: (context, state) {
                   if (state.stripeAccountStatus ==
@@ -426,7 +426,9 @@ class _MobilePaymentsPageState extends State<MobilePaymentsPage>
                   if (paymentsState.balanceTransactions == null ||
                       paymentsState.balanceTransactions!.isEmpty) {
                     return SliverFillRemaining(
-                      child: Center(
+                      hasScrollBody: false,
+                      child: Padding(
+                        padding: const EdgeInsets.only(bottom: 100.0),
                         child: Column(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [

@@ -33,7 +33,7 @@ class _DesktopSearchPageState extends State<DesktopSearchPage> {
       bottomNavigationBar: const MainBottomNavBar(),
       body: CustomScrollView(
         slivers: [
-          const MobileSliverAppBar(),
+          MobileSliverAppBar(),
           SliverToBoxAdapter(
             child: Padding(
               padding:
