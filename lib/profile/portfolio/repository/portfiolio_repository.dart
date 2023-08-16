@@ -15,7 +15,7 @@ class PortfolioRepository {
   Stream<List<PortfolioProject>> getPortfolioProjects(String userId) {
     try {
       return _firestore
-          .collection('users')
+          .collection('freelancers')
           .doc(userId)
           .collection('portfolio')
           .snapshots()
@@ -44,7 +44,7 @@ class PortfolioRepository {
       List<String> imageUrls = await savePortfolioProjectImages(userId, images);
       PortfolioProject projectWithImages = project.copyWith(images: imageUrls);
       await _firestore
-          .collection('users')
+          .collection('freelancers')
           .doc(userId)
           .collection('portfolio')
           .add(projectWithImages.toDocumentSnapshot());
@@ -66,7 +66,7 @@ class PortfolioRepository {
       String userId, PortfolioProject project) async {
     try {
       await _firestore
-          .collection('users')
+          .collection('freelancers')
           .doc(userId)
           .collection('portfolio')
           .doc(project.id)
@@ -92,13 +92,13 @@ class PortfolioRepository {
         for (var image in project.images!)
           _firebaseStorage
               .ref()
-              .child('users')
+              .child('freelancers')
               .child(userId)
               .child('portfolio')
               .child(image)
               .delete(),
         _firestore
-            .collection('users')
+            .collection('freelancers')
             .doc(userId)
             .collection('portfolio')
             .doc(project.id)
@@ -123,7 +123,7 @@ class PortfolioRepository {
       List<Future<String>> tasks = images.map((image) async {
         var ref = _firebaseStorage
             .ref()
-            .child('users')
+            .child('freelancers')
             .child(userId)
             .child('portfolio')
             .child(image.name);

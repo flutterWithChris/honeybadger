@@ -2,13 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_gutter/flutter_gutter.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:go_router/go_router.dart';
 import 'package:OutsourcedX/core/constants.dart';
 import 'package:OutsourcedX/onboarding/bloc/onboarding_bloc.dart';
 import 'package:OutsourcedX/payments/bloc/payments_bloc.dart';
 import 'package:OutsourcedX/profile/bloc/profile_bloc.dart';
 import 'package:loading_animation_widget/loading_animation_widget.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 class PaymentSetupPage extends StatelessWidget {
   final PageController pageController;
@@ -118,74 +116,74 @@ class PaymentSetupPage extends StatelessWidget {
                               ),
                             ],
                           ),
-                          TextButton(
-                              onPressed: () {
-                                showDialog(
-                                  context: context,
-                                  builder: (context) {
-                                    return AlertDialog(
-                                      alignment: Alignment.center,
-                                      // actionsPadding: const EdgeInsets.only(
-                                      //     right: 78.0, bottom: 24.0),
+                          // TextButton(
+                          //     onPressed: () {
+                          //       showDialog(
+                          //         context: context,
+                          //         builder: (context) {
+                          //           return AlertDialog(
+                          //             alignment: Alignment.center,
+                          //             // actionsPadding: const EdgeInsets.only(
+                          //             //     right: 78.0, bottom: 24.0),
 
-                                      actionsAlignment:
-                                          MainAxisAlignment.center,
-                                      title: const Row(
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.center,
-                                        children: [
-                                          Text('Skip Payment Setup'),
-                                        ],
-                                      ),
-                                      content: const Text.rich(
-                                        TextSpan(
-                                          text:
-                                              'You won\'t be able to send proposals or receive payouts \'til you set up your Stripe account. ',
-                                          children: [
-                                            TextSpan(
-                                              text:
-                                                  '\n\nYou can set up your Stripe account later via the payments page.',
-                                              style: TextStyle(
-                                                  fontWeight:
-                                                      FontWeight.normal),
-                                            ),
-                                          ],
-                                        ),
-                                        style: TextStyle(
-                                            fontWeight: FontWeight.bold),
-                                        textAlign: TextAlign.center,
-                                      ),
-                                      actions: [
-                                        Row(
-                                          children: [
-                                            Expanded(
-                                              child: OutlinedButton(
-                                                  onPressed: () {
-                                                    Navigator.of(context).pop();
-                                                  },
-                                                  child: const Text('Cancel')),
-                                            ),
-                                            const Gutter(),
-                                            Expanded(
-                                              child: FilledButton(
-                                                  onPressed: () async {
-                                                    SharedPreferences prefs =
-                                                        await SharedPreferences
-                                                            .getInstance();
-                                                    prefs.setBool(
-                                                        'onboarded', true);
-                                                    context.go('/search');
-                                                  },
-                                                  child: const Text('Skip')),
-                                            )
-                                          ],
-                                        ),
-                                      ],
-                                    );
-                                  },
-                                );
-                              },
-                              child: const Text('Skip For Now'))
+                          //             actionsAlignment:
+                          //                 MainAxisAlignment.center,
+                          //             title: const Row(
+                          //               mainAxisAlignment:
+                          //                   MainAxisAlignment.center,
+                          //               children: [
+                          //                 Text('Skip Payment Setup'),
+                          //               ],
+                          //             ),
+                          //             content: const Text.rich(
+                          //               TextSpan(
+                          //                 text:
+                          //                     'You won\'t be able to send proposals or receive payouts \'til you set up your Stripe account. ',
+                          //                 children: [
+                          //                   TextSpan(
+                          //                     text:
+                          //                         '\n\nYou can set up your Stripe account later via the payments page.',
+                          //                     style: TextStyle(
+                          //                         fontWeight:
+                          //                             FontWeight.normal),
+                          //                   ),
+                          //                 ],
+                          //               ),
+                          //               style: TextStyle(
+                          //                   fontWeight: FontWeight.bold),
+                          //               textAlign: TextAlign.center,
+                          //             ),
+                          //             actions: [
+                          //               Row(
+                          //                 children: [
+                          //                   Expanded(
+                          //                     child: OutlinedButton(
+                          //                         onPressed: () {
+                          //                           Navigator.of(context).pop();
+                          //                         },
+                          //                         child: const Text('Cancel')),
+                          //                   ),
+                          //                   const Gutter(),
+                          //                   Expanded(
+                          //                     child: FilledButton(
+                          //                         onPressed: () async {
+                          //                           SharedPreferences prefs =
+                          //                               await SharedPreferences
+                          //                                   .getInstance();
+                          //                           prefs.setBool(
+                          //                               'onboarded', true);
+                          //                           context.go('/search');
+                          //                         },
+                          //                         child: const Text('Skip')),
+                          //                   )
+                          //                 ],
+                          //               ),
+                          //             ],
+                          //           );
+                          //         },
+                          //       );
+                          //     },
+                          //     child: const Text('Skip For Now'))
                         ],
                       );
                     }

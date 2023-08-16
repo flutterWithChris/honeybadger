@@ -50,7 +50,7 @@ GoRouter goRouter = GoRouter(
     }
     if (onboarded == false) {
       if (state.matchedLocation.contains('stripe-confirmation')) {
-        return null;
+        return '/stripe-confirmation?${state.uri.query}';
       }
       return '/onboarding';
     }
@@ -176,8 +176,9 @@ GoRouter goRouter = GoRouter(
             context.read<PaymentsBloc>().add(
                 LoadPayments(user: context.read<ProfileBloc>().state.user!));
           }
+          print('State path params: ${state.uri.queryParameters}');
           return StripeConfirmationPage(
-            stripeAccountId: state.pathParameters['account_id']!,
+            stripeAccountId: state.uri.queryParameters['account_id']!,
           );
         }),
     GoRoute(

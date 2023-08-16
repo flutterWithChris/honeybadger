@@ -78,7 +78,8 @@ class SkillSearchBloc extends Bloc<SkillSearchEvent, SkillSearchState> {
           const SnackBar(
             backgroundColor: Colors.red,
             behavior: SnackBarBehavior.floating,
-            content: Text('Error adding skill...'),
+            content: Text('Error adding skill...',
+                style: TextStyle(color: Colors.white)),
           ),
         );
       }

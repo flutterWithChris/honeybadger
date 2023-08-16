@@ -81,6 +81,7 @@ dependencies:
   flutter_link_previewer: ^3.2.2
   timeline_tile: ^2.0.0
   file_picker: ^5.3.3
+  mapbox_search: ^3.2.0
 
 
 dev_dependencies:

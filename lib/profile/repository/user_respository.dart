@@ -29,7 +29,10 @@ class UserRepository extends BaseUserRepository {
 
   @override
   Future<void> deleteUser(User user) {
-    return _firebaseFirestore.collection('users').doc(user.id).delete();
+    return _firebaseFirestore
+        .collection(getUserPath(user))
+        .doc(user.id)
+        .delete();
   }
 
   @override
@@ -79,7 +82,7 @@ class UserRepository extends BaseUserRepository {
   Future<void> updateUser(User user) {
     try {
       return _firebaseFirestore
-          .collection('users')
+          .collection(getUserPath(user))
           .doc(user.id)
           .update(user.toDocument());
     } on FirebaseException catch (e) {
@@ -105,7 +108,7 @@ class UserRepository extends BaseUserRepository {
           .ref('profile_pictures/${user.id}')
           .getDownloadURL();
       await _firebaseFirestore
-          .collection('users')
+          .collection(getUserPath(user))
           .doc(user.id)
           .update({'photoUrl': downloadUrl});
       return downloadUrl;

@@ -47,6 +47,10 @@ void main() async {
 // Clear firebase cache
   await FirebaseFirestore.instance.clearPersistence();
 
+// Clear  Shared Preferences
+  SharedPreferences prefs = await SharedPreferences.getInstance();
+  await prefs.clear();
+
   runApp(const MyApp());
 }
 
@@ -195,7 +199,7 @@ class _MyAppState extends State<MyApp> {
             create: (context) => CategorySearchBloc(
               searchRepository: context.read<SearchRepository>(),
               categoryRepository: context.read<CategoryRepository>(),
-            )..add(const SearchCategories(query: '')),
+            ),
           ),
           BlocProvider(
             create: (context) => SkillSearchBloc(

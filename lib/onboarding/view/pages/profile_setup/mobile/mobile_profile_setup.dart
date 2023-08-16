@@ -3,10 +3,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_gutter/flutter_gutter.dart';
 import 'package:OutsourcedX/onboarding/view/pages/profile_setup/bloc/bloc/category_search_bloc.dart';
 import 'package:OutsourcedX/search/repository/search_repository.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:mapbox_search/mapbox_search.dart';
 import 'package:phone_number/phone_number.dart';
 
 import '../../../../../profile/model/category.dart';
@@ -39,6 +41,12 @@ class _MobileProfileSetupState extends State<MobileProfileSetup> {
   final GlobalKey<FormState> _profileFormKey = GlobalKey<FormState>();
   final TextEditingController _skillsController = TextEditingController();
   final TextEditingController categoryController = TextEditingController();
+  final PlacesSearch placesSearch = PlacesSearch(
+    apiKey: dotenv.env['MAPBOX_API_KEY']!,
+    limit: 5,
+    types: [PlaceType.address],
+  );
+  MapBoxPlace? selectedPlace;
 
   List<String> selectedSkills = [];
   List<Category> selectedCategories = [];
@@ -246,6 +254,126 @@ class _MobileProfileSetupState extends State<MobileProfileSetup> {
               ],
             ),
             const Gutter(),
+
+            Autocomplete<MapBoxPlace>(
+              displayStringForOption: (option) => option.placeName!,
+              optionsBuilder: (TextEditingValue textEditingValue) async {
+                if (textEditingValue.text == '') {
+                  return [];
+                }
+                List<MapBoxPlace>? matchingPlaces =
+                    await placesSearch.getPlaces(textEditingValue.text);
+
+                return matchingPlaces ?? [];
+              },
+              onSelected: (MapBoxPlace place) {
+                WidgetsBinding.instance.addPostFrameCallback((_) {
+                  final textEditingController = TextEditingController.fromValue(
+                    TextEditingValue.empty,
+                  );
+                  textEditingController.value = TextEditingValue.empty;
+                });
+
+                setState(() {
+                  selectedPlace = place;
+                });
+                // var currentUser =
+                //     context.read<OnboardingBloc>().state.user!;
+                // List<Category> updatedCategories =
+                //     (currentUser.categories ?? [])..add(category);
+                // context.read<OnboardingBloc>().add(UpdateUser(
+                //       currentUser.copyWith(
+                //         categories: updatedCategories,
+                //       ),
+                //     ));
+                // Print categories that are being added
+                // print('Categories being added:');
+                // for (Category category in updatedCategories) {
+                //   print(category.name);
+                // }
+              },
+              optionsViewBuilder: (BuildContext context,
+                  AutocompleteOnSelected<MapBoxPlace> onSelected,
+                  Iterable<MapBoxPlace> options) {
+                return Material(
+                  borderRadius: BorderRadius.circular(16.0),
+                  elevation: 4.0,
+                  child: SizedBox(
+                    child: ListView.builder(
+                      shrinkWrap: true,
+                      padding: const EdgeInsets.all(8.0),
+                      itemCount: options.isNotEmpty ? options.length : 1,
+                      itemBuilder: (BuildContext context, int index) {
+                        if (options.isEmpty) {
+                          return const ListTile(
+                            title: Text('No results found'),
+                          );
+                        }
+                        final MapBoxPlace option = options.elementAt(index);
+                        bool isHighlighted =
+                            AutocompleteHighlightedOption.of(context) == index;
+                        return GestureDetector(
+                          onTap: () {
+                            onSelected(option);
+                          },
+                          child: ListTile(
+                            shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(16.0)),
+                            tileColor: isHighlighted
+                                ? Theme.of(context).cardColor
+                                : null,
+                            title: Text(option.placeName!),
+                            // subtitle: option.description == null
+                            //     ? null
+                            //     : Text(
+                            //         option.description!,
+                            //         maxLines: 2,
+                            //         style:
+                            //             TextStyle(color: Colors.grey[600]!),
+                            //       ),
+                          ),
+                        );
+                      },
+                    ),
+                  ),
+                );
+              },
+              fieldViewBuilder: (BuildContext context,
+                  TextEditingController textEditingController,
+                  FocusNode focusNode,
+                  VoidCallback onFieldSubmitted) {
+                if (selectedPlace == null) {
+                  textEditingController.text =
+                      context.read<OnboardingBloc>().state.user?.address ?? '';
+                }
+                return TextFormField(
+                  validator: (value) {
+                    if (selectedPlace == null &&
+                        context.read<OnboardingBloc>().state.user?.address ==
+                            null) {
+                      return 'Please enter your address.';
+                    }
+                    return null;
+                  },
+                  onTap: () {
+                    // clear validation error on tap
+                  },
+                  controller: textEditingController,
+                  textCapitalization: TextCapitalization.words,
+                  focusNode: focusNode,
+                  decoration: const InputDecoration(
+                    label: Text('Address'),
+                    hintText: 'Please enter your address..',
+                    floatingLabelBehavior: FloatingLabelBehavior.always,
+                  ),
+                  onFieldSubmitted: (String value) {
+                    onFieldSubmitted();
+                  },
+                );
+              },
+            ),
+
+            const Gutter(),
             BlocBuilder<CategorySearchBloc, CategorySearchState>(
               builder: (context, state) {
                 Category? newCategory;
@@ -258,12 +386,12 @@ class _MobileProfileSetupState extends State<MobileProfileSetup> {
                     if (textEditingValue.text == '') {
                       return const Iterable.empty();
                     }
-                    List<Category> matchingCategories = state.categories
-                            ?.where((category) => category.name!
-                                .toLowerCase()
-                                .contains(textEditingValue.text.toLowerCase()))
-                            .toList() ??
-                        [];
+                    if (textEditingValue.text != '') {
+                      context
+                          .read<CategorySearchBloc>()
+                          .add(SearchCategories(query: textEditingValue.text));
+                    }
+                    List<Category> matchingCategories = state.categories ?? [];
 
                     if (matchingCategories.isEmpty) {
                       newCategory = Category(
@@ -279,6 +407,14 @@ class _MobileProfileSetupState extends State<MobileProfileSetup> {
                       context
                           .read<CategorySearchBloc>()
                           .add(AddCategory(category: category));
+                      // Clear text field
+                      WidgetsBinding.instance.addPostFrameCallback((_) {
+                        final textEditingController =
+                            TextEditingController.fromValue(
+                          TextEditingValue.empty,
+                        );
+                        textEditingController.value = TextEditingValue.empty;
+                      });
                     }
                     WidgetsBinding.instance.addPostFrameCallback((_) {
                       final textEditingController =
@@ -411,7 +547,12 @@ class _MobileProfileSetupState extends State<MobileProfileSetup> {
                     spacing: 8.0,
                     children: selectedCategories
                         .map((category) => Chip(
-                              label: Text(category.name!),
+                              padding: const EdgeInsets.all(8.0),
+                              visualDensity: VisualDensity.compact,
+                              label: Text(
+                                category.name!,
+                                style: Theme.of(context).textTheme.bodySmall,
+                              ),
                               onDeleted: () {
                                 // Remove category from user
                                 var currentUser =
@@ -463,7 +604,20 @@ class _MobileProfileSetupState extends State<MobileProfileSetup> {
                           title: titleController.value.text.trim(),
                           hourlyRate:
                               int.parse(hourlyRateController.value.text.trim()),
-                          address: addressController.value.text.trim(),
+                          address: context
+                                          .read<OnboardingBloc>()
+                                          .state
+                                          .user
+                                          ?.address ==
+                                      null ||
+                                  context
+                                          .read<OnboardingBloc>()
+                                          .state
+                                          .user
+                                          ?.address ==
+                                      ''
+                              ? selectedPlace?.placeName ?? ''
+                              : null,
                           city: cityController.value.text.trim(),
                           state: stateController.value.text.trim(),
                           bio: bioController.value.text.trim(),

@@ -41,10 +41,13 @@ class _OnboardingPageState extends State<OnboardingPage> {
     return Scaffold(
       resizeToAvoidBottomInset: true,
       extendBody: true,
-      bottomNavigationBar: OnboardingPageButtons(
-          userType: userType,
-          currentPage: _currentPage,
-          pageController: _pageController),
+      extendBodyBehindAppBar: true,
+      bottomNavigationBar: _currentPage == 0
+          ? OnboardingPageButtons(
+              userType: userType,
+              currentPage: _currentPage,
+              pageController: _pageController)
+          : null,
       body: Column(
         children: [
           Expanded(

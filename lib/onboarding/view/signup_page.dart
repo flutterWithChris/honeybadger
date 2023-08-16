@@ -132,7 +132,7 @@ class _SignupPageState extends State<SignupPage> {
                                   : Row(
                                       children: [
                                         Expanded(
-                                          child: FilledButton.tonalIcon(
+                                          child: FilledButton.icon(
                                             onPressed: () {
                                               context
                                                   .read<SignupCubit>()
