@@ -62,17 +62,19 @@ class _MobileClientSearchPageState extends State<MobileClientSearchPage> {
                             elevation: const MaterialStatePropertyAll(0),
                             padding: const MaterialStatePropertyAll(
                                 EdgeInsets.symmetric(horizontal: 16.0)),
+                            textStyle: MaterialStatePropertyAll(
+                                Theme.of(context)
+                                    .textTheme
+                                    .bodyMedium
+                                    ?.copyWith(
+                                        color:
+                                            Theme.of(context).iconTheme.color)),
                             backgroundColor: MaterialStatePropertyAll(
                                 Theme.of(context)
                                     .inputDecorationTheme
                                     .fillColor))),
                     child: SearchBar(
                       onChanged: (value) {
-                        context.read<SearchBloc>().add(LoadSearch(
-                              context.read<ProfileBloc>().state.user!,
-                              query: value,
-                            ));
-
                         context.read<SearchBloc>().add(LoadSearch(
                               context.read<ProfileBloc>().state.user!,
                               query: value,

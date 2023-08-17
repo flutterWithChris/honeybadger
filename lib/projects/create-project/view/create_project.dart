@@ -312,7 +312,7 @@ class _CreateProjectPageState extends State<CreateProjectPage> {
                                                   category: _categoryController
                                                       .value.text,
                                                   projectType: _projectType,
-                                                  budget: double.parse(
+                                                  budget: int.parse(
                                                       _budgetController
                                                           .value.text),
                                                   deadline: Jiffy.parse(

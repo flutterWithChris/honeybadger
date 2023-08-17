@@ -1,3 +1,4 @@
+import 'package:algolia_helper_flutter/algolia_helper_flutter.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 import '../../proposals/model/milestone.dart';
@@ -34,7 +35,7 @@ class Project {
   ProjectStatus? status;
   ProjectDuration? duration;
   ProjectVisibility? visibility;
-  double? budget;
+  int? budget;
   DateTime? createdAt;
   DateTime? updatedAt;
   DateTime? deadline;
@@ -116,7 +117,7 @@ class Project {
     ProjectStatus? status,
     ProjectDuration? duration,
     ProjectVisibility? visibility,
-    double? budget,
+    int? budget,
     DateTime? createdAt,
     DateTime? updatedAt,
     DateTime? deadline,
@@ -286,5 +287,56 @@ class Project {
             .map((e) => Milestone.fromJson(e))
             .toList()
         : null;
+  }
+
+  // from Algolia search
+  Project.fromAlgoliaSearch(Hit hit) {
+    id = hit['objectID'];
+    title = hit['title'];
+    description = hit['description'];
+    deliverables = hit['deliverables'];
+    location = hit['location'];
+    skills = hit['skills'];
+    tags = hit['tags'];
+    category = hit['category'];
+    projectType =
+        hit['projectType'] == 'hourly' ? ProjectType.hourly : ProjectType.fixed;
+    status = hit['status'] == 'open'
+        ? ProjectStatus.open
+        : hit['status'] == 'closed'
+            ? ProjectStatus.closed
+            : ProjectStatus.inProgress;
+    duration = hit['duration'] == 'oneTime'
+        ? ProjectDuration.oneTime
+        : ProjectDuration.recurring;
+    visibility = hit['visibility'] == 'public'
+        ? ProjectVisibility.public
+        : ProjectVisibility.private;
+    budget = hit['budget'];
+    createdAt = hit['createdAt'] == null
+        ? null
+        : DateTime.parse(hit['createdAt'] as String);
+    updatedAt = hit['updatedAt'] == null
+        ? null
+        : DateTime.parse(hit['updatedAt'] as String);
+    deadline = hit['deadline'] == null
+        ? null
+        : DateTime.parse(hit['deadline'] as String);
+    weekEstimate = hit['weekEstimate'];
+    hoursPerWeek = hit['hoursPerWeek'];
+    hoursTotal = hit['hoursTotal'];
+    proposalCount = hit['proposalCount'];
+    unreadProposalCount = hit['unreadProposalCount'];
+    viewCount = hit['viewCount'];
+    interviewCount = hit['interviewCount'];
+    lastViewed = hit['lastViewed'] == null
+        ? null
+        : DateTime.parse(hit['lastViewed'] as String);
+    startDate = hit['startDate'] == null
+        ? null
+        : DateTime.parse(hit['startDate'] as String);
+    endDate = hit['endDate'] == null
+        ? null
+        : DateTime.parse(hit['endDate'] as String);
   }
 }

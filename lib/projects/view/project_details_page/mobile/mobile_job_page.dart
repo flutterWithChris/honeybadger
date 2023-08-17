@@ -134,25 +134,9 @@ class _MobileProjectDetailsPageState extends State<MobileProjectDetailsPage> {
                             if (_proposal?.status == ProposalStatus.accepted)
                               const Tab(text: 'Active Proposal')
                             else
-                              widget.project.unreadProposalCount! > 0
-                                  ? Row(
-                                      mainAxisSize: MainAxisSize.min,
-                                      children: [
-                                        Badge(
-                                          label: Text(
-                                            widget.project.unreadProposalCount
-                                                .toString(),
-                                          ),
-                                        ),
-                                        const GutterSmall(),
-                                        const Tab(
-                                          text: 'Proposals',
-                                        ),
-                                      ],
-                                    )
-                                  : const Tab(
-                                      text: 'Proposals',
-                                    ),
+                              const Tab(
+                                text: 'Proposal',
+                              ),
                             const Tab(
                               text: 'Details',
                             ),
@@ -590,66 +574,6 @@ class _ProjectDetailsViewState extends State<ProjectDetailsView> {
               ),
             ),
             const GutterSmall(),
-
-            Row(
-              children: [
-                widget.project.startDate != null
-                    ? Text.rich(
-                        TextSpan(
-                            text: 'Start:  ',
-                            children: [
-                              TextSpan(
-                                  text: Jiffy.parseFromDateTime(
-                                          widget.project.startDate!)
-                                      .yMMMMd,
-                                  style: const TextStyle(
-                                      fontWeight: FontWeight.normal))
-                            ],
-                            style:
-                                const TextStyle(fontWeight: FontWeight.bold)),
-                      )
-                    : const Text.rich(
-                        TextSpan(
-                            text: 'Start:  ',
-                            children: [
-                              TextSpan(
-                                  text: 'N/A',
-                                  style:
-                                      TextStyle(fontWeight: FontWeight.normal))
-                            ],
-                            style: TextStyle(fontWeight: FontWeight.bold)),
-                      ),
-                const GutterSmall(),
-                widget.project.endDate != null
-                    ? Text.rich(
-                        TextSpan(
-                            text: 'End:  ',
-                            children: [
-                              TextSpan(
-                                  text: Jiffy.parseFromDateTime(
-                                          widget.project.endDate!)
-                                      .yMMMMd,
-                                  style: const TextStyle(
-                                      fontWeight: FontWeight.normal))
-                            ],
-                            style:
-                                const TextStyle(fontWeight: FontWeight.bold)),
-                      )
-                    : const Text.rich(
-                        TextSpan(
-                            text: 'End:  ',
-                            children: [
-                              TextSpan(
-                                  text: 'N/A',
-                                  style:
-                                      TextStyle(fontWeight: FontWeight.normal))
-                            ],
-                            style: TextStyle(fontWeight: FontWeight.bold)),
-                      ),
-              ],
-            ),
-
-            const GutterSmall(),
             Wrap(
               spacing: 16.0,
               runSpacing: 8.0,
@@ -938,10 +862,41 @@ class _FreelancerActiveProposalTabState
         padding: EdgeInsets.zero,
         children: [
           Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              const Icon(Icons.timeline),
-              const Gutter(),
-              Text('Milestones', style: Theme.of(context).textTheme.titleLarge),
+              Row(
+                children: [
+                  const Icon(Icons.timeline),
+                  const Gutter(),
+                  Text('Milestones',
+                      style: Theme.of(context).textTheme.titleLarge),
+                ],
+              ),
+              Padding(
+                padding: const EdgeInsets.only(right: 4.0),
+                child: Text.rich(
+                  TextSpan(
+                      text: 'Total Budget: ',
+                      children: [
+                        TextSpan(
+                          text: convertIntToCurrency(
+                              widget.project.budget!.toInt()),
+                          style: Theme.of(context).textTheme.titleSmall,
+                        ),
+                      ],
+                      style: Theme.of(context)
+                          .textTheme
+                          .titleSmall
+                          ?.copyWith(fontWeight: FontWeight.bold)),
+                ),
+              ),
+
+              // Text('Status: ',
+              //     style: Theme.of(context)
+              //         .textTheme
+              //         .titleSmall
+              //         ?.copyWith(fontWeight: FontWeight.bold)),
+              // const GutterTiny(),
             ],
           ),
           MilestoneTimeline(proposal: widget.proposal),
@@ -1446,13 +1401,16 @@ class CreateProposalSection extends StatefulWidget {
 class _CreateProposalSectionState extends State<CreateProposalSection> {
   final TextEditingController _proposalController = TextEditingController();
   final TextEditingController _rateController = TextEditingController();
+  final ExpansionTileController _expansionTileController =
+      ExpansionTileController();
 
   @override
   Widget build(BuildContext context) {
     return BlocBuilder<ProposalBloc, ProposalState>(builder: (context, state) {
-      if (state is ProposalStarted ||
-          state is ProposalSent ||
-          state is ProposalLoaded && _proposalController.text.isEmpty) {
+      if ((state is ProposalStarted ||
+              state is ProposalSent ||
+              state is ProposalLoaded) &&
+          _proposalController.value.text == '') {
         _proposalController.text = state.proposal?.description ?? '';
       }
       return AnimatedSwitcher(
@@ -1499,6 +1457,7 @@ class _CreateProposalSectionState extends State<CreateProposalSection> {
                                   data: Theme.of(context).copyWith(
                                       dividerColor: Colors.transparent),
                                   child: ExpansionTile(
+                                    controller: _expansionTileController,
                                     tilePadding: EdgeInsets.zero,
                                     expandedAlignment: Alignment.center,
                                     // backgroundColor:
@@ -1518,6 +1477,11 @@ class _CreateProposalSectionState extends State<CreateProposalSection> {
                                         IconButton(
                                           padding: EdgeInsets.zero,
                                           onPressed: () {
+                                            if (_expansionTileController
+                                                    .isExpanded ==
+                                                false) {
+                                              _expansionTileController.expand();
+                                            }
                                             context.read<ProposalBloc>().add(
                                                 AddMilestone(Milestone(
                                                     id: const Uuid().v4(),
@@ -1707,6 +1671,44 @@ class _CreateProposalSectionState extends State<CreateProposalSection> {
                             Expanded(
                               child: FilledButton.icon(
                                   onPressed: () async {
+                                    if (_proposalController
+                                        .value.text.isEmpty) {
+                                      scaffoldKey.currentState!.showSnackBar(
+                                          const SnackBar(
+                                              behavior:
+                                                  SnackBarBehavior.floating,
+                                              content: Row(
+                                                children: [
+                                                  Icon(Icons.error,
+                                                      color: Colors.red,
+                                                      size: 20.0),
+                                                  GutterSmall(),
+                                                  Text(
+                                                      'Please enter a proposal.'),
+                                                ],
+                                              ),
+                                              duration: Duration(seconds: 2)));
+                                      return;
+                                    }
+                                    if (state.proposal?.milestones == null ||
+                                        state.proposal!.milestones!.isEmpty) {
+                                      scaffoldKey.currentState!.showSnackBar(
+                                          const SnackBar(
+                                              behavior:
+                                                  SnackBarBehavior.floating,
+                                              content: Row(
+                                                children: [
+                                                  Icon(Icons.error,
+                                                      color: Colors.red,
+                                                      size: 20.0),
+                                                  GutterSmall(),
+                                                  Text(
+                                                      'Please add at least one milestone.'),
+                                                ],
+                                              ),
+                                              duration: Duration(seconds: 2)));
+                                      return;
+                                    }
                                     await showDialog(
                                       context: context,
                                       builder: (context) {
