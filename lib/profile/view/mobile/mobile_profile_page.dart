@@ -1,34 +1,24 @@
+import 'package:OutsourcedX/onboarding/view/pages/profile_setup/bloc/skills/bloc/skill_search_bloc.dart';
+import 'package:OutsourcedX/profile/portfolio/bloc/portfolio_bloc.dart';
+import 'package:OutsourcedX/profile/portfolio/widgets/portfolio_card.dart';
+import 'package:OutsourcedX/profile/view/widgets/add_project_dialog.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_gutter/flutter_gutter.dart';
 import 'package:OutsourcedX/core/presentation/system/main_navigation_bar.dart';
 import 'package:OutsourcedX/core/presentation/system/mobile_sliver_app_bar.dart';
 import 'package:OutsourcedX/profile/bloc/profile_bloc.dart';
-import 'package:OutsourcedX/profile/model/user.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 
-import '../widgets/add_project_dialog.dart';
+import '../../model/skill.dart';
 
 class MobileProfilePage extends StatelessWidget {
   const MobileProfilePage({super.key});
 
   @override
   Widget build(BuildContext context) {
-    final User user = User(
-        firstName: 'Christian',
-        lastName: 'Vergara',
-        title: 'Mobile App Developer',
-        city: 'Brooklyn',
-        country: 'United States',
-        state: 'New York',
-        hourlyRate: 50,
-        rating: 4.7,
-        bio:
-            'I am a mobile app developer with 5 years of experience in developing mobile applications for both Android and iOS. I have worked with clients from all over the world and have developed a wide range of mobile apps. I have worked with clients from all over the world and have developed a wide range of mobile apps.',
-        photoUrl:
-            'https://www.upwork.com/profile-portraits/c1rFySS3sCUYKZbae39D0j1ENTk1Q68MI2fCkWY56buZZ9_EEH1NIOdj02eZ25D2co');
-
     return Scaffold(
       bottomNavigationBar: const MainBottomNavBar(),
       body: CustomScrollView(
@@ -70,110 +60,76 @@ class MobileProfilePage extends StatelessWidget {
                       padding: const EdgeInsets.fromLTRB(16.0, 16.0, 16.0, 0.0),
                       child: Row(
                         children: [
-                          const CircleAvatar(
-                              radius: 40,
+                          CircleAvatar(
+                              radius: 42.0,
                               foregroundImage: CachedNetworkImageProvider(
-                                  'https://www.upwork.com/profile-portraits/c1rFySS3sCUYKZbae39D0j1ENTk1Q68MI2fCkWY56buZZ9_EEH1NIOdj02eZ25D2co'),
-                              child: Icon(Icons.person, size: 40)),
+                                  state.user.photoUrl!),
+                              child: const Icon(Icons.person, size: 40)),
                           const Gutter(),
-                          Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              Text(
-                                  '${state.user.firstName!} ${state.user.lastName!}',
-                                  style: Theme.of(context)
-                                      .textTheme
-                                      .headlineSmall),
-                              Row(
-                                children: [
-                                  Text(
-                                    state.user.title ?? 'No title set',
-                                  ),
-                                ],
-                              ),
-                              const GutterTiny(),
-                              Row(
-                                mainAxisSize: MainAxisSize.min,
-                                children: [
-                                  Flexible(
-                                    child: SizedBox(
-                                      height: 40.0,
-                                      child: FittedBox(
-                                        child: Chip(
-                                          padding: const EdgeInsets.symmetric(
-                                              horizontal: 4.0),
-                                          label: Row(
-                                            children: [
-                                              Icon(
-                                                MdiIcons.mapMarker,
-                                                size: 14.0,
-                                                color: Theme.of(context)
-                                                    .iconTheme
-                                                    .color,
-                                              ),
-                                              const GutterSmall(),
-                                              Text(
-                                                '${state.user.state}',
-                                                style: Theme.of(context)
-                                                    .textTheme
-                                                    .bodySmall
-                                                    ?.copyWith(
-                                                        fontWeight:
-                                                            FontWeight.bold),
-                                              ),
-                                            ],
-                                          ),
-                                        ),
-                                      ),
+                          Expanded(
+                            flex: 5,
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                Text(
+                                    '${state.user.firstName!} ${state.user.lastName!}',
+                                    style: Theme.of(context)
+                                        .textTheme
+                                        .headlineSmall),
+                                Wrap(
+                                  crossAxisAlignment: WrapCrossAlignment.center,
+                                  spacing: 8.0,
+                                  children: [
+                                    Text(
+                                      state.user.title ?? 'No title set',
+                                      style:
+                                          Theme.of(context).textTheme.bodyLarge,
                                     ),
-                                  ),
-                                  const Gutter(),
-                                  Flexible(
-                                    child: SizedBox(
-                                      height: 40.0,
-                                      child: FittedBox(
-                                        child: Chip(
-                                          visualDensity: VisualDensity.compact,
-                                          padding: const EdgeInsets.symmetric(
-                                              horizontal: 4.0),
-                                          side: BorderSide.none,
-                                          backgroundColor: Theme.of(context)
-                                              .colorScheme
-                                              .tertiary,
-                                          label: Row(
-                                            mainAxisSize: MainAxisSize.min,
-                                            children: [
-                                              Icon(
-                                                MdiIcons.trophyAward,
-                                                size: 14.0,
-                                                color: Theme.of(context)
-                                                    .colorScheme
-                                                    .onSecondary,
-                                              ),
-                                              const GutterTiny(),
-                                              Text('Top Rated',
-                                                  style: Theme.of(context)
-                                                      .textTheme
-                                                      .bodySmall
-                                                      ?.copyWith(
-                                                        color: Theme.of(context)
-                                                            .colorScheme
-                                                            .onSecondary,
-                                                      )),
-                                            ],
-                                          ),
+                                    Row(
+                                      mainAxisSize: MainAxisSize.min,
+                                      children: [
+                                        // const Text('-'),
+                                        // const GutterSmall(),
+                                        Icon(
+                                          MdiIcons.mapMarker,
+                                          size: 12.0,
+                                          color:
+                                              Theme.of(context).iconTheme.color,
                                         ),
-                                      ),
+                                        const GutterTiny(),
+                                        Text(
+                                          state.user.address!
+                                              .split(',')[2]
+                                              .split(RegExp(r'\d+'))[0],
+                                          style: Theme.of(context)
+                                              .textTheme
+                                              .bodyMedium
+                                              ?.copyWith(),
+                                        ),
+                                      ],
                                     ),
-                                  )
-                                ],
-                              ),
-                            ],
+                                  ],
+                                ),
+                              ],
+                            ),
                           ),
+                          Flexible(
+                            child: IconButton(
+                                onPressed: () async {
+                                  await showDialog(
+                                      context: context,
+                                      builder: (context) =>
+                                          const EditNameAndTitleDialog());
+                                },
+                                icon: const Icon(Icons.edit_rounded)),
+                          )
                         ],
                       ),
                     ),
+
+                    //   const GutterTiny(),
+
                     // BlocBuilder<PaymentsBloc, PaymentsState>(
                     //   builder: (context, state) {
                     //     if (state is PaymentsError) {
@@ -191,12 +147,201 @@ class MobileProfilePage extends StatelessWidget {
                     //   },
                     // ),
                     // const Gutter(),
+
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 0.0),
+                      child: BlocBuilder<PortfolioBloc, PortfolioState>(
+                        builder: (context, portfolioState) {
+                          if (portfolioState is PortfolioError) {
+                            return Column(
+                              children: [
+                                Padding(
+                                  padding: const EdgeInsets.symmetric(
+                                      horizontal: 16.0),
+                                  child: Row(
+                                    children: [
+                                      Text(
+                                        'Portfolio',
+                                        style: Theme.of(context)
+                                            .textTheme
+                                            .titleLarge,
+                                      ),
+                                      const GutterTiny(),
+                                      IconButton(
+                                          onPressed: () async {
+                                            await showDialog(
+                                                context: context,
+                                                builder: (context) =>
+                                                    const AddProjectDialog());
+                                          },
+                                          icon: const Icon(
+                                              Icons.add_circle_outline_rounded))
+                                    ],
+                                  ),
+                                ),
+                                const GutterSmall(),
+                                const Icon(Icons.error_outline, size: 40.0),
+                                const GutterSmall(),
+                                const Text('Error Loading Portfolio!'),
+                                const Gutter(),
+                                FilledButton.icon(
+                                    onPressed: () {
+                                      context.read<PortfolioBloc>().add(
+                                          LoadPortfolio(
+                                              userId: state.user.id!));
+                                    },
+                                    icon: const Icon(Icons.refresh_rounded),
+                                    label: const Text('Retry'))
+                              ],
+                            );
+                          }
+                          if (portfolioState is PortfolioLoading) {
+                            return Column(
+                              children: [
+                                Padding(
+                                  padding: const EdgeInsets.symmetric(
+                                      horizontal: 16.0),
+                                  child: Row(
+                                    children: [
+                                      Text(
+                                        'Portfolio',
+                                        style: Theme.of(context)
+                                            .textTheme
+                                            .titleLarge,
+                                      ),
+                                      const GutterTiny(),
+                                      IconButton(
+                                          onPressed: () async {
+                                            await showDialog(
+                                                context: context,
+                                                builder: (context) =>
+                                                    const AddProjectDialog());
+                                          },
+                                          icon: const Icon(
+                                              Icons.add_circle_outline_rounded))
+                                    ],
+                                  ),
+                                ),
+                                const GutterSmall(),
+                                const Center(
+                                  child: CircularProgressIndicator.adaptive(),
+                                ),
+                              ],
+                            );
+                          }
+                          if (portfolioState is PortfolioLoaded) {
+                            return Column(
+                              mainAxisSize: MainAxisSize.min,
+                              crossAxisAlignment: CrossAxisAlignment.stretch,
+                              children: [
+                                Padding(
+                                  padding: const EdgeInsets.symmetric(
+                                      horizontal: 16.0),
+                                  child: Row(
+                                    children: [
+                                      Text(
+                                        'Portfolio',
+                                        style: Theme.of(context)
+                                            .textTheme
+                                            .titleLarge,
+                                      ),
+                                      const GutterTiny(),
+                                      IconButton(
+                                          onPressed: () async {
+                                            await showDialog(
+                                                context: context,
+                                                builder: (context) =>
+                                                    const AddProjectDialog());
+                                          },
+                                          icon: const Icon(
+                                              Icons.add_circle_outline_rounded))
+                                    ],
+                                  ),
+                                ),
+                                const GutterSmall(),
+                                portfolioState.projects.isEmpty
+                                    // Display placeholder portfolio card
+                                    ? Padding(
+                                        padding: const EdgeInsets.symmetric(
+                                            horizontal: 16.0),
+                                        child: SizedBox(
+                                          height: 180,
+                                          width: 180,
+                                          child: Card(
+                                            //color: Colors.transparent,
+                                            child: InkWell(
+                                                borderRadius:
+                                                    BorderRadius.circular(16.0),
+                                                onTap: () async {
+                                                  await showDialog(
+                                                      context: context,
+                                                      builder: (context) =>
+                                                          const AddProjectDialog());
+                                                },
+                                                child: const Center(
+                                                  child: Row(
+                                                    mainAxisAlignment:
+                                                        MainAxisAlignment
+                                                            .center,
+                                                    children: [
+                                                      Icon(
+                                                        Icons
+                                                            .add_circle_outline,
+                                                        size: 20.0,
+                                                      ),
+                                                      GutterSmall(),
+                                                      Text('Add Projects'),
+                                                    ],
+                                                  ),
+                                                )),
+                                          ),
+                                        ),
+                                      )
+                                    : SizedBox(
+                                        height: 180,
+                                        child: ListView.separated(
+                                          padding: const EdgeInsets.symmetric(
+                                              horizontal: 16.0),
+                                          physics:
+                                              const BouncingScrollPhysics(),
+                                          shrinkWrap: true,
+                                          scrollDirection: Axis.horizontal,
+                                          itemCount:
+                                              portfolioState.projects.length,
+                                          itemBuilder: (context, index) {
+                                            return SizedBox(
+                                              height: 180,
+                                              child: PortfolioCard(
+                                                  project: portfolioState
+                                                      .projects[index]),
+                                            ).animate().slideX(
+                                                begin: -1.0,
+                                                end: 0.0,
+                                                curve: Curves.easeOutSine,
+                                                duration: const Duration(
+                                                    milliseconds: 400));
+                                          },
+                                          separatorBuilder: (context, index) {
+                                            return const Gutter();
+                                          },
+                                        ),
+                                      )
+                              ],
+                            );
+                          }
+                          return const Center(
+                            child: Text('Something Went Wrong...'),
+                          );
+                        },
+                      ),
+                    ),
+                    const Gutter(),
                     Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 16.0),
                       child: Row(
                         children: [
                           Text(
-                            'Portfolio',
+                            'About Me',
                             style: Theme.of(context).textTheme.titleLarge,
                           ),
                           const GutterTiny(),
@@ -205,113 +350,64 @@ class MobileProfilePage extends StatelessWidget {
                                 await showDialog(
                                     context: context,
                                     builder: (context) =>
-                                        const AddProjectDialog());
+                                        const EditBioDialog());
                               },
-                              icon: const Icon(Icons.add_circle_rounded))
+                              icon: const Icon(Icons.edit_rounded))
                         ],
                       ),
                     ),
                     const GutterSmall(),
                     Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 0.0),
-                      child: SizedBox(
-                        height: 180,
-                        child: ListView.separated(
-                          padding: const EdgeInsets.symmetric(horizontal: 16.0),
-                          physics: const BouncingScrollPhysics(),
-                          shrinkWrap: true,
-                          scrollDirection: Axis.horizontal,
-                          itemCount: 5,
-                          itemBuilder: (context, index) {
-                            List<String> photoLinks = [
-                              'https://www.upwork.com/att/download/portfolio/persons/uid/1109088236987375616/profile/projects/files/544fded9-0423-43ab-8a29-78c920bda193',
-                              'https://www.upwork.com/att/download/portfolio/persons/uid/1109088236987375616/profile/projects/files/0ccd34d7-2a12-4a18-b532-e1000d0015d2',
-                              'https://www.upwork.com/att/download/portfolio/persons/uid/1109088236987375616/profile/projects/files/ac1b3bed-bf87-47df-8edf-c8cf35a58178',
-                              'https://images.squarespace-cdn.com/content/v1/630dd25ca749cb7575f60864/db9f1e2a-b618-4b71-8898-64af579fc9ce/TonyLor_CoffeeShopMarket_FINAL01+-+011923+%281%29.jpg?format=750w',
-                              'https://images.squarespace-cdn.com/content/v1/630dd25ca749cb7575f60864/7f4a9c80-be3f-4bc8-91ee-efc5055e2f3d/1.jpg?format=750w',
-                              'https://www.beachwelcomecenter.com/wp-content/uploads/crabb-bills_building-1_WEB-16x9-1.jpg',
-                              'https://images.squarespace-cdn.com/content/v1/630dd25ca749cb7575f60864/1da6ed99-03f3-43bb-9d03-6c13f6110550/3.jpg?format=750w'
-                                  'https://images.squarespace-cdn.com/content/v1/630dd25ca749cb7575f60864/b1667257-b7c7-4e4e-932e-f31c1902e30f/6.png?format=750w',
-                              'https://images.squarespace-cdn.com/content/v1/630dd25ca749cb7575f60864/6d859112-15bf-4ebc-9ed8-98c28acde02c/1.jpg?format=750w',
-                              'https://images.squarespace-cdn.com/content/v1/630dd25ca749cb7575f60864/1664597665853-HJBS77OU03199C2CD6W8/1_View01a.png?format=1500w',
-                            ];
-                            return Container(
-                              height: 180,
-                              decoration: BoxDecoration(
-                                // image: DecorationImage(
-                                //   image: CachedNetworkImageProvider(
-                                //     photoLinks[index],
-                                //   ),
-                                //   fit: BoxFit.cover,
-                                // ),
-                                // color: Colors.grey[300],
-                                borderRadius: BorderRadius.circular(16.0),
-                              ),
-                              child: Material(
-                                color: Colors.transparent,
-                                child: InkWell(
-                                    borderRadius: BorderRadius.circular(16.0),
-                                    onTap: () async {},
-                                    child: ClipRRect(
-                                      borderRadius: BorderRadius.circular(16.0),
-                                      child: CachedNetworkImage(
-                                        imageUrl: photoLinks[index],
-                                      ),
-                                    )),
-                              ),
-                            );
-                          },
-                          separatorBuilder: (context, index) {
-                            return const Gutter();
-                          },
-                        ),
-                      ),
-                    ),
-                    const Gutter(),
-                    Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 16.0),
                       child: Text(
-                        'About Me',
-                        style: Theme.of(context).textTheme.titleLarge,
+                        state.user.bio ?? 'No bio set',
+                        style: Theme.of(context).textTheme.bodyMedium,
                       ),
                     ),
                     const GutterSmall(),
                     Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 16.0),
-                      child: Text(
-                        'I am a mobile app developer with 5 years of experience in developing mobile applications for both Android and iOS. I have worked with clients from all over the world and have developed a wide range of mobile apps. I have worked with clients from all over the world and have developed a wide range of mobile apps.',
-                        style: Theme.of(context).textTheme.bodyMedium,
+                      child: Row(
+                        children: [
+                          Text(
+                            'Skills',
+                            style: Theme.of(context).textTheme.titleLarge,
+                          ),
+                          const GutterTiny(),
+                          IconButton(
+                              onPressed: () async {
+                                await showDialog(
+                                    context: context,
+                                    builder: (context) =>
+                                        const AddSkillsDialog());
+                              },
+                              icon:
+                                  const Icon(Icons.add_circle_outline_rounded))
+                        ],
                       ),
                     ),
-                    const Gutter(),
-                    Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 16.0),
-                      child: Text(
-                        'Skills',
-                        style: Theme.of(context).textTheme.titleLarge,
+                    if (state.user.skills != null &&
+                        state.user.skills!.isNotEmpty)
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                        child: SizedBox(
+                          height: 40,
+                          child: ListView.separated(
+                            padding: EdgeInsets.zero,
+                            shrinkWrap: true,
+                            scrollDirection: Axis.horizontal,
+                            itemCount: state.user.skills!.length,
+                            itemBuilder: (context, index) {
+                              return Chip(
+                                label: Text(state.user.skills![index].name!),
+                              );
+                            },
+                            separatorBuilder: (context, index) {
+                              return const GutterSmall();
+                            },
+                          ),
+                        ),
                       ),
-                    ),
-                    const Gutter(),
-                    // if (user.skills != null && user.skills!.isNotEmpty)
-                    //   Padding(
-                    //     padding: const EdgeInsets.symmetric(horizontal: 16.0),
-                    //     child: SizedBox(
-                    //       height: 40,
-                    //       child: ListView.separated(
-                    //         shrinkWrap: true,
-                    //         scrollDirection: Axis.horizontal,
-                    //         itemCount: user.skills!.length,
-                    //         itemBuilder: (context, index) {
-                    //           return Chip(
-                    //             label: Text(user.skills![index]),
-                    //           );
-                    //         },
-                    //         separatorBuilder: (context, index) {
-                    //           return const GutterSmall();
-                    //         },
-                    //       ),
-                    //     ),
-                    //   ),
                     const Gutter(),
                   ]),
                 );
@@ -324,6 +420,346 @@ class MobileProfilePage extends StatelessWidget {
             },
           )
         ],
+      ),
+    );
+  }
+}
+
+class EditNameAndTitleDialog extends StatefulWidget {
+  const EditNameAndTitleDialog({super.key});
+
+  @override
+  State<EditNameAndTitleDialog> createState() => _EditNameAndTitleDialogState();
+}
+
+class _EditNameAndTitleDialogState extends State<EditNameAndTitleDialog> {
+  final TextEditingController firstNameController = TextEditingController();
+  final TextEditingController lastNameController = TextEditingController();
+  final TextEditingController titleController = TextEditingController();
+
+  @override
+  void initState() {
+    firstNameController.text =
+        context.read<ProfileBloc>().state.user?.firstName ?? '';
+    lastNameController.text =
+        context.read<ProfileBloc>().state.user?.lastName ?? '';
+    titleController.text = context.read<ProfileBloc>().state.user?.title ?? '';
+    super.initState();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Dialog(
+      child: Padding(
+        padding: const EdgeInsets.symmetric(
+          horizontal: 16.0,
+          vertical: 16.0,
+        ),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            TextFormField(
+              controller: firstNameController,
+              textCapitalization: TextCapitalization.words,
+              decoration: const InputDecoration(label: Text('First Name')),
+            ),
+            const Gutter(),
+            TextFormField(
+              controller: lastNameController,
+              textCapitalization: TextCapitalization.words,
+              decoration: const InputDecoration(label: Text('Last Name')),
+            ),
+            const Gutter(),
+            TextFormField(
+              controller: titleController,
+              textCapitalization: TextCapitalization.words,
+              decoration: const InputDecoration(label: Text('Title')),
+            ),
+            const Gutter(),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.end,
+              children: [
+                TextButton(
+                    onPressed: () {
+                      Navigator.of(context).pop();
+                    },
+                    child: const Text('Cancel')),
+                const Gutter(),
+                ElevatedButton(
+                    onPressed: () {
+                      context.read<ProfileBloc>().add(UpdateProfile(
+                          user: context
+                              .read<ProfileBloc>()
+                              .state
+                              .user!
+                              .copyWith(
+                                  firstName: firstNameController.value.text,
+                                  lastName: lastNameController.value.text,
+                                  title: titleController.value.text)));
+                      Navigator.of(context).pop();
+                    },
+                    child: const Text('Save')),
+              ],
+            )
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class EditBioDialog extends StatefulWidget {
+  const EditBioDialog({super.key});
+
+  @override
+  State<EditBioDialog> createState() => _EditBioDialogState();
+}
+
+class _EditBioDialogState extends State<EditBioDialog> {
+  final TextEditingController bioController = TextEditingController();
+  @override
+  void initState() {
+    bioController.text =
+        context.read<ProfileBloc>().state.user?.bio ?? 'No bio set';
+    super.initState();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Dialog(
+      child: Padding(
+        padding: const EdgeInsets.symmetric(
+          horizontal: 16.0,
+          vertical: 16.0,
+        ),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            TextFormField(
+              controller: bioController,
+              // initialValue: context.read<ProfileBloc>().state.user?.bio,
+              textCapitalization: TextCapitalization.sentences,
+              maxLines: 5,
+              decoration: const InputDecoration(label: Text('Bio')),
+            ),
+            const Gutter(),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.end,
+              children: [
+                TextButton(
+                    onPressed: () {
+                      Navigator.of(context).pop();
+                    },
+                    child: const Text('Cancel')),
+                const Gutter(),
+                ElevatedButton(
+                    onPressed: () {
+                      context.read<ProfileBloc>().add(UpdateProfile(
+                          user: context
+                              .read<ProfileBloc>()
+                              .state
+                              .user!
+                              .copyWith(bio: bioController.value.text)));
+                      Navigator.of(context).pop();
+                    },
+                    child: const Text('Save')),
+              ],
+            )
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class AddSkillsDialog extends StatefulWidget {
+  const AddSkillsDialog({super.key});
+
+  @override
+  State<AddSkillsDialog> createState() => _AddSkillsDialogState();
+}
+
+class _AddSkillsDialogState extends State<AddSkillsDialog> {
+  final List<Skill> selectedSkills = [];
+  Skill? newSkill;
+  @override
+  Widget build(BuildContext context) {
+    return Dialog(
+      child: Padding(
+        padding: const EdgeInsets.symmetric(
+          horizontal: 16.0,
+          vertical: 16.0,
+        ),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            BlocBuilder<SkillSearchBloc, SkillSearchState>(
+              builder: (context, state) {
+                if (state is SkillSearchFailure) {
+                  return const Text('Error loading skills!');
+                }
+                return Autocomplete<Skill>(
+                  displayStringForOption: (option) => option.name!,
+                  optionsBuilder: (TextEditingValue textEditingValue) {
+                    if (textEditingValue.text == '') {
+                      return const Iterable.empty();
+                    }
+                    List<Skill> matchingSkills = [];
+                    if (state.skills != null && state.skills!.isNotEmpty) {
+                      matchingSkills = state.skills?.toList() ?? [];
+                      for (Skill skill in matchingSkills) {
+                        print('Found Skill: ${skill.name}');
+                      }
+                    }
+                    if (matchingSkills.isEmpty) {
+                      newSkill = Skill(
+                          name: textEditingValue.text.trim(),
+                          description: null);
+                      return [newSkill!];
+                    }
+                    return matchingSkills;
+                  },
+                  onSelected: (Skill skill) {
+                    if (skill == newSkill) {
+                      BlocProvider.of<SkillSearchBloc>(context)
+                          .add(AddSkill(skill: skill));
+                    }
+                    setState(() {
+                      selectedSkills.add(skill);
+                    });
+                  },
+                  optionsViewBuilder: (BuildContext context,
+                      AutocompleteOnSelected<Skill> onSelected,
+                      Iterable<Skill> options) {
+                    return Material(
+                      borderRadius: BorderRadius.circular(16.0),
+                      elevation: 4.0,
+                      child: SizedBox(
+                        child: ListView.builder(
+                          shrinkWrap: true,
+                          padding: const EdgeInsets.all(8.0),
+                          itemCount: options.length,
+                          itemBuilder: (BuildContext context, int index) {
+                            final Skill option = options.elementAt(index);
+                            bool isHighlighted =
+                                AutocompleteHighlightedOption.of(context) ==
+                                    index;
+                            return GestureDetector(
+                              onTap: () {
+                                onSelected(option);
+                              },
+                              child: ListTile(
+                                shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(16.0)),
+                                tileColor: isHighlighted
+                                    ? Theme.of(context).cardColor
+                                    : null,
+                                leading: option == newSkill
+                                    ? const Icon(Icons.add)
+                                    : null,
+                                title: option == newSkill
+                                    ? Text.rich(
+                                        TextSpan(
+                                          text: 'Add ',
+                                          children: <TextSpan>[
+                                            TextSpan(
+                                              text: "'${option.name}'",
+                                              style: const TextStyle(
+                                                fontWeight: FontWeight.bold,
+                                              ),
+                                            ),
+                                            const TextSpan(
+                                              text: ' as a new skill',
+                                            ),
+                                          ],
+                                        ),
+                                      )
+                                    : Text(option.name!),
+                              ),
+                            );
+                          },
+                        ),
+                      ),
+                    );
+                  },
+                  fieldViewBuilder: (BuildContext context,
+                      TextEditingController textEditingController,
+                      FocusNode focusNode,
+                      VoidCallback onFieldSubmitted) {
+                    return TextFormField(
+                      textCapitalization: TextCapitalization.words,
+                      controller: textEditingController,
+                      onChanged: (value) {
+                        // Debounce search
+
+                        if (value.isNotEmpty) {
+                          context
+                              .read<SkillSearchBloc>()
+                              .add(SearchSkills(query: value.trim()));
+                        }
+                      },
+                      focusNode: focusNode,
+                      decoration: const InputDecoration(label: Text('Skills')),
+                      onFieldSubmitted: (String value) {
+                        onFieldSubmitted();
+                      },
+                    );
+                  },
+                );
+              },
+            ),
+            selectedSkills.isNotEmpty ? const Gutter() : const SizedBox(),
+            selectedSkills.isNotEmpty
+                ? Wrap(
+                    spacing: 8.0, // gap between adjacent chips
+                    runSpacing: 2.0, // gap between lines
+                    children: selectedSkills
+                        .map((skill) => Chip(
+                              visualDensity: VisualDensity.compact,
+                              label: Text(
+                                skill.name!,
+                                style: Theme.of(context).textTheme.bodySmall,
+                              ),
+                              onDeleted: () {
+                                setState(() {
+                                  selectedSkills.remove(skill);
+                                });
+                              },
+                            ))
+                        .toList(),
+                  )
+                : const SizedBox(),
+            const Gutter(),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.end,
+              children: [
+                TextButton(
+                    onPressed: () {
+                      Navigator.of(context).pop();
+                    },
+                    child: const Text('Cancel')),
+                const Gutter(),
+                ElevatedButton(
+                    onPressed: () {
+                      List<Skill>? currentSkills =
+                          context.read<ProfileBloc>().state.user?.skills;
+                      context.read<ProfileBloc>().add(UpdateProfile(
+                          user: context
+                              .read<ProfileBloc>()
+                              .state
+                              .user!
+                              .copyWith(
+                                  skills: currentSkills != null &&
+                                          currentSkills.isNotEmpty
+                                      ? currentSkills + selectedSkills
+                                      : selectedSkills)));
+                      Navigator.of(context).pop();
+                    },
+                    child: const Text('Save')),
+              ],
+            )
+          ],
+        ),
       ),
     );
   }

@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_gutter/flutter_gutter.dart';
-import 'package:go_router/go_router.dart';
-import 'package:OutsourcedX/core/constants.dart';
 import 'package:OutsourcedX/core/presentation/system/main_navigation_bar.dart';
 import 'package:OutsourcedX/core/presentation/system/mobile_sliver_app_bar.dart';
 import 'package:OutsourcedX/profile/bloc/profile_bloc.dart';
@@ -32,444 +30,426 @@ class _MobileSearchPageState extends State<MobileSearchPage> {
   final TextEditingController _searchController = TextEditingController();
   @override
   Widget build(BuildContext context) {
-    return RawKeyboardListener(
-      focusNode: FocusNode(),
-      autofocus: true,
-      onKey: (event) {},
-      child: Scaffold(
-        floatingActionButton: inProduction == false
-            ? FloatingActionButton(
-                onPressed: () {
-                  context.push('/create-project');
-                },
-                backgroundColor: Theme.of(context).primaryColor,
-                child: const Icon(Icons.add),
-              )
-            : const SizedBox(),
-        bottomNavigationBar: const MainBottomNavBar(),
-        body: CustomScrollView(
-          slivers: [
-            MobileSliverAppBar(),
-            SliverToBoxAdapter(
-              child: Padding(
-                padding:
-                    const EdgeInsets.only(top: 16.0, left: 16.0, right: 16.0),
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    TextField(
-                      controller: _searchController,
-                      onSubmitted: (value) {
-                        context.read<SearchBloc>().add(LoadSearch(
-                              context.read<ProfileBloc>().state.user!,
-                              query: value,
-                            ));
-                      },
-                      // Other properties that match the custom theme
-                      decoration: InputDecoration(
-                        contentPadding: const EdgeInsets.symmetric(
-                            horizontal: 32.0, vertical: 16.0),
+    return Scaffold(
+      bottomNavigationBar: const MainBottomNavBar(),
+      body: CustomScrollView(
+        slivers: [
+          MobileSliverAppBar(),
+          SliverToBoxAdapter(
+            child: Padding(
+              padding:
+                  const EdgeInsets.only(top: 16.0, left: 16.0, right: 16.0),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  TextField(
+                    controller: _searchController,
+                    onSubmitted: (value) {
+                      context.read<SearchBloc>().add(LoadSearch(
+                            context.read<ProfileBloc>().state.user!,
+                            query: value,
+                          ));
+                    },
+                    // Other properties that match the custom theme
+                    decoration: InputDecoration(
+                      contentPadding: const EdgeInsets.symmetric(
+                          horizontal: 32.0, vertical: 16.0),
 
-                        border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(48.0),
-                            borderSide: BorderSide.none),
-                        focusedBorder: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(48.0),
-                            borderSide: BorderSide.none),
-                        enabledBorder: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(48.0),
-                            borderSide: BorderSide.none),
-                        hintText:
-                            context.watch<ProfileBloc>().state is ProfileLoaded
-                                ? 'Search Projects..'
-                                : null,
-                        hintStyle:
-                            Theme.of(context).textTheme.bodyMedium?.copyWith(
-                                  color: Theme.of(context)
-                                      .iconTheme
-                                      .color!
-                                      .withOpacity(0.8),
-                                ),
+                      border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(48.0),
+                          borderSide: BorderSide.none),
+                      focusedBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(48.0),
+                          borderSide: BorderSide.none),
+                      enabledBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(48.0),
+                          borderSide: BorderSide.none),
+                      hintText:
+                          context.watch<ProfileBloc>().state is ProfileLoaded
+                              ? 'Search Projects..'
+                              : null,
+                      hintStyle:
+                          Theme.of(context).textTheme.bodyMedium?.copyWith(
+                                color: Theme.of(context)
+                                    .iconTheme
+                                    .color!
+                                    .withOpacity(0.8),
+                              ),
 
-                        suffixIcon: Padding(
-                          padding: const EdgeInsets.only(right: 16.0),
-                          child: IconButton(
-                            onPressed: () {
-                              print(
-                                  'Searching for: ${_searchController.value.text}');
-                              context.read<SearchBloc>().add(LoadSearch(
-                                    context.read<ProfileBloc>().state.user!,
-                                    query: _searchController.value.text,
-                                  ));
-                            },
-                            icon: const Icon(Icons.search_rounded),
-                          ),
+                      suffixIcon: Padding(
+                        padding: const EdgeInsets.only(right: 16.0),
+                        child: IconButton(
+                          onPressed: () {
+                            print(
+                                'Searching for: ${_searchController.value.text}');
+                            context.read<SearchBloc>().add(LoadSearch(
+                                  context.read<ProfileBloc>().state.user!,
+                                  query: _searchController.value.text,
+                                ));
+                          },
+                          icon: const Icon(Icons.search_rounded),
                         ),
-                        // Other InputDecoration properties that match the theme
                       ),
+                      // Other InputDecoration properties that match the theme
                     ),
-                    const GutterSmall(),
-                    // Theme(
-                    //   data: Theme.of(context).copyWith(),
-                    //   child: Row(
-                    //     mainAxisAlignment: MainAxisAlignment.end,
-                    //     crossAxisAlignment: CrossAxisAlignment.center,
-                    //     children: [
-                    //       // Hourly / Fixes Popup Menu
-                    //       PageTransitionSwitcher(
-                    //         duration: 400.ms,
-                    //         // reverse: true,
-                    //         transitionBuilder:
-                    //             (child, primaryAnimation, secondaryAnimation) {
-                    //           return SharedAxisTransition(
-                    //             animation: primaryAnimation,
-                    //             secondaryAnimation: secondaryAnimation,
-                    //             transitionType: SharedAxisTransitionType.vertical,
-                    //             child: child,
-                    //           );
-                    //         },
-                    //         child: projectType == ProjectType.hourly
-                    //             ? PopupMenuButton(
-                    //                 padding: EdgeInsets.zero,
-                    //                 key: const ValueKey('hourlyPopupMenu'),
-                    //                 //  icon: Icon(MdiIcons.filterVariant),
-                    //                 onSelected: (value) {
-                    //                   setState(() {
-                    //                     projectType = value;
-                    //                   });
-                    //                 },
-                    //                 child: Chip(
-                    //                   label: Row(
-                    //                     children: [
-                    //                       projectType == ProjectType.hourly
-                    //                           ? Icon(
-                    //                               MdiIcons.clockTimeFourOutline,
-                    //                               size: 14.0)
-                    //                           : Icon(
-                    //                               MdiIcons.cashLock,
-                    //                               size: 14.0,
-                    //                               color: Theme.of(context)
-                    //                                   .iconTheme
-                    //                                   .color,
-                    //                             ),
-                    //                       const GutterTiny(),
-                    //                       Text(parseEnumName(
-                    //                           projectType.toString())),
-                    //                     ],
-                    //                   ),
-                    //                   visualDensity: VisualDensity.compact,
-                    //                   padding: EdgeInsets.zero,
-                    //                   // side: BorderSide.none,
-                    //                 ),
-                    //                 itemBuilder: (context) => [
-                    //                   const PopupMenuItem(
-                    //                     value: ProjectType.hourly,
-                    //                     child: Text('Hourly'),
-                    //                   ),
-                    //                   const PopupMenuItem(
-                    //                     value: ProjectType.fixed,
-                    //                     child: Text('Fixed Price'),
-                    //                   ),
-                    //                 ],
-                    //               )
-                    //             : PopupMenuButton(
-                    //                 padding: EdgeInsets.zero,
-                    //                 key: const ValueKey('fixedPopupMenu'),
-                    //                 //  icon: Icon(MdiIcons.filterVariant),
-                    //                 onSelected: (value) {
-                    //                   setState(() {
-                    //                     projectType = value;
-                    //                   });
-                    //                 },
-                    //                 child: Chip(
-                    //                   label: Row(
-                    //                     children: [
-                    //                       projectType == ProjectType.hourly
-                    //                           ? Icon(
-                    //                               MdiIcons.clockTimeFourOutline,
-                    //                               size: 14.0)
-                    //                           : Icon(
-                    //                               MdiIcons.cashLock,
-                    //                               size: 14.0,
-                    //                               color: Theme.of(context)
-                    //                                   .iconTheme
-                    //                                   .color,
-                    //                             ),
-                    //                       const GutterTiny(),
-                    //                       Text(parseEnumName(
-                    //                           projectType.toString())),
-                    //                     ],
-                    //                   ),
-                    //                   visualDensity: VisualDensity.compact,
-                    //                   padding: EdgeInsets.zero,
-                    //                   // side: BorderSide.none,
-                    //                 ),
-                    //                 itemBuilder: (context) => [
-                    //                   const PopupMenuItem(
-                    //                     value: ProjectType.hourly,
-                    //                     child: Text('Hourly'),
-                    //                   ),
-                    //                   const PopupMenuItem(
-                    //                     value: ProjectType.fixed,
-                    //                     child: Text('Fixed Price'),
-                    //                   ),
-                    //                 ],
-                    //               ),
-                    //       ),
-                    //       const Gutter(),
-                    // PageTransitionSwitcher(
-                    //   duration: 400.ms,
-                    //   // reverse: true,
-                    //   transitionBuilder:
-                    //       (child, primaryAnimation, secondaryAnimation) {
-                    //     return SharedAxisTransition(
-                    //       animation: primaryAnimation,
-                    //       secondaryAnimation: secondaryAnimation,
-                    //       transitionType: SharedAxisTransitionType.vertical,
-                    //       child: child,
-                    //     );
-                    //   },
-                    //   child: projectType == ProjectType.hourly
-                    //       ? PopupMenuButton(
-                    //           key: const ValueKey('hourly'),
-                    //           elevation: 0.3,
-                    //           //  icon: Icon(MdiIcons.filterVariant),
-                    //           onOpened: () {
-                    //             _minHourlyRateController.text =
-                    //                 hourlyRateRange[0].toStringAsFixed(0);
-                    //             _maxHourlyRateController.text =
-                    //                 hourlyRateRange[1].toStringAsFixed(0);
-                    //           },
-                    //           onSelected: (value) {
-                    //             setState(() {
-                    //               projectType = value;
-                    //             });
-                    //           },
-                    //           child: Chip(
-                    //             label: Row(
-                    //               children: [
-                    //                 Text(
-                    //                     '\$${hourlyRateRange[0].toStringAsFixed(0)} - \$${hourlyRateRange[1].toStringAsFixed(0)}/hr.'),
-                    //               ],
-                    //             ),
-                    //             visualDensity: VisualDensity.compact,
-                    //             padding: EdgeInsets.zero,
-                    //             // side: BorderSide.none,
-                    //           ),
-                    //           itemBuilder: (context) => [
-                    //             PopupMenuItem(
-                    //               padding: const EdgeInsets.symmetric(
-                    //                   horizontal: 8.0, vertical: 4.0),
-                    //               value: ProjectType.hourly,
-                    //               child: TextField(
-                    //                 controller: _minHourlyRateController,
-                    //                 autofocus: true,
-                    //                 decoration: const InputDecoration(
-                    //                     prefixText: '\$',
-                    //                     filled: true,
-                    //                     border: OutlineInputBorder(),
-                    //                     labelText: 'Min.'),
-                    //               ),
-                    //             ),
-                    //             PopupMenuItem(
-                    //               padding: const EdgeInsets.symmetric(
-                    //                   horizontal: 8.0, vertical: 4.0),
-                    //               value: ProjectType.hourly,
-                    //               child: TextField(
-                    //                 controller: _maxHourlyRateController,
-                    //                 decoration: const InputDecoration(
-                    //                     prefixText: '\$',
-                    //                     filled: true,
-                    //                     border: OutlineInputBorder(),
-                    //                     labelText: 'Max.'),
-                    //               ),
-                    //             ),
-                    //             PopupMenuItem(
-                    //                 child: Row(
-                    //               mainAxisAlignment: MainAxisAlignment.end,
-                    //               children: [
-                    //                 FilledButton(
-                    //                   style: FilledButton.styleFrom(
-                    //                       alignment: Alignment.center,
-                    //                       minimumSize: const Size(80, 32)),
-                    //                   onPressed: () {
-                    //                     context.pop();
-                    //                   },
-                    //                   child: const Text('Apply'),
-                    //                 ),
-                    //               ],
-                    //             )),
-                    //           ],
-                    //         )
-                    //       : PopupMenuButton(
-                    //           key: const ValueKey('fixed'),
-                    //           elevation: 0.3,
-                    //           surfaceTintColor: Colors.transparent,
-                    //           //  icon: Icon(MdiIcons.filterVariant),
-                    //           onOpened: () {
-                    //             _minFixedPriceController.text =
-                    //                 fixedPriceRange[0].toString();
-                    //             _maxFixedPriceController.text =
-                    //                 fixedPriceRange[1].toString();
-                    //           },
-                    //           onSelected: (value) {
-                    //             setState(() {
-                    //               projectType = value;
-                    //             });
-                    //           },
-                    //           child: Chip(
-                    //             label: Row(
-                    //               children: [
-                    //                 Text(
-                    //                     '${convertIntToMoney(fixedPriceRange[0])} - ${convertIntToMoney(fixedPriceRange[1])}'),
-                    //               ],
-                    //             ),
-                    //             visualDensity: VisualDensity.compact,
-                    //             padding: EdgeInsets.zero,
-                    //             // side: BorderSide.none,
-                    //           ),
-                    //           itemBuilder: (context) => [
-                    //             PopupMenuItem(
-                    //               padding: const EdgeInsets.symmetric(
-                    //                   horizontal: 8.0, vertical: 4.0),
-                    //               value: ProjectType.hourly,
-                    //               child: TextField(
-                    //                 controller: _minFixedPriceController,
-                    //                 autofocus: true,
-                    //                 decoration: const InputDecoration(
-                    //                     prefixText: '\$',
-                    //                     filled: true,
-                    //                     border: OutlineInputBorder(),
-                    //                     labelText: 'Min.'),
-                    //               ),
-                    //             ),
-                    //             PopupMenuItem(
-                    //               padding: const EdgeInsets.symmetric(
-                    //                   horizontal: 8.0, vertical: 4.0),
-                    //               value: ProjectType.hourly,
-                    //               child: TextField(
-                    //                 controller: _maxFixedPriceController,
-                    //                 decoration: const InputDecoration(
-                    //                     prefixText: '\$',
-                    //                     filled: true,
-                    //                     border: OutlineInputBorder(),
-                    //                     labelText: 'Max.'),
-                    //               ),
-                    //             ),
-                    //             PopupMenuItem(
-                    //                 child: Row(
-                    //               mainAxisAlignment: MainAxisAlignment.end,
-                    //               children: [
-                    //                 FilledButton(
-                    //                   style: FilledButton.styleFrom(
-                    //                       alignment: Alignment.center,
-                    //                       minimumSize: const Size(80, 32)),
-                    //                   onPressed: () {
-                    //                     context.pop();
-                    //                   },
-                    //                   child: const Text('Apply'),
-                    //                 ),
-                    //               ],
-                    //             )),
-                    //           ],
-                    //         ),
-                    // ),
-                    //       const Gutter(),
-                    //       TextButton(
-                    //           style: TextButton.styleFrom(
-                    //               padding: EdgeInsets.zero,
-                    //               minimumSize: const Size(80, 32)),
-                    //           onPressed: () {},
-                    //           child: const Text('Filters')),
-                    //     ],
-                    //   ),
-                    // ),
-                  ],
-                ),
+                  ),
+                  const GutterSmall(),
+                  // Theme(
+                  //   data: Theme.of(context).copyWith(),
+                  //   child: Row(
+                  //     mainAxisAlignment: MainAxisAlignment.end,
+                  //     crossAxisAlignment: CrossAxisAlignment.center,
+                  //     children: [
+                  //       // Hourly / Fixes Popup Menu
+                  //       PageTransitionSwitcher(
+                  //         duration: 400.ms,
+                  //         // reverse: true,
+                  //         transitionBuilder:
+                  //             (child, primaryAnimation, secondaryAnimation) {
+                  //           return SharedAxisTransition(
+                  //             animation: primaryAnimation,
+                  //             secondaryAnimation: secondaryAnimation,
+                  //             transitionType: SharedAxisTransitionType.vertical,
+                  //             child: child,
+                  //           );
+                  //         },
+                  //         child: projectType == ProjectType.hourly
+                  //             ? PopupMenuButton(
+                  //                 padding: EdgeInsets.zero,
+                  //                 key: const ValueKey('hourlyPopupMenu'),
+                  //                 //  icon: Icon(MdiIcons.filterVariant),
+                  //                 onSelected: (value) {
+                  //                   setState(() {
+                  //                     projectType = value;
+                  //                   });
+                  //                 },
+                  //                 child: Chip(
+                  //                   label: Row(
+                  //                     children: [
+                  //                       projectType == ProjectType.hourly
+                  //                           ? Icon(
+                  //                               MdiIcons.clockTimeFourOutline,
+                  //                               size: 14.0)
+                  //                           : Icon(
+                  //                               MdiIcons.cashLock,
+                  //                               size: 14.0,
+                  //                               color: Theme.of(context)
+                  //                                   .iconTheme
+                  //                                   .color,
+                  //                             ),
+                  //                       const GutterTiny(),
+                  //                       Text(parseEnumName(
+                  //                           projectType.toString())),
+                  //                     ],
+                  //                   ),
+                  //                   visualDensity: VisualDensity.compact,
+                  //                   padding: EdgeInsets.zero,
+                  //                   // side: BorderSide.none,
+                  //                 ),
+                  //                 itemBuilder: (context) => [
+                  //                   const PopupMenuItem(
+                  //                     value: ProjectType.hourly,
+                  //                     child: Text('Hourly'),
+                  //                   ),
+                  //                   const PopupMenuItem(
+                  //                     value: ProjectType.fixed,
+                  //                     child: Text('Fixed Price'),
+                  //                   ),
+                  //                 ],
+                  //               )
+                  //             : PopupMenuButton(
+                  //                 padding: EdgeInsets.zero,
+                  //                 key: const ValueKey('fixedPopupMenu'),
+                  //                 //  icon: Icon(MdiIcons.filterVariant),
+                  //                 onSelected: (value) {
+                  //                   setState(() {
+                  //                     projectType = value;
+                  //                   });
+                  //                 },
+                  //                 child: Chip(
+                  //                   label: Row(
+                  //                     children: [
+                  //                       projectType == ProjectType.hourly
+                  //                           ? Icon(
+                  //                               MdiIcons.clockTimeFourOutline,
+                  //                               size: 14.0)
+                  //                           : Icon(
+                  //                               MdiIcons.cashLock,
+                  //                               size: 14.0,
+                  //                               color: Theme.of(context)
+                  //                                   .iconTheme
+                  //                                   .color,
+                  //                             ),
+                  //                       const GutterTiny(),
+                  //                       Text(parseEnumName(
+                  //                           projectType.toString())),
+                  //                     ],
+                  //                   ),
+                  //                   visualDensity: VisualDensity.compact,
+                  //                   padding: EdgeInsets.zero,
+                  //                   // side: BorderSide.none,
+                  //                 ),
+                  //                 itemBuilder: (context) => [
+                  //                   const PopupMenuItem(
+                  //                     value: ProjectType.hourly,
+                  //                     child: Text('Hourly'),
+                  //                   ),
+                  //                   const PopupMenuItem(
+                  //                     value: ProjectType.fixed,
+                  //                     child: Text('Fixed Price'),
+                  //                   ),
+                  //                 ],
+                  //               ),
+                  //       ),
+                  //       const Gutter(),
+                  // PageTransitionSwitcher(
+                  //   duration: 400.ms,
+                  //   // reverse: true,
+                  //   transitionBuilder:
+                  //       (child, primaryAnimation, secondaryAnimation) {
+                  //     return SharedAxisTransition(
+                  //       animation: primaryAnimation,
+                  //       secondaryAnimation: secondaryAnimation,
+                  //       transitionType: SharedAxisTransitionType.vertical,
+                  //       child: child,
+                  //     );
+                  //   },
+                  //   child: projectType == ProjectType.hourly
+                  //       ? PopupMenuButton(
+                  //           key: const ValueKey('hourly'),
+                  //           elevation: 0.3,
+                  //           //  icon: Icon(MdiIcons.filterVariant),
+                  //           onOpened: () {
+                  //             _minHourlyRateController.text =
+                  //                 hourlyRateRange[0].toStringAsFixed(0);
+                  //             _maxHourlyRateController.text =
+                  //                 hourlyRateRange[1].toStringAsFixed(0);
+                  //           },
+                  //           onSelected: (value) {
+                  //             setState(() {
+                  //               projectType = value;
+                  //             });
+                  //           },
+                  //           child: Chip(
+                  //             label: Row(
+                  //               children: [
+                  //                 Text(
+                  //                     '\$${hourlyRateRange[0].toStringAsFixed(0)} - \$${hourlyRateRange[1].toStringAsFixed(0)}/hr.'),
+                  //               ],
+                  //             ),
+                  //             visualDensity: VisualDensity.compact,
+                  //             padding: EdgeInsets.zero,
+                  //             // side: BorderSide.none,
+                  //           ),
+                  //           itemBuilder: (context) => [
+                  //             PopupMenuItem(
+                  //               padding: const EdgeInsets.symmetric(
+                  //                   horizontal: 8.0, vertical: 4.0),
+                  //               value: ProjectType.hourly,
+                  //               child: TextField(
+                  //                 controller: _minHourlyRateController,
+                  //                 autofocus: true,
+                  //                 decoration: const InputDecoration(
+                  //                     prefixText: '\$',
+                  //                     filled: true,
+                  //                     border: OutlineInputBorder(),
+                  //                     labelText: 'Min.'),
+                  //               ),
+                  //             ),
+                  //             PopupMenuItem(
+                  //               padding: const EdgeInsets.symmetric(
+                  //                   horizontal: 8.0, vertical: 4.0),
+                  //               value: ProjectType.hourly,
+                  //               child: TextField(
+                  //                 controller: _maxHourlyRateController,
+                  //                 decoration: const InputDecoration(
+                  //                     prefixText: '\$',
+                  //                     filled: true,
+                  //                     border: OutlineInputBorder(),
+                  //                     labelText: 'Max.'),
+                  //               ),
+                  //             ),
+                  //             PopupMenuItem(
+                  //                 child: Row(
+                  //               mainAxisAlignment: MainAxisAlignment.end,
+                  //               children: [
+                  //                 FilledButton(
+                  //                   style: FilledButton.styleFrom(
+                  //                       alignment: Alignment.center,
+                  //                       minimumSize: const Size(80, 32)),
+                  //                   onPressed: () {
+                  //                     context.pop();
+                  //                   },
+                  //                   child: const Text('Apply'),
+                  //                 ),
+                  //               ],
+                  //             )),
+                  //           ],
+                  //         )
+                  //       : PopupMenuButton(
+                  //           key: const ValueKey('fixed'),
+                  //           elevation: 0.3,
+                  //           surfaceTintColor: Colors.transparent,
+                  //           //  icon: Icon(MdiIcons.filterVariant),
+                  //           onOpened: () {
+                  //             _minFixedPriceController.text =
+                  //                 fixedPriceRange[0].toString();
+                  //             _maxFixedPriceController.text =
+                  //                 fixedPriceRange[1].toString();
+                  //           },
+                  //           onSelected: (value) {
+                  //             setState(() {
+                  //               projectType = value;
+                  //             });
+                  //           },
+                  //           child: Chip(
+                  //             label: Row(
+                  //               children: [
+                  //                 Text(
+                  //                     '${convertIntToMoney(fixedPriceRange[0])} - ${convertIntToMoney(fixedPriceRange[1])}'),
+                  //               ],
+                  //             ),
+                  //             visualDensity: VisualDensity.compact,
+                  //             padding: EdgeInsets.zero,
+                  //             // side: BorderSide.none,
+                  //           ),
+                  //           itemBuilder: (context) => [
+                  //             PopupMenuItem(
+                  //               padding: const EdgeInsets.symmetric(
+                  //                   horizontal: 8.0, vertical: 4.0),
+                  //               value: ProjectType.hourly,
+                  //               child: TextField(
+                  //                 controller: _minFixedPriceController,
+                  //                 autofocus: true,
+                  //                 decoration: const InputDecoration(
+                  //                     prefixText: '\$',
+                  //                     filled: true,
+                  //                     border: OutlineInputBorder(),
+                  //                     labelText: 'Min.'),
+                  //               ),
+                  //             ),
+                  //             PopupMenuItem(
+                  //               padding: const EdgeInsets.symmetric(
+                  //                   horizontal: 8.0, vertical: 4.0),
+                  //               value: ProjectType.hourly,
+                  //               child: TextField(
+                  //                 controller: _maxFixedPriceController,
+                  //                 decoration: const InputDecoration(
+                  //                     prefixText: '\$',
+                  //                     filled: true,
+                  //                     border: OutlineInputBorder(),
+                  //                     labelText: 'Max.'),
+                  //               ),
+                  //             ),
+                  //             PopupMenuItem(
+                  //                 child: Row(
+                  //               mainAxisAlignment: MainAxisAlignment.end,
+                  //               children: [
+                  //                 FilledButton(
+                  //                   style: FilledButton.styleFrom(
+                  //                       alignment: Alignment.center,
+                  //                       minimumSize: const Size(80, 32)),
+                  //                   onPressed: () {
+                  //                     context.pop();
+                  //                   },
+                  //                   child: const Text('Apply'),
+                  //                 ),
+                  //               ],
+                  //             )),
+                  //           ],
+                  //         ),
+                  // ),
+                  //       const Gutter(),
+                  //       TextButton(
+                  //           style: TextButton.styleFrom(
+                  //               padding: EdgeInsets.zero,
+                  //               minimumSize: const Size(80, 32)),
+                  //           onPressed: () {},
+                  //           child: const Text('Filters')),
+                  //     ],
+                  //   ),
+                  // ),
+                ],
               ),
             ),
-            BlocBuilder<ProfileBloc, ProfileState>(
-              builder: (context, profileState) {
-                return BlocBuilder<SearchBloc, SearchState>(
-                  builder: (context, state) {
-                    if (state is SearchError || profileState is ProfileError) {
-                      return SliverFillRemaining(
-                        child: Center(
-                          child: Column(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Icon(
-                                Icons.error_outline_rounded,
-                                size: 72.0,
-                                color: Theme.of(context).brightness ==
-                                        Brightness.light
-                                    ? Colors.grey[500]
-                                    : Colors.grey[600],
-                              ),
-                              const Gutter(),
-                              Text('Error Searching Projects..',
-                                  style: Theme.of(context)
-                                      .textTheme
-                                      .bodyLarge
-                                      ?.copyWith(
-                                          color: Theme.of(context).brightness ==
-                                                  Brightness.light
-                                              ? Colors.grey[500]
-                                              : Colors.grey[600])),
-                              const Gutter(),
-                              FilledButton(
-                                  onPressed: () => context
-                                      .read<SearchBloc>()
-                                      .add(LoadSearch(context
-                                          .read<ProfileBloc>()
-                                          .state
-                                          .user!)),
-                                  child: const Text('Retry'))
-                            ],
-                          ),
+          ),
+          BlocBuilder<ProfileBloc, ProfileState>(
+            builder: (context, profileState) {
+              return BlocBuilder<SearchBloc, SearchState>(
+                builder: (context, state) {
+                  if (state is SearchError || profileState is ProfileError) {
+                    return SliverFillRemaining(
+                      child: Center(
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Icon(
+                              Icons.error_outline_rounded,
+                              size: 72.0,
+                              color: Theme.of(context).brightness ==
+                                      Brightness.light
+                                  ? Colors.grey[500]
+                                  : Colors.grey[600],
+                            ),
+                            const Gutter(),
+                            Text('Error Searching Projects..',
+                                style: Theme.of(context)
+                                    .textTheme
+                                    .bodyLarge
+                                    ?.copyWith(
+                                        color: Theme.of(context).brightness ==
+                                                Brightness.light
+                                            ? Colors.grey[500]
+                                            : Colors.grey[600])),
+                            const Gutter(),
+                            FilledButton(
+                                onPressed: () => context.read<SearchBloc>().add(
+                                    LoadSearch(context
+                                        .read<ProfileBloc>()
+                                        .state
+                                        .user!)),
+                                child: const Text('Retry'))
+                          ],
                         ),
-                      );
-                    }
-                    if (state is SearchLoading ||
-                        profileState is ProfileLoading) {
-                      return const SliverFillRemaining(
-                          child: Center(child: CircularProgressIndicator()));
-                    }
-                    if (state is SearchLoaded &&
-                        profileState is ProfileLoaded) {
-                      return SliverList(
-                        delegate: SliverChildBuilderDelegate(
-                          childCount: state.projects?.length,
-                          (context, index) => Column(
-                            children: [
-                              index == 0 ? const Divider() : const SizedBox(),
-                              index == 0
-                                  ? const GutterSmall()
-                                  : const SizedBox(),
-                              Padding(
-                                padding: const EdgeInsets.only(bottom: 8.0),
-                                child: ProjectCard(
-                                  project: state.projects![index],
-                                ),
+                      ),
+                    );
+                  }
+                  if (state is SearchLoading ||
+                      profileState is ProfileLoading) {
+                    return const SliverFillRemaining(
+                        child: Center(child: CircularProgressIndicator()));
+                  }
+                  if (state is SearchLoaded && profileState is ProfileLoaded) {
+                    return SliverList(
+                      delegate: SliverChildBuilderDelegate(
+                        childCount: state.projects?.length,
+                        (context, index) => Column(
+                          children: [
+                            index == 0 ? const Divider() : const SizedBox(),
+                            index == 0 ? const GutterSmall() : const SizedBox(),
+                            Padding(
+                              padding: const EdgeInsets.only(bottom: 8.0),
+                              child: ProjectCard(
+                                project: state.projects![index],
                               ),
-                              const Padding(
-                                padding: EdgeInsets.symmetric(vertical: 8.0),
-                                child: Divider(),
-                              ),
-                            ],
-                          ),
+                            ),
+                            const Padding(
+                              padding: EdgeInsets.symmetric(vertical: 8.0),
+                              child: Divider(),
+                            ),
+                          ],
                         ),
-                      );
-                    } else {
-                      return const SliverFillRemaining(
-                          child: Center(child: Text('Something went wrong!')));
-                    }
-                  },
-                );
-              },
-            )
-          ],
-        ),
+                      ),
+                    );
+                  } else {
+                    return const SliverFillRemaining(
+                        child: Center(child: Text('Something went wrong!')));
+                  }
+                },
+              );
+            },
+          )
+        ],
       ),
     );
   }
