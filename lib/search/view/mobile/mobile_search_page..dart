@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_gutter/flutter_gutter.dart';
 import 'package:go_router/go_router.dart';
@@ -36,18 +35,7 @@ class _MobileSearchPageState extends State<MobileSearchPage> {
     return RawKeyboardListener(
       focusNode: FocusNode(),
       autofocus: true,
-      onKey: (event) {
-        print('Keyboard event: $event');
-        print(' Key Pressed: ${event.logicalKey}');
-        if (event.isKeyPressed(LogicalKeyboardKey.enter) ||
-            event.isKeyPressed(LogicalKeyboardKey.accept)) {
-          print('Searching for: ${_searchController.value.text}');
-          context.read<SearchBloc>().add(LoadSearch(
-                context.read<ProfileBloc>().state.user!,
-                query: _searchController.value.text,
-              ));
-        }
-      },
+      onKey: (event) {},
       child: Scaffold(
         floatingActionButton: inProduction == false
             ? FloatingActionButton(
@@ -69,60 +57,55 @@ class _MobileSearchPageState extends State<MobileSearchPage> {
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    Theme(
-                      data: ThemeData(
-                          searchBarTheme: SearchBarThemeData(
-                              elevation: const MaterialStatePropertyAll(0),
-                              padding: const MaterialStatePropertyAll(
-                                  EdgeInsets.symmetric(horizontal: 16.0)),
-                              textStyle: MaterialStatePropertyAll(
-                                  Theme.of(context)
-                                      .textTheme
-                                      .bodyMedium
-                                      ?.copyWith(
-                                          color: Theme.of(context)
-                                              .iconTheme
-                                              .color)),
-                              backgroundColor: MaterialStatePropertyAll(
-                                  Theme.of(context)
-                                      .inputDecorationTheme
-                                      .fillColor))),
-                      child: SearchBar(
-                        controller: _searchController,
-                        // onSubmitted: (value) {
-                        //   context.read<SearchBloc>().add(LoadSearch(
-                        //         context.read<ProfileBloc>().state.user!,
-                        //         query: value,
-                        //       ));
-                        // },
-                        // onChanged: (value) {
-                        //   //
-                        //   context.read<SearchBloc>().add(LoadSearch(
-                        //         context.read<ProfileBloc>().state.user!,
-                        //         query: value,
-                        //       ));
-                        // },
+                    TextField(
+                      controller: _searchController,
+                      onSubmitted: (value) {
+                        context.read<SearchBloc>().add(LoadSearch(
+                              context.read<ProfileBloc>().state.user!,
+                              query: value,
+                            ));
+                      },
+                      // Other properties that match the custom theme
+                      decoration: InputDecoration(
+                        contentPadding: const EdgeInsets.symmetric(
+                            horizontal: 32.0, vertical: 16.0),
+
+                        border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(48.0),
+                            borderSide: BorderSide.none),
+                        focusedBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(48.0),
+                            borderSide: BorderSide.none),
+                        enabledBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(48.0),
+                            borderSide: BorderSide.none),
                         hintText:
                             context.watch<ProfileBloc>().state is ProfileLoaded
                                 ? 'Search Projects..'
                                 : null,
-                        hintStyle: MaterialStatePropertyAll(TextStyle(
-                            color: Theme.of(context)
-                                .iconTheme
-                                .color!
-                                .withOpacity(0.8))),
-                        trailing: [
-                          IconButton(
-                              onPressed: () {
-                                print(
-                                    'Searching for: ${_searchController.value.text}');
-                                context.read<SearchBloc>().add(LoadSearch(
-                                      context.read<ProfileBloc>().state.user!,
-                                      query: _searchController.value.text,
-                                    ));
-                              },
-                              icon: const Icon(Icons.search_rounded)),
-                        ],
+                        hintStyle:
+                            Theme.of(context).textTheme.bodyMedium?.copyWith(
+                                  color: Theme.of(context)
+                                      .iconTheme
+                                      .color!
+                                      .withOpacity(0.8),
+                                ),
+
+                        suffixIcon: Padding(
+                          padding: const EdgeInsets.only(right: 16.0),
+                          child: IconButton(
+                            onPressed: () {
+                              print(
+                                  'Searching for: ${_searchController.value.text}');
+                              context.read<SearchBloc>().add(LoadSearch(
+                                    context.read<ProfileBloc>().state.user!,
+                                    query: _searchController.value.text,
+                                  ));
+                            },
+                            icon: const Icon(Icons.search_rounded),
+                          ),
+                        ),
+                        // Other InputDecoration properties that match the theme
                       ),
                     ),
                     const GutterSmall(),

@@ -1,6 +1,5 @@
 import 'dart:async';
 
-import 'package:OutsourcedX/core/constants.dart';
 import 'package:algolia_helper_flutter/algolia_helper_flutter.dart';
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
@@ -8,9 +7,7 @@ import 'package:OutsourcedX/profile/bloc/profile_bloc.dart';
 import 'package:OutsourcedX/projects/model/project.dart';
 import 'package:OutsourcedX/projects/repository/projects_repository.dart';
 import 'package:OutsourcedX/search/repository/search_repository.dart';
-import 'package:flutter/material.dart';
 import 'package:rxdart/rxdart.dart';
-import 'package:tuple/tuple.dart';
 
 import '../../profile/model/user.dart';
 
@@ -22,8 +19,10 @@ class SearchBloc extends Bloc<SearchEvent, SearchState> {
   final ProjectsRepository _projectsRepository;
   final ProfileBloc _profileBloc;
   StreamSubscription? _profileSubscription;
-  final String _query = '';
+  static String? _query;
   StreamSubscription<SearchResponse>? _searchSubscription;
+  StreamSubscription<List<Project>>? projectsSubscription;
+  StreamSubscription<SearchResponse>? reloadSubscription;
   SearchBloc(
       {required ProjectsRepository projectsRepository,
       required SearchRepository searchRepository,
@@ -38,14 +37,24 @@ class SearchBloc extends Bloc<SearchEvent, SearchState> {
         add(LoadSearch(profileState.user));
       }
     });
+
     on<LoadSearch>((event, emit) async {
+      print('State query: $_query');
       try {
         emit(SearchLoading());
 
         if (_profileBloc.state.user?.userType == UserType.freelancer) {
-          _searchRepository.setQuery(event.query ?? '', 'projects');
-          final searchStream = _searchRepository.getSearchResults('projects');
+          if (event.query != null &&
+              event.query!.isNotEmpty &&
+              event.query == _query) {
+            _searchRepository.reload('projects');
+            return;
+          }
+          final searchQuery = event.query ?? '';
 
+          _searchRepository.setQuery(searchQuery, 'projects');
+
+          final searchStream = _searchRepository.getSearchResults('projects');
           final projectsStream = searchStream.switchMap((searchResponse) {
             final projectIds = searchResponse.hits
                 .map<String>((hit) => hit['objectID'] as String)
@@ -53,53 +62,37 @@ class SearchBloc extends Bloc<SearchEvent, SearchState> {
 
             return _projectsRepository
                 .getProjectsFromIds(projectIds)
-                .map((projects) {
-              return Tuple2(searchResponse,
-                  projects); // Combine searchResponse and projects
-            });
+                .startWith([]);
           });
-
-          final combinedStream = Rx.combineLatest2(
-            searchStream,
-            projectsStream,
-            (SearchResponse searchResponse,
-                Tuple2<SearchResponse, List<Project>> tuple) {
-              final projects = tuple.item2; // Extract projects from the tuple
-              final projectList = projects.map((project) {
-                return Project.fromAlgoliaSearch(tuple.item1.hits
-                    .firstWhere((hit) => hit['objectID'] == project.id));
-              }).toList();
-              return projectList;
-            },
-          );
-          await emit.forEach(
-            combinedStream,
-            onData: (data) {
-              print('Search Bloc received Data: $data');
-              return SearchLoaded(projects: data);
-            },
-            onError: (e, s) {
-              print('Search Bloc received Error: $e');
-              scaffoldKey.currentState?.showSnackBar(
-                const SnackBar(
-                  content: Text('Error loading search results'),
-                ),
-              );
-              return SearchError();
-            },
-          );
+          await emit.forEach(projectsStream, onData: (projects) {
+            _query = event.query;
+            return SearchLoaded(projects: projects);
+          });
+          // projectsStream.listen((projects) {
+          //   emit(SearchLoaded(projects: projects));
+          // });
         } else {
           // Handle the case for freelancers here
-          _searchRepository.setQuery(event.query ?? '', 'freelancers');
-          final value =
-              await _searchRepository.getSearchResults('freelancers').first;
-          List<User> freelancers = [];
-          for (Hit hit in value.hits) {
-            print('Hit found: ${hit.toString()}');
-            freelancers.add(User.fromAlgoliaSearch(hit));
+          if (event.query != null &&
+              event.query!.isNotEmpty &&
+              event.query == _query) {
+            _searchRepository.reload('freelancers');
+            return;
           }
-          emit(SearchLoaded(freelancers: freelancers));
-          print('Search Bloc received Freelancer Ids: $freelancers');
+          _searchRepository.setQuery(event.query ?? '', 'freelancers');
+
+          await emit.forEach(
+            _searchRepository.getSearchResults('freelancers'),
+            onData: (value) {
+              List<User> freelancers = [];
+              for (Hit hit in value.hits) {
+                print('Hit found: ${hit.toString()}');
+                freelancers.add(User.fromAlgoliaSearch(hit));
+              }
+              print('Search Bloc received Freelancer Ids: $freelancers');
+              return SearchLoaded(freelancers: freelancers);
+            },
+          );
         }
       } catch (e) {
         print('Search Bloc received Error: $e');
@@ -110,6 +103,8 @@ class SearchBloc extends Bloc<SearchEvent, SearchState> {
   dispose() {
     _profileSubscription?.cancel();
     _searchSubscription?.cancel();
+    projectsSubscription?.cancel();
+    reloadSubscription?.cancel();
     super.close();
   }
 }

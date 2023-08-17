@@ -33,6 +33,7 @@ class _MobileClientSearchPageState extends State<MobileClientSearchPage> {
       TextEditingController();
   final TextEditingController _maxFixedPriceController =
       TextEditingController();
+  final TextEditingController _searchController = TextEditingController();
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -56,42 +57,55 @@ class _MobileClientSearchPageState extends State<MobileClientSearchPage> {
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  Theme(
-                    data: ThemeData(
-                        searchBarTheme: SearchBarThemeData(
-                            elevation: const MaterialStatePropertyAll(0),
-                            padding: const MaterialStatePropertyAll(
-                                EdgeInsets.symmetric(horizontal: 16.0)),
-                            textStyle: MaterialStatePropertyAll(
-                                Theme.of(context)
-                                    .textTheme
-                                    .bodyMedium
-                                    ?.copyWith(
-                                        color:
-                                            Theme.of(context).iconTheme.color)),
-                            backgroundColor: MaterialStatePropertyAll(
-                                Theme.of(context)
-                                    .inputDecorationTheme
-                                    .fillColor))),
-                    child: SearchBar(
-                      onChanged: (value) {
-                        context.read<SearchBloc>().add(LoadSearch(
-                              context.read<ProfileBloc>().state.user!,
-                              query: value,
-                            ));
-                      },
-                      hintText: 'Search Freelancers..',
-                      hintStyle: MaterialStatePropertyAll(TextStyle(
-                          color: Theme.of(context)
-                              .iconTheme
-                              .color!
-                              .withOpacity(0.8))),
-                      trailing: [
-                        Icon(
-                          Icons.search_rounded,
-                          color: Theme.of(context).iconTheme.color,
-                        )
-                      ],
+                  TextField(
+                    controller: _searchController,
+                    onSubmitted: (value) {
+                      context.read<SearchBloc>().add(LoadSearch(
+                            context.read<ProfileBloc>().state.user!,
+                            query: value,
+                          ));
+                    },
+                    // Other properties that match the custom theme
+                    decoration: InputDecoration(
+                      contentPadding: const EdgeInsets.symmetric(
+                          horizontal: 32.0, vertical: 16.0),
+
+                      border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(48.0),
+                          borderSide: BorderSide.none),
+                      focusedBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(48.0),
+                          borderSide: BorderSide.none),
+                      enabledBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(48.0),
+                          borderSide: BorderSide.none),
+                      hintText:
+                          context.watch<ProfileBloc>().state is ProfileLoaded
+                              ? 'Search Projects..'
+                              : null,
+                      hintStyle:
+                          Theme.of(context).textTheme.bodyMedium?.copyWith(
+                                color: Theme.of(context)
+                                    .iconTheme
+                                    .color!
+                                    .withOpacity(0.8),
+                              ),
+
+                      suffixIcon: Padding(
+                        padding: const EdgeInsets.only(right: 16.0),
+                        child: IconButton(
+                          onPressed: () {
+                            print(
+                                'Searching for: ${_searchController.value.text}');
+                            context.read<SearchBloc>().add(LoadSearch(
+                                  context.read<ProfileBloc>().state.user!,
+                                  query: _searchController.value.text,
+                                ));
+                          },
+                          icon: const Icon(Icons.search_rounded),
+                        ),
+                      ),
+                      // Other InputDecoration properties that match the theme
                     ),
                   ),
                   const GutterSmall(),

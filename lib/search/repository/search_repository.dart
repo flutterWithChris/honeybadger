@@ -57,6 +57,27 @@ class SearchRepository {
     }
   }
 
+  // Rerun search with same query
+  void reload(String index) async {
+    switch (index) {
+      case 'projects':
+        hitsSearcher.rerun();
+        break;
+      case 'categories':
+        categoryHitsSearcher.rerun();
+        break;
+      case 'skills':
+        skillsHitsSearcher.rerun();
+        break;
+      case 'freelancers':
+        freelancerHitsSearcher.rerun();
+        break;
+      default:
+        hitsSearcher.rerun();
+        break;
+    }
+  }
+
   Stream<SearchState> getSearchState(String index) {
     switch (index) {
       case 'projects':
