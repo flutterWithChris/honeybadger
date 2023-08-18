@@ -80,6 +80,7 @@ class User {
     industry = snap['industry'];
     rating = snap['rating'];
     ratingCount = snap['ratingCount'];
+    // convert list of maps to list of reviews
     if (snap['reviews'] != null) {
       reviews = [];
       snap['reviews'].forEach((v) {

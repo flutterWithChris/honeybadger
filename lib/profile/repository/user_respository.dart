@@ -57,6 +57,27 @@ class UserRepository extends BaseUserRepository {
     }
   }
 
+  @override
+  Future<User?> getFreelancerFromId(String userId) async {
+    try {
+      return _firebaseFirestore
+          .collection('freelancers')
+          .doc(userId)
+          .get()
+          .then((doc) => doc.exists ? User.fromDocument(doc) : null);
+    } on FirebaseException catch (e) {
+      print(e);
+      scaffoldKey.currentState!.showSnackBar(const SnackBar(
+        backgroundColor: Colors.red,
+        content: Text(
+          'An error occurred while getting your profile.',
+          style: TextStyle(color: Colors.white),
+        ),
+      ));
+      return null;
+    }
+  }
+
   /// Get user as a stream
   @override
   Stream<User> getUserAsStream(User user) {

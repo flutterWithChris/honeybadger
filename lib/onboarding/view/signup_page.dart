@@ -9,6 +9,8 @@ import 'package:OutsourcedX/auth/cubit/signup/signup_cubit.dart';
 import 'package:OutsourcedX/core/constants.dart';
 import 'package:OutsourcedX/onboarding/bloc/onboarding_bloc.dart';
 import 'package:OutsourcedX/profile/model/user.dart';
+import 'package:go_router/go_router.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class SignupPage extends StatefulWidget {
   final UserType userType;
@@ -186,7 +188,13 @@ class _SignupPageState extends State<SignupPage> {
                           //     style: ElevatedButton.styleFrom(elevation: 0.6)),
                           // const GutterTiny(),
                           TextButton(
-                              onPressed: () {},
+                              onPressed: () async {
+                                context.go('/login');
+                                SharedPreferences prefs =
+                                    await SharedPreferences.getInstance();
+                                prefs.setBool('onboarded', true);
+                                prefs.setBool('paymentSetupComplete', true);
+                              },
                               child: const Text(
                                   'Already have an account? Sign in.')),
                           //   const GutterSmall(),

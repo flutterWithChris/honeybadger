@@ -1,3 +1,4 @@
+import 'package:OutsourcedX/login/view/cubit/login_cubit.dart';
 import 'package:OutsourcedX/profile/bloc/profile_bloc.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -41,7 +42,10 @@ class MainDrawer extends StatelessWidget {
                   mainAxisAlignment: MainAxisAlignment.start,
                   children: [
                     TextButton.icon(
-                      onPressed: () {},
+                      onPressed: () {
+                        context.read<LoginCubit>().logout();
+                        context.go('/login');
+                      },
                       icon: const Icon(Icons.logout),
                       label: const Text('Logout'),
                     ),

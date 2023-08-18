@@ -1,5 +1,8 @@
+import 'package:OutsourcedX/login/view/login_page.dart';
 import 'package:OutsourcedX/message/bloc/messages_bloc.dart';
+import 'package:OutsourcedX/message/view/new_chat_screen.dart';
 import 'package:OutsourcedX/onboarding/bloc/onboarding_bloc.dart';
+import 'package:OutsourcedX/profile/public/view/freelancer_public_profile_page.dart';
 import 'package:OutsourcedX/settings/view/settings_page.dart';
 import 'package:animations/animations.dart';
 import 'package:flutter/material.dart';
@@ -48,9 +51,7 @@ GoRouter goRouter = GoRouter(
     if (isOnboarding) {
       return null;
     }
-    if (loggedIn == false) {
-      return '/onboarding';
-    }
+
     if (onboarded == false) {
       if (state.matchedLocation.contains('stripe-confirmation')) {
         return null;
@@ -60,6 +61,10 @@ GoRouter goRouter = GoRouter(
 
     if (onboarded) {
       return null;
+    }
+
+    if (loggedIn == false) {
+      return '/login';
     }
     return null;
   },
@@ -77,10 +82,25 @@ GoRouter goRouter = GoRouter(
       builder: (context, state) => const WelcomePage(),
     ),
     GoRoute(
-      path: '/search',
-      name: 'search',
-      builder: (context, state) => const SearchPage(),
-    ),
+        path: '/login',
+        name: 'login',
+        builder: (context, state) {
+          return const LoginPage();
+        }),
+    GoRoute(
+        path: '/search',
+        name: 'search',
+        builder: (context, state) => const SearchPage(),
+        routes: [
+          GoRoute(
+              path: 'freelancer-profile/:id',
+              name: 'freelancer-profile',
+              builder: (context, state) {
+                return FreelancerPublicProfilePage(
+                  userId: state.extra as String,
+                );
+              }),
+        ]),
     GoRoute(
         path: '/project/:id',
         name: 'project',
@@ -153,6 +173,10 @@ GoRouter goRouter = GoRouter(
             builder: (context, state) => StreamChannel(
                 channel: state.extra as Channel, child: const ChannelPage()),
           ),
+          GoRoute(
+              path: 'new-chat',
+              name: 'new-chat',
+              builder: (context, state) => const NewChatScreen()),
         ]),
     GoRoute(
         path: '/payments',

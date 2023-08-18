@@ -13,7 +13,9 @@ class MobileMessagesSliverAppBar extends StatelessWidget {
         title: Padding(
           padding: const EdgeInsets.only(left: 0.0),
           child: Image.asset(
-            'assets/logos/OutsourcedX_White.png',
+            Theme.of(context).brightness == Brightness.light
+                ? 'assets/logos/OutsourcedX_black_logo.png'
+                : 'assets/logos/OutsourcedX_White.png',
             height: 40,
           ),
         ),

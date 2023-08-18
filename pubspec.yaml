@@ -85,6 +85,7 @@ dependencies:
   rxdart: ^0.27.7
   tuple: ^2.0.2
   settings_ui: ^2.0.2
+  flutter_email_sender: ^6.0.1
 
 
 dev_dependencies:

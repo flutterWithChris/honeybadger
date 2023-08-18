@@ -236,10 +236,7 @@ class _MobileMessagesPageState extends State<MobileMessagesPage> {
                                     ),
                                     emptyTitle: TextButton(
                                       onPressed: () {
-                                        // Navigator.pushNamed(
-                                        //   context,
-                                        //   Routes.NEW_CHAT,
-                                        // );
+                                        context.push('/messages/new-chat');
                                       },
                                       child: Text(
                                         'Start a chat',

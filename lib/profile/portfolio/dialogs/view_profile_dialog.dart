@@ -1,4 +1,3 @@
-import 'package:OutsourcedX/profile/bloc/profile_bloc.dart';
 import 'package:OutsourcedX/profile/model/portfolio_project.dart';
 import 'package:OutsourcedX/profile/portfolio/bloc/portfolio_bloc.dart';
 import 'package:cached_network_image/cached_network_image.dart';
@@ -95,229 +94,51 @@ class _ViewPortfolioProjectDialogState
             return Form(
               key: formKey,
               child: ListView(
+                  shrinkWrap: true,
                   padding: const EdgeInsets.symmetric(
                       horizontal: 24.0, vertical: 16.0),
                   children: [
-                    Text('View Project',
-                        style: Theme.of(context).textTheme.headlineMedium),
+                    Text(widget.project.title!,
+                        style: Theme.of(context).textTheme.titleLarge),
                     const Gutter(),
-                    TextFormField(
-                      controller: _projectNameController,
-                      textCapitalization: TextCapitalization.words,
-                      validator: (value) {
-                        if (value == null || value.isEmpty) {
-                          return 'Please enter some text';
-                        }
-                        return null;
-                      },
-                      decoration: const InputDecoration(
-                        label: Text('Project Name'),
-                      ),
-                    ),
-                    const GutterSmall(),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                      children: [
-                        Flexible(
-                            flex: 3,
-                            child: ActionChip(
-                              side: BorderSide.none,
-                              label: _projectStart != null
-                                  ? Text(Jiffy.parseFromDateTime(_projectStart!)
-                                      .yMMMd)
-                                  : const Text('Project Start'),
-                              onPressed: () => showDatePicker(
-                                      context: context,
-                                      initialDate: DateTime.now(),
-                                      firstDate: DateTime.now()
-                                          .subtract(const Duration(days: 3650)),
-                                      lastDate: DateTime.now())
-                                  .then((value) => setState(() {
-                                        _projectStart = value;
-                                      })),
-                            )),
-                        const Expanded(child: Center(child: Text('to'))),
-                        Flexible(
-                            flex: 3,
-                            child: ActionChip(
-                              side: BorderSide.none,
-                              label: _projectEnd != null
-                                  ? Text(Jiffy.parseFromDateTime(_projectEnd!)
-                                      .yMMMd)
-                                  : const Text('Ongoing'),
-                              onPressed: () => showDatePicker(
-                                      context: context,
-                                      initialDate: DateTime.now(),
-                                      firstDate: DateTime.now()
-                                          .subtract(const Duration(days: 3650)),
-                                      lastDate: DateTime.now())
-                                  .then((value) => setState(() {
-                                        _projectEnd = value;
-                                      })),
-                            )),
-                      ],
-                    ),
-                    const Gutter(),
-                    TextFormField(
-                      controller: _projectDescriptionController,
-                      textCapitalization: TextCapitalization.sentences,
-                      validator: (value) {
-                        if (value == null || value.isEmpty) {
-                          return 'Please enter some text';
-                        }
-                        return null;
-                      },
-                      minLines: 3,
-                      maxLines: 5,
-                      decoration: const InputDecoration(
-                        label: Text('Project Description'),
-                      ),
-                    ),
-                    const Gutter(),
-                    TextFormField(
-                      controller: _projectLinkController,
-                      validator: (value) {
-                        if (value != null) {
-                          try {
-                            var url = Uri.parse(value);
-                          } catch (e) {
-                            return 'Please enter a valid URL';
-                          }
-                        }
-                        return null;
-                      },
-                      keyboardType: TextInputType.url,
-                      decoration: const InputDecoration(
-                        label: Text('Project Link'),
-                        prefixText: 'https://',
-                      ),
-                    ),
-                    Row(
-                      children: [
-                        Text('Images',
-                            style: Theme.of(context).textTheme.titleLarge),
-                        const GutterTiny(),
-                        IconButton(
-                            onPressed: () async {
-                              final ImagePicker picker = ImagePicker();
-                              List<XFile> selectedImages =
-                                  await picker.pickMultiImage();
-                              if (selectedImages.isNotEmpty) {
-                                print('images selected');
-                                setState(() {
-                                  _newImages += selectedImages;
-                                });
-                              }
-                            },
-                            icon: const Icon(Icons.add_circle_outline_rounded,
-                                size: 20)),
-                      ],
-                    ),
-                    const GutterSmall(),
                     SizedBox(
-                      height: 200,
+                      height: 280,
                       child: _images.isNotEmpty
                           ? ListView.separated(
                               scrollDirection: Axis.horizontal,
                               itemCount: _images.length,
                               itemBuilder: (context, index) {
-                                return Stack(
-                                  clipBehavior: Clip.none,
-                                  children: [
-                                    ClipRRect(
-                                      borderRadius: BorderRadius.circular(16),
-                                      child: SizedBox(
-                                        height: 200,
-                                        child: InkWell(
-                                          onTap: () {
-                                            showDialog(
-                                              context: context,
-                                              builder: (context) {
-                                                return Dialog(
-                                                  child: Stack(
-                                                    clipBehavior: Clip.none,
-                                                    alignment:
-                                                        Alignment.topLeft,
-                                                    children: [
-                                                      Card(
-                                                        child: SizedBox(
-                                                          child:
-                                                              CachedNetworkImage(
-                                                                  imageUrl:
-                                                                      _images[
-                                                                          index]),
-                                                        ),
-                                                      ),
-                                                      Positioned(
-                                                        top: 2.0,
-                                                        left: 2.0,
-                                                        child: Opacity(
-                                                          opacity: 0.8,
-                                                          child:
-                                                              IconButton.filled(
-                                                                  onPressed:
-                                                                      () {
-                                                                    context
-                                                                        .pop();
-                                                                  },
-                                                                  icon: const Icon(
-                                                                      Icons
-                                                                          .close_rounded,
-                                                                      size:
-                                                                          16)),
-                                                        ),
-                                                      ),
-                                                    ],
+                                return ClipRRect(
+                                  borderRadius: BorderRadius.circular(16),
+                                  child: SizedBox(
+                                    height: 280,
+                                    child: InkWell(
+                                      onTap: () {
+                                        showDialog(
+                                          context: context,
+                                          builder: (context) {
+                                            return Dialog(
+                                              child: Stack(
+                                                clipBehavior: Clip.none,
+                                                alignment: Alignment.topLeft,
+                                                children: [
+                                                  Card(
+                                                    child: SizedBox(
+                                                      child: CachedNetworkImage(
+                                                          imageUrl:
+                                                              _images[index]),
+                                                    ),
                                                   ),
-                                                );
-                                              },
+                                                ],
+                                              ),
                                             );
                                           },
-                                          child: CachedNetworkImage(
-                                              imageUrl: _images[index] ?? ''),
-                                        ),
-                                      ),
+                                        );
+                                      },
+                                      child: CachedNetworkImage(
+                                          imageUrl: _images[index] ?? ''),
                                     ),
-                                    Positioned(
-                                      top: 4.0,
-                                      left: 4.0,
-                                      child: SizedBox(
-                                        height: 28,
-                                        child: FittedBox(
-                                          child: Opacity(
-                                            opacity: 0.8,
-                                            child: IconButton.filled(
-                                                style: IconButton.styleFrom(
-                                                    backgroundColor:
-                                                        Colors.redAccent,
-                                                    foregroundColor:
-                                                        Colors.white),
-                                                onPressed: () {
-                                                  setState(() {
-                                                    _images.removeAt(index);
-                                                  });
-                                                },
-                                                icon: const Icon(
-                                                    Icons.remove_rounded,
-                                                    size: 24)),
-                                          ),
-                                        ),
-                                      ),
-                                    ),
-                                    // TODO: Mark as cover
-                                    index == 0
-                                        ? Positioned(
-                                            bottom: 0,
-                                            child: SizedBox(
-                                              child: Container(
-                                                color: Colors.white
-                                                    .withOpacity(0.8),
-                                                height: 48,
-                                              ),
-                                            ),
-                                          )
-                                        : const SizedBox()
-                                  ],
+                                  ),
                                 );
                               },
                               separatorBuilder: (context, index) =>
@@ -372,71 +193,68 @@ class _ViewPortfolioProjectDialogState
                             ),
                     ),
                     const Gutter(),
+                    Text(
+                      'Description',
+                      style: Theme.of(context).textTheme.titleSmall,
+                    ),
+                    const GutterTiny(),
+                    Text(widget.project.description!,
+                        style: Theme.of(context).textTheme.bodyMedium),
+                    const GutterTiny(),
+                    if (widget.project.url != null)
+                      Row(
+                        children: [
+                          Text('Link: ',
+                              style: Theme.of(context).textTheme.titleSmall),
+                          TextButton(
+                              onPressed: () {},
+                              child: Text(widget.project.url!)),
+                        ],
+                      ),
+                    const GutterTiny(),
                     Row(
-                      mainAxisAlignment: MainAxisAlignment.end,
+                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                       children: [
-                        TextButton(
-                            onPressed: () {
-                              Navigator.pop(context);
-                            },
-                            child: const Text('Cancel')),
-                        const Gutter(),
-                        FilledButton(
-                            onPressed: () {
-                              if (_images.isEmpty) {
-                                setState(() {
-                                  imageValid = false;
-                                });
-                                ScaffoldMessenger.of(context).showSnackBar(
-                                    const SnackBar(
-                                        content: Text(
-                                            'Please select at least one image')));
-                                return;
-                              }
-                              if (formKey.currentState!.validate()) {
-                                context.read<PortfolioBloc>().add(UpdateProject(
-                                    project: PortfolioProject(
-                                      title: _projectNameController.value.text
-                                          .trim(),
-                                      description: _projectDescriptionController
-                                          .text
-                                          .trim(),
-                                      url: _projectLinkController.value.text
-                                          .trim(),
-                                      startDate: _projectStart,
-                                      endDate: _projectEnd,
-                                    ),
-                                    images: _newImages,
-                                    userId: context
-                                        .read<AuthBloc>()
-                                        .state
-                                        .user!
-                                        .uid));
-                              } else {
-                                ScaffoldMessenger.of(context).showSnackBar(
-                                    const SnackBar(
-                                        content:
-                                            Text('Please fill in all fields')));
-                              }
-                            },
-                            child: const Text('Save')),
-                        const Gutter(),
+                        Flexible(
+                            flex: 3,
+                            child: ActionChip(
+                              side: BorderSide.none,
+                              label: _projectStart != null
+                                  ? Text(Jiffy.parseFromDateTime(_projectStart!)
+                                      .yMMMd)
+                                  : const Text('Project Start'),
+                              onPressed: () => showDatePicker(
+                                      context: context,
+                                      initialDate: DateTime.now(),
+                                      firstDate: DateTime.now()
+                                          .subtract(const Duration(days: 3650)),
+                                      lastDate: DateTime.now())
+                                  .then((value) => setState(() {
+                                        _projectStart = value;
+                                      })),
+                            )),
+                        const Expanded(child: Center(child: Text('to'))),
+                        Flexible(
+                            flex: 3,
+                            child: ActionChip(
+                              side: BorderSide.none,
+                              label: _projectEnd != null
+                                  ? Text(Jiffy.parseFromDateTime(_projectEnd!)
+                                      .yMMMd)
+                                  : const Text('Ongoing'),
+                              onPressed: () => showDatePicker(
+                                      context: context,
+                                      initialDate: DateTime.now(),
+                                      firstDate: DateTime.now()
+                                          .subtract(const Duration(days: 3650)),
+                                      lastDate: DateTime.now())
+                                  .then((value) => setState(() {
+                                        _projectEnd = value;
+                                      })),
+                            )),
                       ],
                     ),
-                    TextButton.icon(
-                        onPressed: () => context.read<PortfolioBloc>().add(
-                            DeleteProject(
-                                project: widget.project,
-                                userId: context
-                                    .read<ProfileBloc>()
-                                    .state
-                                    .user!
-                                    .id!)),
-                        icon: const Icon(
-                          Icons.delete_outline_rounded,
-                          size: 20.0,
-                        ),
-                        label: const Text('Delete Project')),
+                    const Gutter(),
                   ]),
             );
           } else {

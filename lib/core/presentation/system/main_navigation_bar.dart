@@ -1,3 +1,5 @@
+import 'package:OutsourcedX/profile/bloc/profile_bloc.dart';
+import 'package:OutsourcedX/profile/model/user.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
@@ -52,7 +54,9 @@ class _MainBottomNavBarState extends State<MainBottomNavBar> {
           NavigationDestination(
             icon: BlocBuilder<ProjectsBloc, ProjectsState>(
               builder: (context, state) {
-                if (state is ProjectsLoaded) {
+                if (state is ProjectsLoaded &&
+                    context.read<ProfileBloc>().state.user!.userType ==
+                        UserType.client) {
                   int unreadProposalCount = state.projects
                       .where((element) => element.unreadProposalCount! > 0)
                       .length;
@@ -67,40 +71,33 @@ class _MainBottomNavBarState extends State<MainBottomNavBar> {
                 return Icon(MdiIcons.folderOutline);
               },
             ),
-            selectedIcon: BlocBuilder<ProjectsBloc, ProjectsState>(
-              builder: (context, state) {
-                if (state is ProjectsLoaded) {
-                  int unreadProposalCount = state.projects
-                      .where((element) => element.unreadProposalCount! > 0)
-                      .length;
-                  if (unreadProposalCount > 0) {
-                    return Badge(
-                      label: Text(unreadProposalCount.toString()),
-                      backgroundColor: Theme.of(context).colorScheme.tertiary,
-                      child: Icon(MdiIcons.folder),
-                    );
-                  }
-                }
-                return Icon(MdiIcons.folder);
-              },
-            ),
+            selectedIcon: Icon(MdiIcons.folder),
+            //  BlocBuilder<ProjectsBloc, ProjectsState>(
+            //   builder: (context, state) {
+            //     if (state is ProjectsLoaded) {
+            //       int unreadProposalCount = state.projects
+            //           .where((element) => element.unreadProposalCount! > 0)
+            //           .length;
+            //       if (unreadProposalCount > 0) {
+            //         return Badge(
+            //           label: Text(unreadProposalCount.toString()),
+            //           backgroundColor: Theme.of(context).colorScheme.tertiary,
+            //           child: Icon(MdiIcons.folder),
+            //         );
+            //       }
+            //     }
+            //     return Icon(MdiIcons.folder);
+            //   },
+            // ),
             label: 'Projects',
           ),
           NavigationDestination(
-            icon: Badge(
-              backgroundColor: Theme.of(context).colorScheme.primary,
-              label: const Text('2'),
-              child: Icon(MdiIcons.chatOutline),
-            ),
+            icon: Icon(MdiIcons.chatOutline),
             selectedIcon: Icon(MdiIcons.chat),
             label: 'Messages',
           ),
           NavigationDestination(
-            icon: Badge(
-              label: const Text('1'),
-              backgroundColor: Theme.of(context).colorScheme.primary,
-              child: Icon(MdiIcons.cash),
-            ),
+            icon: Icon(MdiIcons.cash),
             selectedIcon: Icon(MdiIcons.cash),
             label: 'Payments',
           ),

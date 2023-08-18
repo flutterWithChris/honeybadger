@@ -1,6 +1,10 @@
+import 'package:OutsourcedX/profile/bloc/profile_bloc.dart';
 import 'package:OutsourcedX/profile/model/portfolio_project.dart';
+import 'package:OutsourcedX/profile/model/user.dart';
+import 'package:OutsourcedX/profile/portfolio/dialogs/edit_profile_dialog.dart';
 import 'package:OutsourcedX/profile/portfolio/dialogs/view_profile_dialog.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
 class PortfolioCard extends StatelessWidget {
   final PortfolioProject project;
@@ -17,9 +21,16 @@ class PortfolioCard extends StatelessWidget {
             showDialog(
               context: context,
               builder: (context) {
-                return ViewPortfolioProjectDialog(
-                  project: project,
-                );
+                if (context.watch<ProfileBloc>().state.user!.userType ==
+                    UserType.client) {
+                  return ViewPortfolioProjectDialog(
+                    project: project,
+                  );
+                } else {
+                  return EditPortfolioProjectDialog(
+                    project: project,
+                  );
+                }
               },
             );
           },

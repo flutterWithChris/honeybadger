@@ -1,3 +1,4 @@
+import 'package:OutsourcedX/profile/model/user.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -5,7 +6,7 @@ import 'package:flutter_gutter/flutter_gutter.dart';
 import 'package:OutsourcedX/core/presentation/system/main_navigation_bar.dart';
 import 'package:OutsourcedX/core/presentation/system/mobile_sliver_app_bar.dart';
 import 'package:OutsourcedX/profile/bloc/profile_bloc.dart';
-import 'package:OutsourcedX/profile/model/user.dart';
+import 'package:jiffy/jiffy.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 
 class MobileClientProfilePage extends StatelessWidget {
@@ -13,20 +14,6 @@ class MobileClientProfilePage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final User user = User(
-        firstName: 'Christian',
-        lastName: 'Vergara',
-        title: 'Mobile App Developer',
-        city: 'Brooklyn',
-        country: 'United States',
-        state: 'New York',
-        hourlyRate: 50,
-        rating: 4.7,
-        bio:
-            'I am a mobile app developer with 5 years of experience in developing mobile applications for both Android and iOS. I have worked with clients from all over the world and have developed a wide range of mobile apps. I have worked with clients from all over the world and have developed a wide range of mobile apps.',
-        photoUrl:
-            'https://www.upwork.com/profile-portraits/c1rFySS3sCUYKZbae39D0j1ENTk1Q68MI2fCkWY56buZZ9_EEH1NIOdj02eZ25D2co');
-
     return Scaffold(
       bottomNavigationBar: const MainBottomNavBar(),
       body: CustomScrollView(
@@ -68,11 +55,11 @@ class MobileClientProfilePage extends StatelessWidget {
                       padding: const EdgeInsets.fromLTRB(16.0, 16.0, 16.0, 0.0),
                       child: Row(
                         children: [
-                          const CircleAvatar(
+                          CircleAvatar(
                               radius: 40,
                               foregroundImage: CachedNetworkImageProvider(
-                                  'https://www.upwork.com/profile-portraits/c1rFySS3sCUYKZbae39D0j1ENTk1Q68MI2fCkWY56buZZ9_EEH1NIOdj02eZ25D2co'),
-                              child: Icon(Icons.person, size: 40)),
+                                  state.user.photoUrl!),
+                              child: const Icon(Icons.person, size: 40)),
                           const Gutter(),
                           Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
@@ -98,19 +85,22 @@ class MobileClientProfilePage extends StatelessWidget {
                                   ),
                                   const Gutter(),
                                   Row(
+                                    mainAxisSize: MainAxisSize.min,
                                     children: [
                                       Icon(
                                         MdiIcons.mapMarker,
-                                        size: 14.0,
+                                        size: 12.0,
                                         color:
                                             Theme.of(context).iconTheme.color,
                                       ),
                                       const GutterTiny(),
                                       Text(
-                                        '${state.user.state}',
+                                        state.user.address!
+                                            .split(',')[2]
+                                            .split(RegExp(r'\d+'))[0],
                                         style: Theme.of(context)
                                             .textTheme
-                                            .bodySmall
+                                            .bodyMedium
                                             ?.copyWith(),
                                       ),
                                     ],
@@ -124,28 +114,28 @@ class MobileClientProfilePage extends StatelessWidget {
                     ),
 
                     // Communication Preferences
-                    Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 16.0),
-                      child: Row(
-                        children: [
-                          Text(
-                            'Communication Preferences',
-                            style: Theme.of(context).textTheme.titleLarge,
-                          ),
-                          const Spacer(),
-                          TextButton(
-                            onPressed: () {},
-                            child: Text(
-                              'Edit',
-                              style: Theme.of(context)
-                                  .textTheme
-                                  .bodyMedium
-                                  ?.copyWith(color: Colors.blue),
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
+                    // Padding(
+                    //   padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                    //   child: Row(
+                    //     children: [
+                    //       Text(
+                    //         'Communication Preferences',
+                    //         style: Theme.of(context).textTheme.titleLarge,
+                    //       ),
+                    //       const Spacer(),
+                    //       TextButton(
+                    //         onPressed: () {},
+                    //         child: Text(
+                    //           'Edit',
+                    //           style: Theme.of(context)
+                    //               .textTheme
+                    //               .bodyMedium
+                    //               ?.copyWith(color: Colors.blue),
+                    //         ),
+                    //       ),
+                    //     ],
+                    //   ),
+                    // ),
 
                     const Gutter(),
                     Padding(
@@ -159,7 +149,7 @@ class MobileClientProfilePage extends StatelessWidget {
                     Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 16.0),
                       child: Text(
-                        'I am a mobile app developer with 5 years of experience in developing mobile applications for both Android and iOS. I have worked with clients from all over the world and have developed a wide range of mobile apps. I have worked with clients from all over the world and have developed a wide range of mobile apps.',
+                        state.user.bio ?? 'No bio set',
                         style: Theme.of(context).textTheme.bodyMedium,
                       ),
                     ),
@@ -171,125 +161,12 @@ class MobileClientProfilePage extends StatelessWidget {
                         style: Theme.of(context).textTheme.titleLarge,
                       ),
                     ),
-                    user.reviews != null && user.reviews!.isNotEmpty
-                        ? ListView(
-                            shrinkWrap: true,
-                            physics: const NeverScrollableScrollPhysics(),
-                            children: user.reviews!.map((review) {
-                              return Padding(
-                                padding: const EdgeInsets.symmetric(
-                                    horizontal: 16.0, vertical: 8.0),
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Row(
-                                      children: [
-                                        // TODO: Make this the author image
-                                        CircleAvatar(
-                                          radius: 20,
-                                          foregroundImage:
-                                              CachedNetworkImageProvider(
-                                                  review.authorId!),
-                                        ),
-                                        const Gutter(),
-                                        Column(
-                                          crossAxisAlignment:
-                                              CrossAxisAlignment.start,
-                                          children: [
-                                            // TODO: Make this the author name
-                                            Text(
-                                              review.authorId!,
-                                              style: Theme.of(context)
-                                                  .textTheme
-                                                  .bodyMedium
-                                                  ?.copyWith(
-                                                      fontWeight:
-                                                          FontWeight.bold),
-                                            ),
-                                            Text(
-                                              review.createdAt!,
-                                              style: Theme.of(context)
-                                                  .textTheme
-                                                  .bodySmall,
-                                            ),
-                                          ],
-                                        ),
-                                      ],
-                                    ),
-                                    const Gutter(),
-                                    Text(
-                                      review.review!,
-                                      style: Theme.of(context)
-                                          .textTheme
-                                          .bodyMedium,
-                                    ),
-                                    const Gutter(),
-                                    Row(
-                                      children: [
-                                        Text(
-                                          'Job: ',
-                                          style: Theme.of(context)
-                                              .textTheme
-                                              .bodyMedium
-                                              ?.copyWith(
-                                                  fontWeight: FontWeight.bold),
-                                        ),
-                                        // TODO: Make this the job title
-                                        Text(
-                                          review.authorId!,
-                                          style: Theme.of(context)
-                                              .textTheme
-                                              .bodyMedium,
-                                        ),
-                                      ],
-                                    ),
-                                    const Gutter(),
-                                    Row(
-                                      children: [
-                                        Text(
-                                          'Rating: ',
-                                          style: Theme.of(context)
-                                              .textTheme
-                                              .bodyMedium
-                                              ?.copyWith(
-                                                  fontWeight: FontWeight.bold),
-                                        ),
-                                        Text(
-                                          review.rating.toString(),
-                                          style: Theme.of(context)
-                                              .textTheme
-                                              .bodyMedium,
-                                        ),
-                                      ],
-                                    ),
-                                    const Divider(),
-                                  ],
-                                ),
-                              );
-                            }).toList(),
+                    state.user.reviews != null && state.user.reviews!.isNotEmpty
+                        ? ReviewList(
+                            user: state.user,
                           )
                         : // show empty state
-                        Padding(
-                            padding: const EdgeInsets.symmetric(
-                                horizontal: 16.0, vertical: 8.0),
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text(
-                                  'No Reviews Yet',
-                                  style: Theme.of(context)
-                                      .textTheme
-                                      .bodyMedium
-                                      ?.copyWith(fontWeight: FontWeight.bold),
-                                ),
-                                const Gutter(),
-                                Text(
-                                  'This user has no reviews yet.',
-                                  style: Theme.of(context).textTheme.bodyMedium,
-                                ),
-                              ],
-                            ),
-                          ),
+                        const EmptyReviewsWidget(),
                     const Gutter(),
                     // if (user.skills != null && user.skills!.isNotEmpty)
                     //   Padding(
@@ -324,6 +201,157 @@ class MobileClientProfilePage extends StatelessWidget {
           )
         ],
       ),
+    );
+  }
+}
+
+class EmptyReviewsWidget extends StatelessWidget {
+  const EmptyReviewsWidget({
+    super.key,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            'No Reviews Yet',
+            style: Theme.of(context)
+                .textTheme
+                .bodyMedium
+                ?.copyWith(fontWeight: FontWeight.bold),
+          ),
+          const Gutter(),
+          Text(
+            'This user has no reviews yet.',
+            style: Theme.of(context).textTheme.bodyMedium,
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class ReviewList extends StatelessWidget {
+  final User user;
+  const ReviewList({
+    required this.user,
+    super.key,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return ListView(
+      shrinkWrap: true,
+      padding: EdgeInsets.zero,
+      physics: const NeverScrollableScrollPhysics(),
+      children: user.reviews!.map((review) {
+        return Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              /// Show star rating
+              Row(
+                children: [
+                  Row(
+                    children: List.generate(
+                      review.rating!,
+                      (index) => const Icon(
+                        Icons.star,
+                        color: Colors.amber,
+                        size: 16.0,
+                      ),
+                    ),
+                  ),
+                  const GutterSmall(),
+                  Text(
+                    '${review.rating}.0',
+                    style: Theme.of(context)
+                        .textTheme
+                        .bodyMedium
+                        ?.copyWith(fontWeight: FontWeight.bold),
+                  ),
+                ],
+              ),
+              const GutterSmall(),
+              Row(
+                children: [
+                  Text(
+                    'Job: ',
+                    style: Theme.of(context)
+                        .textTheme
+                        .bodyMedium
+                        ?.copyWith(fontWeight: FontWeight.bold),
+                  ),
+                  // TODO: Make this the job title
+                  Text(
+                    review.projectTitle!,
+                    style: Theme.of(context).textTheme.bodyMedium,
+                  ),
+                ],
+              ),
+              const GutterSmall(),
+              Text(
+                '"${review.review!}"',
+                style: Theme.of(context).textTheme.bodyMedium,
+              ),
+              const Gutter(),
+              Row(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Row(
+                    children: [
+                      // TODO: Make this the author image
+                      CircleAvatar(
+                        radius: 24,
+                        foregroundImage:
+                            CachedNetworkImageProvider(review.authorPhoto!),
+                      ),
+                      const Gutter(),
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          // TODO: Make this the author name
+                          Text(
+                            review.authorName!,
+                            style: Theme.of(context)
+                                .textTheme
+                                .titleMedium
+                                ?.copyWith(fontWeight: FontWeight.bold),
+                          ),
+                          Text(
+                            review.authorTitle!,
+                            style: Theme.of(context).textTheme.bodySmall,
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.end,
+                    children: [
+                      Text(
+                        Jiffy.parseFromDateTime(
+                                DateTime.parse(review.createdAt ?? ''))
+                            .fromNow(),
+                        style: Theme.of(context).textTheme.bodySmall,
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+              const Gutter(),
+
+              const Divider(),
+            ],
+          ),
+        );
+      }).toList(),
     );
   }
 }

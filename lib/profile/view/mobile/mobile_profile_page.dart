@@ -477,29 +477,35 @@ class _EditNameAndTitleDialogState extends State<EditNameAndTitleDialog> {
               decoration: const InputDecoration(label: Text('Title')),
             ),
             const Gutter(),
-            Row(
+            Column(
               mainAxisAlignment: MainAxisAlignment.end,
               children: [
+                Row(
+                  children: [
+                    Expanded(
+                      child: ElevatedButton(
+                          onPressed: () {
+                            context.read<ProfileBloc>().add(UpdateProfile(
+                                user: context
+                                    .read<ProfileBloc>()
+                                    .state
+                                    .user!
+                                    .copyWith(
+                                        firstName:
+                                            firstNameController.value.text,
+                                        lastName: lastNameController.value.text,
+                                        title: titleController.value.text)));
+                            Navigator.of(context).pop();
+                          },
+                          child: const Text('Save')),
+                    ),
+                  ],
+                ),
                 TextButton(
                     onPressed: () {
                       Navigator.of(context).pop();
                     },
                     child: const Text('Cancel')),
-                const Gutter(),
-                ElevatedButton(
-                    onPressed: () {
-                      context.read<ProfileBloc>().add(UpdateProfile(
-                          user: context
-                              .read<ProfileBloc>()
-                              .state
-                              .user!
-                              .copyWith(
-                                  firstName: firstNameController.value.text,
-                                  lastName: lastNameController.value.text,
-                                  title: titleController.value.text)));
-                      Navigator.of(context).pop();
-                    },
-                    child: const Text('Save')),
               ],
             )
           ],
@@ -540,30 +546,36 @@ class _EditBioDialogState extends State<EditBioDialog> {
               controller: bioController,
               // initialValue: context.read<ProfileBloc>().state.user?.bio,
               textCapitalization: TextCapitalization.sentences,
-              maxLines: 5,
+              minLines: 5,
+              maxLines: 12,
               decoration: const InputDecoration(label: Text('Bio')),
             ),
             const Gutter(),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.end,
+            Column(
+              mainAxisSize: MainAxisSize.min,
               children: [
+                Row(
+                  children: [
+                    Expanded(
+                      child: ElevatedButton(
+                          onPressed: () {
+                            context.read<ProfileBloc>().add(UpdateProfile(
+                                user: context
+                                    .read<ProfileBloc>()
+                                    .state
+                                    .user!
+                                    .copyWith(bio: bioController.value.text)));
+                            Navigator.of(context).pop();
+                          },
+                          child: const Text('Save')),
+                    ),
+                  ],
+                ),
                 TextButton(
                     onPressed: () {
                       Navigator.of(context).pop();
                     },
                     child: const Text('Cancel')),
-                const Gutter(),
-                ElevatedButton(
-                    onPressed: () {
-                      context.read<ProfileBloc>().add(UpdateProfile(
-                          user: context
-                              .read<ProfileBloc>()
-                              .state
-                              .user!
-                              .copyWith(bio: bioController.value.text)));
-                      Navigator.of(context).pop();
-                    },
-                    child: const Text('Save')),
               ],
             )
           ],
@@ -700,7 +712,8 @@ class _AddSkillsDialogState extends State<AddSkillsDialog> {
                         }
                       },
                       focusNode: focusNode,
-                      decoration: const InputDecoration(label: Text('Skills')),
+                      decoration:
+                          const InputDecoration(label: Text('Search Skills')),
                       onFieldSubmitted: (String value) {
                         onFieldSubmitted();
                       },
@@ -731,32 +744,36 @@ class _AddSkillsDialogState extends State<AddSkillsDialog> {
                   )
                 : const SizedBox(),
             const Gutter(),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.end,
+            Column(
               children: [
+                Row(
+                  children: [
+                    Expanded(
+                      child: ElevatedButton(
+                          onPressed: () {
+                            List<Skill>? currentSkills =
+                                context.read<ProfileBloc>().state.user?.skills;
+                            context.read<ProfileBloc>().add(UpdateProfile(
+                                user: context
+                                    .read<ProfileBloc>()
+                                    .state
+                                    .user!
+                                    .copyWith(
+                                        skills: currentSkills != null &&
+                                                currentSkills.isNotEmpty
+                                            ? currentSkills + selectedSkills
+                                            : selectedSkills)));
+                            Navigator.of(context).pop();
+                          },
+                          child: const Text('Save')),
+                    ),
+                  ],
+                ),
                 TextButton(
                     onPressed: () {
                       Navigator.of(context).pop();
                     },
                     child: const Text('Cancel')),
-                const Gutter(),
-                ElevatedButton(
-                    onPressed: () {
-                      List<Skill>? currentSkills =
-                          context.read<ProfileBloc>().state.user?.skills;
-                      context.read<ProfileBloc>().add(UpdateProfile(
-                          user: context
-                              .read<ProfileBloc>()
-                              .state
-                              .user!
-                              .copyWith(
-                                  skills: currentSkills != null &&
-                                          currentSkills.isNotEmpty
-                                      ? currentSkills + selectedSkills
-                                      : selectedSkills)));
-                      Navigator.of(context).pop();
-                    },
-                    child: const Text('Save')),
               ],
             )
           ],

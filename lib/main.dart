@@ -1,5 +1,7 @@
 import 'dart:async';
 
+import 'package:OutsourcedX/login/view/cubit/login_cubit.dart';
+import 'package:OutsourcedX/profile/public/bloc/bloc/freelancer_public_profile_bloc.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flex_color_scheme/flex_color_scheme.dart';
@@ -151,6 +153,11 @@ class _MyAppState extends State<MyApp> {
             ),
           ),
           BlocProvider(
+            create: (context) => LoginCubit(
+              authRepository: context.read<AuthRepository>(),
+            ),
+          ),
+          BlocProvider(
               create: (context) =>
                   SignupCubit(authRepository: context.read<AuthRepository>())),
           BlocProvider<OnboardingBloc>(
@@ -220,6 +227,10 @@ class _MyAppState extends State<MyApp> {
             create: (context) => PayoutBloc(
               paymentsRepository: context.read<PaymentsRepository>(),
             ),
+          ),
+          BlocProvider(
+            create: (context) => FreelancerPublicProfileBloc(
+                userRepository: context.read<UserRepository>()),
           )
         ],
         child: Listener(

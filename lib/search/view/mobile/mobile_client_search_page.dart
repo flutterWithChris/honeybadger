@@ -1,4 +1,5 @@
 import 'package:OutsourcedX/core/presentation/drawers/main_drawer.dart';
+import 'package:OutsourcedX/profile/public/bloc/bloc/freelancer_public_profile_bloc.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -463,13 +464,11 @@ class FreelancerCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return InkWell(
         onTap: () {
-          // Navigator.of(context).push(
-          //   MaterialPageRoute(
-          //     builder: (context) => FreelancerProfilePage(
-          //       freelancer: freelancer,
-          //     ),
-          //   ),
-          // );
+          context
+              .read<FreelancerPublicProfileBloc>()
+              .add(LoadFreelancerPublicProfile(freelancer.id!));
+          context.push('/search/freelancer-profile/${freelancer.id}',
+              extra: freelancer.id);
         },
         child: Padding(
             padding: const EdgeInsets.fromLTRB(8.0, 0.0, 8.0, 0.0),
