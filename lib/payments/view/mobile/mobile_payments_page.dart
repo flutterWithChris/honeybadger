@@ -1,3 +1,4 @@
+import 'package:OutsourcedX/core/presentation/drawers/main_drawer.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_gutter/flutter_gutter.dart';
@@ -77,6 +78,7 @@ class _MobilePaymentsPageState extends State<MobilePaymentsPage>
   Widget build(BuildContext context) {
     return Scaffold(
         bottomNavigationBar: const MainBottomNavBar(),
+        drawer: const MainDrawer(),
         body: RefreshIndicator(
           // header: const ClassicHeader(
           //   mainAxisAlignment: MainAxisAlignment.end,
@@ -93,7 +95,9 @@ class _MobilePaymentsPageState extends State<MobilePaymentsPage>
           },
           child: CustomScrollView(
             slivers: [
-              MobileSliverAppBar(),
+              MobileSliverAppBar(
+                iconOnly: true,
+              ),
               BlocBuilder<PaymentsBloc, PaymentsState>(
                 builder: (context, state) {
                   if (state.stripeAccountStatus ==

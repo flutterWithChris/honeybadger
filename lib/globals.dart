@@ -3,6 +3,7 @@ import 'dart:math';
 
 import 'package:flutter/material.dart';
 import 'package:OutsourcedX/payments/model/balance_transaction.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:stream_chat_flutter/stream_chat_flutter.dart';
 import 'package:jose/jose.dart';
 
@@ -84,4 +85,18 @@ String formatBytes(int bytes, int decimals) {
   const suffixes = ['B', 'KB', 'MB', 'GB', 'TB'];
   var i = (log(bytes) / log(1024)).floor();
   return '${(bytes / pow(1024, i)).toStringAsFixed(decimals)} ${suffixes[i]}';
+}
+
+class OutsourcedFullText extends StatelessWidget {
+  const OutsourcedFullText({
+    super.key,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Text(
+      'OutsourcedX',
+      style: GoogleFonts.gloock(),
+    );
+  }
 }

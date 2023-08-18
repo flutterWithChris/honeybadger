@@ -1,3 +1,4 @@
+import 'package:OutsourcedX/core/presentation/drawers/main_drawer.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_gutter/flutter_gutter.dart';
@@ -19,6 +20,7 @@ class ProjectsPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      drawer: const MainDrawer(),
       bottomNavigationBar: const MainBottomNavBar(),
       body: LayoutBuilder(builder: (context, constraints) {
         //   if (constraints.maxWidth > desktopWidthConstraint) {
@@ -202,59 +204,61 @@ class ActiveProjectsTab extends StatelessWidget {
         itemBuilder: (context, index) {
           final project = projects[index];
           int unreadProposalCount = project.unreadProposalCount ?? 0;
-          return Card(
-            child: Padding(
-              padding: const EdgeInsets.symmetric(
-                vertical: 8.0,
-              ),
-              child: ListTile(
-                  visualDensity: VisualDensity.comfortable,
-                  title: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Row(
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        mainAxisAlignment: MainAxisAlignment.start,
-                        children: [
-                          if (unreadProposalCount != 0)
-                            Padding(
-                              padding: const EdgeInsets.only(
-                                  right: 8.0, bottom: 2.0),
-                              child: Badge.count(
-                                padding:
-                                    const EdgeInsets.symmetric(horizontal: 8.0),
-                                backgroundColor:
-                                    Theme.of(context).indicatorColor,
-                                count: unreadProposalCount,
-                                alignment: Alignment.topCenter,
-                                offset: const Offset(0, 1),
-                              ),
-                            ),
-                          Text(
-                            project.title!,
-                            // style: Theme.of(context).textTheme.titleMedium,
-                            maxLines: 2,
-                            overflow: TextOverflow.ellipsis,
-                          ),
-                        ],
-                      ),
-                    ],
-                  ),
-                  subtitle: Padding(
-                    padding: const EdgeInsets.only(top: 2.0),
-                    child: Text(project.description!),
-                  ),
-                  onTap: () {
-                    context.read<ProposalBloc>().add(LoadProposal(project.id!,
-                        context.read<ProfileBloc>().state.user!.id!));
-                    context.push('/project/${project.id}', extra: project);
-                  }),
-            ),
-          );
+          if (context.read<ProfileBloc>().state.user!.userType ==
+              UserType.freelancer) {
+            return ProjectCard(project: project);
+          } else {
+            return ClientProjectCard(
+                unreadProposalCount: unreadProposalCount, project: project);
+          }
         },
         separatorBuilder: (context, index) => const GutterSmall(),
       );
     }
+  }
+}
+
+class ProjectCard extends StatelessWidget {
+  const ProjectCard({
+    super.key,
+    required this.project,
+  });
+
+  final Project project;
+
+  @override
+  Widget build(BuildContext context) {
+    return Card(
+      child: Padding(
+        padding: const EdgeInsets.symmetric(
+          vertical: 8.0,
+        ),
+        child: ListTile(
+            visualDensity: VisualDensity.comfortable,
+            title: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Text(
+                  project.title!,
+                  style: Theme.of(context).textTheme.titleMedium,
+                  maxLines: 2,
+                  overflow: TextOverflow.ellipsis,
+                  textAlign: TextAlign.start,
+                ),
+              ],
+            ),
+            subtitle: Padding(
+              padding: const EdgeInsets.only(top: 2.0),
+              child: Text(project.description!),
+            ),
+            onTap: () {
+              context.read<ProposalBloc>().add(LoadProposal(
+                  project.id!, context.read<ProfileBloc>().state.user!.id!));
+              context.push('/project/${project.id}', extra: project);
+            }),
+      ),
+    );
   }
 }
 
@@ -298,55 +302,13 @@ class OpenProjectsTab extends StatelessWidget {
         itemBuilder: (context, index) {
           final project = projects[index];
           int unreadProposalCount = project.unreadProposalCount ?? 0;
-          return Card(
-            child: Padding(
-              padding: const EdgeInsets.symmetric(
-                vertical: 8.0,
-              ),
-              child: ListTile(
-                  visualDensity: VisualDensity.comfortable,
-                  title: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Row(
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        mainAxisAlignment: MainAxisAlignment.start,
-                        children: [
-                          if (unreadProposalCount != 0)
-                            Padding(
-                              padding: const EdgeInsets.only(
-                                  right: 8.0, bottom: 2.0),
-                              child: Badge.count(
-                                padding:
-                                    const EdgeInsets.symmetric(horizontal: 8.0),
-                                backgroundColor:
-                                    Theme.of(context).indicatorColor,
-                                count: unreadProposalCount,
-                                alignment: Alignment.topCenter,
-                                offset: const Offset(0, 1),
-                              ),
-                            ),
-                          Text(
-                            project.title!,
-                            // style: Theme.of(context).textTheme.titleMedium,
-                            maxLines: 2,
-                            overflow: TextOverflow.ellipsis,
-                          ),
-                        ],
-                      ),
-                    ],
-                  ),
-                  subtitle: Padding(
-                    padding: const EdgeInsets.only(top: 2.0),
-                    child: Text(project.description!),
-                  ),
-                  onTap: () {
-                    context.read<ProposalBloc>().add(LoadProposals(
-                        project, context.read<ProfileBloc>().state.user!.id!));
-                    context.push('/project/${project.id}', extra: project);
-                  }),
-            ),
-          );
+          if (context.read<ProfileBloc>().state.user!.userType ==
+              UserType.freelancer) {
+            return ProjectCard(project: project);
+          } else {
+            return ClientProjectCard(
+                unreadProposalCount: unreadProposalCount, project: project);
+          }
         },
         separatorBuilder: (context, index) => const GutterSmall(),
       );
@@ -394,59 +356,78 @@ class AppliedProjectsTab extends StatelessWidget {
         itemBuilder: (context, index) {
           final project = projects[index];
           int unreadProposalCount = project.unreadProposalCount ?? 0;
-          return Card(
-            child: Padding(
-              padding: const EdgeInsets.symmetric(
-                vertical: 8.0,
-              ),
-              child: ListTile(
-                  visualDensity: VisualDensity.comfortable,
-                  title: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Row(
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        mainAxisAlignment: MainAxisAlignment.start,
-                        children: [
-                          if (unreadProposalCount != 0)
-                            Padding(
-                              padding: const EdgeInsets.only(
-                                  right: 8.0, bottom: 2.0),
-                              child: Badge.count(
-                                padding:
-                                    const EdgeInsets.symmetric(horizontal: 8.0),
-                                backgroundColor:
-                                    Theme.of(context).indicatorColor,
-                                count: unreadProposalCount,
-                                alignment: Alignment.topCenter,
-                                offset: const Offset(0, 1),
-                              ),
-                            ),
-                          Text(
-                            project.title!,
-                            // style: Theme.of(context).textTheme.titleMedium,
-                            maxLines: 2,
-                            overflow: TextOverflow.ellipsis,
-                          ),
-                        ],
-                      ),
-                    ],
-                  ),
-                  subtitle: Padding(
-                    padding: const EdgeInsets.only(top: 2.0),
-                    child: Text(project.description!),
-                  ),
-                  onTap: () {
-                    context.read<ProposalBloc>().add(LoadProposals(
-                        project, context.read<ProfileBloc>().state.user!.id!));
-                    context.push('/project/${project.id}', extra: project);
-                  }),
-            ),
-          );
+          if (context.read<ProfileBloc>().state.user!.userType ==
+              UserType.freelancer) {
+            return ProjectCard(project: project);
+          } else {
+            return ClientProjectCard(
+                unreadProposalCount: unreadProposalCount, project: project);
+          }
         },
         separatorBuilder: (context, index) => const GutterSmall(),
       );
     }
+  }
+}
+
+class ClientProjectCard extends StatelessWidget {
+  const ClientProjectCard({
+    super.key,
+    required this.unreadProposalCount,
+    required this.project,
+  });
+
+  final int unreadProposalCount;
+  final Project project;
+
+  @override
+  Widget build(BuildContext context) {
+    return Card(
+      child: Padding(
+        padding: const EdgeInsets.symmetric(
+          vertical: 8.0,
+        ),
+        child: ListTile(
+            visualDensity: VisualDensity.comfortable,
+            title: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Row(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  children: [
+                    if (unreadProposalCount != 0)
+                      Padding(
+                        padding: const EdgeInsets.only(right: 8.0, bottom: 2.0),
+                        child: Badge.count(
+                          padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                          backgroundColor: Theme.of(context).indicatorColor,
+                          count: unreadProposalCount,
+                          alignment: Alignment.topCenter,
+                          offset: const Offset(0, 1),
+                        ),
+                      ),
+                    Text(
+                      project.title!,
+                      style: Theme.of(context).textTheme.titleMedium,
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                  ],
+                ),
+              ],
+            ),
+            subtitle: Padding(
+              padding: const EdgeInsets.only(top: 2.0),
+              child: Text(project.description!),
+            ),
+            onTap: () {
+              context.read<ProposalBloc>().add(LoadProposals(
+                  project, context.read<ProfileBloc>().state.user!.id!));
+              context.push('/project/${project.id}', extra: project);
+            }),
+      ),
+    );
   }
 }
 
@@ -490,55 +471,13 @@ class CompletedProjectsTab extends StatelessWidget {
         itemBuilder: (context, index) {
           final project = projects[index];
           int unreadProposalCount = project.unreadProposalCount ?? 0;
-          return Card(
-            child: Padding(
-              padding: const EdgeInsets.symmetric(
-                vertical: 8.0,
-              ),
-              child: ListTile(
-                  visualDensity: VisualDensity.comfortable,
-                  title: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Row(
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        mainAxisAlignment: MainAxisAlignment.start,
-                        children: [
-                          if (unreadProposalCount != 0)
-                            Padding(
-                              padding: const EdgeInsets.only(
-                                  right: 8.0, bottom: 2.0),
-                              child: Badge.count(
-                                padding:
-                                    const EdgeInsets.symmetric(horizontal: 8.0),
-                                backgroundColor:
-                                    Theme.of(context).indicatorColor,
-                                count: unreadProposalCount,
-                                alignment: Alignment.topCenter,
-                                offset: const Offset(0, 1),
-                              ),
-                            ),
-                          Text(
-                            project.title!,
-                            // style: Theme.of(context).textTheme.titleMedium,
-                            maxLines: 2,
-                            overflow: TextOverflow.ellipsis,
-                          ),
-                        ],
-                      ),
-                    ],
-                  ),
-                  subtitle: Padding(
-                    padding: const EdgeInsets.only(top: 2.0),
-                    child: Text(project.description!),
-                  ),
-                  onTap: () {
-                    context.read<ProposalBloc>().add(LoadProposals(
-                        project, context.read<ProfileBloc>().state.user!.id!));
-                    context.push('/project/${project.id}', extra: project);
-                  }),
-            ),
-          );
+          if (context.read<ProfileBloc>().state.user!.userType ==
+              UserType.freelancer) {
+            return ProjectCard(project: project);
+          } else {
+            return ClientProjectCard(
+                unreadProposalCount: unreadProposalCount, project: project);
+          }
         },
         separatorBuilder: (context, index) => const GutterSmall(),
       );

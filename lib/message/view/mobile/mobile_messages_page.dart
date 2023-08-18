@@ -1,6 +1,4 @@
-import 'dart:io';
-
-import 'package:flutter/cupertino.dart';
+import 'package:OutsourcedX/core/presentation/drawers/main_drawer.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_gutter/flutter_gutter.dart';
@@ -45,6 +43,7 @@ class _MobileMessagesPageState extends State<MobileMessagesPage> {
     return StreamChatTheme(
       data: StreamChatThemeData.fromTheme(Theme.of(context)),
       child: Scaffold(
+        drawer: const MainDrawer(),
         body: DefaultTabController(
           length: 2,
           child: CustomScrollView(
@@ -53,28 +52,26 @@ class _MobileMessagesPageState extends State<MobileMessagesPage> {
               SliverToBoxAdapter(
                 child: Padding(
                   padding: const EdgeInsets.all(16.0),
-                  child: Platform.isAndroid
-                      ? const CupertinoSearchTextField()
-                      : applySearchBarTheme(
-                          SearchBar(
-                              hintText: 'Search Messages..',
-                              hintStyle: MaterialStatePropertyAll(TextStyle(
-                                  color: Theme.of(context)
-                                      .iconTheme
-                                      .color!
-                                      .withOpacity(0.8))),
-                              trailing: [
-                                IconButton(
-                                    onPressed: () {},
-                                    icon: Icon(Icons.search_rounded,
-                                        color:
-                                            Theme.of(context).iconTheme.color)),
-                              ]),
-                          context),
+                  child: applySearchBarTheme(
+                      SearchBar(
+                          hintText: 'Search Messages..',
+                          hintStyle: MaterialStatePropertyAll(TextStyle(
+                              color: Theme.of(context)
+                                  .iconTheme
+                                  .color!
+                                  .withOpacity(0.8))),
+                          trailing: [
+                            IconButton(
+                                onPressed: () {},
+                                icon: Icon(Icons.search_rounded,
+                                    color: Theme.of(context).iconTheme.color)),
+                          ]),
+                      context),
                 ),
               ),
               BlocBuilder<MessagesBloc, MessagesState>(
                 builder: (context, state) {
+                  print('Messages State: $state');
                   if (state is MessagesError) {
                     return SliverFillRemaining(
                         child: Center(

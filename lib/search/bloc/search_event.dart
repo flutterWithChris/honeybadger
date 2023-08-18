@@ -17,6 +17,8 @@ class LoadSearch extends SearchEvent {
   List<Object?> get props => [user, query];
 }
 
+class ReloadSearch extends SearchEvent {}
+
 class SearchProjects extends SearchEvent {
   final String query;
 

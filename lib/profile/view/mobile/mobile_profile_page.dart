@@ -12,6 +12,7 @@ import 'package:OutsourcedX/core/presentation/system/mobile_sliver_app_bar.dart'
 import 'package:OutsourcedX/profile/bloc/profile_bloc.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 
+import '../../../core/presentation/drawers/main_drawer.dart';
 import '../../model/skill.dart';
 
 class MobileProfilePage extends StatelessWidget {
@@ -20,10 +21,13 @@ class MobileProfilePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      drawer: const MainDrawer(),
       bottomNavigationBar: const MainBottomNavBar(),
       body: CustomScrollView(
         slivers: [
-          MobileSliverAppBar(),
+          MobileSliverAppBar(
+            iconOnly: true,
+          ),
           BlocBuilder<ProfileBloc, ProfileState>(
             builder: (context, state) {
               if (state is ProfileError) {
@@ -89,8 +93,6 @@ class MobileProfilePage extends StatelessWidget {
                                     Row(
                                       mainAxisSize: MainAxisSize.min,
                                       children: [
-                                        // const Text('-'),
-                                        // const GutterSmall(),
                                         Icon(
                                           MdiIcons.mapMarker,
                                           size: 12.0,
@@ -335,7 +337,7 @@ class MobileProfilePage extends StatelessWidget {
                         },
                       ),
                     ),
-                    const Gutter(),
+                    const GutterSmall(),
                     Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 16.0),
                       child: Row(
@@ -356,7 +358,6 @@ class MobileProfilePage extends StatelessWidget {
                         ],
                       ),
                     ),
-                    const GutterSmall(),
                     Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 16.0),
                       child: Text(

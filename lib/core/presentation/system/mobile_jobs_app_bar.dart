@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
 
 class MobileJobsSliverAppBar extends StatelessWidget {
   const MobileJobsSliverAppBar({super.key});
@@ -14,19 +13,15 @@ class MobileJobsSliverAppBar extends StatelessWidget {
         // leading: const CircleAvatar(
         //   child: Icon(Icons.person),
         // ),
-        title: Text(
-          'OutsourcedX',
-          style: GoogleFonts.gloock(),
-        ),
-        actions: [
-          Padding(
-            padding: const EdgeInsets.only(right: 12.0),
-            child: IconButton(
-              icon: const Icon(Icons.menu),
-              onPressed: () {},
-            ),
-          ),
-        ],
+        title: Theme.of(context).brightness == Brightness.light
+            ? Image.asset(
+                'assets/logos/OutsourcedX_black_logo.png',
+                height: 40,
+              )
+            : Image.asset(
+                'assets/logos/OutsourcedX_White.png',
+                height: 40,
+              ),
         bottom: const TabBar(
           tabs: [
             Tab(

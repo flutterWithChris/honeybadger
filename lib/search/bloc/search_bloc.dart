@@ -37,7 +37,10 @@ class SearchBloc extends Bloc<SearchEvent, SearchState> {
         add(LoadSearch(profileState.user));
       }
     });
-
+    on<ReloadSearch>((event, emit) {
+      emit(SearchLoading());
+      _searchRepository.reload('projects');
+    });
     on<LoadSearch>((event, emit) async {
       print('State query: $_query');
       try {

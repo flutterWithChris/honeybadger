@@ -1,4 +1,6 @@
+import 'package:OutsourcedX/message/bloc/messages_bloc.dart';
 import 'package:OutsourcedX/onboarding/bloc/onboarding_bloc.dart';
+import 'package:OutsourcedX/settings/view/settings_page.dart';
 import 'package:animations/animations.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
@@ -136,8 +138,14 @@ GoRouter goRouter = GoRouter(
     GoRoute(
         path: '/messages',
         name: 'messages',
-        builder: (context, state) => StreamChat(
-            client: StreamChat.of(context).client, child: const MessagesPage()),
+        builder: (context, state) {
+          if (context.read<MessagesBloc>().state is MessagesInitial) {
+            context.read<MessagesBloc>().add(LoadMessages());
+          }
+          return StreamChat(
+              client: StreamChat.of(context).client,
+              child: const MessagesPage());
+        },
         routes: [
           GoRoute(
             path: 'channel/:id',
@@ -192,6 +200,11 @@ GoRouter goRouter = GoRouter(
       path: '/create-project',
       name: 'create-project',
       builder: (context, state) => const CreateProjectPage(),
+    ),
+    GoRoute(
+      path: '/settings',
+      name: 'settings',
+      builder: (context, state) => const SettingsPage(),
     )
   ],
 );

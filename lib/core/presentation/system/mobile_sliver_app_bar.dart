@@ -1,9 +1,10 @@
+import 'package:OutsourcedX/globals.dart';
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
 
 class MobileSliverAppBar extends StatelessWidget {
   bool? noActions;
-  MobileSliverAppBar({this.noActions, super.key});
+  bool? iconOnly;
+  MobileSliverAppBar({this.noActions, this.iconOnly, super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -15,36 +16,17 @@ class MobileSliverAppBar extends StatelessWidget {
       // leading: const CircleAvatar(
       //   child: Icon(Icons.person),
       // ),
-      title: Wrap(
-        alignment: WrapAlignment.center,
-        spacing: 8.0,
-        crossAxisAlignment: WrapCrossAlignment.center,
-        children: [
-          // Image.asset(
-          //   'assets/honeybee_logo.png',
-          //   color: Theme.of(context).brightness == Brightness.light
-          //       ? const Color(0xFF1E2223)
-          //       : Colors.white,
-          //   height: 18,
-          // ),
-
-          Text(
-            'OutsourcedX',
-            style: GoogleFonts.gloock(),
-          ),
-        ],
-      ),
-      actions: noActions == true
-          ? null
-          : [
-              Padding(
-                padding: const EdgeInsets.only(right: 12.0),
-                child: IconButton(
-                  icon: const Icon(Icons.menu),
-                  onPressed: () {},
-                ),
-              ),
-            ],
+      title: iconOnly == true
+          ? Theme.of(context).brightness == Brightness.light
+              ? Image.asset(
+                  'assets/logos/OutsourcedX_black_logo.png',
+                  height: 40,
+                )
+              : Image.asset(
+                  'assets/logos/OutsourcedX_White.png',
+                  height: 40,
+                )
+          : const OutsourcedFullText(),
     );
   }
 }
