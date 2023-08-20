@@ -49,8 +49,12 @@ class _SignupPageState extends State<SignupPage> {
                       id: state.user!.uid,
                       userType: context.read<OnboardingBloc>().userType,
                       email: state.user!.email,
-                      firstName: state.user!.displayName?.split(' ')[0],
-                      lastName: state.user!.displayName?.split(' ')[1],
+                      firstName: state.user!.displayName != null
+                          ? state.user!.displayName?.split(' ')[0]
+                          : null,
+                      lastName: state.user!.displayName != null
+                          ? state.user!.displayName?.split(' ')[1]
+                          : null,
                       photoUrl: state.user!.photoURL,
                       createdAt: DateTime.now(),
                     )));
