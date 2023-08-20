@@ -70,7 +70,6 @@ dependencies:
   sign_in_with_apple: ^5.0.0
   github: ^9.16.0
   email_validator: ^2.1.17
-  phone_number: ^2.0.1
   flutter_typeahead: ^4.6.2
   http: ^1.1.0
   uni_links: ^0.5.1
@@ -86,6 +85,7 @@ dependencies:
   tuple: ^2.0.2
   settings_ui: ^2.0.2
   flutter_email_sender: ^6.0.1
+  phone_number: ^2.0.0
 
 
 dev_dependencies:
