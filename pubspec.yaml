@@ -85,7 +85,6 @@ dependencies:
   tuple: ^2.0.2
   settings_ui: ^2.0.2
   flutter_email_sender: ^6.0.1
-  phone_number: ^2.0.0
 
 
 dev_dependencies:
