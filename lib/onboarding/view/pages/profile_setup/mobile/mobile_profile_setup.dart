@@ -9,7 +9,6 @@ import 'package:OutsourcedX/onboarding/view/pages/profile_setup/bloc/bloc/catego
 import 'package:OutsourcedX/search/repository/search_repository.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:mapbox_search/mapbox_search.dart';
-import 'package:phone_number/phone_number.dart';
 
 import '../../../../../profile/model/category.dart';
 import '../../../../../profile/model/user.dart';
@@ -30,8 +29,6 @@ class _MobileProfileSetupState extends State<MobileProfileSetup> {
   final TextEditingController firstNameController = TextEditingController();
   final TextEditingController lastNameController = TextEditingController();
   final TextEditingController emailController = TextEditingController();
-  final PhoneNumberEditingController phoneNumberController =
-      PhoneNumberEditingController(PhoneNumberUtil(), regionCode: 'US');
   final TextEditingController titleController = TextEditingController();
   final TextEditingController hourlyRateController = TextEditingController();
   final TextEditingController addressController = TextEditingController();
@@ -58,7 +55,6 @@ class _MobileProfileSetupState extends State<MobileProfileSetup> {
     firstNameController.text = user.firstName ?? '';
     lastNameController.text = user.lastName ?? '';
     emailController.text = user.email ?? '';
-    phoneNumberController.text = user.phoneNumber ?? '';
     titleController.text = user.title ?? '';
     hourlyRateController.text = user.hourlyRate?.toString() ?? '';
     addressController.text = user.address ?? '';
@@ -600,7 +596,6 @@ class _MobileProfileSetupState extends State<MobileProfileSetup> {
                           firstName: firstNameController.value.text.trim(),
                           lastName: lastNameController.value.text.trim(),
                           email: emailController.value.text.trim(),
-                          phoneNumber: phoneNumberController.value.text.trim(),
                           title: titleController.value.text.trim(),
                           hourlyRate:
                               int.parse(hourlyRateController.value.text.trim()),
