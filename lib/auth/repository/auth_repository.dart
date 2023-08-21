@@ -137,35 +137,13 @@ class AuthRepository extends BaseAuthRepository {
 
   Future<auth.User?> signInWithApple() async {
     try {
-      // 1. perform the sign-in request
-      final result = await SignInWithApple.getAppleIDCredential(
-        scopes: [
-          AppleIDAuthorizationScopes.email,
-          AppleIDAuthorizationScopes.fullName,
-        ],
-      );
+      final appleProvider = auth.AppleAuthProvider();
+      final credential = await _firebaseAuth.signInWithProvider(appleProvider);
 
-      // 2. check the result
+      final firebaseUser = credential.user!;
 
-      final appleIdCredential = result;
-      final oAuthProvider = auth.OAuthProvider('apple.com');
-      final credential = oAuthProvider.credential(
-        idToken: appleIdCredential.identityToken.toString(),
-        accessToken: appleIdCredential.authorizationCode,
-      );
-      scaffoldKey.currentState?.showSnackBar(SnackBar(
-        content: Text('IdToken: ${appleIdCredential.identityToken}, '
-            'AuthorizationCode: ${appleIdCredential.authorizationCode}'),
-      ));
-      final userCredential =
-          await _firebaseAuth.signInWithCredential(credential);
-      final firebaseUser = userCredential.user!;
-
-      if (appleIdCredential.givenName != null &&
-          appleIdCredential.familyName != null) {
-        final displayName =
-            '${appleIdCredential.givenName} ${appleIdCredential.familyName}';
-        await firebaseUser.updateDisplayName(displayName);
+      if (credential.user!.displayName != null) {
+        await firebaseUser.updateDisplayName(firebaseUser.displayName!);
       }
 
       return firebaseUser;
