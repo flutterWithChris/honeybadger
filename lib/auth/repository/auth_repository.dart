@@ -150,8 +150,8 @@ class AuthRepository extends BaseAuthRepository {
       final appleIdCredential = result;
       final oAuthProvider = auth.OAuthProvider('apple.com');
       final credential = oAuthProvider.credential(
-        idToken: appleIdCredential.identityToken!,
-        accessToken: appleIdCredential.authorizationCode,
+        idToken: appleIdCredential.identityToken,
+        //    accessToken: appleIdCredential.authorizationCode,
       );
       final userCredential =
           await _firebaseAuth.signInWithCredential(credential);
