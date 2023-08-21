@@ -112,7 +112,7 @@ class _SignupPageState extends State<SignupPage> {
                           const Gutter(),
                           Column(
                             children: [
-                              Platform.isAndroid
+                              Platform.isIOS
                                   ? Row(
                                       children: [
                                         Expanded(
