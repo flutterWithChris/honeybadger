@@ -127,7 +127,7 @@ class _SignupPageState extends State<SignupPage> {
                                                   .signupWithApple();
                                             },
                                             label: const Text(
-                                                'Continue with Apple'),
+                                                'Sign In with Apple'),
                                             icon: const Icon(
                                                 FontAwesomeIcons.apple,
                                                 size: 20.0),
@@ -145,7 +145,7 @@ class _SignupPageState extends State<SignupPage> {
                                                   .signupWithGoogle();
                                             },
                                             label: const Text(
-                                                'Continue with Google'),
+                                                'Sign In with Google'),
                                             icon: const Icon(
                                                 FontAwesomeIcons.google,
                                                 size: 20.0),
@@ -153,29 +153,34 @@ class _SignupPageState extends State<SignupPage> {
                                         ),
                                       ],
                                     ),
-                              const GutterSmall(),
-                              Row(
-                                children: [
-                                  Expanded(
-                                    child: FilledButton.tonalIcon(
-                                      style: FilledButton.styleFrom(
-                                          backgroundColor: FlexColor.flutterDash
-                                              .dark.secondaryContainer),
-                                      onPressed: () {
-                                        context
-                                            .read<SignupCubit>()
-                                            .signupWithGithub();
-                                      },
-                                      label: const Text(
-                                        'Continue with Github',
-                                        style: TextStyle(color: Colors.white),
+                              if (Platform.isIOS == false) const GutterSmall(),
+                              if (Platform.isIOS == false)
+                                Row(
+                                  children: [
+                                    Expanded(
+                                      child: FilledButton.tonalIcon(
+                                        style: FilledButton.styleFrom(
+                                            backgroundColor: FlexColor
+                                                .flutterDash
+                                                .dark
+                                                .secondaryContainer),
+                                        onPressed: () {
+                                          context
+                                              .read<SignupCubit>()
+                                              .signupWithGithub();
+                                        },
+                                        label: const Text(
+                                          'Continue with Github',
+                                          style: TextStyle(color: Colors.white),
+                                        ),
+                                        icon: const Icon(
+                                            FontAwesomeIcons.github,
+                                            color: Colors.white,
+                                            size: 20.0),
                                       ),
-                                      icon: const Icon(FontAwesomeIcons.github,
-                                          color: Colors.white, size: 20.0),
                                     ),
-                                  ),
-                                ],
-                              ),
+                                  ],
+                                ),
                             ],
                           ),
                           // const GutterSmall(),
