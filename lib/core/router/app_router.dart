@@ -59,9 +59,9 @@ GoRouter goRouter = GoRouter(
         } else {
           return '/onboarding';
         }
+      } else {
+        return '/login';
       }
-
-      return '/login';
     }
 
     if (onboarded) {

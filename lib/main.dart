@@ -58,7 +58,7 @@ void main() async {
   SharedPreferences prefs = await SharedPreferences.getInstance();
   // prefs.setBool('onboarded', true);
   // await prefs.clear();
-
+  prefs.setString('userType', 'freelancer');
   FirebaseUIAuth.configureProviders([
     AppleProvider(),
   ]);

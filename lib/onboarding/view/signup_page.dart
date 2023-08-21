@@ -170,7 +170,7 @@ class _SignupPageState extends State<SignupPage> {
                                               .signupWithGithub();
                                         },
                                         label: const Text(
-                                          'Continue with Github',
+                                          'Sign In with Github',
                                           style: TextStyle(color: Colors.white),
                                         ),
                                         icon: const Icon(

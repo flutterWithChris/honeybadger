@@ -55,7 +55,7 @@ class _MainBottomNavBarState extends State<MainBottomNavBar> {
             icon: BlocBuilder<ProjectsBloc, ProjectsState>(
               builder: (context, state) {
                 if (state is ProjectsLoaded &&
-                    context.read<ProfileBloc>().state.user!.userType ==
+                    context.watch<ProfileBloc>().state.user!.userType ==
                         UserType.client) {
                   int unreadProposalCount = state.projects
                       .where((element) => element.unreadProposalCount! > 0)

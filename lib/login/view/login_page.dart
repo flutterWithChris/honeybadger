@@ -8,6 +8,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_gutter/flutter_gutter.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:go_router/go_router.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class LoginPage extends StatelessWidget {
   const LoginPage({super.key});
@@ -39,7 +40,7 @@ class LoginPage extends StatelessWidget {
             children: [
               const SizedBox(
                   height: 60, child: FittedBox(child: OutsourcedFullText())),
-              const Gutter(),
+              const GutterSmall(),
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 16.0),
                 child: Column(
@@ -56,7 +57,7 @@ class LoginPage extends StatelessWidget {
                                   onPressed: () {
                                     context.read<LoginCubit>().loginWithApple();
                                   },
-                                  label: const Text('Continue with Apple'),
+                                  label: const Text('Login with Apple'),
                                   icon: const Icon(FontAwesomeIcons.apple,
                                       size: 20.0),
                                 ),
@@ -72,34 +73,44 @@ class LoginPage extends StatelessWidget {
                                         .read<LoginCubit>()
                                         .loginWithGoogle();
                                   },
-                                  label: const Text('Continue with Google'),
+                                  label: const Text('Login with Google'),
                                   icon: const Icon(FontAwesomeIcons.google,
                                       size: 20.0),
                                 ),
                               ),
                             ],
                           ),
-                    const GutterSmall(),
-                    Row(
-                      children: [
-                        Expanded(
-                          child: FilledButton.tonalIcon(
-                            style: FilledButton.styleFrom(
-                                backgroundColor: FlexColor
-                                    .flutterDash.dark.secondaryContainer),
-                            onPressed: () {
-                              context.read<LoginCubit>().loginWithGithub();
-                            },
-                            label: const Text(
-                              'Continue with Github',
-                              style: TextStyle(color: Colors.white),
+                    if (Platform.isIOS == false) const GutterSmall(),
+                    if (Platform.isIOS == false)
+                      Row(
+                        children: [
+                          Expanded(
+                            child: FilledButton.tonalIcon(
+                              style: FilledButton.styleFrom(
+                                  backgroundColor: FlexColor
+                                      .flutterDash.dark.secondaryContainer),
+                              onPressed: () {
+                                context.read<LoginCubit>().loginWithGithub();
+                              },
+                              label: const Text(
+                                'Login with Github',
+                                style: TextStyle(color: Colors.white),
+                              ),
+                              icon: const Icon(FontAwesomeIcons.github,
+                                  color: Colors.white, size: 20.0),
                             ),
-                            icon: const Icon(FontAwesomeIcons.github,
-                                color: Colors.white, size: 20.0),
                           ),
-                        ),
-                      ],
-                    ),
+                        ],
+                      ),
+                    const GutterTiny(),
+                    TextButton(
+                        onPressed: () async {
+                          SharedPreferences prefs =
+                              await SharedPreferences.getInstance();
+                          prefs.setBool('onboarded', false);
+                          prefs.setBool('paymentSetupComplete', false);
+                        },
+                        child: const Text('New? Sign up.')),
                   ],
                 ),
               ),

@@ -64,5 +64,16 @@
   		<string>tel</string>
 		<string>https</string>
 	</array>
+	<key>CFBundleURLTypes</key>
+	<array>
+    	<dict>
+       	 <key>CFBundleURLName</key>
+        	<string></string>
+        	<key>CFBundleURLSchemes</key>
+        	<array>
+            	<string>app-1-799995890184-ios-2d48f0d558bd1f0c451fbd</string>
+        	</array>
+    	</dict>
+	</array>
 </dict>
 </plist>

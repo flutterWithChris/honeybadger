@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_gutter/flutter_gutter.dart';
+import 'package:go_router/go_router.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../../../../profile/model/user.dart';
 import '../../../../bloc/onboarding_bloc.dart';
@@ -141,6 +143,16 @@ class _MobileWelcomePageState extends State<MobileWelcomePage> {
                   ],
                 ),
               ),
+              const GutterSmall(),
+              TextButton(
+                  onPressed: () async {
+                    context.go('/login');
+                    SharedPreferences prefs =
+                        await SharedPreferences.getInstance();
+                    prefs.setBool('onboarded', true);
+                    prefs.setBool('paymentSetupComplete', true);
+                  },
+                  child: const Text('Already have an account? Sign in.')),
               // Flexible(
               //   child: Row(
               //     mainAxisAlignment: MainAxisAlignment.center,
