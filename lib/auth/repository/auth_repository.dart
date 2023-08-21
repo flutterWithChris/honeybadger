@@ -165,7 +165,7 @@ class AuthRepository extends BaseAuthRepository {
       }
 
       return firebaseUser;
-    } on SignInWithAppleException catch (e) {
+    } catch (e) {
       final SnackBar snackBar = SnackBar(
         content: Text('Error: ${e.toString()}'),
         backgroundColor: Colors.redAccent,
