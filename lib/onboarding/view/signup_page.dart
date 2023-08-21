@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:firebase_ui_oauth_apple/firebase_ui_oauth_apple.dart';
 import 'package:flex_color_scheme/flex_color_scheme.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -10,6 +11,7 @@ import 'package:OutsourcedX/core/constants.dart';
 import 'package:OutsourcedX/onboarding/bloc/onboarding_bloc.dart';
 import 'package:OutsourcedX/profile/model/user.dart';
 import 'package:go_router/go_router.dart';
+import 'package:loading_animation_widget/loading_animation_widget.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class SignupPage extends StatefulWidget {
@@ -112,29 +114,36 @@ class _SignupPageState extends State<SignupPage> {
                           const Gutter(),
                           Column(
                             children: [
-                              Platform.isIOS
-                                  ? Row(
-                                      children: [
-                                        Expanded(
-                                          child: FilledButton.tonalIcon(
-                                            style: ElevatedButton.styleFrom(
-                                              foregroundColor: Colors.white,
-                                              backgroundColor: Colors.black87,
-                                            ),
-                                            onPressed: () {
-                                              context
-                                                  .read<SignupCubit>()
-                                                  .signupWithApple();
-                                            },
-                                            label: const Text(
-                                                'Continue with Apple'),
-                                            icon: const Icon(
-                                                FontAwesomeIcons.apple,
-                                                size: 20.0),
-                                          ),
-                                        ),
-                                      ],
-                                    )
+                              Platform.isAndroid
+                                  ? AppleSignInButton(
+                                      loadingIndicator: LoadingAnimationWidget
+                                          .staggeredDotsWave(
+                                              color: Theme.of(context)
+                                                  .iconTheme
+                                                  .color!,
+                                              size: 20.0))
+                                  // Row(
+                                  //     children: [
+                                  //       Expanded(
+                                  //         child: FilledButton.tonalIcon(
+                                  //           style: ElevatedButton.styleFrom(
+                                  //             foregroundColor: Colors.white,
+                                  //             backgroundColor: Colors.black87,
+                                  //           ),
+                                  //           onPressed: () {
+                                  //             context
+                                  //                 .read<SignupCubit>()
+                                  //                 .signupWithApple();
+                                  //           },
+                                  //           label: const Text(
+                                  //               'Continue with Apple'),
+                                  //           icon: const Icon(
+                                  //               FontAwesomeIcons.apple,
+                                  //               size: 20.0),
+                                  //         ),
+                                  //       ),
+                                  //     ],
+                                  //   )
                                   : Row(
                                       children: [
                                         Expanded(

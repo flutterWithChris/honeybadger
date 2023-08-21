@@ -44,7 +44,7 @@ dependencies:
   equatable: ^2.0.5
   material_design_icons_flutter: ^7.0.7296
   shared_preferences: ^2.2.0
-  intl: ^0.18.1
+  intl: any
   cached_network_image: ^3.2.3
   jiffy: ^6.2.1
   animations: ^2.0.7
@@ -84,6 +84,8 @@ dependencies:
   tuple: ^2.0.2
   settings_ui: ^2.0.2
   flutter_email_sender: ^6.0.1
+  firebase_ui_auth: ^1.6.4
+  firebase_ui_oauth_apple: ^1.2.8
 
 
 dev_dependencies:

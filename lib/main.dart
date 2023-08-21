@@ -5,6 +5,8 @@ import 'package:OutsourcedX/profile/public/bloc/bloc/freelancer_public_profile_b
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_crashlytics/firebase_crashlytics.dart';
+import 'package:firebase_ui_auth/firebase_ui_auth.dart';
+import 'package:firebase_ui_oauth_apple/firebase_ui_oauth_apple.dart';
 import 'package:flex_color_scheme/flex_color_scheme.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -56,6 +58,10 @@ void main() async {
   SharedPreferences prefs = await SharedPreferences.getInstance();
   // prefs.setBool('onboarded', true);
   // await prefs.clear();
+
+  FirebaseUIAuth.configureProviders([
+    AppleProvider(),
+  ]);
 
   FlutterError.onError = FirebaseCrashlytics.instance.recordFlutterError;
 

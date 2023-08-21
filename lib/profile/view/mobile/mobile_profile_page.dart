@@ -1,6 +1,7 @@
 import 'package:OutsourcedX/onboarding/view/pages/profile_setup/bloc/skills/bloc/skill_search_bloc.dart';
 import 'package:OutsourcedX/profile/portfolio/bloc/portfolio_bloc.dart';
 import 'package:OutsourcedX/profile/portfolio/widgets/portfolio_card.dart';
+import 'package:OutsourcedX/profile/view/mobile/mobile_client_profile_page.dart';
 import 'package:OutsourcedX/profile/view/widgets/add_project_dialog.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
@@ -85,10 +86,15 @@ class MobileProfilePage extends StatelessWidget {
                                   crossAxisAlignment: WrapCrossAlignment.center,
                                   spacing: 8.0,
                                   children: [
-                                    Text(
-                                      state.user.title ?? 'No title set',
-                                      style:
-                                          Theme.of(context).textTheme.bodyLarge,
+                                    Chip(
+                                      visualDensity: VisualDensity.compact,
+                                      padding: EdgeInsets.zero,
+                                      label: Text(
+                                        state.user.title ?? 'No title set',
+                                        style: Theme.of(context)
+                                            .textTheme
+                                            .bodySmall,
+                                      ),
                                     ),
                                     Row(
                                       mainAxisSize: MainAxisSize.min,
@@ -410,6 +416,18 @@ class MobileProfilePage extends StatelessWidget {
                         ),
                       ),
                     const Gutter(),
+                    Padding(
+                      padding: const EdgeInsets.only(left: 16.0),
+                      child: Text('Reviews',
+                          style: Theme.of(context).textTheme.titleLarge),
+                    ),
+                    state.user.reviews != null && state.user.reviews!.isNotEmpty
+                        ? ReviewList(
+                            user: state.user,
+                          )
+                        : // show empty state
+                        const EmptyReviewsWidget(),
+                    const Gutter(),
                   ]),
                 );
               }
@@ -483,7 +501,7 @@ class _EditNameAndTitleDialogState extends State<EditNameAndTitleDialog> {
                 Row(
                   children: [
                     Expanded(
-                      child: ElevatedButton(
+                      child: FilledButton(
                           onPressed: () {
                             context.read<ProfileBloc>().add(UpdateProfile(
                                 user: context
@@ -557,7 +575,7 @@ class _EditBioDialogState extends State<EditBioDialog> {
                 Row(
                   children: [
                     Expanded(
-                      child: ElevatedButton(
+                      child: FilledButton(
                           onPressed: () {
                             context.read<ProfileBloc>().add(UpdateProfile(
                                 user: context
@@ -749,7 +767,7 @@ class _AddSkillsDialogState extends State<AddSkillsDialog> {
                 Row(
                   children: [
                     Expanded(
-                      child: ElevatedButton(
+                      child: FilledButton(
                           onPressed: () {
                             List<Skill>? currentSkills =
                                 context.read<ProfileBloc>().state.user?.skills;
@@ -794,8 +812,8 @@ class FreelancerActionButtons extends StatelessWidget {
       mainAxisAlignment: MainAxisAlignment.start,
       children: [
         Flexible(
-          child: ElevatedButton(
-              style: ElevatedButton.styleFrom(
+          child: FilledButton(
+              style: FilledButton.styleFrom(
                   padding: EdgeInsets.zero, shape: const CircleBorder()),
               onPressed: () {},
               child: Icon(

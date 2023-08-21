@@ -32,7 +32,7 @@ class OnboardingBloc extends Bloc<OnboardingEvent, OnboardingState> {
         } else {
           print('User does not exist');
           //  TODO: ***Reenable this***
-          await _userRepository.createUser(event.user);
+          // await _userRepository.createUser(event.user);
 
           await prefs.setString(
               'userType', event.user.userType.toString().split('.').last);
