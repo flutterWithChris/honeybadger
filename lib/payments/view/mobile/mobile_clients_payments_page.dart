@@ -153,9 +153,7 @@ class _MobileClientPaymentsPageState extends State<MobileClientPaymentsPage>
                     ),
                   );
                 }
-                if (paymentsState is PaymentsLoaded &&
-                    paymentsState.stripeAccountStatus ==
-                        StripeAccountStatus.complete) {
+                if (paymentsState is PaymentsLoaded) {
                   if (paymentsState.charges == null ||
                       paymentsState.charges!.isEmpty) {
                     return SliverFillRemaining(

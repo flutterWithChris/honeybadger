@@ -44,7 +44,7 @@ class ProfileBloc extends Bloc<ProfileEvent, ProfileState> {
     emit(ProfileLoading());
     try {
       await emit.forEach(
-        _userRepository.getUserAsStream(
+        await _userRepository.getUserAsStream(
             User(id: _authBloc.state.user!.uid, userType: userType)),
         onData: (data) {
           //   _paymentsBloc.add(LoadPayments(user: data));

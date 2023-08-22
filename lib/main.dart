@@ -52,13 +52,13 @@ void main() async {
 
 // Clear firebase cache
   await FirebaseFirestore.instance.clearPersistence();
-  //await FirebaseAuth.instance.signOut();
+  // await FirebaseAuth.instance.signOut();
 
 // Clear  Shared Preferences
   SharedPreferences prefs = await SharedPreferences.getInstance();
   // prefs.setBool('onboarded', true);
-  // await prefs.clear();
-  prefs.setString('userType', 'freelancer');
+  //await prefs.clear();
+  //prefs.setString('userType', 'client');
   FirebaseUIAuth.configureProviders([
     AppleProvider(),
   ]);

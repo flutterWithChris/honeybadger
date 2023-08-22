@@ -7,13 +7,16 @@ import 'package:OutsourcedX/core/constants.dart';
 import 'package:OutsourcedX/profile/model/user.dart';
 import 'package:OutsourcedX/profile/repository/base_user_repository.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class UserRepository extends BaseUserRepository {
   final FirebaseFirestore _firebaseFirestore = FirebaseFirestore.instance;
   final FirebaseStorage _firebaseStorage = FirebaseStorage.instance;
-  String getUserPath(User user) {
-    print('Getting User for User Type: ${user.userType}');
-    if (user.userType == UserType.freelancer) {
+  Future<String> getUserPath() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    String userType = prefs.getString('userType') ?? 'freelancer';
+    print('User Type: $userType');
+    if (userType == 'freelancer') {
       return 'freelancers';
     } else {
       return 'clients';
@@ -21,17 +24,17 @@ class UserRepository extends BaseUserRepository {
   }
 
   @override
-  Future<void> createUser(User user) {
-    return _firebaseFirestore
-        .collection(getUserPath(user))
+  Future<void> createUser(User user) async {
+    return await _firebaseFirestore
+        .collection(await getUserPath())
         .doc(user.id)
         .set(user.toDocument());
   }
 
   @override
-  Future<void> deleteUser(User user) {
-    return _firebaseFirestore
-        .collection(getUserPath(user))
+  Future<void> deleteUser(User user) async {
+    return await _firebaseFirestore
+        .collection(await getUserPath())
         .doc(user.id)
         .delete();
   }
@@ -39,8 +42,8 @@ class UserRepository extends BaseUserRepository {
   @override
   Future<User?> getUser(User user) async {
     try {
-      return _firebaseFirestore
-          .collection(getUserPath(user))
+      return await _firebaseFirestore
+          .collection(await getUserPath())
           .doc(user.id)
           .get()
           .then((doc) => doc.exists ? User.fromDocument(doc) : null);
@@ -60,7 +63,7 @@ class UserRepository extends BaseUserRepository {
   @override
   Future<User?> getFreelancerFromId(String userId) async {
     try {
-      return _firebaseFirestore
+      return await _firebaseFirestore
           .collection('freelancers')
           .doc(userId)
           .get()
@@ -80,13 +83,16 @@ class UserRepository extends BaseUserRepository {
 
   /// Get user as a stream
   @override
-  Stream<User> getUserAsStream(User user) {
+  Future<Stream<User>> getUserAsStream(User user) async {
     try {
       return _firebaseFirestore
-          .collection(getUserPath(user))
+          .collection(await getUserPath())
           .doc(user.id)
           .snapshots()
-          .map((doc) => User.fromDocument(doc));
+          .map((doc) {
+        print('Stream User: ${User.fromDocument(doc)}}');
+        return User.fromDocument(doc);
+      });
     } catch (e) {
       print(e);
       scaffoldKey.currentState!.showSnackBar(const SnackBar(
@@ -101,10 +107,10 @@ class UserRepository extends BaseUserRepository {
   }
 
   @override
-  Future<void> updateUser(User user) {
+  Future<void> updateUser(User user) async {
     try {
-      return _firebaseFirestore
-          .collection(getUserPath(user))
+      return await _firebaseFirestore
+          .collection(await getUserPath())
           .doc(user.id)
           .update(user.toDocument());
     } on FirebaseException catch (e) {
@@ -130,7 +136,7 @@ class UserRepository extends BaseUserRepository {
           .ref('profile_pictures/${user.id}')
           .getDownloadURL();
       await _firebaseFirestore
-          .collection(getUserPath(user))
+          .collection(await getUserPath())
           .doc(user.id)
           .update({'photoUrl': downloadUrl});
       return downloadUrl;

@@ -117,7 +117,7 @@ class MobileClientProjectsPage extends StatelessWidget {
             .isNotEmpty ??
         false;
     return DefaultTabController(
-      length: hasActiveProjects ? 3 : 2,
+      length: 3,
       child: CustomScrollView(
         slivers: [
           const ClientProjectsSliverAppBar(),
@@ -135,12 +135,11 @@ class MobileClientProjectsPage extends StatelessWidget {
                 return SliverFillRemaining(
                     child: TabBarView(
                   children: [
-                    if (hasActiveProjects)
-                      ActiveProjectsTab(
-                          projects: state.projects
-                              .where((element) =>
-                                  element.status == ProjectStatus.inProgress)
-                              .toList()),
+                    ActiveProjectsTab(
+                        projects: state.projects
+                            .where((element) =>
+                                element.status == ProjectStatus.inProgress)
+                            .toList()),
                     OpenProjectsTab(
                         projects: state.projects
                             .where((element) =>

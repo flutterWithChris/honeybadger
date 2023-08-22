@@ -493,63 +493,69 @@ class FreelancerCard extends StatelessWidget {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Text(
-                              '${freelancer.firstName} ${freelancer.lastName}',
-                              maxLines: 1,
-                              overflow: TextOverflow.ellipsis,
-                              style: Theme.of(context).textTheme.bodyLarge,
-                            ),
-                            const GutterSmall(),
-                            freelancer.rating != null
-                                ? SizedBox(
-                                    height: 28.0,
-                                    child: FittedBox(
-                                      child: Chip(
-                                        padding: const EdgeInsets.all(4.0),
-                                        visualDensity: VisualDensity.compact,
-                                        label: Text(
-                                          '${freelancer.rating}',
-                                          style: Theme.of(context)
-                                              .textTheme
-                                              .bodyMedium
-                                              ?.copyWith(
-                                                  fontWeight: FontWeight.bold),
-                                        ),
-                                        avatar: Icon(
-                                          Icons.star,
-                                          size: 16.0,
-                                          color: Colors.amber[600],
-                                        ),
-                                      ),
-                                    ),
-                                  )
-                                : SizedBox(
-                                    height: 28.0,
-                                    child: FittedBox(
-                                      child: Chip(
-                                        padding: const EdgeInsets.all(4.0),
-                                        visualDensity: VisualDensity.compact,
-                                        label: Text(
-                                          'New',
-                                          style: Theme.of(context)
-                                              .textTheme
-                                              .bodyMedium
-                                              ?.copyWith(
-                                                  fontWeight: FontWeight.bold),
-                                        ),
-                                        avatar: Icon(
-                                          MdiIcons.shimmer,
-                                          color: Colors.amber[600],
-                                          size: 16.0,
-                                          // color: Colors.amber[600],
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Text(
+                                '${freelancer.firstName} ${freelancer.lastName}',
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                                style: Theme.of(context).textTheme.bodyLarge,
+                              ),
+                              const GutterSmall(),
+                              freelancer.rating != null
+                                  ? SizedBox(
+                                      height: 28.0,
+                                      child: FittedBox(
+                                        child: Chip(
+                                          padding: const EdgeInsets.all(4.0),
+                                          visualDensity: VisualDensity.compact,
+                                          label: Text(
+                                            '${freelancer.rating}',
+                                            style: Theme.of(context)
+                                                .textTheme
+                                                .bodyMedium
+                                                ?.copyWith(
+                                                    fontWeight:
+                                                        FontWeight.bold),
+                                          ),
+                                          avatar: Icon(
+                                            Icons.star,
+                                            size: 16.0,
+                                            color: Colors.amber[600],
+                                          ),
                                         ),
                                       ),
-                                    ),
-                                  )
-                          ],
-                        ),
+                                    )
+                                  : freelancer.createdAt!.isAfter(DateTime.now()
+                                          .subtract(const Duration(days: 30)))
+                                      ? SizedBox(
+                                          height: 28.0,
+                                          child: FittedBox(
+                                            child: Chip(
+                                              padding:
+                                                  const EdgeInsets.all(4.0),
+                                              visualDensity:
+                                                  VisualDensity.compact,
+                                              label: Text(
+                                                'New',
+                                                style: Theme.of(context)
+                                                    .textTheme
+                                                    .bodyMedium
+                                                    ?.copyWith(
+                                                        fontWeight:
+                                                            FontWeight.bold),
+                                              ),
+                                              avatar: Icon(
+                                                MdiIcons.shimmer,
+                                                color: Colors.amber[600],
+                                                size: 16.0,
+                                                // color: Colors.amber[600],
+                                              ),
+                                            ),
+                                          ),
+                                        )
+                                      : const SizedBox(),
+                            ]),
                         Row(
                           children: [
                             Text(

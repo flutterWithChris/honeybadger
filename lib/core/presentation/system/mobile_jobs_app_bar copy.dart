@@ -13,25 +13,15 @@ class ClientProjectsSliverAppBar extends StatelessWidget {
         // leading: const CircleAvatar(
         //   child: Icon(Icons.person),
         // ),
-        title: Padding(
-          padding: const EdgeInsets.only(left: 0.0),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Wrap(
-                alignment: WrapAlignment.center,
-                spacing: 8.0,
-                crossAxisAlignment: WrapCrossAlignment.center,
-                children: [
-                  Icon(Icons.hive_outlined,
-                      size: 30.0, color: Colors.blue[600]),
-                  Text('Honeybadger',
-                      style: Theme.of(context).textTheme.titleLarge),
-                ],
+        title: Theme.of(context).brightness == Brightness.light
+            ? Image.asset(
+                'assets/logos/OutsourcedX_black_logo.png',
+                height: 40,
+              )
+            : Image.asset(
+                'assets/logos/OutsourcedX_White.png',
+                height: 40,
               ),
-            ],
-          ),
-        ),
         actions: [
           Padding(
             padding: const EdgeInsets.only(right: 12.0),

@@ -33,13 +33,13 @@ class _MainBottomNavBarState extends State<MainBottomNavBar> {
             case 1:
               context.go('/projects');
               break;
+            // case 2:
+            //   context.go('/messages');
+            //   break;
             case 2:
-              context.go('/messages');
-              break;
-            case 3:
               context.go('/payments');
               break;
-            case 4:
+            case 3:
               context.go('/profile');
               break;
           }
@@ -91,11 +91,11 @@ class _MainBottomNavBarState extends State<MainBottomNavBar> {
             // ),
             label: 'Projects',
           ),
-          NavigationDestination(
-            icon: Icon(MdiIcons.chatOutline),
-            selectedIcon: Icon(MdiIcons.chat),
-            label: 'Messages',
-          ),
+          // NavigationDestination(
+          //   icon: Icon(MdiIcons.chatOutline),
+          //   selectedIcon: Icon(MdiIcons.chat),
+          //   label: 'Messages',
+          // ),
           NavigationDestination(
             icon: Icon(MdiIcons.cash),
             selectedIcon: Icon(MdiIcons.cash),

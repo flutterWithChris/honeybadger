@@ -80,13 +80,12 @@ class _ClientIndustryPageState extends State<ClientIndustryPage> {
                       if (textEditingValue.text == '') {
                         return const Iterable.empty();
                       }
-                      List<Category> matchingCategories = state.categories
-                              ?.where((category) => category.name!
-                                  .toLowerCase()
-                                  .contains(
-                                      textEditingValue.text.toLowerCase()))
-                              .toList() ??
-                          [];
+                      if (textEditingValue.text != '') {
+                        context.read<CategorySearchBloc>().add(
+                            SearchCategories(query: textEditingValue.text));
+                      }
+                      List<Category> matchingCategories =
+                          state.categories ?? [];
 
                       if (matchingCategories.isEmpty) {
                         newCategory = Category(
@@ -102,6 +101,14 @@ class _ClientIndustryPageState extends State<ClientIndustryPage> {
                         context
                             .read<CategorySearchBloc>()
                             .add(AddCategory(category: category));
+                        // Clear text field
+                        WidgetsBinding.instance.addPostFrameCallback((_) {
+                          final textEditingController =
+                              TextEditingController.fromValue(
+                            TextEditingValue.empty,
+                          );
+                          textEditingController.value = TextEditingValue.empty;
+                        });
                       }
                       WidgetsBinding.instance.addPostFrameCallback((_) {
                         final textEditingController =
@@ -111,6 +118,13 @@ class _ClientIndustryPageState extends State<ClientIndustryPage> {
                         textEditingController.value = TextEditingValue.empty;
                       });
 
+                      if (selectedCategories.length >= 3) {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(
+                                content: Text(
+                                    'You can only select up to 3 categories.')));
+                        return;
+                      }
                       print('Categories: $categories');
                       setState(() {
                         selectedCategories.add(category);
@@ -207,11 +221,9 @@ class _ClientIndustryPageState extends State<ClientIndustryPage> {
                         controller: textEditingController,
                         textCapitalization: TextCapitalization.words,
                         focusNode: focusNode,
-                        scrollPadding: const EdgeInsets.only(bottom: 200),
                         decoration: const InputDecoration(
-                          // label: Text('Categories'),
-                          suffixIcon: Icon(Icons.search),
-                          hintText: 'Search freelancer categories..',
+                          label: Text('Categories'),
+                          hintText: 'Add up to 3 categories..',
                           floatingLabelBehavior: FloatingLabelBehavior.always,
                         ),
                         onFieldSubmitted: (String value) {
@@ -231,8 +243,12 @@ class _ClientIndustryPageState extends State<ClientIndustryPage> {
                       spacing: 8.0,
                       children: selectedCategories
                           .map((category) => Chip(
+                                padding: const EdgeInsets.all(8.0),
                                 visualDensity: VisualDensity.compact,
-                                label: Text(category.name!),
+                                label: Text(
+                                  category.name!,
+                                  style: Theme.of(context).textTheme.bodySmall,
+                                ),
                                 onDeleted: () {
                                   // Remove category from user
                                   var currentUser = context

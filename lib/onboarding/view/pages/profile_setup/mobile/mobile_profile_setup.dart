@@ -98,11 +98,18 @@ class _MobileProfileSetupState extends State<MobileProfileSetup> {
                     children: [
                       CircleAvatar(
                           radius: 34.0,
-                          foregroundImage: CachedNetworkImageProvider(context
-                              .watch<OnboardingBloc>()
-                              .state
-                              .user!
-                              .photoUrl!),
+                          foregroundImage: context
+                                      .watch<OnboardingBloc>()
+                                      .state
+                                      .user!
+                                      .photoUrl !=
+                                  null
+                              ? CachedNetworkImageProvider(context
+                                  .watch<OnboardingBloc>()
+                                  .state
+                                  .user!
+                                  .photoUrl!)
+                              : null,
                           child: const Icon(Icons.person)),
                       Positioned(
                         right: -10,

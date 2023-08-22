@@ -309,4 +309,23 @@ class AuthRepository extends BaseAuthRepository {
       return null;
     }
   }
+
+  // Sign up with email and password
+  Future<auth.User?> signUpWithEmailAndPassword(
+      String email, String password) async {
+    try {
+      final credential = await auth.FirebaseAuth.instance
+          .createUserWithEmailAndPassword(email: email, password: password);
+      final user = credential.user;
+      return user;
+    } on auth.FirebaseAuthException catch (e) {
+      final SnackBar snackBar = SnackBar(
+        content: Text(e.message.toString()),
+        backgroundColor: Colors.redAccent,
+      );
+      scaffoldKey.currentState?.showSnackBar(snackBar);
+
+      return null;
+    }
+  }
 }

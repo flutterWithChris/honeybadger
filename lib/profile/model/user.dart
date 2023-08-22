@@ -235,6 +235,7 @@ class User {
     id = hit['objectID'];
     firstName = hit['firstName'];
     lastName = hit['lastName'];
+    createdAt = DateTime.tryParse(hit['createdAt'] ?? '');
     company = hit['company'];
     rating = hit['rating'];
     ratingCount = hit['ratingCount'];
