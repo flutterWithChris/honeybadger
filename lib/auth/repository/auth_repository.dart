@@ -320,7 +320,7 @@ class AuthRepository extends BaseAuthRepository {
       return user;
     } on auth.FirebaseAuthException catch (e) {
       final SnackBar snackBar = SnackBar(
-        content: Text(e.message.toString()),
+        content: Text('${e.message} ${e.code}'),
         backgroundColor: Colors.redAccent,
       );
       scaffoldKey.currentState?.showSnackBar(snackBar);
