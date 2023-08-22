@@ -109,6 +109,7 @@ class LoginPage extends StatelessWidget {
                               await SharedPreferences.getInstance();
                           prefs.setBool('onboarded', false);
                           prefs.setBool('paymentSetupComplete', false);
+                          context.go('/onboarding');
                         },
                         child: const Text('New? Sign up.')),
                   ],
