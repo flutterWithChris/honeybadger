@@ -149,8 +149,8 @@ class AuthRepository extends BaseAuthRepository {
       final appleIdCredential = result;
       final oAuthProvider = auth.OAuthProvider('apple.com');
       final credential = oAuthProvider.credential(
-        idToken: appleIdCredential.identityToken!,
-        accessToken: appleIdCredential.authorizationCode,
+        idToken: appleIdCredential.identityToken!.toString(),
+        accessToken: appleIdCredential.authorizationCode.toString(),
       );
       scaffoldKey.currentState?.showSnackBar(SnackBar(
         content: Text('IdToken: ${appleIdCredential.identityToken}, '
