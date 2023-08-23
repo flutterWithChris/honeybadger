@@ -109,7 +109,7 @@ class _OnboardingPageState extends State<OnboardingPage> {
                     return PageView(
                       allowImplicitScrolling: true,
                       controller: _pageController,
-                      physics: const NeverScrollableScrollPhysics(),
+                      //  physics: const NeverScrollableScrollPhysics(),
                       children: [
                         WelcomePage(
                           pageController: _pageController,
