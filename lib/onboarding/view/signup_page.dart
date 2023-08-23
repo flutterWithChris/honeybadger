@@ -1,4 +1,5 @@
-import 'package:email_validator/email_validator.dart';
+import 'dart:io';
+
 import 'package:flex_color_scheme/flex_color_scheme.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -7,6 +8,7 @@ import 'package:OutsourcedX/auth/cubit/signup/signup_cubit.dart';
 import 'package:OutsourcedX/core/constants.dart';
 import 'package:OutsourcedX/onboarding/bloc/onboarding_bloc.dart';
 import 'package:OutsourcedX/profile/model/user.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:go_router/go_router.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -22,7 +24,7 @@ class SignupPage extends StatefulWidget {
 
 class _SignupPageState extends State<SignupPage> {
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
-  bool _obscureText = true;
+  final bool _obscureText = true;
   @override
   void initState() {
     // TODO: implement initState
@@ -110,174 +112,162 @@ class _SignupPageState extends State<SignupPage> {
                             style: Theme.of(context).textTheme.headlineLarge,
                           ),
                           const Gutter(),
-                          Form(
-                            key: _formKey,
-                            child: Column(
-                              children: [
-                                TextFormField(
-                                  keyboardType: TextInputType.emailAddress,
-                                  decoration: const InputDecoration(
-                                    labelText: 'Email',
-                                    hintText: 'Enter your email',
-                                    border: OutlineInputBorder(),
-                                  ),
-                                  onChanged: (value) {
-                                    context
-                                        .read<SignupCubit>()
-                                        .emailChanged(value);
-                                  },
-                                  validator: (value) {
-                                    if (value!.isEmpty) {
-                                      return 'Please enter your email';
-                                    } else if (!EmailValidator.validate(
-                                        value)) {
-                                      return 'Please enter a valid email';
-                                    }
-                                    return null;
-                                  },
-                                ),
-                                const Gutter(),
-                                TextFormField(
-                                  obscureText: _obscureText,
-                                  keyboardType: TextInputType.visiblePassword,
-                                  decoration: InputDecoration(
-                                    suffixIcon: IconButton(
-                                        onPressed: () {
-                                          setState(() {
-                                            _obscureText = !_obscureText;
-                                          });
-                                        },
-                                        icon: Icon(
-                                          _obscureText
-                                              ? Icons.visibility
-                                              : Icons.visibility_off_outlined,
-                                        )),
-                                    labelText: 'Password',
-                                    hintText: 'Enter your password',
-                                    border: const OutlineInputBorder(),
-                                  ),
-                                  onChanged: (value) {
-                                    context
-                                        .read<SignupCubit>()
-                                        .passwordChanged(value);
-                                  },
-                                  validator: (value) {
-                                    if (value!.isEmpty) {
-                                      return 'Please enter your password';
-                                    } else if (value.length < 6) {
-                                      return 'Password must be at least 6 characters';
-                                    }
-                                    return null;
-                                  },
-                                ),
-                                const Gutter(),
-                                Row(
-                                  children: [
-                                    Expanded(
-                                      child: FilledButton(
-                                        onPressed: () {
-                                          if (_formKey.currentState!
-                                              .validate()) {
-                                            context
-                                                .read<SignupCubit>()
-                                                .signupWithEmailAndPassword();
-                                          }
-                                        },
-                                        child: const Text('Sign Up'),
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                                // const Gutter(),
-                              ],
-                            ),
-                          ),
-                          // Column(
-                          //   children: [
-                          //     Platform.isIOS
-                          //         ? Row(
-                          //             children: [
-                          //               Expanded(
-                          //                 child: FilledButton.tonalIcon(
-                          //                   style: ElevatedButton.styleFrom(
-                          //                     foregroundColor: Colors.white,
-                          //                     backgroundColor: Colors.black87,
-                          //                   ),
-                          //                   onPressed: () {
-                          //                     context
-                          //                         .read<SignupCubit>()
-                          //                         .signupWithApple();
-                          //                   },
-                          //                   label: const Text(
-                          //                       'Sign In with Apple'),
-                          //                   icon: const Icon(
-                          //                       FontAwesomeIcons.apple,
-                          //                       size: 20.0),
-                          //                 ),
-                          //               ),
-                          //             ],
-                          //           )
-                          //         : Row(
-                          //             children: [
-                          //               Expanded(
-                          //                 child: FilledButton.icon(
-                          //                   onPressed: () {
-                          //                     context
-                          //                         .read<SignupCubit>()
-                          //                         .signupWithGoogle();
-                          //                   },
-                          //                   label: const Text(
-                          //                       'Sign In with Google'),
-                          //                   icon: const Icon(
-                          //                       FontAwesomeIcons.google,
-                          //                       size: 20.0),
-                          //                 ),
-                          //               ),
-                          //             ],
-                          //           ),
-                          //     if (Platform.isIOS == false) const GutterSmall(),
-                          //     if (Platform.isIOS == false)
+                          // Form(
+                          //   key: _formKey,
+                          //   child: Column(
+                          //     children: [
+                          //       TextFormField(
+                          //         keyboardType: TextInputType.emailAddress,
+                          //         decoration: const InputDecoration(
+                          //           labelText: 'Email',
+                          //           hintText: 'Enter your email',
+                          //           border: OutlineInputBorder(),
+                          //         ),
+                          //         onChanged: (value) {
+                          //           context
+                          //               .read<SignupCubit>()
+                          //               .emailChanged(value);
+                          //         },
+                          //         validator: (value) {
+                          //           if (value!.isEmpty) {
+                          //             return 'Please enter your email';
+                          //           } else if (!EmailValidator.validate(
+                          //               value)) {
+                          //             return 'Please enter a valid email';
+                          //           }
+                          //           return null;
+                          //         },
+                          //       ),
+                          //       const Gutter(),
+                          //       TextFormField(
+                          //         obscureText: _obscureText,
+                          //         keyboardType: TextInputType.visiblePassword,
+                          //         decoration: InputDecoration(
+                          //           suffixIcon: IconButton(
+                          //               onPressed: () {
+                          //                 setState(() {
+                          //                   _obscureText = !_obscureText;
+                          //                 });
+                          //               },
+                          //               icon: Icon(
+                          //                 _obscureText
+                          //                     ? Icons.visibility
+                          //                     : Icons.visibility_off_outlined,
+                          //               )),
+                          //           labelText: 'Password',
+                          //           hintText: 'Enter your password',
+                          //           border: const OutlineInputBorder(),
+                          //         ),
+                          //         onChanged: (value) {
+                          //           context
+                          //               .read<SignupCubit>()
+                          //               .passwordChanged(value);
+                          //         },
+                          //         validator: (value) {
+                          //           if (value!.isEmpty) {
+                          //             return 'Please enter your password';
+                          //           } else if (value.length < 6) {
+                          //             return 'Password must be at least 6 characters';
+                          //           }
+                          //           return null;
+                          //         },
+                          //       ),
+                          //       const Gutter(),
                           //       Row(
                           //         children: [
                           //           Expanded(
-                          //             child: FilledButton.tonalIcon(
-                          //               style: FilledButton.styleFrom(
-                          //                   backgroundColor: FlexColor
-                          //                       .flutterDash
-                          //                       .dark
-                          //                       .secondaryContainer),
+                          //             child: FilledButton(
                           //               onPressed: () {
-                          //                 context
-                          //                     .read<SignupCubit>()
-                          //                     .signupWithGithub();
+                          //                 if (_formKey.currentState!
+                          //                     .validate()) {
+                          //                   context
+                          //                       .read<SignupCubit>()
+                          //                       .signupWithEmailAndPassword();
+                          //                 }
                           //               },
-                          //               label: const Text(
-                          //                 'Sign In with Github',
-                          //                 style: TextStyle(color: Colors.white),
-                          //               ),
-                          //               icon: const Icon(
-                          //                   FontAwesomeIcons.github,
-                          //                   color: Colors.white,
-                          //                   size: 20.0),
+                          //               child: const Text('Sign Up'),
                           //             ),
                           //           ),
                           //         ],
                           //       ),
-                          //   ],
+                          //       // const Gutter(),
+                          //     ],
+                          //   ),
                           // ),
-                          // const GutterSmall(),
-                          // ElevatedButton.icon(
-                          //     onPressed: () {
-                          //       context.read<OnboardingBloc>().add(StartOnboarding(
-                          //           User(
-                          //               userType:
-                          //                   onboardingState.user!.userType!)));
-                          //     },
-                          //     icon: const Icon(FontAwesomeIcons.magicWandSparkles,
-                          //         size: 16.0),
-                          //     label: const Text('Send a Magic Link'),
-                          //     style: ElevatedButton.styleFrom(elevation: 0.6)),
-                          // const GutterTiny(),
+                          Column(
+                            children: [
+                              Platform.isIOS
+                                  ? Row(
+                                      children: [
+                                        Expanded(
+                                          child: FilledButton.icon(
+                                            // style: ElevatedButton.styleFrom(
+                                            //   foregroundColor: Colors.white,
+                                            //   backgroundColor: Colors.black87,
+                                            // ),
+                                            onPressed: () {
+                                              context
+                                                  .read<SignupCubit>()
+                                                  .signupWithApple();
+                                            },
+                                            label: const Text(
+                                                'Sign In with Apple'),
+                                            icon: const Icon(
+                                                FontAwesomeIcons.apple,
+                                                size: 20.0),
+                                          ),
+                                        ),
+                                      ],
+                                    )
+                                  : Row(
+                                      children: [
+                                        Expanded(
+                                          child: FilledButton.icon(
+                                            onPressed: () {
+                                              context
+                                                  .read<SignupCubit>()
+                                                  .signupWithGoogle();
+                                            },
+                                            label: const Text(
+                                                'Sign In with Google'),
+                                            icon: const Icon(
+                                                FontAwesomeIcons.google,
+                                                size: 20.0),
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                              if (Platform.isIOS == false) const GutterSmall(),
+                              if (Platform.isIOS == false)
+                                Row(
+                                  children: [
+                                    Expanded(
+                                      child: FilledButton.tonalIcon(
+                                        style: FilledButton.styleFrom(
+                                            backgroundColor: FlexColor
+                                                .flutterDash
+                                                .dark
+                                                .secondaryContainer),
+                                        onPressed: () {
+                                          context
+                                              .read<SignupCubit>()
+                                              .signupWithGithub();
+                                        },
+                                        label: const Text(
+                                          'Sign In with Github',
+                                          style: TextStyle(color: Colors.white),
+                                        ),
+                                        icon: const Icon(
+                                            FontAwesomeIcons.github,
+                                            color: Colors.white,
+                                            size: 20.0),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                            ],
+                          ),
+                          const GutterTiny(),
                           TextButton(
                               onPressed: () async {
                                 context.go('/login');
