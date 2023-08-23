@@ -2,8 +2,6 @@ import 'dart:async';
 
 import 'package:outsourcedx/login/view/cubit/login_cubit.dart';
 import 'package:outsourcedx/profile/public/bloc/bloc/freelancer_public_profile_bloc.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:firebase_ui_auth/firebase_ui_auth.dart';
@@ -52,14 +50,16 @@ void main() async {
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
 
 // Clear firebase cache
-  await FirebaseFirestore.instance.clearPersistence();
-  await FirebaseAuth.instance.signOut();
+  // await FirebaseFirestore.instance.clearPersistence();
+  // await FirebaseAuth.instance.signOut();
 
 // Clear  Shared Preferences
-  SharedPreferences prefs = await SharedPreferences.getInstance();
+  // SharedPreferences prefs = await SharedPreferences.getInstance();
   // prefs.setBool('onboarded', true);
   //await prefs.clear();
-  //prefs.setString('userType', 'client');
+  // await prefs.setString('userType', 'freelancer');
+  // await prefs.setBool('onboarded', true);
+  // await prefs.setBool('paymentSetupComplete', true);
   FirebaseUIAuth.configureProviders([
     AppleProvider(),
   ]);

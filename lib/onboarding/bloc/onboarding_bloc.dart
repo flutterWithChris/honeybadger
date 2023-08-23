@@ -25,10 +25,9 @@ class OnboardingBloc extends Bloc<OnboardingEvent, OnboardingState> {
         if (user != null) {
           print('User exists');
           emit(OnboardingState.loaded(user));
-          if (prefs.getString('userType') == null) {
-            await prefs.setString(
-                'userType', event.user.userType.toString().split('.').last);
-          }
+
+          await prefs.setString(
+              'userType', event.user.userType.toString().split('.').last);
         } else {
           print('User does not exist');
           //  TODO: ***Reenable this***
