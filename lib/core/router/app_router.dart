@@ -48,24 +48,19 @@ GoRouter goRouter = GoRouter(
     // TODO: **IMPORTANT** Change this back
     bool onboarded = prefs.getBool('onboarded') ?? false;
     //bool onboarded = false;
-
-    if (loggedIn == false) {
-      if (onboarded == false) {
-        if (state.matchedLocation.contains('stripe-confirmation')) {
-          return null;
-        }
-        if (isOnboarding) {
-          return null;
-        } else {
-          return '/onboarding';
-        }
+    if (onboarded == false) {
+      if (state.matchedLocation.contains('stripe-confirmation')) {
+        return null;
+      }
+      if (isOnboarding) {
+        return null;
       } else {
-        return '/login';
+        return '/onboarding';
       }
     }
 
-    if (onboarded) {
-      return null;
+    if (loggedIn == false) {
+      return '/login';
     }
 
     return null;

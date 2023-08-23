@@ -7,16 +7,13 @@ import 'package:OutsourcedX/core/constants.dart';
 import 'package:OutsourcedX/profile/model/user.dart';
 import 'package:OutsourcedX/profile/repository/base_user_repository.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 class UserRepository extends BaseUserRepository {
   final FirebaseFirestore _firebaseFirestore = FirebaseFirestore.instance;
   final FirebaseStorage _firebaseStorage = FirebaseStorage.instance;
-  Future<String> getUserPath() async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    String userType = prefs.getString('userType') ?? 'freelancer';
-    print('User Type: $userType');
-    if (userType == 'freelancer') {
+  String getUserPath(User user) {
+    print('Getting User for User Type: ${user.userType}');
+    if (user.userType == 'freelancer') {
       return 'freelancers';
     } else {
       return 'clients';
@@ -26,7 +23,7 @@ class UserRepository extends BaseUserRepository {
   @override
   Future<void> createUser(User user) async {
     return await _firebaseFirestore
-        .collection(await getUserPath())
+        .collection(getUserPath(user))
         .doc(user.id)
         .set(user.toDocument());
   }
@@ -34,7 +31,7 @@ class UserRepository extends BaseUserRepository {
   @override
   Future<void> deleteUser(User user) async {
     return await _firebaseFirestore
-        .collection(await getUserPath())
+        .collection(getUserPath(user))
         .doc(user.id)
         .delete();
   }
@@ -43,7 +40,7 @@ class UserRepository extends BaseUserRepository {
   Future<User?> getUser(User user) async {
     try {
       return await _firebaseFirestore
-          .collection(await getUserPath())
+          .collection(getUserPath(user))
           .doc(user.id)
           .get()
           .then((doc) => doc.exists ? User.fromDocument(doc) : null);
@@ -83,10 +80,10 @@ class UserRepository extends BaseUserRepository {
 
   /// Get user as a stream
   @override
-  Future<Stream<User>> getUserAsStream(User user) async {
+  Stream<User> getUserAsStream(User user) {
     try {
       return _firebaseFirestore
-          .collection(await getUserPath())
+          .collection('freelancers')
           .doc(user.id)
           .snapshots()
           .map((doc) {
@@ -107,10 +104,10 @@ class UserRepository extends BaseUserRepository {
   }
 
   @override
-  Future<void> updateUser(User user) async {
+  Future<void> updateUser(User user) {
     try {
-      return await _firebaseFirestore
-          .collection(await getUserPath())
+      return _firebaseFirestore
+          .collection(getUserPath(user))
           .doc(user.id)
           .update(user.toDocument());
     } on FirebaseException catch (e) {
@@ -136,7 +133,7 @@ class UserRepository extends BaseUserRepository {
           .ref('profile_pictures/${user.id}')
           .getDownloadURL();
       await _firebaseFirestore
-          .collection(await getUserPath())
+          .collection(getUserPath(user))
           .doc(user.id)
           .update({'photoUrl': downloadUrl});
       return downloadUrl;
