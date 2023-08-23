@@ -137,7 +137,7 @@ class _LoginPageState extends State<LoginPage> {
                                 key: _formKey,
                                 child: Column(
                                   children: [
-                                    const GutterTiny(),
+                                    const GutterSmall(),
                                     TextFormField(
                                       controller: _emailController,
                                       keyboardType: TextInputType.emailAddress,
