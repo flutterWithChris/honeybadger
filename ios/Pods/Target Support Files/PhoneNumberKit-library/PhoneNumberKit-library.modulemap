@@ -1,6 +1,0 @@
-module PhoneNumberKit {
-  umbrella header "PhoneNumberKit-library-umbrella.h"
-
-  export *
-  module * { export * }
-}

@@ -1,6 +1,0 @@
-framework module phone_number {
-  umbrella header "phone_number-umbrella.h"
-
-  export *
-  module * { export * }
-}
