@@ -53,7 +53,6 @@ class OnboardingBloc extends Bloc<OnboardingEvent, OnboardingState> {
       }
     });
     on<SetUserProfilePicture>((event, emit) async {
-      emit(OnboardingState.loading());
       try {
         String? profilePictureUrl = await _userRepository.setUserProfilePicture(
             event.profilePicture, event.user);

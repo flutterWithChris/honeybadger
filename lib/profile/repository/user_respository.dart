@@ -13,7 +13,7 @@ class UserRepository extends BaseUserRepository {
   final FirebaseStorage _firebaseStorage = FirebaseStorage.instance;
   String getUserPath(User user) {
     print('Getting User for User Type: ${user.userType}');
-    if (user.userType == 'freelancer') {
+    if (user.userType == UserType.freelancer) {
       return 'freelancers';
     } else {
       return 'clients';
@@ -83,7 +83,7 @@ class UserRepository extends BaseUserRepository {
   Stream<User> getUserAsStream(User user) {
     try {
       return _firebaseFirestore
-          .collection('freelancers')
+          .collection(getUserPath(user))
           .doc(user.id)
           .snapshots()
           .map((doc) {
