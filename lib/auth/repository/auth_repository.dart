@@ -52,13 +52,15 @@ class AuthRepository extends BaseAuthRepository {
   }
 
   @override
-  Future<void> logInWithEmailAndPassword({
+  Future<auth.User?> logInWithEmailAndPassword({
     required String email,
     required String password,
   }) async {
     try {
-      await _firebaseAuth.signInWithEmailAndPassword(
+      final credential = await _firebaseAuth.signInWithEmailAndPassword(
           email: email, password: password);
+      final user = credential.user;
+      return user;
     } on auth.FirebaseAuthException catch (e) {
       final SnackBar snackBar = SnackBar(
         content: Text(e.message.toString()),
@@ -149,13 +151,10 @@ class AuthRepository extends BaseAuthRepository {
       final appleIdCredential = result;
       final oAuthProvider = auth.OAuthProvider('apple.com');
       final credential = oAuthProvider.credential(
-        idToken: appleIdCredential.identityToken!.toString(),
-        accessToken: appleIdCredential.authorizationCode.toString(),
+        idToken: appleIdCredential.identityToken!,
+        accessToken: appleIdCredential.authorizationCode,
       );
-      scaffoldKey.currentState?.showSnackBar(SnackBar(
-        content: Text('IdToken: ${appleIdCredential.identityToken}, '
-            'AuthorizationCode: ${appleIdCredential.authorizationCode}'),
-      ));
+
       final userCredential =
           await _firebaseAuth.signInWithCredential(credential);
       final firebaseUser = userCredential.user!;

@@ -302,11 +302,13 @@ class _SignupPageState extends State<SignupPage> {
                           const GutterTiny(),
                           TextButton(
                               onPressed: () async {
-                                context.go('/login');
                                 SharedPreferences prefs =
                                     await SharedPreferences.getInstance();
-                                prefs.setBool('onboarded', true);
-                                prefs.setBool('paymentSetupComplete', true);
+                                await prefs.setBool('onboarded', true);
+                                await prefs.setBool(
+                                    'paymentSetupComplete', true);
+
+                                context.go('/login');
                               },
                               child: const Text(
                                   'Already have an account? Sign in.')),

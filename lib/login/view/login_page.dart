@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:OutsourcedX/globals.dart';
 import 'package:OutsourcedX/login/view/cubit/login_cubit.dart';
+import 'package:email_validator/email_validator.dart';
 import 'package:flex_color_scheme/flex_color_scheme.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -10,9 +11,19 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:go_router/go_router.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-class LoginPage extends StatelessWidget {
+class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
 
+  @override
+  State<LoginPage> createState() => _LoginPageState();
+}
+
+class _LoginPageState extends State<LoginPage> {
+  bool emailSignup = false;
+  final _formKey = GlobalKey<FormState>();
+  bool _obscureText = true;
+  final TextEditingController _emailController = TextEditingController();
+  final TextEditingController _passwordController = TextEditingController();
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -57,7 +68,7 @@ class LoginPage extends StatelessWidget {
                                   onPressed: () {
                                     context.read<LoginCubit>().loginWithApple();
                                   },
-                                  label: const Text('Login with Apple'),
+                                  label: const Text('Sign In with Apple'),
                                   icon: const Icon(FontAwesomeIcons.apple,
                                       size: 20.0),
                                 ),
@@ -73,7 +84,7 @@ class LoginPage extends StatelessWidget {
                                         .read<LoginCubit>()
                                         .loginWithGoogle();
                                   },
-                                  label: const Text('Login with Google'),
+                                  label: const Text('Sign In with Google'),
                                   icon: const Icon(FontAwesomeIcons.google,
                                       size: 20.0),
                                 ),
@@ -93,7 +104,7 @@ class LoginPage extends StatelessWidget {
                                 context.read<LoginCubit>().loginWithGithub();
                               },
                               label: const Text(
-                                'Login with Github',
+                                'Sign In with Github',
                                 style: TextStyle(color: Colors.white),
                               ),
                               icon: const Icon(FontAwesomeIcons.github,
@@ -103,12 +114,115 @@ class LoginPage extends StatelessWidget {
                         ],
                       ),
                     const GutterTiny(),
+                    // Email and Password Login
+                    AnimatedSwitcher(
+                        duration: const Duration(milliseconds: 400),
+                        child: emailSignup == false
+                            ? Row(
+                                children: [
+                                  Expanded(
+                                    child: FilledButton.icon(
+                                      onPressed: () {
+                                        setState(() {
+                                          emailSignup = true;
+                                        });
+                                      },
+                                      label: const Text('Sign In with Email'),
+                                      icon: const Icon(Icons.email_rounded),
+                                    ),
+                                  ),
+                                ],
+                              )
+                            : Form(
+                                key: _formKey,
+                                child: Column(
+                                  children: [
+                                    const GutterTiny(),
+                                    TextFormField(
+                                      controller: _emailController,
+                                      keyboardType: TextInputType.emailAddress,
+                                      decoration: const InputDecoration(
+                                        labelText: 'Email',
+                                        hintText: 'Enter your email',
+                                        border: OutlineInputBorder(),
+                                      ),
+                                      validator: (value) {
+                                        if (value!.isEmpty) {
+                                          return 'Please enter your email';
+                                        } else if (!EmailValidator.validate(
+                                            value)) {
+                                          return 'Please enter a valid email';
+                                        }
+                                        return null;
+                                      },
+                                    ),
+                                    const Gutter(),
+                                    TextFormField(
+                                      controller: _passwordController,
+                                      obscureText: _obscureText,
+                                      keyboardType:
+                                          TextInputType.visiblePassword,
+                                      decoration: InputDecoration(
+                                        suffixIcon: IconButton(
+                                            onPressed: () {
+                                              setState(() {
+                                                _obscureText = !_obscureText;
+                                              });
+                                            },
+                                            icon: Icon(
+                                              _obscureText
+                                                  ? Icons.visibility
+                                                  : Icons
+                                                      .visibility_off_outlined,
+                                            )),
+                                        labelText: 'Password',
+                                        hintText: 'Enter your password',
+                                        border: const OutlineInputBorder(),
+                                      ),
+                                      validator: (value) {
+                                        if (value!.isEmpty) {
+                                          return 'Please enter your password';
+                                        } else if (value.length < 6) {
+                                          return 'Password must be at least 6 characters';
+                                        }
+                                        return null;
+                                      },
+                                    ),
+                                    const Gutter(),
+                                    Row(
+                                      children: [
+                                        Expanded(
+                                          child: FilledButton.icon(
+                                            onPressed: () {
+                                              if (_formKey.currentState!
+                                                  .validate()) {
+                                                context
+                                                    .read<LoginCubit>()
+                                                    .loginWithEmailAndPassword(
+                                                        _emailController
+                                                            .value.text,
+                                                        _passwordController
+                                                            .value.text);
+                                              }
+                                            },
+                                            icon:
+                                                const Icon(Icons.email_rounded),
+                                            label: const Text(
+                                                'Sign In With Email'),
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                    // const Gutter(),
+                                  ],
+                                ),
+                              )),
                     TextButton(
                         onPressed: () async {
                           SharedPreferences prefs =
                               await SharedPreferences.getInstance();
-                          prefs.setBool('onboarded', false);
-                          prefs.setBool('paymentSetupComplete', false);
+                          await prefs.setBool('onboarded', false);
+                          await prefs.setBool('paymentSetupComplete', false);
                           context.go('/onboarding');
                         },
                         child: const Text('New? Sign up.')),

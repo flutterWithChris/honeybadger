@@ -42,24 +42,27 @@ GoRouter goRouter = GoRouter(
   redirect: (context, state) async {
     bool loggedIn =
         context.read<AuthBloc>().state.status == AuthStatus.authenticated;
-    bool isOnboarding = state.matchedLocation.contains('onboarding');
+    bool isOnboarding = state.matchedLocation.contains('/onboarding');
+    bool isLoggingIn = state.matchedLocation == '/login';
     print('Logged in: $loggedIn');
     SharedPreferences prefs = await SharedPreferences.getInstance();
     // TODO: **IMPORTANT** Change this back
     bool onboarded = prefs.getBool('onboarded') ?? false;
+    print('Onboarded: $onboarded');
     //bool onboarded = false;
-    if (onboarded == false) {
-      if (state.matchedLocation.contains('stripe-confirmation')) {
-        return null;
-      }
-      if (isOnboarding) {
-        return null;
-      } else {
-        return '/onboarding';
-      }
-    } else if (loggedIn == false) {
-      return '/login';
+    if (isOnboarding) {
+      return null;
     }
+    if (!onboarded) {
+      return '/onboarding';
+    }
+    if (!loggedIn) {
+      return isLoggingIn ? null : '/login';
+    }
+
+    final isLoggedIn = state.path == '/';
+
+    if (loggedIn && isLoggingIn) return isLoggedIn ? null : '/';
 
     return null;
   },
