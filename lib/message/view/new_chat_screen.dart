@@ -1,6 +1,6 @@
 import 'dart:async';
 
-import 'package:OutsourcedX/message/view/chips_input_text_field.dart';
+import 'package:outsourcedx/message/view/chips_input_text_field.dart';
 import 'package:flutter/material.dart';
 import 'package:stream_chat_flutter/stream_chat_flutter.dart';
 

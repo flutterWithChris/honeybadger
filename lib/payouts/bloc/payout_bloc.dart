@@ -1,8 +1,8 @@
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
-import 'package:OutsourcedX/payments/repository/payments_repository.dart';
-import 'package:OutsourcedX/payouts/model/payout.dart';
-import 'package:OutsourcedX/profile/model/user.dart';
+import 'package:outsourcedx/payments/repository/payments_repository.dart';
+import 'package:outsourcedx/payouts/model/payout.dart';
+import 'package:outsourcedx/profile/model/user.dart';
 
 part 'payout_event.dart';
 part 'payout_state.dart';

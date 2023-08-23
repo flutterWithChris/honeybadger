@@ -3,14 +3,15 @@ import 'dart:async';
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:flutter/material.dart';
-import 'package:OutsourcedX/payments/model/balance.dart';
-import 'package:OutsourcedX/payments/model/balance_transaction.dart';
-import 'package:OutsourcedX/payments/model/charge.dart';
-import 'package:OutsourcedX/payments/model/stripe_account.dart';
-import 'package:OutsourcedX/payments/repository/payments_repository.dart';
-import 'package:OutsourcedX/profile/bloc/profile_bloc.dart';
-import 'package:OutsourcedX/profile/model/user.dart';
-import 'package:OutsourcedX/proposals/model/proposal.dart';
+import 'package:outsourcedx/payments/model/balance.dart';
+import 'package:outsourcedx/payments/model/balance_transaction.dart';
+import 'package:outsourcedx/payments/model/charge.dart';
+import 'package:outsourcedx/payments/model/stripe_account.dart';
+import 'package:outsourcedx/payments/repository/payments_repository.dart';
+import 'package:outsourcedx/profile/bloc/profile_bloc.dart';
+import 'package:outsourcedx/profile/model/user.dart';
+import 'package:outsourcedx/proposals/model/proposal.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 part 'payments_event.dart';
 part 'payments_state.dart';
@@ -33,9 +34,14 @@ class PaymentsBloc extends Bloc<PaymentsEvent, PaymentsState>
     on<SendPayment>(_onSendPayment);
     on<LoadBalanceAndTransactions>(_onLoadBalanceAndTransactions);
     on<LoadCharges>(_onLoadCharges);
-    _profileSubscription = _profileBloc.stream.listen((profileState) {
+    _profileSubscription = _profileBloc.stream.listen((profileState) async {
+      SharedPreferences prefs = await SharedPreferences.getInstance();
+      bool paymentSetupComplete =
+          prefs.getBool('paymentSetupComplete') ?? false;
       print('Profile State: $profileState');
-      if (profileState is ProfileLoaded && state is PaymentsInitial) {
+      if (profileState is ProfileLoaded &&
+          state is PaymentsInitial &&
+          paymentSetupComplete) {
         add(LoadPayments(user: profileState.user));
       }
     });

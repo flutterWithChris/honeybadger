@@ -1,4 +1,4 @@
-import 'package:OutsourcedX/projects/model/work_submission.dart';
+import 'package:outsourcedx/projects/model/work_submission.dart';
 
 class Milestone {
   final String? id;

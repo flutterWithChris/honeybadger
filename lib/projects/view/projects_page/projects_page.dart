@@ -1,15 +1,15 @@
-import 'package:OutsourcedX/core/presentation/drawers/main_drawer.dart';
+import 'package:outsourcedx/core/presentation/drawers/main_drawer.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_gutter/flutter_gutter.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:go_router/go_router.dart';
-import 'package:OutsourcedX/core/presentation/system/main_navigation_bar.dart';
-import 'package:OutsourcedX/core/presentation/system/mobile_jobs_app_bar%20copy.dart';
-import 'package:OutsourcedX/profile/bloc/profile_bloc.dart';
-import 'package:OutsourcedX/profile/model/user.dart';
-import 'package:OutsourcedX/projects/bloc/projects_bloc.dart';
-import 'package:OutsourcedX/proposals/bloc/proposal_bloc.dart';
+import 'package:outsourcedx/core/presentation/system/main_navigation_bar.dart';
+import 'package:outsourcedx/core/presentation/system/mobile_jobs_app_bar%20copy.dart';
+import 'package:outsourcedx/profile/bloc/profile_bloc.dart';
+import 'package:outsourcedx/profile/model/user.dart';
+import 'package:outsourcedx/projects/bloc/projects_bloc.dart';
+import 'package:outsourcedx/proposals/bloc/proposal_bloc.dart';
 
 import '../../../core/presentation/system/mobile_jobs_app_bar.dart';
 import '../../model/project.dart';

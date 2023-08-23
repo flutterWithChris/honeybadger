@@ -3,8 +3,8 @@ import 'dart:async';
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:flutter/material.dart';
-import 'package:OutsourcedX/core/constants.dart';
-import 'package:OutsourcedX/message/repository/message_repository.dart';
+import 'package:outsourcedx/core/constants.dart';
+import 'package:outsourcedx/message/repository/message_repository.dart';
 import 'package:stream_chat_flutter/stream_chat_flutter.dart';
 
 part 'messages_event.dart';

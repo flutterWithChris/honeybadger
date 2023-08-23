@@ -1,7 +1,7 @@
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
-import 'package:OutsourcedX/globals.dart';
-import 'package:OutsourcedX/payments/model/payment.dart';
+import 'package:outsourcedx/globals.dart';
+import 'package:outsourcedx/payments/model/payment.dart';
 
 part 'payment_history_event.dart';
 part 'payment_history_state.dart';

@@ -1,6 +1,6 @@
 import 'package:flex_color_scheme/flex_color_scheme.dart';
 import 'package:flutter/material.dart';
-import 'package:OutsourcedX/payments/model/balance_transaction.dart';
+import 'package:outsourcedx/payments/model/balance_transaction.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 
 import '../../../core/constants.dart';

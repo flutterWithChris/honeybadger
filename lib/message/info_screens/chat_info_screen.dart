@@ -1,9 +1,9 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:OutsourcedX/message/channel_file_display_screen.dart';
-import 'package:OutsourcedX/message/localizations.dart';
-import 'package:OutsourcedX/message/media_display/channel_media_display_screen.dart';
-import 'package:OutsourcedX/message/pinned/pinned_messages_screen.dart';
+import 'package:outsourcedx/message/channel_file_display_screen.dart';
+import 'package:outsourcedx/message/localizations.dart';
+import 'package:outsourcedx/message/media_display/channel_media_display_screen.dart';
+import 'package:outsourcedx/message/pinned/pinned_messages_screen.dart';
 import 'package:stream_chat_flutter/stream_chat_flutter.dart';
 
 /// Detail screen for a 1:1 chat correspondence

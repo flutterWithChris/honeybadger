@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:OutsourcedX/payments/model/balance_transaction.dart';
+import 'package:outsourcedx/payments/model/balance_transaction.dart';
 
 class DesktopPaymentDetailsPage extends StatelessWidget {
   final BalanceTransaction balanceTransaction;

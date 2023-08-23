@@ -1,6 +1,6 @@
-import 'package:OutsourcedX/profile/bloc/profile_bloc.dart';
-import 'package:OutsourcedX/profile/model/portfolio_project.dart';
-import 'package:OutsourcedX/profile/portfolio/bloc/portfolio_bloc.dart';
+import 'package:outsourcedx/profile/bloc/profile_bloc.dart';
+import 'package:outsourcedx/profile/model/portfolio_project.dart';
+import 'package:outsourcedx/profile/portfolio/bloc/portfolio_bloc.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';

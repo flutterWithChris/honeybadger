@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:OutsourcedX/proposals/model/proposal.dart';
-import 'package:OutsourcedX/proposals/view/view_proposal/desktop/desktop_view_proposal.dart';
-import 'package:OutsourcedX/proposals/view/view_proposal/mobile/mobile_view_proposal.dart';
-import 'package:OutsourcedX/proposals/view/view_proposal/tablet/tablet_view_proposal.dart';
+import 'package:outsourcedx/proposals/model/proposal.dart';
+import 'package:outsourcedx/proposals/view/view_proposal/desktop/desktop_view_proposal.dart';
+import 'package:outsourcedx/proposals/view/view_proposal/mobile/mobile_view_proposal.dart';
+import 'package:outsourcedx/proposals/view/view_proposal/tablet/tablet_view_proposal.dart';
 
 import '../../core/constants.dart';
 

@@ -1,4 +1,4 @@
-import 'package:OutsourcedX/globals.dart';
+import 'package:outsourcedx/globals.dart';
 import 'package:flutter/material.dart';
 
 class MobileSliverAppBar extends StatelessWidget {

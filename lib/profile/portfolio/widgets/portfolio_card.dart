@@ -1,8 +1,8 @@
-import 'package:OutsourcedX/profile/bloc/profile_bloc.dart';
-import 'package:OutsourcedX/profile/model/portfolio_project.dart';
-import 'package:OutsourcedX/profile/model/user.dart';
-import 'package:OutsourcedX/profile/portfolio/dialogs/edit_profile_dialog.dart';
-import 'package:OutsourcedX/profile/portfolio/dialogs/view_profile_dialog.dart';
+import 'package:outsourcedx/profile/bloc/profile_bloc.dart';
+import 'package:outsourcedx/profile/model/portfolio_project.dart';
+import 'package:outsourcedx/profile/model/user.dart';
+import 'package:outsourcedx/profile/portfolio/dialogs/edit_profile_dialog.dart';
+import 'package:outsourcedx/profile/portfolio/dialogs/view_profile_dialog.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 

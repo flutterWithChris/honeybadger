@@ -2,10 +2,10 @@ import 'dart:async';
 
 import 'package:equatable/equatable.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:OutsourcedX/profile/bloc/profile_bloc.dart';
-import 'package:OutsourcedX/profile/model/user.dart';
-import 'package:OutsourcedX/projects/model/project.dart';
-import 'package:OutsourcedX/projects/repository/projects_repository.dart';
+import 'package:outsourcedx/profile/bloc/profile_bloc.dart';
+import 'package:outsourcedx/profile/model/user.dart';
+import 'package:outsourcedx/projects/model/project.dart';
+import 'package:outsourcedx/projects/repository/projects_repository.dart';
 
 part 'rojects_event.dart';
 part 'projects_state.dart';

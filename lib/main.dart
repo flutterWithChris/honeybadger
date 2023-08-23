@@ -1,8 +1,9 @@
 import 'dart:async';
 
-import 'package:OutsourcedX/login/view/cubit/login_cubit.dart';
-import 'package:OutsourcedX/profile/public/bloc/bloc/freelancer_public_profile_bloc.dart';
+import 'package:outsourcedx/login/view/cubit/login_cubit.dart';
+import 'package:outsourcedx/profile/public/bloc/bloc/freelancer_public_profile_bloc.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:firebase_ui_auth/firebase_ui_auth.dart';
@@ -12,33 +13,33 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
-import 'package:OutsourcedX/auth/bloc/auth_bloc.dart';
-import 'package:OutsourcedX/auth/cubit/signup/signup_cubit.dart';
-import 'package:OutsourcedX/auth/repository/auth_repository.dart';
-import 'package:OutsourcedX/core/constants.dart';
-import 'package:OutsourcedX/core/router/app_router.dart';
-import 'package:OutsourcedX/firebase_options.dart';
-import 'package:OutsourcedX/message/bloc/messages_bloc.dart';
-import 'package:OutsourcedX/message/repository/message_repository.dart';
-import 'package:OutsourcedX/onboarding/bloc/onboarding_bloc.dart';
-import 'package:OutsourcedX/onboarding/view/pages/profile_setup/bloc/bloc/category_search_bloc.dart';
-import 'package:OutsourcedX/onboarding/view/pages/profile_setup/bloc/skills/bloc/skill_search_bloc.dart';
-import 'package:OutsourcedX/payments/bloc/history/payment_history_bloc.dart';
-import 'package:OutsourcedX/payments/bloc/payments_bloc.dart';
-import 'package:OutsourcedX/payments/repository/payments_repository.dart';
-import 'package:OutsourcedX/payouts/bloc/payout_bloc.dart';
-import 'package:OutsourcedX/profile/bloc/profile_bloc.dart';
-import 'package:OutsourcedX/profile/portfolio/bloc/portfolio_bloc.dart';
-import 'package:OutsourcedX/profile/portfolio/repository/category_repository.dart';
-import 'package:OutsourcedX/profile/portfolio/repository/portfiolio_repository.dart';
-import 'package:OutsourcedX/profile/portfolio/repository/skills_repository.dart';
-import 'package:OutsourcedX/profile/repository/user_respository.dart';
-import 'package:OutsourcedX/projects/bloc/projects_bloc.dart';
-import 'package:OutsourcedX/projects/repository/projects_repository.dart';
-import 'package:OutsourcedX/proposals/bloc/proposal_bloc.dart';
-import 'package:OutsourcedX/proposals/repo/proposal_repository.dart';
-import 'package:OutsourcedX/search/bloc/search_bloc.dart';
-import 'package:OutsourcedX/search/repository/search_repository.dart';
+import 'package:outsourcedx/auth/bloc/auth_bloc.dart';
+import 'package:outsourcedx/auth/cubit/signup/signup_cubit.dart';
+import 'package:outsourcedx/auth/repository/auth_repository.dart';
+import 'package:outsourcedx/core/constants.dart';
+import 'package:outsourcedx/core/router/app_router.dart';
+import 'package:outsourcedx/firebase_options.dart';
+import 'package:outsourcedx/message/bloc/messages_bloc.dart';
+import 'package:outsourcedx/message/repository/message_repository.dart';
+import 'package:outsourcedx/onboarding/bloc/onboarding_bloc.dart';
+import 'package:outsourcedx/onboarding/view/pages/profile_setup/bloc/bloc/category_search_bloc.dart';
+import 'package:outsourcedx/onboarding/view/pages/profile_setup/bloc/skills/bloc/skill_search_bloc.dart';
+import 'package:outsourcedx/payments/bloc/history/payment_history_bloc.dart';
+import 'package:outsourcedx/payments/bloc/payments_bloc.dart';
+import 'package:outsourcedx/payments/repository/payments_repository.dart';
+import 'package:outsourcedx/payouts/bloc/payout_bloc.dart';
+import 'package:outsourcedx/profile/bloc/profile_bloc.dart';
+import 'package:outsourcedx/profile/portfolio/bloc/portfolio_bloc.dart';
+import 'package:outsourcedx/profile/portfolio/repository/category_repository.dart';
+import 'package:outsourcedx/profile/portfolio/repository/portfiolio_repository.dart';
+import 'package:outsourcedx/profile/portfolio/repository/skills_repository.dart';
+import 'package:outsourcedx/profile/repository/user_respository.dart';
+import 'package:outsourcedx/projects/bloc/projects_bloc.dart';
+import 'package:outsourcedx/projects/repository/projects_repository.dart';
+import 'package:outsourcedx/proposals/bloc/proposal_bloc.dart';
+import 'package:outsourcedx/proposals/repo/proposal_repository.dart';
+import 'package:outsourcedx/search/bloc/search_bloc.dart';
+import 'package:outsourcedx/search/repository/search_repository.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:stream_chat_flutter/stream_chat_flutter.dart';
 import 'package:uni_links/uni_links.dart';
@@ -52,7 +53,7 @@ void main() async {
 
 // Clear firebase cache
   await FirebaseFirestore.instance.clearPersistence();
-  // await FirebaseAuth.instance.signOut();
+  await FirebaseAuth.instance.signOut();
 
 // Clear  Shared Preferences
   SharedPreferences prefs = await SharedPreferences.getInstance();
@@ -115,6 +116,7 @@ class _MyAppState extends State<MyApp> {
     bool paymentSetupComplete = prefs.getBool('paymentSetupComplete') ?? false;
     // Use GoRouter to navigate to the path in the deep link
     if (link.contains('redirect') && paymentSetupComplete == false) {
+      print('Redirecting to stripe confirmation');
       goRouter.go('/stripe-confirmation?${uri.query}');
     }
   }

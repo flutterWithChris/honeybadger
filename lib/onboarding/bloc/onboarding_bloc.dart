@@ -1,7 +1,7 @@
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
-import 'package:OutsourcedX/profile/model/user.dart';
-import 'package:OutsourcedX/profile/repository/user_respository.dart';
+import 'package:outsourcedx/profile/model/user.dart';
+import 'package:outsourcedx/profile/repository/user_respository.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:meta/meta.dart';
 import 'package:shared_preferences/shared_preferences.dart';

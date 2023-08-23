@@ -1,15 +1,15 @@
-import 'package:OutsourcedX/profile/portfolio/widgets/portfolio_card.dart';
+import 'package:outsourcedx/profile/portfolio/widgets/portfolio_card.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_gutter/flutter_gutter.dart';
-import 'package:OutsourcedX/auth/bloc/auth_bloc.dart';
-import 'package:OutsourcedX/core/constants.dart';
-import 'package:OutsourcedX/onboarding/bloc/onboarding_bloc.dart';
-import 'package:OutsourcedX/onboarding/view/pages/profile_setup/bloc/skills/bloc/skill_search_bloc.dart';
-import 'package:OutsourcedX/profile/model/portfolio_project.dart';
-import 'package:OutsourcedX/profile/model/skill.dart';
-import 'package:OutsourcedX/profile/portfolio/bloc/portfolio_bloc.dart';
-import 'package:OutsourcedX/profile/view/widgets/add_project_dialog.dart';
+import 'package:outsourcedx/auth/bloc/auth_bloc.dart';
+import 'package:outsourcedx/core/constants.dart';
+import 'package:outsourcedx/onboarding/bloc/onboarding_bloc.dart';
+import 'package:outsourcedx/onboarding/view/pages/profile_setup/bloc/skills/bloc/skill_search_bloc.dart';
+import 'package:outsourcedx/profile/model/portfolio_project.dart';
+import 'package:outsourcedx/profile/model/skill.dart';
+import 'package:outsourcedx/profile/portfolio/bloc/portfolio_bloc.dart';
+import 'package:outsourcedx/profile/view/widgets/add_project_dialog.dart';
 
 import '../../../profile/model/user.dart';
 

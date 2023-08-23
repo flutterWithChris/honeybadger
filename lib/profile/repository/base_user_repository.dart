@@ -1,4 +1,4 @@
-import 'package:OutsourcedX/profile/model/user.dart';
+import 'package:outsourcedx/profile/model/user.dart';
 import 'package:image_picker/image_picker.dart';
 
 abstract class BaseUserRepository {

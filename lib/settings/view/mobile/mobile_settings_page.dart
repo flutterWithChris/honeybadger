@@ -1,5 +1,5 @@
-import 'package:OutsourcedX/core/presentation/system/main_navigation_bar.dart';
-import 'package:OutsourcedX/core/presentation/system/mobile_sliver_app_bar.dart';
+import 'package:outsourcedx/core/presentation/system/main_navigation_bar.dart';
+import 'package:outsourcedx/core/presentation/system/mobile_sliver_app_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:settings_ui/settings_ui.dart';
 

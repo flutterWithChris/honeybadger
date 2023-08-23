@@ -1,37 +1,37 @@
-import 'package:OutsourcedX/login/view/login_page.dart';
-import 'package:OutsourcedX/message/bloc/messages_bloc.dart';
-import 'package:OutsourcedX/message/view/new_chat_screen.dart';
-import 'package:OutsourcedX/onboarding/bloc/onboarding_bloc.dart';
-import 'package:OutsourcedX/profile/public/view/freelancer_public_profile_page.dart';
-import 'package:OutsourcedX/settings/view/settings_page.dart';
+import 'package:outsourcedx/login/view/login_page.dart';
+import 'package:outsourcedx/message/bloc/messages_bloc.dart';
+import 'package:outsourcedx/message/view/new_chat_screen.dart';
+import 'package:outsourcedx/onboarding/bloc/onboarding_bloc.dart';
+import 'package:outsourcedx/profile/public/view/freelancer_public_profile_page.dart';
+import 'package:outsourcedx/settings/view/settings_page.dart';
 import 'package:animations/animations.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
-import 'package:OutsourcedX/auth/bloc/auth_bloc.dart';
-import 'package:OutsourcedX/message/channel_page.dart';
-import 'package:OutsourcedX/message/view/messages_page.dart';
-import 'package:OutsourcedX/onboarding/stripe_confirmation.dart';
-import 'package:OutsourcedX/onboarding/view/onboarding_page.dart';
-import 'package:OutsourcedX/onboarding/view/pages/welcome/welcome_page.dart';
-import 'package:OutsourcedX/payments/bloc/payments_bloc.dart';
-import 'package:OutsourcedX/payments/details/payment_details.dart';
-import 'package:OutsourcedX/payments/model/balance_transaction.dart';
-import 'package:OutsourcedX/payments/view/payments_page.dart';
-import 'package:OutsourcedX/profile/bloc/profile_bloc.dart';
-import 'package:OutsourcedX/profile/model/user.dart';
-import 'package:OutsourcedX/profile/view/profile_page.dart';
-import 'package:OutsourcedX/projects/bloc/projects_bloc.dart';
-import 'package:OutsourcedX/projects/create-project/view/create_project.dart';
-import 'package:OutsourcedX/projects/model/project.dart';
-import 'package:OutsourcedX/projects/view/project_details_page/mobile/mobile_job_page.dart';
-import 'package:OutsourcedX/projects/view/project_details_page/project_page.dart';
-import 'package:OutsourcedX/projects/view/projects_page/projects_page.dart';
-import 'package:OutsourcedX/proposals/create/view/create_proposal_page.dart';
-import 'package:OutsourcedX/proposals/model/proposal.dart';
-import 'package:OutsourcedX/proposals/view/view_proposal.dart';
-import 'package:OutsourcedX/search/view/search_page.dart';
+import 'package:outsourcedx/auth/bloc/auth_bloc.dart';
+import 'package:outsourcedx/message/channel_page.dart';
+import 'package:outsourcedx/message/view/messages_page.dart';
+import 'package:outsourcedx/onboarding/stripe_confirmation.dart';
+import 'package:outsourcedx/onboarding/view/onboarding_page.dart';
+import 'package:outsourcedx/onboarding/view/pages/welcome/welcome_page.dart';
+import 'package:outsourcedx/payments/bloc/payments_bloc.dart';
+import 'package:outsourcedx/payments/details/payment_details.dart';
+import 'package:outsourcedx/payments/model/balance_transaction.dart';
+import 'package:outsourcedx/payments/view/payments_page.dart';
+import 'package:outsourcedx/profile/bloc/profile_bloc.dart';
+import 'package:outsourcedx/profile/model/user.dart';
+import 'package:outsourcedx/profile/view/profile_page.dart';
+import 'package:outsourcedx/projects/bloc/projects_bloc.dart';
+import 'package:outsourcedx/projects/create-project/view/create_project.dart';
+import 'package:outsourcedx/projects/model/project.dart';
+import 'package:outsourcedx/projects/view/project_details_page/mobile/mobile_job_page.dart';
+import 'package:outsourcedx/projects/view/project_details_page/project_page.dart';
+import 'package:outsourcedx/projects/view/projects_page/projects_page.dart';
+import 'package:outsourcedx/proposals/create/view/create_proposal_page.dart';
+import 'package:outsourcedx/proposals/model/proposal.dart';
+import 'package:outsourcedx/proposals/view/view_proposal.dart';
+import 'package:outsourcedx/search/view/search_page.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:stream_chat_flutter/stream_chat_flutter.dart';
 
@@ -54,7 +54,11 @@ GoRouter goRouter = GoRouter(
       return null;
     }
     if (!onboarded) {
-      return '/onboarding';
+      if (state.matchedLocation.contains('stripe')) {
+        return null;
+      } else {
+        return '/onboarding';
+      }
     }
     if (!loggedIn) {
       return isLoggingIn ? null : '/login';

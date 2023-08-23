@@ -6,10 +6,10 @@
 // import 'package:flutter_bloc/flutter_bloc.dart';
 // import 'package:flutter_gutter/flutter_gutter.dart';
 // import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-// import 'package:OutsourcedX/auth/cubit/signup/signup_cubit.dart';
-// import 'package:OutsourcedX/core/constants.dart';
-// import 'package:OutsourcedX/onboarding/bloc/onboarding_bloc.dart';
-// import 'package:OutsourcedX/profile/model/user.dart';
+// import 'package:outsourcedx/auth/cubit/signup/signup_cubit.dart';
+// import 'package:outsourcedx/core/constants.dart';
+// import 'package:outsourcedx/onboarding/bloc/onboarding_bloc.dart';
+// import 'package:outsourcedx/profile/model/user.dart';
 // import 'package:google_sign_in_platform_interface/google_sign_in_platform_interface.dart';
 // import 'package:google_sign_in_web/google_sign_in_web.dart' as web;
 

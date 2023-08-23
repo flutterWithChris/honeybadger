@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:OutsourcedX/core/constants.dart';
+import 'package:outsourcedx/core/constants.dart';
 
 class AnimatedCurrency extends ImplicitlyAnimatedWidget {
   final TextStyle? style;

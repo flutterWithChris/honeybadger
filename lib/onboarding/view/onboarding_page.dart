@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:OutsourcedX/onboarding/bloc/onboarding_bloc.dart';
-import 'package:OutsourcedX/onboarding/view/pages/client_industry/client_industry_page.dart';
-import 'package:OutsourcedX/onboarding/view/pages/payment_setup.dart';
-import 'package:OutsourcedX/onboarding/view/pages/profile_setup/profile_setup.dart';
-import 'package:OutsourcedX/onboarding/view/pages/skills_and_experience.dart';
-import 'package:OutsourcedX/onboarding/view/pages/welcome/welcome_page.dart';
-import 'package:OutsourcedX/onboarding/view/signup_page.dart';
-import 'package:OutsourcedX/profile/model/user.dart';
+import 'package:outsourcedx/onboarding/bloc/onboarding_bloc.dart';
+import 'package:outsourcedx/onboarding/view/pages/client_industry/client_industry_page.dart';
+import 'package:outsourcedx/onboarding/view/pages/payment_setup.dart';
+import 'package:outsourcedx/onboarding/view/pages/profile_setup/profile_setup.dart';
+import 'package:outsourcedx/onboarding/view/pages/skills_and_experience.dart';
+import 'package:outsourcedx/onboarding/view/pages/welcome/welcome_page.dart';
+import 'package:outsourcedx/onboarding/view/signup_page.dart';
+import 'package:outsourcedx/profile/model/user.dart';
 import 'package:go_router/go_router.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:smooth_page_indicator/smooth_page_indicator.dart';
@@ -109,7 +109,7 @@ class _OnboardingPageState extends State<OnboardingPage> {
                     return PageView(
                       allowImplicitScrolling: true,
                       controller: _pageController,
-                      physics: const NeverScrollableScrollPhysics(),
+                      //physics: const NeverScrollableScrollPhysics(),
                       children: [
                         WelcomePage(
                           pageController: _pageController,

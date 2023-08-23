@@ -2,7 +2,7 @@ import 'dart:async';
 import 'dart:math';
 
 import 'package:flutter/material.dart';
-import 'package:OutsourcedX/payments/model/balance_transaction.dart';
+import 'package:outsourcedx/payments/model/balance_transaction.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:stream_chat_flutter/stream_chat_flutter.dart';
 import 'package:jose/jose.dart';
@@ -95,7 +95,7 @@ class OutsourcedFullText extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Text(
-      'OutsourcedX',
+      'outsourcedx',
       style: GoogleFonts.gloock(),
     );
   }

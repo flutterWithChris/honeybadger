@@ -1,5 +1,5 @@
-import 'package:OutsourcedX/core/constants.dart';
-import 'package:OutsourcedX/settings/view/tablet/tablet_settings_page.dart';
+import 'package:outsourcedx/core/constants.dart';
+import 'package:outsourcedx/settings/view/tablet/tablet_settings_page.dart';
 import 'package:flutter/material.dart';
 
 import 'desktop/desktop_settings_page.dart';

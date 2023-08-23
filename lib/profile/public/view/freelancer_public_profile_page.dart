@@ -1,10 +1,10 @@
-import 'package:OutsourcedX/core/presentation/system/main_navigation_bar.dart';
-import 'package:OutsourcedX/core/presentation/system/mobile_sliver_app_bar.dart';
-import 'package:OutsourcedX/globals.dart';
-import 'package:OutsourcedX/profile/portfolio/bloc/portfolio_bloc.dart';
-import 'package:OutsourcedX/profile/portfolio/widgets/portfolio_card.dart';
-import 'package:OutsourcedX/profile/public/bloc/bloc/freelancer_public_profile_bloc.dart';
-import 'package:OutsourcedX/profile/view/widgets/add_project_dialog.dart';
+import 'package:outsourcedx/core/presentation/system/main_navigation_bar.dart';
+import 'package:outsourcedx/core/presentation/system/mobile_sliver_app_bar.dart';
+import 'package:outsourcedx/globals.dart';
+import 'package:outsourcedx/profile/portfolio/bloc/portfolio_bloc.dart';
+import 'package:outsourcedx/profile/portfolio/widgets/portfolio_card.dart';
+import 'package:outsourcedx/profile/public/bloc/bloc/freelancer_public_profile_bloc.dart';
+import 'package:outsourcedx/profile/view/widgets/add_project_dialog.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';

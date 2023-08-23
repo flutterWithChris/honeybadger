@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_gutter/flutter_gutter.dart';
-import 'package:OutsourcedX/core/presentation/system/main_sliver_app_bar.dart';
-import 'package:OutsourcedX/onboarding/bloc/onboarding_bloc.dart';
-import 'package:OutsourcedX/profile/model/user.dart';
+import 'package:outsourcedx/core/presentation/system/main_sliver_app_bar.dart';
+import 'package:outsourcedx/onboarding/bloc/onboarding_bloc.dart';
+import 'package:outsourcedx/profile/model/user.dart';
 
 class DesktopWelcomePage extends StatefulWidget {
   final PageController? pageController;

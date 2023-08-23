@@ -1,10 +1,10 @@
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:flutter/material.dart';
-import 'package:OutsourcedX/core/constants.dart';
-import 'package:OutsourcedX/profile/model/skill.dart';
-import 'package:OutsourcedX/profile/portfolio/repository/skills_repository.dart';
-import 'package:OutsourcedX/search/repository/search_repository.dart';
+import 'package:outsourcedx/core/constants.dart';
+import 'package:outsourcedx/profile/model/skill.dart';
+import 'package:outsourcedx/profile/portfolio/repository/skills_repository.dart';
+import 'package:outsourcedx/search/repository/search_repository.dart';
 
 part 'skill_search_event.dart';
 part 'skill_search_state.dart';

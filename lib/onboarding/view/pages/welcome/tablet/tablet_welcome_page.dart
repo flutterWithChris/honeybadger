@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_gutter/flutter_gutter.dart';
-import 'package:OutsourcedX/onboarding/bloc/onboarding_bloc.dart';
+import 'package:outsourcedx/onboarding/bloc/onboarding_bloc.dart';
 
 import '../../../../../profile/model/user.dart';
 

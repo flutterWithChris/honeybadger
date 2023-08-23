@@ -3,7 +3,7 @@ import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:google_sign_in/google_sign_in.dart';
-import 'package:OutsourcedX/core/constants.dart';
+import 'package:outsourcedx/core/constants.dart';
 import 'package:sign_in_with_apple/sign_in_with_apple.dart';
 
 import 'base_auth_repository.dart';

@@ -1,4 +1,4 @@
-import 'package:OutsourcedX/auth/repository/auth_repository.dart';
+import 'package:outsourcedx/auth/repository/auth_repository.dart';
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:firebase_auth/firebase_auth.dart' as auth;

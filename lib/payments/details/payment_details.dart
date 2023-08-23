@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:OutsourcedX/core/constants.dart';
-import 'package:OutsourcedX/payments/details/desktop/desktop_payment_details.dart';
-import 'package:OutsourcedX/payments/details/mobile/mobile_payment_details.dart';
-import 'package:OutsourcedX/payments/details/tablet/tablet_payment_details.dart';
-import 'package:OutsourcedX/payments/model/balance_transaction.dart';
+import 'package:outsourcedx/core/constants.dart';
+import 'package:outsourcedx/payments/details/desktop/desktop_payment_details.dart';
+import 'package:outsourcedx/payments/details/mobile/mobile_payment_details.dart';
+import 'package:outsourcedx/payments/details/tablet/tablet_payment_details.dart';
+import 'package:outsourcedx/payments/model/balance_transaction.dart';
 
 class PaymentDetailsPage extends StatelessWidget {
   final BalanceTransaction balanceTransaction;

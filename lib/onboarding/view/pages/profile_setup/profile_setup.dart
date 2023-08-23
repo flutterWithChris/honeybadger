@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:OutsourcedX/core/constants.dart';
-import 'package:OutsourcedX/onboarding/bloc/onboarding_bloc.dart';
-import 'package:OutsourcedX/onboarding/view/pages/profile_setup/client/mobile_client_profile_setup.dart';
-import 'package:OutsourcedX/onboarding/view/pages/profile_setup/desktop/desktop_profile_setup.dart';
-import 'package:OutsourcedX/onboarding/view/pages/profile_setup/mobile/mobile_profile_setup.dart';
-import 'package:OutsourcedX/onboarding/view/pages/profile_setup/tablet/tablet_profile_setup.dart';
-import 'package:OutsourcedX/profile/model/user.dart';
+import 'package:outsourcedx/core/constants.dart';
+import 'package:outsourcedx/onboarding/bloc/onboarding_bloc.dart';
+import 'package:outsourcedx/onboarding/view/pages/profile_setup/client/mobile_client_profile_setup.dart';
+import 'package:outsourcedx/onboarding/view/pages/profile_setup/desktop/desktop_profile_setup.dart';
+import 'package:outsourcedx/onboarding/view/pages/profile_setup/mobile/mobile_profile_setup.dart';
+import 'package:outsourcedx/onboarding/view/pages/profile_setup/tablet/tablet_profile_setup.dart';
+import 'package:outsourcedx/profile/model/user.dart';
 
 class ProfileSetup extends StatefulWidget {
   final PageController pageController;

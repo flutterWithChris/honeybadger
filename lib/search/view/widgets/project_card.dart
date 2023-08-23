@@ -2,10 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_gutter/flutter_gutter.dart';
 import 'package:go_router/go_router.dart';
-import 'package:OutsourcedX/core/constants.dart';
-import 'package:OutsourcedX/profile/bloc/profile_bloc.dart';
-import 'package:OutsourcedX/projects/model/project.dart';
-import 'package:OutsourcedX/proposals/bloc/proposal_bloc.dart';
+import 'package:outsourcedx/core/constants.dart';
+import 'package:outsourcedx/profile/bloc/profile_bloc.dart';
+import 'package:outsourcedx/projects/model/project.dart';
+import 'package:outsourcedx/proposals/bloc/proposal_bloc.dart';
 import 'package:intl/intl.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 

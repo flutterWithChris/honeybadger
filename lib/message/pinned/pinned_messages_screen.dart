@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:OutsourcedX/message/localizations.dart';
+import 'package:outsourcedx/message/localizations.dart';
 import 'package:stream_chat_flutter/stream_chat_flutter.dart';
 
 import '../channel_page.dart';

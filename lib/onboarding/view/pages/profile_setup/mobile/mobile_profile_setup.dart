@@ -5,8 +5,8 @@ import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_gutter/flutter_gutter.dart';
-import 'package:OutsourcedX/onboarding/view/pages/profile_setup/bloc/bloc/category_search_bloc.dart';
-import 'package:OutsourcedX/search/repository/search_repository.dart';
+import 'package:outsourcedx/onboarding/view/pages/profile_setup/bloc/bloc/category_search_bloc.dart';
+import 'package:outsourcedx/search/repository/search_repository.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:mapbox_search/mapbox_search.dart';
 

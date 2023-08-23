@@ -1,13 +1,13 @@
-import 'package:OutsourcedX/core/presentation/drawers/main_drawer.dart';
+import 'package:outsourcedx/core/presentation/drawers/main_drawer.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_gutter/flutter_gutter.dart';
-import 'package:OutsourcedX/core/presentation/system/main_navigation_bar.dart';
-import 'package:OutsourcedX/core/presentation/system/mobile_sliver_app_bar.dart';
-import 'package:OutsourcedX/profile/bloc/profile_bloc.dart';
-import 'package:OutsourcedX/projects/model/project.dart';
-import 'package:OutsourcedX/search/bloc/search_bloc.dart';
-import 'package:OutsourcedX/search/view/widgets/Project_card.dart';
+import 'package:outsourcedx/core/presentation/system/main_navigation_bar.dart';
+import 'package:outsourcedx/core/presentation/system/mobile_sliver_app_bar.dart';
+import 'package:outsourcedx/profile/bloc/profile_bloc.dart';
+import 'package:outsourcedx/projects/model/project.dart';
+import 'package:outsourcedx/search/bloc/search_bloc.dart';
+import 'package:outsourcedx/search/view/widgets/Project_card.dart';
 
 class MobileSearchPage extends StatefulWidget {
   const MobileSearchPage({super.key});

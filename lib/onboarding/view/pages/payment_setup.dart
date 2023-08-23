@@ -2,10 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_gutter/flutter_gutter.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:OutsourcedX/core/constants.dart';
-import 'package:OutsourcedX/onboarding/bloc/onboarding_bloc.dart';
-import 'package:OutsourcedX/payments/bloc/payments_bloc.dart';
-import 'package:OutsourcedX/profile/bloc/profile_bloc.dart';
+import 'package:outsourcedx/core/constants.dart';
+import 'package:outsourcedx/onboarding/bloc/onboarding_bloc.dart';
+import 'package:outsourcedx/payments/bloc/payments_bloc.dart';
+import 'package:outsourcedx/profile/bloc/profile_bloc.dart';
 import 'package:loading_animation_widget/loading_animation_widget.dart';
 
 class PaymentSetupPage extends StatelessWidget {

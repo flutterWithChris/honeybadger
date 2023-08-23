@@ -1,7 +1,7 @@
 import 'dart:io';
 
-import 'package:OutsourcedX/globals.dart';
-import 'package:OutsourcedX/login/view/cubit/login_cubit.dart';
+import 'package:outsourcedx/globals.dart';
+import 'package:outsourcedx/login/view/cubit/login_cubit.dart';
 import 'package:email_validator/email_validator.dart';
 import 'package:flex_color_scheme/flex_color_scheme.dart';
 import 'package:flutter/material.dart';
