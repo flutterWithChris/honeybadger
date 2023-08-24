@@ -57,6 +57,12 @@ class ProfileBloc extends Bloc<ProfileEvent, ProfileState> {
           return ProfileError(error.toString());
         },
       );
+      SharedPreferences prefs = await SharedPreferences.getInstance();
+      if (state.user!.userType == UserType.freelancer) {
+        await prefs.setString('userType', 'freelancer');
+      } else {
+        await prefs.setString('userType', 'client');
+      }
       // _userSubscription =
       //     _userRepository.getUserAsStream(event.userId).listen((user) {
       //   if (!emit.isDone) {
