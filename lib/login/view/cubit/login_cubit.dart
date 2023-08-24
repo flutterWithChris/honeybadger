@@ -18,7 +18,7 @@ class LoginCubit extends Cubit<LoginState> {
       user != null
           ? emit(state.copyWith(status: LoginStatus.success, user: user))
           : emit(state.copyWith(status: LoginStatus.error));
-    } on auth.FirebaseAuthException {
+    } catch (e) {
       emit(state.copyWith(status: LoginStatus.error));
     }
   }
@@ -30,7 +30,7 @@ class LoginCubit extends Cubit<LoginState> {
       user != null
           ? emit(state.copyWith(status: LoginStatus.success, user: user))
           : emit(state.copyWith(status: LoginStatus.error));
-    } on auth.FirebaseAuthException {
+    } catch (e) {
       emit(state.copyWith(status: LoginStatus.error));
     }
   }
@@ -42,7 +42,7 @@ class LoginCubit extends Cubit<LoginState> {
       user != null
           ? emit(state.copyWith(status: LoginStatus.success, user: user))
           : emit(state.copyWith(status: LoginStatus.error));
-    } on auth.FirebaseAuthException {
+    } catch (e) {
       emit(state.copyWith(status: LoginStatus.error));
     }
   }
@@ -55,7 +55,7 @@ class LoginCubit extends Cubit<LoginState> {
       user != null
           ? emit(state.copyWith(status: LoginStatus.success, user: user))
           : emit(state.copyWith(status: LoginStatus.error));
-    } on auth.FirebaseAuthException {
+    } catch (e) {
       emit(state.copyWith(status: LoginStatus.error));
     }
   }
@@ -65,7 +65,7 @@ class LoginCubit extends Cubit<LoginState> {
     try {
       await _authRepository.signOut();
       emit(state.copyWith(status: LoginStatus.initial));
-    } on auth.FirebaseAuthException {
+    } catch (e) {
       emit(state.copyWith(status: LoginStatus.error));
     }
   }

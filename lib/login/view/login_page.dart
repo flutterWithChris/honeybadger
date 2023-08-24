@@ -38,14 +38,12 @@ class _LoginPageState extends State<LoginPage> {
         if (state.status == LoginStatus.submitting) {
           return const Center(child: CircularProgressIndicator());
         }
-        if (state.status == LoginStatus.error) {
-          return const Center(child: Text('Error'));
-        }
 
         if (state.status == LoginStatus.success) {
           return const Center(child: Text('Success!'));
         }
-        if (state.status == LoginStatus.initial) {
+        if (state.status == LoginStatus.initial ||
+            state.status == LoginStatus.error) {
           return Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [

@@ -51,7 +51,7 @@ void main() async {
 
 // Clear firebase cache
   // await FirebaseFirestore.instance.clearPersistence();
-  // await FirebaseAuth.instance.signOut();
+  //await FirebaseAuth.instance.signOut();
 
 // Clear  Shared Preferences
   // SharedPreferences prefs = await SharedPreferences.getInstance();

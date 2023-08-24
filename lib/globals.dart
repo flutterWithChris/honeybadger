@@ -95,7 +95,7 @@ class OutsourcedFullText extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Text(
-      'outsourcedx',
+      'OutsourcedX',
       style: GoogleFonts.gloock(),
     );
   }

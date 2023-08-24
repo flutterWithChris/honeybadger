@@ -1,7 +1,6 @@
 import 'package:outsourcedx/login/view/login_page.dart';
 import 'package:outsourcedx/message/bloc/messages_bloc.dart';
 import 'package:outsourcedx/message/view/new_chat_screen.dart';
-import 'package:outsourcedx/onboarding/bloc/onboarding_bloc.dart';
 import 'package:outsourcedx/profile/public/view/freelancer_public_profile_page.dart';
 import 'package:outsourcedx/settings/view/settings_page.dart';
 import 'package:animations/animations.dart';
@@ -15,7 +14,6 @@ import 'package:outsourcedx/message/view/messages_page.dart';
 import 'package:outsourcedx/onboarding/stripe_confirmation.dart';
 import 'package:outsourcedx/onboarding/view/onboarding_page.dart';
 import 'package:outsourcedx/onboarding/view/pages/welcome/welcome_page.dart';
-import 'package:outsourcedx/payments/bloc/payments_bloc.dart';
 import 'package:outsourcedx/payments/details/payment_details.dart';
 import 'package:outsourcedx/payments/model/balance_transaction.dart';
 import 'package:outsourcedx/payments/view/payments_page.dart';
@@ -50,6 +48,9 @@ GoRouter goRouter = GoRouter(
     bool onboarded = prefs.getBool('onboarded') ?? false;
     print('Onboarded: $onboarded');
     //bool onboarded = false;
+    if (state.matchedLocation == '/') {
+      return '/search';
+    }
     if (isOnboarding) {
       return null;
     }
@@ -208,15 +209,7 @@ GoRouter goRouter = GoRouter(
         name: 'stripe-confirmation',
         builder: (context, state) {
           context.read<ProfileBloc>().add(LoadProfile());
-          if (context.read<OnboardingBloc>().state.user != null) {
-            context.read<PaymentsBloc>().add(
-                LoadPayments(user: context.read<OnboardingBloc>().state.user!));
-          } else {
-            if (context.read<ProfileBloc>().state.user != null) {
-              context.read<PaymentsBloc>().add(
-                  LoadPayments(user: context.read<ProfileBloc>().state.user!));
-            }
-          }
+
           print('State path params: ${state.uri.queryParameters}');
           return StripeConfirmationPage(
             stripeAccountId: state.uri.queryParameters['account_id']!,

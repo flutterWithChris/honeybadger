@@ -20,7 +20,7 @@ class SignupCubit extends Cubit<SignupState> {
       user != null
           ? emit(state.copyWith(status: SignupStatus.success, user: user))
           : emit(state.copyWith(status: SignupStatus.error));
-    } on auth.FirebaseAuthException {
+    } catch (e) {
       emit(state.copyWith(status: SignupStatus.error));
     }
   }
@@ -32,7 +32,7 @@ class SignupCubit extends Cubit<SignupState> {
       user != null
           ? emit(state.copyWith(status: SignupStatus.success, user: user))
           : emit(state.copyWith(status: SignupStatus.error));
-    } on auth.FirebaseAuthException {
+    } catch (e) {
       emit(state.copyWith(status: SignupStatus.error));
     }
   }
@@ -44,7 +44,7 @@ class SignupCubit extends Cubit<SignupState> {
       user != null
           ? emit(state.copyWith(status: SignupStatus.success, user: user))
           : emit(state.copyWith(status: SignupStatus.error));
-    } on auth.FirebaseAuthException {
+    } catch (e) {
       emit(state.copyWith(status: SignupStatus.error));
     }
   }
@@ -67,7 +67,7 @@ class SignupCubit extends Cubit<SignupState> {
       user != null
           ? emit(state.copyWith(status: SignupStatus.success, user: user))
           : emit(state.copyWith(status: SignupStatus.error));
-    } on auth.FirebaseAuthException {
+    } catch (e) {
       emit(state.copyWith(status: SignupStatus.error));
     }
   }

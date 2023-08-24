@@ -72,12 +72,11 @@ class MobileProjectsPage extends StatelessWidget {
                 return SliverFillRemaining(
                     child: TabBarView(
                   children: [
-                    if (hasActiveProjects)
-                      ActiveProjectsTab(
-                          projects: state.projects
-                              .where((element) =>
-                                  element.status == ProjectStatus.inProgress)
-                              .toList()),
+                    ActiveProjectsTab(
+                        projects: state.projects
+                            .where((element) =>
+                                element.status == ProjectStatus.inProgress)
+                            .toList()),
                     AppliedProjectsTab(
                         projects: state.projects
                             .where((element) =>
@@ -192,7 +191,7 @@ class ActiveProjectsTab extends StatelessWidget {
           FilledButton(
               // style: FilledButton.styleFrom(
               //     foregroundColor: Colors.white),
-              onPressed: () => context.go('/search  '),
+              onPressed: () => context.go('/search'),
               child: const Text(' Search Jobs'))
         ],
       ));
@@ -290,7 +289,7 @@ class OpenProjectsTab extends StatelessWidget {
           FilledButton(
               // style: FilledButton.styleFrom(
               //     foregroundColor: Colors.white),
-              onPressed: () => context.go('/search  '),
+              onPressed: () => context.go('/search'),
               child: const Text(' Search Jobs'))
         ],
       ));
@@ -344,7 +343,7 @@ class AppliedProjectsTab extends StatelessWidget {
           FilledButton(
               // style: FilledButton.styleFrom(
               //     foregroundColor: Colors.white),
-              onPressed: () => context.go('/search  '),
+              onPressed: () => context.go('/search'),
               child: const Text(' Search Jobs'))
         ],
       ));
@@ -459,7 +458,7 @@ class CompletedProjectsTab extends StatelessWidget {
           FilledButton(
               // style: FilledButton.styleFrom(
               //     foregroundColor: Colors.white),
-              onPressed: () => context.go('/search  '),
+              onPressed: () => context.go('/search'),
               child: const Text(' Search Jobs'))
         ],
       ));
