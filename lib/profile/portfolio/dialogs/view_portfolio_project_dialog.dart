@@ -1,3 +1,4 @@
+import 'package:jiffy/jiffy.dart';
 import 'package:outsourcedx/profile/model/portfolio_project.dart';
 import 'package:outsourcedx/profile/portfolio/bloc/portfolio_bloc.dart';
 import 'package:cached_network_image/cached_network_image.dart';
@@ -6,7 +7,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_gutter/flutter_gutter.dart';
 import 'package:go_router/go_router.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:jiffy/jiffy.dart';
+import 'package:url_launcher/url_launcher_string.dart';
 
 import '../../../auth/bloc/auth_bloc.dart';
 
@@ -104,46 +105,82 @@ class _ViewPortfolioProjectDialogState
                     SizedBox(
                       height: 280,
                       child: _images.isNotEmpty
-                          ? ListView.separated(
-                              scrollDirection: Axis.horizontal,
-                              itemCount: _images.length,
-                              itemBuilder: (context, index) {
-                                return ClipRRect(
+                          ? _images.length == 1
+                              ? ClipRRect(
                                   borderRadius: BorderRadius.circular(16),
-                                  child: SizedBox(
-                                    height: 280,
-                                    child: InkWell(
-                                      onTap: () {
-                                        showDialog(
-                                          context: context,
-                                          builder: (context) {
-                                            return Dialog(
-                                              child: Stack(
-                                                clipBehavior: Clip.none,
-                                                alignment: Alignment.topLeft,
-                                                children: [
-                                                  Card(
-                                                    child: SizedBox(
-                                                      child: CachedNetworkImage(
-                                                          imageUrl:
-                                                              _images[index]),
-                                                    ),
+                                  child: InkWell(
+                                    onTap: () async {
+                                      await showDialog(
+                                        context: context,
+                                        builder: (context) {
+                                          return Dialog(
+                                            child: Stack(
+                                              clipBehavior: Clip.none,
+                                              alignment: Alignment.topLeft,
+                                              children: [
+                                                Card(
+                                                  child: SizedBox(
+                                                    child: CachedNetworkImage(
+                                                        imageUrl: _images[0],
+                                                        fit: BoxFit.cover),
                                                   ),
-                                                ],
-                                              ),
+                                                ),
+                                              ],
+                                            ),
+                                          );
+                                        },
+                                      );
+                                    },
+                                    child: CachedNetworkImage(
+                                        imageUrl: _images[0] ?? '',
+                                        fit: BoxFit.cover),
+                                  ))
+                              : ListView.separated(
+                                  scrollDirection: Axis.horizontal,
+                                  itemCount: _images.length,
+                                  itemBuilder: (context, index) {
+                                    return ClipRRect(
+                                      borderRadius: BorderRadius.circular(16),
+                                      child: SizedBox(
+                                        height: 280,
+                                        child: InkWell(
+                                          onTap: () async {
+                                            await showDialog(
+                                              context: context,
+                                              builder: (context) {
+                                                return Dialog(
+                                                  child: Stack(
+                                                    clipBehavior: Clip.none,
+                                                    alignment:
+                                                        Alignment.topLeft,
+                                                    children: [
+                                                      Card(
+                                                        child: SizedBox(
+                                                          child:
+                                                              CachedNetworkImage(
+                                                                  imageUrl:
+                                                                      _images[
+                                                                          index],
+                                                                  fit: BoxFit
+                                                                      .cover),
+                                                        ),
+                                                      ),
+                                                    ],
+                                                  ),
+                                                );
+                                              },
                                             );
                                           },
-                                        );
-                                      },
-                                      child: CachedNetworkImage(
-                                          imageUrl: _images[index] ?? ''),
-                                    ),
-                                  ),
-                                );
-                              },
-                              separatorBuilder: (context, index) =>
-                                  const GutterSmall(),
-                            )
+                                          child: CachedNetworkImage(
+                                              imageUrl: _images[index],
+                                              fit: BoxFit.cover),
+                                        ),
+                                      ),
+                                    );
+                                  },
+                                  separatorBuilder: (context, index) =>
+                                      const GutterSmall(),
+                                )
                           : Container(
                               height: 160,
                               width: 160,
@@ -198,63 +235,63 @@ class _ViewPortfolioProjectDialogState
                       style: Theme.of(context).textTheme.titleSmall,
                     ),
                     const GutterTiny(),
-                    Text(widget.project.description!,
-                        style: Theme.of(context).textTheme.bodyMedium),
-                    const GutterTiny(),
-                    if (widget.project.url != null)
+                    if (widget.project.startDate != null &&
+                        widget.project.endDate != null)
                       Row(
+                        mainAxisAlignment: MainAxisAlignment.start,
                         children: [
-                          Text('Link: ',
-                              style: Theme.of(context).textTheme.titleSmall),
-                          TextButton(
-                              onPressed: () {},
-                              child: Text(widget.project.url!)),
+                          const Icon(
+                            Icons.calendar_month,
+                            size: 12.0,
+                          ),
+                          const GutterTiny(),
+                          Text(
+                              '${Jiffy.parseFromDateTime(_projectStart!).yMMMd} - ${Jiffy.parseFromDateTime(_projectEnd!).yMMMd}',
+                              style: Theme.of(context).textTheme.bodySmall)
+                        ],
+                      ),
+                    if (widget.project.startDate != null &&
+                        widget.project.endDate == null)
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        children: [
+                          const Icon(
+                            Icons.calendar_month,
+                            size: 12.0,
+                          ),
+                          const GutterTiny(),
+                          Text(
+                              '${Jiffy.parseFromDateTime(_projectStart!).yMMMd} - Ongoing',
+                              style: Theme.of(context).textTheme.bodySmall)
                         ],
                       ),
                     const GutterTiny(),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                      children: [
-                        Flexible(
-                            flex: 3,
-                            child: ActionChip(
-                              side: BorderSide.none,
-                              label: _projectStart != null
-                                  ? Text(Jiffy.parseFromDateTime(_projectStart!)
-                                      .yMMMd)
-                                  : const Text('Project Start'),
-                              onPressed: () => showDatePicker(
-                                      context: context,
-                                      initialDate: DateTime.now(),
-                                      firstDate: DateTime.now()
-                                          .subtract(const Duration(days: 3650)),
-                                      lastDate: DateTime.now())
-                                  .then((value) => setState(() {
-                                        _projectStart = value;
-                                      })),
-                            )),
-                        const Expanded(child: Center(child: Text('to'))),
-                        Flexible(
-                            flex: 3,
-                            child: ActionChip(
-                              side: BorderSide.none,
-                              label: _projectEnd != null
-                                  ? Text(Jiffy.parseFromDateTime(_projectEnd!)
-                                      .yMMMd)
-                                  : const Text('Ongoing'),
-                              onPressed: () => showDatePicker(
-                                      context: context,
-                                      initialDate: DateTime.now(),
-                                      firstDate: DateTime.now()
-                                          .subtract(const Duration(days: 3650)),
-                                      lastDate: DateTime.now())
-                                  .then((value) => setState(() {
-                                        _projectEnd = value;
-                                      })),
-                            )),
-                      ],
-                    ),
-                    const Gutter(),
+                    Text(widget.project.description!,
+                        style: Theme.of(context).textTheme.bodyMedium),
+                    const GutterSmall(),
+                    if (widget.project.url != null)
+                      Column(
+                        mainAxisSize: MainAxisSize.min,
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          // Text('Link',
+                          //     style: Theme.of(context).textTheme.titleSmall),
+                          Flexible(
+                            child: OutlinedButton.icon(
+                                onPressed: () async {
+                                  await launchUrlString(widget.project.url!,
+                                      mode: LaunchMode.externalApplication);
+                                },
+                                icon: const Icon(Icons.link_rounded),
+                                label: Text(
+                                  widget.project.url!,
+                                  maxLines: 1,
+                                  overflow: TextOverflow.ellipsis,
+                                )),
+                          ),
+                        ],
+                      ),
+                    const GutterTiny(),
                   ]),
             );
           } else {

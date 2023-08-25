@@ -1,4 +1,5 @@
 import 'package:outsourcedx/core/presentation/drawers/main_drawer.dart';
+import 'package:outsourcedx/profile/portfolio/bloc/portfolio_bloc.dart';
 import 'package:outsourcedx/profile/public/bloc/bloc/freelancer_public_profile_bloc.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
@@ -467,6 +468,9 @@ class FreelancerCard extends StatelessWidget {
           context
               .read<FreelancerPublicProfileBloc>()
               .add(LoadFreelancerPublicProfile(freelancer.id!));
+          context.read<PortfolioBloc>().add(
+                LoadPortfolio(userId: freelancer.id!),
+              );
           context.push('/search/freelancer-profile/${freelancer.id}',
               extra: freelancer.id);
         },
