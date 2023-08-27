@@ -10,6 +10,7 @@ import 'package:outsourcedx/search/repository/search_repository.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:mapbox_search/mapbox_search.dart';
 
+import '../../../../../core/constants.dart';
 import '../../../../../profile/model/category.dart';
 import '../../../../../profile/model/user.dart';
 import '../../../../bloc/onboarding_bloc.dart';
@@ -44,6 +45,7 @@ class _MobileProfileSetupState extends State<MobileProfileSetup> {
     types: [PlaceType.address],
   );
   MapBoxPlace? selectedPlace;
+  bool? imageSelected;
 
   List<String> selectedSkills = [];
   List<Category> selectedCategories = [];
@@ -96,21 +98,89 @@ class _MobileProfileSetupState extends State<MobileProfileSetup> {
                     clipBehavior: Clip.none,
                     alignment: Alignment.bottomRight,
                     children: [
-                      CircleAvatar(
-                          radius: 34.0,
-                          foregroundImage: context
-                                      .watch<OnboardingBloc>()
-                                      .state
-                                      .user!
-                                      .photoUrl !=
-                                  null
-                              ? CachedNetworkImageProvider(context
-                                  .watch<OnboardingBloc>()
-                                  .state
-                                  .user!
-                                  .photoUrl!)
-                              : null,
-                          child: const Icon(Icons.person)),
+                      imageSelected == false
+                          ? CircleAvatar(
+                              radius: 36.0,
+                              backgroundColor: imageSelected == false
+                                  ? Colors.redAccent
+                                  : Colors.transparent,
+                              child: InkWell(
+                                onTap: () async {
+                                  await ImagePicker()
+                                      .pickImage(source: ImageSource.gallery)
+                                      .then((profilePicture) {
+                                    if (profilePicture != null) {
+                                      context.read<OnboardingBloc>().add(
+                                          SetUserProfilePicture(
+                                              profilePicture,
+                                              context
+                                                  .read<OnboardingBloc>()
+                                                  .state
+                                                  .user!));
+                                    } else {
+                                      scaffoldKey.currentState!
+                                          .showSnackBar(const SnackBar(
+                                        content: Text('No image selected.'),
+                                      ));
+                                    }
+                                    return profilePicture;
+                                  });
+                                },
+                                child: CircleAvatar(
+                                    radius: 34.0,
+                                    foregroundImage: context
+                                                .watch<OnboardingBloc>()
+                                                .state
+                                                .user!
+                                                .photoUrl !=
+                                            null
+                                        ? CachedNetworkImageProvider(context
+                                            .watch<OnboardingBloc>()
+                                            .state
+                                            .user!
+                                            .photoUrl!)
+                                        : null,
+                                    child: const Icon(Icons.person)),
+                              ),
+                            )
+                          : InkWell(
+                              onTap: () async {
+                                await ImagePicker()
+                                    .pickImage(source: ImageSource.gallery)
+                                    .then((profilePicture) {
+                                  if (profilePicture != null) {
+                                    context.read<OnboardingBloc>().add(
+                                        SetUserProfilePicture(
+                                            profilePicture,
+                                            context
+                                                .read<OnboardingBloc>()
+                                                .state
+                                                .user!));
+                                  } else {
+                                    scaffoldKey.currentState!
+                                        .showSnackBar(const SnackBar(
+                                      content: Text('No image selected.'),
+                                    ));
+                                  }
+                                  return profilePicture;
+                                });
+                              },
+                              child: CircleAvatar(
+                                  radius: 34.0,
+                                  foregroundImage: context
+                                              .watch<OnboardingBloc>()
+                                              .state
+                                              .user!
+                                              .photoUrl !=
+                                          null
+                                      ? CachedNetworkImageProvider(context
+                                          .watch<OnboardingBloc>()
+                                          .state
+                                          .user!
+                                          .photoUrl!)
+                                      : null,
+                                  child: const Icon(Icons.person)),
+                            ),
                       Positioned(
                         right: -10,
                         bottom: -8,
@@ -133,6 +203,11 @@ class _MobileProfileSetupState extends State<MobileProfileSetup> {
                                               .read<OnboardingBloc>()
                                               .state
                                               .user!));
+                                } else {
+                                  scaffoldKey.currentState!
+                                      .showSnackBar(const SnackBar(
+                                    content: Text('No image selected.'),
+                                  ));
                                 }
                                 return profilePicture;
                               });
@@ -592,9 +667,12 @@ class _MobileProfileSetupState extends State<MobileProfileSetup> {
             FilledButton(
                 onPressed: () async {
                   bool categoryIsValid = selectedCategories.isNotEmpty;
-
+                  imageSelected =
+                      context.read<OnboardingBloc>().state.user!.photoUrl !=
+                          null;
                   if (_profileFormKey.currentState!.validate() &&
-                      categoryIsValid) {
+                      categoryIsValid &&
+                      imageSelected == true) {
                     context.read<OnboardingBloc>().add(UpdateUser(context
                         .read<OnboardingBloc>()
                         .state
@@ -629,6 +707,24 @@ class _MobileProfileSetupState extends State<MobileProfileSetup> {
                         duration: const Duration(milliseconds: 500),
                         curve: Curves.ease);
                   } else {
+                    if (imageSelected == false) {
+                      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+                          backgroundColor: Colors.red,
+                          behavior: SnackBarBehavior.floating,
+                          content: Row(
+                            children: [
+                              Icon(
+                                Icons.error,
+                                color: Colors.white,
+                              ),
+                              SizedBox(width: 8.0),
+                              Text(
+                                'Please select a profile picture.',
+                                style: TextStyle(color: Colors.white),
+                              ),
+                            ],
+                          )));
+                    }
                     ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
                         backgroundColor: Colors.red,
                         behavior: SnackBarBehavior.floating,
