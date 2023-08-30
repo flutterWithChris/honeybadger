@@ -1,3 +1,4 @@
+import 'package:flutter/cupertino.dart';
 import 'package:outsourcedx/core/presentation/drawers/main_drawer.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -38,9 +39,14 @@ class _MobileSearchPageState extends State<MobileSearchPage> {
         onRefresh: () async {
           if (context.read<SearchBloc>().state is SearchLoaded) {
             context.read<SearchBloc>().add(ReloadSearch());
+          } else {
+            context.read<SearchBloc>().add(LoadSearch(
+                  context.read<ProfileBloc>().state.user!,
+                ));
           }
         },
         child: CustomScrollView(
+          scrollBehavior: const CupertinoScrollBehavior(),
           slivers: [
             MobileSliverAppBar(),
             SliverToBoxAdapter(

@@ -409,10 +409,17 @@ class MilestoneTimeline extends StatelessWidget {
                                   ? proposal.milestones![i].workSubmission !=
                                               null &&
                                           proposal.milestones![i].isPaid != true
-                                      ? Icon(MdiIcons.fileCheck)
+                                      ? Icon(
+                                          MdiIcons.fileCheck,
+                                          color: Colors.white,
+                                        )
                                       : proposal.milestones![i].isPaid != true
-                                          ? Icon(MdiIcons.cashCheck)
-                                          : Icon(MdiIcons.checkBold)
+                                          ? Icon(MdiIcons.cashCheck,
+                                              color: Colors.white)
+                                          : Icon(
+                                              MdiIcons.checkBold,
+                                              color: Colors.white,
+                                            )
                                   : null,
                               label: Text(
                                 proposal.milestones![i].funded == true

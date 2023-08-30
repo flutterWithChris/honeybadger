@@ -4,7 +4,6 @@ import 'package:outsourcedx/globals.dart';
 import 'package:outsourcedx/profile/portfolio/bloc/portfolio_bloc.dart';
 import 'package:outsourcedx/profile/portfolio/widgets/portfolio_card.dart';
 import 'package:outsourcedx/profile/public/bloc/bloc/freelancer_public_profile_bloc.dart';
-import 'package:outsourcedx/profile/view/widgets/add_project_dialog.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
@@ -93,7 +92,7 @@ class FreelancerPublicProfilePage extends StatelessWidget {
                                         state.user.title ?? 'No title set',
                                         style: Theme.of(context)
                                             .textTheme
-                                            .bodyMedium,
+                                            .bodySmall,
                                       ),
                                     ),
                                     Row(
@@ -143,7 +142,7 @@ class FreelancerPublicProfilePage extends StatelessWidget {
                           icon: const Icon(Icons.email_rounded, size: 20.0),
                           label: const Text('Contact Me')),
                     ),
-                    const Gutter(),
+                    const GutterTiny(),
                     Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 0.0),
                       child: BlocBuilder<PortfolioBloc, PortfolioState>(
@@ -162,16 +161,6 @@ class FreelancerPublicProfilePage extends StatelessWidget {
                                             .textTheme
                                             .titleLarge,
                                       ),
-                                      const GutterTiny(),
-                                      IconButton(
-                                          onPressed: () async {
-                                            await showDialog(
-                                                context: context,
-                                                builder: (context) =>
-                                                    const AddProjectDialog());
-                                          },
-                                          icon: const Icon(
-                                              Icons.add_circle_outline_rounded))
                                     ],
                                   ),
                                 ),
@@ -224,11 +213,19 @@ class FreelancerPublicProfilePage extends StatelessWidget {
                               mainAxisSize: MainAxisSize.min,
                               crossAxisAlignment: CrossAxisAlignment.stretch,
                               children: [
+                                const GutterSmall(),
                                 Padding(
                                   padding: const EdgeInsets.symmetric(
                                       horizontal: 16.0),
                                   child: Row(
                                     children: [
+                                      Icon(
+                                        MdiIcons.folderOpenOutline,
+                                        size: 18.0,
+                                        color:
+                                            Theme.of(context).iconTheme.color,
+                                      ),
+                                      const GutterSmall(),
                                       Text(
                                         'Portfolio',
                                         style: Theme.of(context)
@@ -286,6 +283,12 @@ class FreelancerPublicProfilePage extends StatelessWidget {
                       padding: const EdgeInsets.symmetric(horizontal: 16.0),
                       child: Row(
                         children: [
+                          Icon(
+                            MdiIcons.informationOutline,
+                            size: 18.0,
+                            color: Theme.of(context).iconTheme.color,
+                          ),
+                          const GutterSmall(),
                           Text(
                             'About Me',
                             style: Theme.of(context).textTheme.titleLarge,
@@ -307,6 +310,12 @@ class FreelancerPublicProfilePage extends StatelessWidget {
                       padding: const EdgeInsets.symmetric(horizontal: 16.0),
                       child: Row(
                         children: [
+                          Icon(
+                            MdiIcons.certificateOutline,
+                            size: 18.0,
+                            color: Theme.of(context).iconTheme.color,
+                          ),
+                          const GutterSmall(),
                           Text(
                             'Skills',
                             style: Theme.of(context).textTheme.titleLarge,
@@ -339,14 +348,21 @@ class FreelancerPublicProfilePage extends StatelessWidget {
                         ),
                       ),
                     const Gutter(),
-                    state.user.reviews != null && state.user.reviews!.isNotEmpty
-                        ? Padding(
-                            padding:
-                                const EdgeInsets.symmetric(horizontal: 16.0),
-                            child: Text('Reviews',
-                                style: Theme.of(context).textTheme.titleLarge),
-                          )
-                        : const SizedBox(),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                      child: Row(
+                        children: [
+                          Icon(
+                            MdiIcons.starOutline,
+                            size: 18.0,
+                            color: Theme.of(context).iconTheme.color,
+                          ),
+                          const GutterSmall(),
+                          Text('Reviews',
+                              style: Theme.of(context).textTheme.titleLarge),
+                        ],
+                      ),
+                    ),
                     state.user.reviews != null && state.user.reviews!.isNotEmpty
                         ? ReviewList(
                             user: state.user,

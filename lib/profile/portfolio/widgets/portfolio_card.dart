@@ -2,10 +2,10 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:outsourcedx/profile/bloc/profile_bloc.dart';
 import 'package:outsourcedx/profile/model/portfolio_project.dart';
 import 'package:outsourcedx/profile/model/user.dart';
-import 'package:outsourcedx/profile/portfolio/dialogs/edit_profile_dialog.dart';
-import 'package:outsourcedx/profile/portfolio/dialogs/view_profile_dialog.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:outsourcedx/profile/portfolio/dialogs/edit_portfolio_project_dialog.dart';
+import 'package:outsourcedx/profile/portfolio/dialogs/view_portfolio_project_dialog.dart';
 
 class PortfolioCard extends StatelessWidget {
   final PortfolioProject project;
@@ -65,7 +65,7 @@ class PortfolioCard extends StatelessWidget {
               ),
               Positioned.fill(
                 child: Padding(
-                  padding: const EdgeInsets.all(16.0),
+                  padding: const EdgeInsets.all(8.0),
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.end,
                     crossAxisAlignment: CrossAxisAlignment.start,

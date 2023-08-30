@@ -217,14 +217,14 @@ class EmptyReviewsWidget extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(
-            'No Reviews Yet',
-            style: Theme.of(context)
-                .textTheme
-                .bodyMedium
-                ?.copyWith(fontWeight: FontWeight.bold),
-          ),
-          const Gutter(),
+          // Text(
+          //   'No Reviews Yet',
+          //   style: Theme.of(context)
+          //       .textTheme
+          //       .bodyMedium
+          //       ?.copyWith(fontWeight: FontWeight.bold),
+          // ),
+          // const Gutter(),
           Text(
             'This user has no reviews yet.',
             style: Theme.of(context).textTheme.bodyMedium,

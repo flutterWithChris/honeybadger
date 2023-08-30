@@ -1,3 +1,4 @@
+import 'package:flutter/cupertino.dart';
 import 'package:outsourcedx/onboarding/view/pages/profile_setup/bloc/skills/bloc/skill_search_bloc.dart';
 import 'package:outsourcedx/profile/portfolio/bloc/portfolio_bloc.dart';
 import 'package:outsourcedx/profile/portfolio/widgets/portfolio_card.dart';
@@ -25,6 +26,7 @@ class MobileProfilePage extends StatelessWidget {
       drawer: const MainDrawer(),
       bottomNavigationBar: const MainBottomNavBar(),
       body: CustomScrollView(
+        scrollBehavior: const CupertinoScrollBehavior(),
         slivers: [
           MobileSliverAppBar(
             iconOnly: true,
@@ -168,6 +170,11 @@ class MobileProfilePage extends StatelessWidget {
                                       horizontal: 16.0),
                                   child: Row(
                                     children: [
+                                      Icon(
+                                        MdiIcons.folderOutline,
+                                        size: 20.0,
+                                      ),
+                                      const GutterTiny(),
                                       Text(
                                         'Portfolio',
                                         style: Theme.of(context)
@@ -247,6 +254,11 @@ class MobileProfilePage extends StatelessWidget {
                                       horizontal: 16.0),
                                   child: Row(
                                     children: [
+                                      Icon(
+                                        MdiIcons.folderOpenOutline,
+                                        size: 18.0,
+                                      ),
+                                      const GutterSmall(),
                                       Text(
                                         'Portfolio',
                                         style: Theme.of(context)
@@ -261,8 +273,7 @@ class MobileProfilePage extends StatelessWidget {
                                                 builder: (context) =>
                                                     const AddProjectDialog());
                                           },
-                                          icon: const Icon(
-                                              Icons.add_circle_outline_rounded))
+                                          icon: const Icon(Icons.add))
                                     ],
                                   ),
                                 ),
@@ -348,6 +359,11 @@ class MobileProfilePage extends StatelessWidget {
                       padding: const EdgeInsets.symmetric(horizontal: 16.0),
                       child: Row(
                         children: [
+                          Icon(
+                            MdiIcons.informationOutline,
+                            size: 18.0,
+                          ),
+                          const GutterSmall(),
                           Text(
                             'About Me',
                             style: Theme.of(context).textTheme.titleLarge,
@@ -376,6 +392,11 @@ class MobileProfilePage extends StatelessWidget {
                       padding: const EdgeInsets.symmetric(horizontal: 16.0),
                       child: Row(
                         children: [
+                          Icon(
+                            MdiIcons.certificateOutline,
+                            size: 18.0,
+                          ),
+                          const GutterSmall(),
                           Text(
                             'Skills',
                             style: Theme.of(context).textTheme.titleLarge,
@@ -388,8 +409,7 @@ class MobileProfilePage extends StatelessWidget {
                                     builder: (context) =>
                                         const AddSkillsDialog());
                               },
-                              icon:
-                                  const Icon(Icons.add_circle_outline_rounded))
+                              icon: const Icon(Icons.add))
                         ],
                       ),
                     ),
@@ -418,8 +438,17 @@ class MobileProfilePage extends StatelessWidget {
                     const Gutter(),
                     Padding(
                       padding: const EdgeInsets.only(left: 16.0),
-                      child: Text('Reviews',
-                          style: Theme.of(context).textTheme.titleLarge),
+                      child: Row(
+                        children: [
+                          Icon(
+                            MdiIcons.starOutline,
+                            size: 18.0,
+                          ),
+                          const GutterSmall(),
+                          Text('Reviews',
+                              style: Theme.of(context).textTheme.titleLarge),
+                        ],
+                      ),
                     ),
                     state.user.reviews != null && state.user.reviews!.isNotEmpty
                         ? ReviewList(

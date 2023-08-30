@@ -270,7 +270,7 @@ class _ClientIndustryPageState extends State<ClientIndustryPage> {
                       children: [
                         Expanded(
                           child: FilledButton(
-                            onPressed: () {
+                            onPressed: () async {
                               if (_formKey.currentState!.validate()) {
                                 var currentUser =
                                     context.read<OnboardingBloc>().state.user!;
@@ -289,6 +289,9 @@ class _ClientIndustryPageState extends State<ClientIndustryPage> {
                                         categories: selectedCategories,
                                       ),
                                     ));
+                                SharedPreferences prefs =
+                                    await SharedPreferences.getInstance();
+                                prefs.setBool('onboarded', true);
                                 context.go('/search');
                               }
                             },

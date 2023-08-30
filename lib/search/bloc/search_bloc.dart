@@ -90,6 +90,12 @@ class SearchBloc extends Bloc<SearchEvent, SearchState> {
               List<User> freelancers = [];
               for (Hit hit in value.hits) {
                 print('Hit found: ${hit.toString()}');
+                // Check if hit contains null values for fields used in freelancer card
+                if (hit['firstName'] == null ||
+                    hit['lastName'] == null ||
+                    hit['photoUrl'] == null) {
+                  continue;
+                }
                 freelancers.add(User.fromAlgoliaSearch(hit));
               }
               print('Search Bloc received Freelancer Ids: $freelancers');
