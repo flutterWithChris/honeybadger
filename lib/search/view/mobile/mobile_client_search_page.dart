@@ -46,12 +46,14 @@ class _MobileClientSearchPageState extends State<MobileClientSearchPage> {
       floatingActionButton: OpenContainer(
           transitionDuration: const Duration(milliseconds: 400),
           closedColor: Colors.transparent,
+          closedElevation: 0,
           openColor: Theme.of(context).canvasColor,
           openBuilder: (context, action) {
             return const CreateProjectPage();
           },
           closedBuilder: (context, action) {
             return FloatingActionButton(
+              elevation: 0,
               onPressed: () {
                 action();
               },

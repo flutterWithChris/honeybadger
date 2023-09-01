@@ -279,6 +279,11 @@ class _ViewPortfolioProjectDialogState
                           Flexible(
                             child: OutlinedButton.icon(
                                 onPressed: () async {
+                                  if (!widget.project.url!
+                                      .contains('https://')) {
+                                    widget.project.url =
+                                        'https://${widget.project.url}';
+                                  }
                                   await launchUrlString(widget.project.url!,
                                       mode: LaunchMode.externalApplication);
                                 },

@@ -7,6 +7,7 @@ import 'package:outsourcedx/core/constants.dart';
 import 'package:outsourcedx/profile/model/user.dart';
 import 'package:outsourcedx/profile/repository/base_user_repository.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:rxdart/rxdart.dart';
 
 class UserRepository extends BaseUserRepository {
   final FirebaseFirestore _firebaseFirestore = FirebaseFirestore.instance;
@@ -89,6 +90,26 @@ class UserRepository extends BaseUserRepository {
           .map((doc) {
         print('Stream User: ${User.fromDocument(doc)}}');
         return User.fromDocument(doc);
+      }).onErrorResume((error, stackTrace) {
+        if (getUserPath(user) == 'freelancers') {
+          return _firebaseFirestore
+              .collection('clients')
+              .doc(user.id)
+              .snapshots()
+              .map((doc) {
+            print('Stream User: ${User.fromDocument(doc)}}');
+            return User.fromDocument(doc);
+          });
+        } else {
+          return _firebaseFirestore
+              .collection('freelancers')
+              .doc(user.id)
+              .snapshots()
+              .map((doc) {
+            print('Stream User: ${User.fromDocument(doc)}}');
+            return User.fromDocument(doc);
+          });
+        }
       });
     } catch (e) {
       print(e);

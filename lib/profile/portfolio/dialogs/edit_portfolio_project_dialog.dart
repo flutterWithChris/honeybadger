@@ -8,6 +8,7 @@ import 'package:flutter_gutter/flutter_gutter.dart';
 import 'package:go_router/go_router.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:jiffy/jiffy.dart';
+import 'package:outsourcedx/profile/portfolio/dialogs/view_portfolio_project_dialog.dart';
 
 import '../../../auth/bloc/auth_bloc.dart';
 
@@ -98,8 +99,76 @@ class _EditPortfolioProjectDialogState
                   padding: const EdgeInsets.symmetric(
                       horizontal: 24.0, vertical: 16.0),
                   children: [
-                    Text('View Project',
-                        style: Theme.of(context).textTheme.headlineMedium),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text('Edit Project',
+                            style: Theme.of(context).textTheme.headlineMedium),
+                        Row(
+                          children: [
+                            IconButton.outlined(
+                              style: IconButton.styleFrom(
+                                  minimumSize: const Size(32, 32)),
+                              onPressed: () {
+                                showDialog(
+                                  context: context,
+                                  builder: (context) {
+                                    return ViewPortfolioProjectDialog(
+                                      project: widget.project,
+                                    );
+                                  },
+                                );
+                              },
+                              icon: const Icon(
+                                Icons.visibility,
+                                size: 18,
+                              ),
+                            ),
+                            const GutterTiny(),
+                            IconButton.outlined(
+                              style: IconButton.styleFrom(
+                                  minimumSize: const Size(32, 32)),
+                              onPressed: () {
+                                showDialog(
+                                  context: context,
+                                  builder: (context) {
+                                    return AlertDialog(
+                                      title: const Text('Delete Project'),
+                                      content: const Text(
+                                          'Are you sure you want to delete this project?'),
+                                      actions: [
+                                        TextButton(
+                                            onPressed: () {
+                                              context.pop();
+                                            },
+                                            child: const Text('Cancel')),
+                                        TextButton(
+                                            onPressed: () {
+                                              context.pop();
+                                              context.read<PortfolioBloc>().add(
+                                                  DeleteProject(
+                                                      project: widget.project,
+                                                      userId: context
+                                                          .read<ProfileBloc>()
+                                                          .state
+                                                          .user!
+                                                          .id!));
+                                            },
+                                            child: const Text('Delete')),
+                                      ],
+                                    );
+                                  },
+                                );
+                              },
+                              icon: const Icon(
+                                Icons.delete_outline_rounded,
+                                size: 18.0,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
                     const Gutter(),
                     TextFormField(
                       controller: _projectNameController,
@@ -189,7 +258,7 @@ class _EditPortfolioProjectDialogState
                       keyboardType: TextInputType.url,
                       decoration: const InputDecoration(
                         label: Text('Project Link'),
-                        prefixText: 'https://',
+                        hintText: 'https://example.com',
                       ),
                     ),
                     Row(
@@ -373,70 +442,63 @@ class _EditPortfolioProjectDialogState
                     ),
                     const Gutter(),
                     Row(
-                      mainAxisAlignment: MainAxisAlignment.end,
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        TextButton(
-                            onPressed: () {
-                              Navigator.pop(context);
-                            },
-                            child: const Text('Cancel')),
-                        const Gutter(),
-                        FilledButton(
-                            onPressed: () {
-                              if (_images.isEmpty) {
-                                setState(() {
-                                  imageValid = false;
-                                });
-                                ScaffoldMessenger.of(context).showSnackBar(
-                                    const SnackBar(
-                                        content: Text(
-                                            'Please select at least one image')));
-                                return;
-                              }
-                              if (formKey.currentState!.validate()) {
-                                context.read<PortfolioBloc>().add(UpdateProject(
-                                    project: PortfolioProject(
-                                      title: _projectNameController.value.text
-                                          .trim(),
-                                      description: _projectDescriptionController
-                                          .text
-                                          .trim(),
-                                      url: _projectLinkController.value.text
-                                          .trim(),
-                                      startDate: _projectStart,
-                                      endDate: _projectEnd,
-                                    ),
-                                    images: _newImages,
-                                    userId: context
-                                        .read<AuthBloc>()
-                                        .state
-                                        .user!
-                                        .uid));
-                              } else {
-                                ScaffoldMessenger.of(context).showSnackBar(
-                                    const SnackBar(
-                                        content:
-                                            Text('Please fill in all fields')));
-                              }
-                            },
-                            child: const Text('Save')),
-                        const Gutter(),
+                        Expanded(
+                          child: TextButton(
+                              onPressed: () {
+                                Navigator.pop(context);
+                              },
+                              child: const Text('Cancel')),
+                        ),
+                        Expanded(
+                          child: FilledButton(
+                              onPressed: () {
+                                if (_images.isEmpty) {
+                                  setState(() {
+                                    imageValid = false;
+                                  });
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                      const SnackBar(
+                                          content: Text(
+                                              'Please select at least one image')));
+                                  return;
+                                }
+                                if (formKey.currentState!.validate()) {
+                                  context.read<PortfolioBloc>().add(
+                                      UpdateProject(
+                                          project: PortfolioProject(
+                                            title: _projectNameController
+                                                .value.text
+                                                .trim(),
+                                            description:
+                                                _projectDescriptionController
+                                                    .text
+                                                    .trim(),
+                                            url: _projectLinkController
+                                                .value.text
+                                                .trim(),
+                                            startDate: _projectStart,
+                                            endDate: _projectEnd,
+                                          ),
+                                          images: _newImages,
+                                          userId: context
+                                              .read<AuthBloc>()
+                                              .state
+                                              .user!
+                                              .uid));
+                                } else {
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                      const SnackBar(
+                                          content: Text(
+                                              'Please fill in all fields')));
+                                }
+                              },
+                              child: const Text('Save')),
+                        ),
+                        const Spacer(),
                       ],
                     ),
-                    TextButton.icon(
-                        onPressed: () => context.read<PortfolioBloc>().add(
-                            DeleteProject(
-                                project: widget.project,
-                                userId: context
-                                    .read<ProfileBloc>()
-                                    .state
-                                    .user!
-                                    .id!)),
-                        icon: const Icon(
-                          Icons.delete_outline_rounded,
-                          size: 20.0,
-                        ),
-                        label: const Text('Delete Project')),
                   ]),
             );
           } else {
