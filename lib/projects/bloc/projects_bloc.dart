@@ -58,7 +58,6 @@ class ProjectsBloc extends Bloc<ProjectsEvent, ProjectsState> {
       return;
     }
     await _projectsRepository.createProjectReference(event.user, newProjectId);
-    await Future.delayed(const Duration(seconds: 2));
     emit(ProjectCreated(event.project));
   }
 

@@ -22,22 +22,10 @@ class ClientProjectsSliverAppBar extends StatelessWidget {
                 'assets/logos/OutsourcedX_White.png',
                 height: 40,
               ),
-        actions: [
-          Padding(
-            padding: const EdgeInsets.only(right: 12.0),
-            child: IconButton(
-              icon: const Icon(Icons.menu),
-              onPressed: () {},
-            ),
-          ),
-        ],
         bottom: const TabBar(
           tabs: [
             Tab(
               text: 'Active',
-            ),
-            Tab(
-              text: 'Open',
             ),
             Tab(
               text: 'Completed',

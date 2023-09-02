@@ -221,6 +221,8 @@ class _ClientIndustryPageState extends State<ClientIndustryPage> {
                         controller: textEditingController,
                         textCapitalization: TextCapitalization.words,
                         focusNode: focusNode,
+                        scrollPadding: EdgeInsets.only(
+                            bottom: MediaQuery.sizeOf(context).height * 0.3),
                         decoration: const InputDecoration(
                           label: Text('Categories'),
                           hintText: 'Add up to 3 categories..',

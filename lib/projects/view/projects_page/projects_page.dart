@@ -9,6 +9,7 @@ import 'package:outsourcedx/core/presentation/system/mobile_jobs_app_bar%20copy.
 import 'package:outsourcedx/profile/bloc/profile_bloc.dart';
 import 'package:outsourcedx/profile/model/user.dart';
 import 'package:outsourcedx/projects/bloc/projects_bloc.dart';
+import 'package:outsourcedx/projects/view/widgets/project_status_chip.dart';
 import 'package:outsourcedx/proposals/bloc/proposal_bloc.dart';
 
 import '../../../core/presentation/system/mobile_jobs_app_bar.dart';
@@ -116,7 +117,7 @@ class MobileClientProjectsPage extends StatelessWidget {
             .isNotEmpty ??
         false;
     return DefaultTabController(
-      length: 3,
+      length: 2,
       child: CustomScrollView(
         slivers: [
           const ClientProjectsSliverAppBar(),
@@ -137,11 +138,7 @@ class MobileClientProjectsPage extends StatelessWidget {
                     ActiveProjectsTab(
                         projects: state.projects
                             .where((element) =>
-                                element.status == ProjectStatus.inProgress)
-                            .toList()),
-                    OpenProjectsTab(
-                        projects: state.projects
-                            .where((element) =>
+                                element.status == ProjectStatus.inProgress ||
                                 element.status == ProjectStatus.open)
                             .toList()),
                     CompletedProjectsTab(
@@ -405,19 +402,23 @@ class ClientProjectCard extends StatelessWidget {
                           offset: const Offset(0, 1),
                         ),
                       ),
-                    Text(
-                      project.title!,
-                      style: Theme.of(context).textTheme.titleMedium,
-                      maxLines: 2,
-                      overflow: TextOverflow.ellipsis,
+                    Flexible(
+                      child: Text(
+                        project.title!,
+                        style: Theme.of(context).textTheme.titleMedium,
+                        maxLines: 2,
+                        overflow: TextOverflow.ellipsis,
+                      ),
                     ),
+                    const Gutter(),
+                    ProjectStatusChip(project: project)
                   ],
                 ),
               ],
             ),
             subtitle: Padding(
               padding: const EdgeInsets.only(top: 2.0),
-              child: Text(project.description!),
+              child: Text(project.description!, maxLines: 3),
             ),
             onTap: () {
               context.read<ProposalBloc>().add(LoadProposals(

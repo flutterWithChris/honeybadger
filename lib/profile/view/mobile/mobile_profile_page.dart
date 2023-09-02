@@ -1,4 +1,5 @@
 import 'package:flutter/cupertino.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:outsourcedx/onboarding/view/pages/profile_setup/bloc/skills/bloc/skill_search_bloc.dart';
 import 'package:outsourcedx/profile/portfolio/bloc/portfolio_bloc.dart';
 import 'package:outsourcedx/profile/portfolio/widgets/portfolio_card.dart';
@@ -67,11 +68,55 @@ class MobileProfilePage extends StatelessWidget {
                       padding: const EdgeInsets.fromLTRB(16.0, 16.0, 16.0, 0.0),
                       child: Row(
                         children: [
-                          CircleAvatar(
-                              radius: 42.0,
-                              foregroundImage: CachedNetworkImageProvider(
-                                  state.user.photoUrl!),
-                              child: const Icon(Icons.person, size: 40)),
+                          Stack(
+                            children: [
+                              CircleAvatar(
+                                  radius: 42.0,
+                                  foregroundImage: CachedNetworkImageProvider(
+                                      state.user.photoUrl!),
+                                  child: const Icon(Icons.person, size: 40)),
+                              Positioned(
+                                bottom: 0.0,
+                                right: 0.0,
+                                child: CircleAvatar(
+                                  radius: 12.0,
+                                  backgroundColor: Theme.of(context)
+                                      .colorScheme
+                                      .secondaryContainer,
+                                  child: IconButton(
+                                      padding: EdgeInsets.zero,
+                                      onPressed: () async {
+                                        ImagePicker picker = ImagePicker();
+                                        final pickedFile = await picker
+                                            .pickImage(
+                                                source: ImageSource.gallery)
+                                            .then((pickedFile) {
+                                          if (pickedFile != null) {
+                                            ScaffoldMessenger.of(context)
+                                                .showSnackBar(const SnackBar(
+                                                    content: Text(
+                                                        'Uploading image...')));
+                                            context.read<ProfileBloc>().add(
+                                                SetUserProfilePicture(
+                                                    user: state.user,
+                                                    profilePicture:
+                                                        pickedFile));
+                                          } else {
+                                            ScaffoldMessenger.of(context)
+                                                .showSnackBar(const SnackBar(
+                                                    content: Text(
+                                                        'No image selected')));
+                                          }
+                                        });
+                                      },
+                                      icon: Icon(Icons.edit_rounded,
+                                          color: Theme.of(context)
+                                              .scaffoldBackgroundColor,
+                                          size: 16.0)),
+                                ),
+                              )
+                            ],
+                          ),
                           const Gutter(),
                           Expanded(
                             flex: 5,
@@ -137,27 +182,6 @@ class MobileProfilePage extends StatelessWidget {
                         ],
                       ),
                     ),
-
-                    //   const GutterTiny(),
-
-                    // BlocBuilder<PaymentsBloc, PaymentsState>(
-                    //   builder: (context, state) {
-                    //     if (state is PaymentsError) {
-                    //       return
-                    //     } if (state is PaymentsLoading) {
-
-                    //     }
-                    //     if (state is PaymentsLoaded) {
-                    //       return const FractionallySizedBox(
-                    //         widthFactor: 0.8,
-                    //         child: FreelancerActionButtons(),
-                    //       );
-                    //     }
-                    //     return const Center(child: Text('Something Went Wrong...'),);
-                    //   },
-                    // ),
-                    // const Gutter(),
-
                     Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 0.0),
                       child: BlocBuilder<PortfolioBloc, PortfolioState>(

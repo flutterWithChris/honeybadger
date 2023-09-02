@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:outsourcedx/auth/bloc/auth_bloc.dart';
 import 'package:outsourcedx/profile/model/user.dart';
 import 'package:outsourcedx/profile/repository/user_respository.dart';
@@ -24,6 +25,7 @@ class ProfileBloc extends Bloc<ProfileEvent, ProfileState> {
     on<LoadProfile>(_onLoadProfile);
     on<UpdateProfile>(_onUpdateProfile);
     on<DeleteProfile>(_onDeleteProfile);
+    on<SetUserProfilePicture>(_onSetUserProfilePicture);
 
     _authSubscription = _authBloc.stream.listen((state) async {
       print('Profile Bloc received Auth State: $state');
@@ -94,6 +96,23 @@ class ProfileBloc extends Bloc<ProfileEvent, ProfileState> {
     try {
       final user = event.user;
       emit(ProfileLoaded(user));
+    } catch (e) {
+      print(e);
+      emit(ProfileError(e.toString()));
+    }
+  }
+
+  void _onSetUserProfilePicture(
+      SetUserProfilePicture event, Emitter<ProfileState> emit) async {
+    emit(ProfileLoading());
+    try {
+      String? profilePictureUrl = await _userRepository.setUserProfilePicture(
+          event.profilePicture, event.user);
+      profilePictureUrl != null
+          ? emit(ProfileLoaded(event.user.copyWith(
+              photoUrl: profilePictureUrl,
+            )))
+          : emit(const ProfileError('Error setting profile picture'));
     } catch (e) {
       print(e);
       emit(ProfileError(e.toString()));

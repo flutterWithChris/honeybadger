@@ -1,3 +1,4 @@
+import 'package:list_ext/list_ext.dart';
 import 'package:outsourcedx/profile/bloc/profile_bloc.dart';
 import 'package:outsourcedx/profile/model/user.dart';
 import 'package:flutter/material.dart';
@@ -57,9 +58,11 @@ class _MainBottomNavBarState extends State<MainBottomNavBar> {
                 if (state is ProjectsLoaded &&
                     context.watch<ProfileBloc>().state.user!.userType ==
                         UserType.client) {
-                  int unreadProposalCount = state.projects
-                      .where((element) => element.unreadProposalCount! > 0)
-                      .length;
+                  int unreadProposalCount = state.projects.isNotNullOrEmpty
+                      ? state.projects
+                          .where((element) => element.unreadProposalCount! > 0)
+                          .length
+                      : 0;
                   if (unreadProposalCount > 0) {
                     return Badge(
                       label: Text(unreadProposalCount.toString()),

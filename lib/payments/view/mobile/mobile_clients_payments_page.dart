@@ -6,6 +6,7 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:go_router/go_router.dart';
 import 'package:outsourcedx/core/constants.dart';
 import 'package:outsourcedx/core/extensions.dart';
+import 'package:outsourcedx/core/presentation/drawers/main_drawer.dart';
 import 'package:outsourcedx/core/presentation/system/main_navigation_bar.dart';
 import 'package:outsourcedx/core/presentation/system/mobile_sliver_app_bar.dart';
 import 'package:outsourcedx/globals.dart';
@@ -79,6 +80,7 @@ class _MobileClientPaymentsPageState extends State<MobileClientPaymentsPage>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+        drawer: const MainDrawer(),
         bottomNavigationBar: const MainBottomNavBar(),
         body: RefreshIndicator(
           // header: const ClassicHeader(

@@ -288,6 +288,8 @@ class _SkillsAndExperiencePageState extends State<SkillsAndExperiencePage> {
                         return TextFormField(
                           textCapitalization: TextCapitalization.words,
                           controller: textEditingController,
+                          scrollPadding: EdgeInsets.only(
+                              bottom: MediaQuery.sizeOf(context).height * 0.3),
                           onChanged: (value) {
                             // Debounce search
 

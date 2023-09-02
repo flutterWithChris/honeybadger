@@ -29,3 +29,16 @@ class DeleteProfile extends ProfileEvent {
   @override
   List<Object> get props => [user];
 }
+
+class SetUserProfilePicture extends ProfileEvent {
+  final User user;
+  final XFile profilePicture;
+
+  const SetUserProfilePicture({
+    required this.user,
+    required this.profilePicture,
+  });
+
+  @override
+  List<Object> get props => [user, profilePicture];
+}

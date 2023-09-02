@@ -127,7 +127,7 @@ class ProjectsRepository {
 
   Future<void> createProjectReference(User user, String projectId) async {
     try {
-      return await _firestore.collection('users').doc(user.id).update({
+      return await _firestore.collection('clients').doc(user.id).update({
         'projectIds': FieldValue.arrayUnion([projectId])
       });
     } on FirebaseException catch (e) {

@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_gutter/flutter_gutter.dart';
 import 'package:go_router/go_router.dart';
+import 'package:list_ext/list_ext.dart';
 import 'package:outsourcedx/core/constants.dart';
 import 'package:outsourcedx/core/presentation/system/mobile_sliver_app_bar.dart';
 import 'package:outsourcedx/profile/bloc/profile_bloc.dart';
@@ -12,7 +13,10 @@ import 'package:jiffy/jiffy.dart';
 import 'package:loading_animation_widget/loading_animation_widget.dart';
 
 import '../../../onboarding/view/pages/profile_setup/bloc/bloc/category_search_bloc.dart';
+import '../../../onboarding/view/pages/profile_setup/bloc/skills/bloc/skill_search_bloc.dart';
 import '../../../profile/model/category.dart';
+import '../../../profile/model/skill.dart';
+import '../../../profile/model/user.dart';
 
 class CreateProjectPage extends StatefulWidget {
   const CreateProjectPage({super.key});
@@ -30,8 +34,11 @@ class _CreateProjectPageState extends State<CreateProjectPage> {
   final TextEditingController _deadlineController = TextEditingController();
   final TextEditingController _tagsController = TextEditingController();
   final TextEditingController _skillsController = TextEditingController();
-  List<Category> selectedCategories = [];
+  final GlobalKey<FormState> _createProjectFormKey = GlobalKey<FormState>();
+  Category? selectedCategory;
   ProjectType _projectType = ProjectType.fixed;
+  List<Skill> selectedSkills = [];
+  Skill? newSkill;
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -39,7 +46,14 @@ class _CreateProjectPageState extends State<CreateProjectPage> {
         body: CustomScrollView(
       slivers: [
         MobileSliverAppBar(),
-        BlocBuilder<ProjectsBloc, ProjectsState>(
+        BlocConsumer<ProjectsBloc, ProjectsState>(
+          listener: (context, state) {
+            if (state is ProjectCreated) {
+              context.read<ProjectsBloc>().add(
+                  LoadProjects(user: context.read<ProfileBloc>().state.user!));
+              context.go('/projects');
+            }
+          },
           builder: (context, state) {
             if (state is ProjectsError) {
               return SliverFillRemaining(
@@ -131,454 +145,675 @@ class _CreateProjectPageState extends State<CreateProjectPage> {
                       style: Theme.of(context).textTheme.headlineLarge),
                   const Gutter(),
                   Form(
+                      key: _createProjectFormKey,
                       child: Column(
-                    children: [
-                      TextFormField(
-                        controller: _titleController,
-                        textCapitalization: TextCapitalization.sentences,
-                        validator: (value) {
-                          if (value == null || value.isEmpty) {
-                            return 'Please enter a title for your project';
-                          }
-                          return null;
-                        },
-                        decoration: const InputDecoration(
-                          labelText: 'Project Title',
-                          hintText: 'Enter a title for your project',
-                          border: OutlineInputBorder(),
-                        ),
-                      ),
-                      const Gutter(),
-                      TextFormField(
-                        controller: _descriptionController,
-                        textCapitalization: TextCapitalization.sentences,
-                        validator: (value) {
-                          if (value == null || value.isEmpty) {
-                            return 'Please enter a description for your project';
-                          }
-                          return null;
-                        },
-                        decoration: const InputDecoration(
-                          labelText: 'Project Description',
-                          hintText: 'Enter a description for your project',
-                          border: OutlineInputBorder(),
-                        ),
-                        minLines: 5,
-                        maxLines: 10,
-                      ),
-                      // const Gutter(),
-                      // TextFormField(
-                      //   textCapitalization: TextCapitalization.sentences,
-                      //   controller: _deliverablesController,
-                      //   validator: (value) {
-                      //     if (value == null || value.isEmpty) {
-                      //       return 'Please enter deliverables for your project';
-                      //     }
-                      //     return null;
-                      //   },
-                      //   decoration: const InputDecoration(
-                      //     labelText: 'Project Deliverables',
-                      //     hintText:
-                      //         'Clearly define the deliverables for your project. Describe exactly what you expect to receive from the freelancer.',
-                      //     border: OutlineInputBorder(),
-                      //   ),
-                      //   minLines: 5,
-                      //   maxLines: 10,
-                      // ),
-                      const Gutter(),
-                      BlocBuilder<CategorySearchBloc, CategorySearchState>(
-                        builder: (context, state) {
-                          Category? newCategory;
-                          List<Category> categories = state.categories ?? [];
-                          String _displayStringForOption(Category option) =>
-                              option.name ?? '';
-                          return Autocomplete<Category>(
-                            displayStringForOption: _displayStringForOption,
-                            optionsBuilder:
-                                (TextEditingValue textEditingValue) async {
-                              if (textEditingValue.text == '') {
-                                return const Iterable.empty();
+                        children: [
+                          TextFormField(
+                            controller: _titleController,
+                            textCapitalization: TextCapitalization.sentences,
+                            validator: (value) {
+                              if (value == null || value.isEmpty) {
+                                return 'Please enter a title for your project';
                               }
-                              if (textEditingValue.text != '') {
-                                context.read<CategorySearchBloc>().add(
-                                    SearchCategories(
-                                        query: textEditingValue.text));
+                              return null;
+                            },
+                            decoration: const InputDecoration(
+                              labelText: 'Project Title',
+                              hintText: 'Enter a title for your project',
+                              border: OutlineInputBorder(),
+                              floatingLabelBehavior:
+                                  FloatingLabelBehavior.always,
+                            ),
+                          ),
+                          const Gutter(),
+                          TextFormField(
+                            controller: _descriptionController,
+                            textCapitalization: TextCapitalization.sentences,
+                            validator: (value) {
+                              if (value == null || value.isEmpty) {
+                                return 'Please enter a description for your project';
                               }
-                              List<Category> matchingCategories =
+                              return null;
+                            },
+                            decoration: const InputDecoration(
+                              labelText: 'Project Description',
+                              floatingLabelBehavior:
+                                  FloatingLabelBehavior.always,
+                              hintText: 'Enter a description for your project',
+                              border: OutlineInputBorder(),
+                            ),
+                            minLines: 5,
+                            maxLines: 10,
+                          ),
+                          // const Gutter(),
+                          // TextFormField(
+                          //   textCapitalization: TextCapitalization.sentences,
+                          //   controller: _deliverablesController,
+                          //   validator: (value) {
+                          //     if (value == null || value.isEmpty) {
+                          //       return 'Please enter deliverables for your project';
+                          //     }
+                          //     return null;
+                          //   },
+                          //   decoration: const InputDecoration(
+                          //     labelText: 'Project Deliverables',
+                          //     hintText:
+                          //         'Clearly define the deliverables for your project. Describe exactly what you expect to receive from the freelancer.',
+                          //     border: OutlineInputBorder(),
+                          //   ),
+                          //   minLines: 5,
+                          //   maxLines: 10,
+                          // ),
+                          const Gutter(),
+                          BlocBuilder<CategorySearchBloc, CategorySearchState>(
+                            builder: (context, state) {
+                              Category? newCategory;
+                              List<Category> categories =
                                   state.categories ?? [];
-
-                              if (matchingCategories.isEmpty) {
-                                newCategory = Category(
-                                  name: textEditingValue.text.trim(),
-                                );
-                                matchingCategories.add(newCategory!);
-                              }
-
-                              return matchingCategories;
-                            },
-                            onSelected: (Category category) {
-                              if (category == newCategory) {
-                                context
-                                    .read<CategorySearchBloc>()
-                                    .add(AddCategory(category: category));
-                                // Clear text field
-                                WidgetsBinding.instance
-                                    .addPostFrameCallback((_) {
-                                  final textEditingController =
-                                      TextEditingController.fromValue(
-                                    TextEditingValue.empty,
-                                  );
-                                  textEditingController.value =
-                                      TextEditingValue.empty;
-                                });
-                              }
-                              WidgetsBinding.instance.addPostFrameCallback((_) {
-                                final textEditingController =
-                                    TextEditingController.fromValue(
-                                  TextEditingValue.empty,
-                                );
-                                textEditingController.value =
-                                    TextEditingValue.empty;
-                              });
-
-                              if (selectedCategories.length >= 3) {
-                                ScaffoldMessenger.of(context).showSnackBar(
-                                    const SnackBar(
-                                        content: Text(
-                                            'You can only select up to 3 categories.')));
-                                return;
-                              }
-                              print('Categories: $categories');
-                              setState(() {
-                                selectedCategories.add(category);
-                              });
-                              // var currentUser =
-                              //     context.read<OnboardingBloc>().state.user!;
-                              // List<Category> updatedCategories =
-                              //     (currentUser.categories ?? [])..add(category);
-                              // context.read<OnboardingBloc>().add(UpdateUser(
-                              //       currentUser.copyWith(
-                              //         categories: updatedCategories,
-                              //       ),
-                              //     ));
-                              // Print categories that are being added
-                              // print('Categories being added:');
-                              // for (Category category in updatedCategories) {
-                              //   print(category.name);
-                              // }
-                            },
-                            optionsViewBuilder: (BuildContext context,
-                                AutocompleteOnSelected<Category> onSelected,
-                                Iterable<Category> options) {
-                              return Material(
-                                borderRadius: BorderRadius.circular(16.0),
-                                elevation: 4.0,
-                                child: SizedBox(
-                                  child: ListView.builder(
-                                    shrinkWrap: true,
-                                    padding: const EdgeInsets.all(8.0),
-                                    itemCount:
-                                        options.isNotEmpty ? options.length : 1,
-                                    itemBuilder:
-                                        (BuildContext context, int index) {
-                                      if (options.isEmpty) {
-                                        return const ListTile(
-                                          title: Text('No results found'),
-                                        );
-                                      }
-                                      final Category option =
-                                          options.elementAt(index);
-                                      bool isHighlighted =
-                                          AutocompleteHighlightedOption.of(
-                                                  context) ==
-                                              index;
-                                      return GestureDetector(
-                                        onTap: () {
-                                          onSelected(option);
-                                        },
-                                        child: ListTile(
-                                          leading: option == newCategory
-                                              ? const Icon(Icons.add)
-                                              : null,
-                                          shape: RoundedRectangleBorder(
-                                              borderRadius:
-                                                  BorderRadius.circular(16.0)),
-                                          tileColor: isHighlighted
-                                              ? Theme.of(context).cardColor
-                                              : null,
-                                          title: option == newCategory
-                                              ? Text.rich(TextSpan(
-                                                  text: 'Add ',
-                                                  children: [
-                                                    TextSpan(
-                                                      text: newCategory!.name!,
-                                                      style: const TextStyle(
-                                                        fontWeight:
-                                                            FontWeight.bold,
-                                                      ),
-                                                    ),
-                                                  ],
-                                                ))
-                                              : Text(option.name!),
-                                          subtitle: option.description == null
-                                              ? null
-                                              : Text(
-                                                  option.description!,
-                                                  maxLines: 2,
-                                                  style: TextStyle(
-                                                      color: Colors.grey[600]!),
-                                                ),
-                                        ),
-                                      );
-                                    },
-                                  ),
-                                ),
-                              );
-                            },
-                            fieldViewBuilder: (BuildContext context,
-                                TextEditingController textEditingController,
-                                FocusNode focusNode,
-                                VoidCallback onFieldSubmitted) {
-                              return TextFormField(
-                                validator: (value) {
-                                  if (selectedCategories.isEmpty) {
-                                    return 'Please enter at least one category.';
+                              String _displayStringForOption(Category option) =>
+                                  option.name ?? '';
+                              return Autocomplete<Category>(
+                                displayStringForOption: _displayStringForOption,
+                                optionsBuilder:
+                                    (TextEditingValue textEditingValue) async {
+                                  if (textEditingValue.text == '') {
+                                    return const Iterable.empty();
                                   }
-                                  return null;
+                                  if (textEditingValue.text != '') {
+                                    context.read<CategorySearchBloc>().add(
+                                        SearchCategories(
+                                            query: textEditingValue.text));
+                                  }
+                                  List<Category> matchingCategories =
+                                      state.categories ?? [];
+
+                                  if (matchingCategories.isEmpty) {
+                                    newCategory = Category(
+                                      name: textEditingValue.text.trim(),
+                                    );
+                                    matchingCategories.add(newCategory!);
+                                  }
+
+                                  return matchingCategories;
                                 },
-                                controller: textEditingController,
-                                textCapitalization: TextCapitalization.words,
-                                focusNode: focusNode,
-                                decoration: const InputDecoration(
-                                  label: Text('Categories'),
-                                  hintText: 'Add a category..',
-                                  floatingLabelBehavior:
-                                      FloatingLabelBehavior.always,
-                                ),
-                                onFieldSubmitted: (String value) {
-                                  onFieldSubmitted();
+                                onSelected: (Category category) {
+                                  if (category == newCategory) {
+                                    context
+                                        .read<CategorySearchBloc>()
+                                        .add(AddCategory(category: category));
+                                    // Clear text field
+                                    WidgetsBinding.instance
+                                        .addPostFrameCallback((_) {
+                                      final textEditingController =
+                                          TextEditingController.fromValue(
+                                        TextEditingValue.empty,
+                                      );
+                                      textEditingController.value =
+                                          TextEditingValue.empty;
+                                    });
+                                  }
+                                  WidgetsBinding.instance
+                                      .addPostFrameCallback((_) {
+                                    final textEditingController =
+                                        TextEditingController.fromValue(
+                                      TextEditingValue.empty,
+                                    );
+                                    textEditingController.value =
+                                        TextEditingValue.empty;
+                                  });
+
+                                  setState(() {
+                                    selectedCategory = category;
+                                  });
+                                  // var currentUser =
+                                  //     context.read<OnboardingBloc>().state.user!;
+                                  // List<Category> updatedCategories =
+                                  //     (currentUser.categories ?? [])..add(category);
+                                  // context.read<OnboardingBloc>().add(UpdateUser(
+                                  //       currentUser.copyWith(
+                                  //         categories: updatedCategories,
+                                  //       ),
+                                  //     ));
+                                  // Print categories that are being added
+                                  // print('Categories being added:');
+                                  // for (Category category in updatedCategories) {
+                                  //   print(category.name);
+                                  // }
+                                },
+                                optionsViewBuilder: (BuildContext context,
+                                    AutocompleteOnSelected<Category> onSelected,
+                                    Iterable<Category> options) {
+                                  return Material(
+                                    borderRadius: BorderRadius.circular(16.0),
+                                    elevation: 4.0,
+                                    child: SizedBox(
+                                      child: ListView.builder(
+                                        shrinkWrap: true,
+                                        padding: const EdgeInsets.all(8.0),
+                                        itemCount: options.isNotEmpty
+                                            ? options.length
+                                            : 1,
+                                        itemBuilder:
+                                            (BuildContext context, int index) {
+                                          if (options.isEmpty) {
+                                            return const ListTile(
+                                              title: Text('No results found'),
+                                            );
+                                          }
+                                          final Category option =
+                                              options.elementAt(index);
+                                          bool isHighlighted =
+                                              AutocompleteHighlightedOption.of(
+                                                      context) ==
+                                                  index;
+                                          return GestureDetector(
+                                            onTap: () {
+                                              onSelected(option);
+                                            },
+                                            child: ListTile(
+                                              leading: option == newCategory
+                                                  ? const Icon(Icons.add)
+                                                  : null,
+                                              shape: RoundedRectangleBorder(
+                                                  borderRadius:
+                                                      BorderRadius.circular(
+                                                          16.0)),
+                                              tileColor: isHighlighted
+                                                  ? Theme.of(context).cardColor
+                                                  : null,
+                                              title: option == newCategory
+                                                  ? Text.rich(TextSpan(
+                                                      text: 'Add ',
+                                                      children: [
+                                                        TextSpan(
+                                                          text: newCategory!
+                                                              .name!,
+                                                          style:
+                                                              const TextStyle(
+                                                            fontWeight:
+                                                                FontWeight.bold,
+                                                          ),
+                                                        ),
+                                                      ],
+                                                    ))
+                                                  : Text(option.name!),
+                                              subtitle:
+                                                  option.description == null
+                                                      ? null
+                                                      : Text(
+                                                          option.description!,
+                                                          maxLines: 2,
+                                                          style: TextStyle(
+                                                              color: Colors
+                                                                  .grey[600]!),
+                                                        ),
+                                            ),
+                                          );
+                                        },
+                                      ),
+                                    ),
+                                  );
+                                },
+                                fieldViewBuilder: (BuildContext context,
+                                    TextEditingController textEditingController,
+                                    FocusNode focusNode,
+                                    VoidCallback onFieldSubmitted) {
+                                  return TextFormField(
+                                    validator: (value) {
+                                      if (selectedCategory == null) {
+                                        return 'Please enter a category.';
+                                      }
+                                      return null;
+                                    },
+                                    onChanged: (value) {
+                                      if (selectedCategory != null) {
+                                        setState(() {
+                                          selectedCategory = null;
+                                        });
+                                      }
+                                    },
+                                    controller: textEditingController,
+                                    textCapitalization:
+                                        TextCapitalization.words,
+                                    focusNode: focusNode,
+                                    scrollPadding: EdgeInsets.only(
+                                        bottom:
+                                            MediaQuery.sizeOf(context).height *
+                                                0.3),
+                                    decoration: InputDecoration(
+                                        label: const Text('Categories'),
+                                        hintText: 'Add a category..',
+                                        floatingLabelBehavior:
+                                            FloatingLabelBehavior.always,
+                                        suffix: selectedCategory == null
+                                            ? null
+                                            : const Icon(
+                                                Icons.check_circle,
+                                                size: 18.0,
+                                              )),
+                                    onFieldSubmitted: (String value) {
+                                      onFieldSubmitted();
+                                    },
+                                  );
                                 },
                               );
                             },
-                          );
-                        },
-                      ),
-                      selectedCategories.isNotEmpty
-                          ? const GutterSmall()
-                          : const SizedBox(),
-                      selectedCategories.isEmpty
-                          ? const SizedBox()
-                          : Row(
-                              // spacing: 8.0,
-                              // alignment: WrapAlignment.start,
-                              children: selectedCategories
-                                  .map((category) => Chip(
+                          ),
+
+                          const Gutter(),
+                          // Skills Autocomplete
+                          BlocBuilder<SkillSearchBloc, SkillSearchState>(
+                            builder: (context, state) {
+                              if (state is SkillSearchFailure) {
+                                return const Text('Error loading skills!');
+                              }
+                              return Autocomplete<Skill>(
+                                displayStringForOption: (option) =>
+                                    option.name!,
+                                optionsBuilder:
+                                    (TextEditingValue textEditingValue) {
+                                  if (textEditingValue.text == '') {
+                                    return const Iterable.empty();
+                                  }
+                                  List<Skill> matchingSkills = [];
+                                  if (state.skills != null &&
+                                      state.skills!.isNotEmpty) {
+                                    matchingSkills =
+                                        state.skills?.toList() ?? [];
+                                    for (Skill skill in matchingSkills) {
+                                      print('Found Skill: ${skill.name}');
+                                    }
+                                  }
+                                  if (matchingSkills.isEmpty) {
+                                    newSkill = Skill(
+                                        name: textEditingValue.text.trim(),
+                                        description: null);
+                                    return [newSkill!];
+                                  }
+                                  return matchingSkills;
+                                },
+                                onSelected: (Skill skill) {
+                                  if (skill == newSkill) {
+                                    BlocProvider.of<SkillSearchBloc>(context)
+                                        .add(AddSkill(skill: skill));
+                                  }
+                                  setState(() {
+                                    selectedSkills.add(skill);
+                                  });
+                                },
+                                optionsViewBuilder: (BuildContext context,
+                                    AutocompleteOnSelected<Skill> onSelected,
+                                    Iterable<Skill> options) {
+                                  return Material(
+                                    borderRadius: BorderRadius.circular(16.0),
+                                    elevation: 4.0,
+                                    child: SizedBox(
+                                      child: ListView.builder(
+                                        shrinkWrap: true,
                                         padding: const EdgeInsets.all(8.0),
-                                        visualDensity: VisualDensity.compact,
-                                        label: Text(
-                                          category.name!,
+                                        itemCount: options.length,
+                                        itemBuilder:
+                                            (BuildContext context, int index) {
+                                          final Skill option =
+                                              options.elementAt(index);
+                                          bool isHighlighted =
+                                              AutocompleteHighlightedOption.of(
+                                                      context) ==
+                                                  index;
+                                          return GestureDetector(
+                                            onTap: () {
+                                              onSelected(option);
+                                            },
+                                            child: ListTile(
+                                              shape: RoundedRectangleBorder(
+                                                  borderRadius:
+                                                      BorderRadius.circular(
+                                                          16.0)),
+                                              tileColor: isHighlighted
+                                                  ? Theme.of(context).cardColor
+                                                  : null,
+                                              leading: option == newSkill
+                                                  ? const Icon(Icons.add)
+                                                  : null,
+                                              title: option == newSkill
+                                                  ? Text.rich(
+                                                      TextSpan(
+                                                        text: 'Add ',
+                                                        children: <TextSpan>[
+                                                          TextSpan(
+                                                            text:
+                                                                "'${option.name}'",
+                                                            style:
+                                                                const TextStyle(
+                                                              fontWeight:
+                                                                  FontWeight
+                                                                      .bold,
+                                                            ),
+                                                          ),
+                                                          const TextSpan(
+                                                            text:
+                                                                ' as a new skill',
+                                                          ),
+                                                        ],
+                                                      ),
+                                                    )
+                                                  : Text(option.name!),
+                                            ),
+                                          );
+                                        },
+                                      ),
+                                    ),
+                                  );
+                                },
+                                fieldViewBuilder: (BuildContext context,
+                                    TextEditingController textEditingController,
+                                    FocusNode focusNode,
+                                    VoidCallback onFieldSubmitted) {
+                                  return TextFormField(
+                                    textCapitalization:
+                                        TextCapitalization.words,
+                                    controller: textEditingController,
+                                    validator: (value) {
+                                      if (selectedSkills.isEmpty) {
+                                        return 'Please enter at least one skill.';
+                                      }
+                                      return null;
+                                    },
+                                    scrollPadding: EdgeInsets.only(
+                                        bottom:
+                                            MediaQuery.sizeOf(context).height *
+                                                0.3),
+                                    onChanged: (value) {
+                                      // Debounce search
+
+                                      if (value.isNotEmpty) {
+                                        context.read<SkillSearchBloc>().add(
+                                            SearchSkills(query: value.trim()));
+                                      }
+                                    },
+                                    focusNode: focusNode,
+                                    decoration: const InputDecoration(
+                                        label: Text('Skills')),
+                                    onFieldSubmitted: (String value) {
+                                      onFieldSubmitted();
+                                    },
+                                  );
+                                },
+                              );
+                            },
+                          ),
+                          selectedSkills.isNotEmpty
+                              ? const GutterSmall()
+                              : const SizedBox(),
+                          selectedSkills.isNotEmpty
+                              ? Align(
+                                  alignment: Alignment.centerLeft,
+                                  child: Wrap(
+                                    alignment: WrapAlignment.start,
+                                    crossAxisAlignment:
+                                        WrapCrossAlignment.start,
+                                    spacing: 8.0, // gap between adjacent chips
+                                    runSpacing: 2.0, // gap between lines
+                                    children: selectedSkills
+                                        .map((skill) => Chip(
+                                              visualDensity:
+                                                  VisualDensity.compact,
+                                              label: Text(
+                                                skill.name!,
+                                                style: Theme.of(context)
+                                                    .textTheme
+                                                    .bodySmall,
+                                              ),
+                                              onDeleted: () {
+                                                setState(() {
+                                                  selectedSkills.remove(skill);
+                                                });
+                                              },
+                                            ))
+                                        .toList(),
+                                  ),
+                                )
+                              : const SizedBox(),
+                          selectedSkills.isNotNullOrEmpty
+                              ? const GutterTiny()
+                              : const Gutter(),
+                          Card(
+                            elevation: 0,
+                            color: Theme.of(context).colorScheme.surfaceVariant,
+                            child: Column(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                Padding(
+                                  padding: const EdgeInsets.only(
+                                      left: 16.0, top: 16.0),
+                                  child: Row(
+                                    children: [
+                                      Text('Project Type',
                                           style: Theme.of(context)
                                               .textTheme
-                                              .bodySmall,
-                                        ),
-                                        onDeleted: () {
-                                          // Remove category from user
-                                          var currentUser = context
-                                              .read<ProfileBloc>()
-                                              .state
-                                              .user!;
-                                          setState(() {
-                                            selectedCategories =
-                                                selectedCategories
-                                                  ..remove(category);
-                                          });
-                                        },
-                                      ))
-                                  .toList(),
-                            ),
-                      const Gutter(),
-                      Card(
-                        elevation: 0,
-                        color: Theme.of(context).colorScheme.surfaceVariant,
-                        child: Column(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            Padding(
-                              padding:
-                                  const EdgeInsets.only(left: 16.0, top: 16.0),
-                              child: Row(
-                                children: [
-                                  Text('Project Type',
-                                      style: Theme.of(context)
-                                          .textTheme
-                                          .titleMedium),
-                                ],
-                              ),
-                            ),
-                            Row(
-                              children: [
-                                Flexible(
-                                  child: RadioListTile.adaptive(
-                                      title: const Text('Fixed'),
-                                      value: 'Fixed',
-                                      groupValue: parseEnumName(
-                                          _projectType.toString().capitalize),
-                                      onChanged: (value) {
-                                        setState(() {
-                                          _projectType = ProjectType.fixed;
-                                        });
-                                      }),
+                                              .titleMedium),
+                                    ],
+                                  ),
                                 ),
-                                Flexible(
-                                  child: RadioListTile.adaptive(
-                                      fillColor:
-                                          MaterialStateProperty.all<Color>(
-                                              Colors.grey),
-                                      title: Badge(
-                                          backgroundColor: Theme.of(context)
-                                              .colorScheme
-                                              .primary,
-                                          offset: const Offset(-64, -24),
-                                          padding: const EdgeInsets.symmetric(
-                                            horizontal: 8.0,
+                                Row(
+                                  children: [
+                                    Flexible(
+                                      child: RadioListTile.adaptive(
+                                          title: const Text('Fixed'),
+                                          value: 'Fixed',
+                                          groupValue: parseEnumName(_projectType
+                                              .toString()
+                                              .capitalize),
+                                          onChanged: (value) {
+                                            setState(() {
+                                              _projectType = ProjectType.fixed;
+                                            });
+                                          }),
+                                    ),
+                                    Flexible(
+                                      child: RadioListTile.adaptive(
+                                          fillColor:
+                                              MaterialStateProperty.all<Color>(
+                                                  Colors.grey),
+                                          title: Stack(
+                                            clipBehavior: Clip.none,
+                                            alignment: Alignment.topCenter,
+                                            children: [
+                                              const Row(
+                                                children: [
+                                                  Text(
+                                                    'Hourly',
+                                                    style: TextStyle(
+                                                        color: Colors.grey),
+                                                  ),
+                                                ],
+                                              ),
+                                              Positioned(
+                                                bottom: 30,
+                                                child: Badge(
+                                                  backgroundColor:
+                                                      Theme.of(context)
+                                                          .colorScheme
+                                                          .primary,
+                                                  padding: const EdgeInsets
+                                                      .symmetric(
+                                                    horizontal: 2.0,
+                                                  ),
+                                                  label: Padding(
+                                                    padding: const EdgeInsets
+                                                            .symmetric(
+                                                        horizontal: 4.0),
+                                                    child: Text('Coming Soon',
+                                                        style: Theme.of(context)
+                                                            .textTheme
+                                                            .bodySmall
+                                                            ?.copyWith(
+                                                                fontWeight:
+                                                                    FontWeight
+                                                                        .bold,
+                                                                color: Theme.of(
+                                                                        context)
+                                                                    .canvasColor)),
+                                                  ),
+                                                ),
+                                              )
+                                            ],
                                           ),
-                                          label: Text('Coming Soon',
-                                              style: Theme.of(context)
-                                                  .textTheme
-                                                  .bodySmall
-                                                  ?.copyWith(
-                                                      fontWeight:
-                                                          FontWeight.bold,
-                                                      color: Theme.of(context)
-                                                          .canvasColor)),
-                                          child: const Text(
-                                            'Hourly',
-                                            style:
-                                                TextStyle(color: Colors.grey),
-                                          )),
-                                      value: 'Hourly',
-                                      groupValue: parseEnumName(
-                                          _projectType.toString().capitalize),
-                                      onChanged: (value) {
-                                        // setState(() {
-                                        //   _projectType = ProjectType.hourly;
-                                        // });
-                                      }),
+                                          value: 'Hourly',
+                                          groupValue: parseEnumName(_projectType
+                                              .toString()
+                                              .capitalize),
+                                          onChanged: (value) {
+                                            // setState(() {
+                                            //   _projectType = ProjectType.hourly;
+                                            // });
+                                          }),
+                                    ),
+                                  ],
                                 ),
                               ],
                             ),
-                          ],
-                        ),
-                      ),
-                      const Gutter(),
-                      TextFormField(
-                        controller: _budgetController,
-                        validator: (value) {
-                          // Check if value is less than 25 for hourly projects
-                          // Check if value is less than 250 for fixed projects
-                          if (value == null || value.isEmpty) {
-                            return 'Please enter a budget for your project';
-                          } else if (int.parse(value) < 250) {
-                            return 'Please enter a budget of at least \$250';
-                          }
-                          return null;
-                        },
-                        keyboardType: TextInputType.number,
-                        decoration: const InputDecoration(
-                          prefixText: '\$',
-                          labelText: 'Project Budget',
-                          hintText: ' Enter a budget. Minimum \$250',
-                          border: OutlineInputBorder(),
-                        ),
-                      ),
-                      const Gutter(),
-                      TextFormField(
-                        controller: _deadlineController,
-                        readOnly: true,
-                        onTap: () {
-                          showDatePicker(
-                                  context: context,
-                                  initialDate: DateTime.now(),
-                                  firstDate: DateTime.now(),
-                                  lastDate: DateTime.now()
-                                      .add(const Duration(days: 365)))
-                              .then((value) {
-                            if (value != null) {
-                              _deadlineController.text =
-                                  Jiffy.parse(value.toString().split(' ')[0])
+                          ),
+                          const Gutter(),
+                          TextFormField(
+                            controller: _budgetController,
+                            validator: (value) {
+                              // Check if value is less than 25 for hourly projects
+                              // Check if value is less than 250 for fixed projects
+                              if (value == null || value.isEmpty) {
+                                return 'Please enter a budget for your project';
+                              } else if (int.parse(value) < 250) {
+                                return 'Please enter a budget of at least \$250';
+                              } else if (int.tryParse(value) == null) {
+                                return 'Please enter a valid number';
+                              }
+                              return null;
+                            },
+                            keyboardType: TextInputType.number,
+                            decoration: const InputDecoration(
+                              prefixText: '\$',
+                              labelText: 'Project Budget',
+                              floatingLabelBehavior:
+                                  FloatingLabelBehavior.always,
+                              hintText: ' Enter a budget. Minimum \$250',
+                              border: OutlineInputBorder(),
+                            ),
+                          ),
+                          const Gutter(),
+                          TextFormField(
+                            controller: _deadlineController,
+                            readOnly: true,
+                            onTap: () {
+                              showDatePicker(
+                                      context: context,
+                                      initialDate: DateTime.now(),
+                                      firstDate: DateTime.now(),
+                                      lastDate: DateTime.now()
+                                          .add(const Duration(days: 365)))
+                                  .then((value) {
+                                if (value != null) {
+                                  _deadlineController.text = Jiffy.parse(
+                                          value.toString().split(' ')[0])
                                       .yMMMd;
-                            }
-                          }); // TODO: Add a year to the last date
-                        },
-                        decoration: const InputDecoration(
-                          labelText: 'Project Deadline',
-                          hintText: 'Enter a deadline for your project',
-                          border: OutlineInputBorder(),
-                        ),
-                      ),
-                      const Gutter(),
-                      TextFormField(
-                        controller: _tagsController,
-                        decoration: const InputDecoration(
-                          labelText: 'Project Categories',
-                          hintText: 'Enter tags for your project',
-                          border: OutlineInputBorder(),
-                        ),
-                      ),
-                      const Gutter(),
-                      TextFormField(
-                        controller: _skillsController,
-                        decoration: const InputDecoration(
-                          labelText: 'Project Skills',
-                          hintText: 'Enter skills for your project',
-                          border: OutlineInputBorder(),
-                        ),
-                      ),
-                      const Gutter(),
-                      Row(
-                        children: [
-                          Expanded(
-                            child: FilledButton.icon(
-                                onPressed: () {
-                                  context.read<ProjectsBloc>().add(
-                                        CreateProject(
-                                          project: Project(
-                                              title:
-                                                  _titleController.value.text,
-                                              description: _descriptionController
-                                                  .value.text,
-                                              deliverables: _deliverablesController
-                                                  .value.text,
-                                              category: _categoryController
-                                                  .value.text,
-                                              projectType: _projectType,
-                                              budget: int.parse(
-                                                  _budgetController.value.text),
-                                              deadline: Jiffy.parse(
-                                                      _deadlineController
+                                }
+                              }); // TODO: Add a year to the last date
+                            },
+                            decoration: const InputDecoration(
+                              labelText: 'Project Deadline',
+                              floatingLabelBehavior:
+                                  FloatingLabelBehavior.always,
+                              hintText:
+                                  'Enter a deadline. Leave blank if none.',
+                              border: OutlineInputBorder(),
+                            ),
+                          ),
+                          const Gutter(),
+
+                          Row(
+                            children: [
+                              Expanded(
+                                child: FilledButton.icon(
+                                    onPressed: () {
+                                      if (_createProjectFormKey.currentState!
+                                          .validate()) {
+                                        User currentUser = context
+                                            .read<ProfileBloc>()
+                                            .state
+                                            .user!;
+                                        context.read<ProjectsBloc>().add(
+                                              CreateProject(
+                                                project: Project(
+                                                  title: _titleController
+                                                      .value.text,
+                                                  description:
+                                                      _descriptionController
                                                           .value.text,
-                                                      pattern: 'MMM do, yyyy')
-                                                  .dateTime,
-                                              tags: _tagsController.value.text
-                                                  .split(','),
-                                              skills: _skillsController.value.text
-                                                  .split(','),
-                                              status: ProjectStatus.open,
-                                              createdAt: DateTime.now()),
-                                          user: context
-                                              .read<ProfileBloc>()
-                                              .state
-                                              .user!,
-                                        ),
-                                      );
-                                },
-                                icon: const Icon(Icons.add),
-                                label: const Text('Create Project')),
+                                                  deliverables:
+                                                      _deliverablesController
+                                                          .value.text,
+                                                  category:
+                                                      selectedCategory!.name,
+                                                  projectType: _projectType,
+                                                  budget: int.parse(
+                                                      _budgetController
+                                                          .value.text),
+                                                  deadline: _deadlineController
+                                                          .text.isNotEmpty
+                                                      ? Jiffy.parse(
+                                                              _deadlineController
+                                                                  .value.text,
+                                                              pattern:
+                                                                  'MMM do, yyyy')
+                                                          .dateTime
+                                                      : null,
+                                                  skills: selectedSkills
+                                                      .map((skill) =>
+                                                          skill.name!)
+                                                      .toList(),
+                                                  status: ProjectStatus.open,
+                                                  createdAt: DateTime.now(),
+                                                  clientId: currentUser.id!,
+                                                  clientName:
+                                                      '${currentUser.firstName} ${currentUser.lastName}',
+                                                  clientIndustry:
+                                                      currentUser.industry,
+                                                  clientLocation:
+                                                      currentUser.address !=
+                                                              null
+                                                          ? currentUser.address
+                                                              ?.split(',')[2]
+                                                          : null,
+                                                  clientProfilePicture:
+                                                      currentUser.photoUrl,
+                                                  clientRating:
+                                                      currentUser.rating,
+                                                  clientReviewCount: currentUser
+                                                          .reviews?.length ??
+                                                      0,
+                                                  clientTotalSpend:
+                                                      currentUser.totalSpend,
+                                                ),
+                                                user: currentUser,
+                                              ),
+                                            );
+                                      } else {
+                                        ScaffoldMessenger.of(context)
+                                            .showSnackBar(const SnackBar(
+                                                backgroundColor: Colors.red,
+                                                content: Text(
+                                                  'Please fill in all required fields.',
+                                                  style: TextStyle(
+                                                      color: Colors.white),
+                                                )));
+                                      }
+                                    },
+                                    icon: const Icon(Icons.add),
+                                    label: const Text('Create Project')),
+                              ),
+                            ],
                           ),
                         ],
-                      ),
-                    ],
-                  ))
+                      ))
                 ])),
               );
             }

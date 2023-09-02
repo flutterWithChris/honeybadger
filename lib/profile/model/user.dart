@@ -23,6 +23,8 @@ class User {
   String? address;
   String? title;
   int? hourlyRate;
+  int? totalSpend;
+  int? totalEarned;
   UserType? userType;
   String? city;
   String? state;
@@ -54,6 +56,8 @@ class User {
     this.address,
     this.title,
     this.hourlyRate,
+    this.totalSpend,
+    this.totalEarned,
     this.userType,
     this.city,
     this.state,
@@ -92,6 +96,8 @@ class User {
     address = snap['address'];
     title = snap['title'];
     hourlyRate = snap['hourlyRate'];
+    totalSpend = snap['totalSpend'];
+    totalEarned = snap['totalEarned'];
     userType = snap['userType'] == 'freelancer'
         ? UserType.freelancer
         : UserType.client;
@@ -143,6 +149,8 @@ class User {
       'address': address,
       'title': title,
       'hourlyRate': hourlyRate,
+      'totalSpend': totalSpend,
+      'totalEarned': totalEarned,
       'userType': userType == UserType.freelancer ? 'freelancer' : 'client',
       'city': city,
       'state': state,
@@ -182,6 +190,8 @@ class User {
     String? address,
     String? title,
     int? hourlyRate,
+    int? totalSpend,
+    int? totalEarned,
     UserType? userType,
     String? city,
     String? state,
@@ -212,6 +222,8 @@ class User {
       address: address ?? this.address,
       title: title ?? this.title,
       hourlyRate: hourlyRate ?? this.hourlyRate,
+      totalSpend: totalSpend ?? this.totalSpend,
+      totalEarned: totalEarned ?? this.totalEarned,
       userType: userType ?? this.userType,
       city: city ?? this.city,
       state: state ?? this.state,
