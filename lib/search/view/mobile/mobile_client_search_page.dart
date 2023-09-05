@@ -45,6 +45,7 @@ class _MobileClientSearchPageState extends State<MobileClientSearchPage> {
     return Scaffold(
       floatingActionButton: OpenContainer(
           transitionDuration: const Duration(milliseconds: 400),
+          openElevation: 0,
           closedColor: Colors.transparent,
           closedElevation: 0,
           openColor: Theme.of(context).canvasColor,
@@ -108,7 +109,7 @@ class _MobileClientSearchPageState extends State<MobileClientSearchPage> {
                             borderSide: BorderSide.none),
                         hintText:
                             context.watch<ProfileBloc>().state is ProfileLoaded
-                                ? 'Search Projects..'
+                                ? 'Search Freelancers, Industries, etc...'
                                 : null,
                         hintStyle:
                             Theme.of(context).textTheme.bodyMedium?.copyWith(
@@ -473,7 +474,12 @@ class _MobileClientSearchPageState extends State<MobileClientSearchPage> {
                         children: [
                           index == 0 ? const Divider() : const SizedBox(),
                           FreelancerCard(freelancer: state.freelancers![index]),
-                        ],
+                        ].animate(interval: 150.ms).fadeIn().slideY(
+                              duration: 400.ms,
+                              begin: 1.0,
+                              end: 0.0,
+                              curve: Curves.easeOutSine,
+                            ),
                       ),
                     ),
                   );

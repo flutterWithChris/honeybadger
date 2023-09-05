@@ -1,4 +1,5 @@
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:loading_animation_widget/loading_animation_widget.dart';
 import 'package:outsourcedx/profile/bloc/profile_bloc.dart';
 import 'package:outsourcedx/profile/model/portfolio_project.dart';
 import 'package:outsourcedx/profile/model/user.dart';
@@ -42,6 +43,13 @@ class PortfolioCard extends StatelessWidget {
                   child: ClipRRect(
                     borderRadius: BorderRadius.circular(16.0),
                     child: CachedNetworkImage(
+                      placeholder: (context, url) {
+                        return Center(
+                            child: LoadingAnimationWidget.staggeredDotsWave(
+                          color: Theme.of(context).iconTheme.color!,
+                          size: 20.0,
+                        ));
+                      },
                       imageUrl: project.images![0],
                       fit: BoxFit.cover,
                     ),

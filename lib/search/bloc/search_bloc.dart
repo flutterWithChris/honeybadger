@@ -8,6 +8,7 @@ import 'package:outsourcedx/projects/model/project.dart';
 import 'package:outsourcedx/projects/repository/projects_repository.dart';
 import 'package:outsourcedx/search/repository/search_repository.dart';
 import 'package:rxdart/rxdart.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../profile/model/user.dart';
 
@@ -37,9 +38,13 @@ class SearchBloc extends Bloc<SearchEvent, SearchState> {
         add(LoadSearch(profileState.user));
       }
     });
-    on<ReloadSearch>((event, emit) {
+    on<ReloadSearch>((event, emit) async {
       emit(SearchLoading());
-      _searchRepository.reload('projects');
+      SharedPreferences prefs = await SharedPreferences.getInstance();
+      String? userType = prefs.getString('userType');
+      _profileBloc.state.user?.userType == UserType.client
+          ? _searchRepository.reload('freelancers')
+          : _searchRepository.reload('projects');
     });
     on<LoadSearch>((event, emit) async {
       print('State query: $_query');
@@ -59,9 +64,18 @@ class SearchBloc extends Bloc<SearchEvent, SearchState> {
 
           final searchStream = _searchRepository.getSearchResults('projects');
           final projectsStream = searchStream.switchMap((searchResponse) {
-            final projectIds = searchResponse.hits
-                .map<String>((hit) => hit['objectID'] as String)
-                .toList();
+            final projectIds = searchResponse.hits.map<String>((hit) {
+              // Check if hit contains null values for fields used in freelancer card
+              if (hit['title'] == null ||
+                  hit['description'] == null ||
+                  hit['skills'] == null ||
+                  hit['budget'] == null ||
+                  hit['deadline'] == null ||
+                  hit['objectID'] == null) {
+                return '';
+              }
+              return hit['objectID'] as String;
+            }).toList();
 
             return _projectsRepository
                 .getProjectsFromIds(projectIds)

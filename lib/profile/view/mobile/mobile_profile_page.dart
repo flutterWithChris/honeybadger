@@ -80,9 +80,8 @@ class MobileProfilePage extends StatelessWidget {
                                 right: 0.0,
                                 child: CircleAvatar(
                                   radius: 12.0,
-                                  backgroundColor: Theme.of(context)
-                                      .colorScheme
-                                      .secondaryContainer,
+                                  backgroundColor:
+                                      Theme.of(context).colorScheme.primary,
                                   child: IconButton(
                                       padding: EdgeInsets.zero,
                                       onPressed: () async {

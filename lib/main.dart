@@ -38,6 +38,9 @@ import 'package:outsourcedx/proposals/bloc/proposal_bloc.dart';
 import 'package:outsourcedx/proposals/repo/proposal_repository.dart';
 import 'package:outsourcedx/search/bloc/search_bloc.dart';
 import 'package:outsourcedx/search/repository/search_repository.dart';
+import 'package:outsourcedx/settings/cubit/bug_report_cubit.dart';
+import 'package:outsourcedx/settings/cubit/settings_cubit.dart';
+import 'package:outsourcedx/settings/repository/bug_repository.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:stream_chat_flutter/stream_chat_flutter.dart';
 import 'package:uni_links/uni_links.dart';
@@ -154,7 +157,10 @@ class _MyAppState extends State<MyApp> {
         ),
         RepositoryProvider(
           create: (context) => PortfolioRepository(),
-        )
+        ),
+        RepositoryProvider(
+          create: (context) => BugRepository(),
+        ),
       ],
       child: MultiBlocProvider(
         providers: [
@@ -242,6 +248,18 @@ class _MyAppState extends State<MyApp> {
           BlocProvider(
             create: (context) => FreelancerPublicProfileBloc(
                 userRepository: context.read<UserRepository>()),
+          ),
+          BlocProvider(
+            create: (context) => SettingsCubit(
+              authRepository: context.read<AuthRepository>(),
+              bugRepository: context.read<BugRepository>(),
+            ),
+          ),
+          BlocProvider(
+            create: (context) => BugReportCubit(
+              bugRepository: context.read<BugRepository>(),
+            ),
+            child: Container(),
           )
         ],
         child: Listener(
@@ -272,11 +290,12 @@ class _MyAppState extends State<MyApp> {
                 primaryContainer: Color(0xffd0e4ff),
                 secondary: Color(0xffac3306),
                 secondaryContainer: Color(0xff97f0ff),
-                tertiary: Color(0xff006875),
-                tertiaryContainer: Color(0xff95f0ff),
+                tertiary: Color.fromARGB(255, 255, 255, 255),
+                tertiaryContainer: Color.fromARGB(255, 238, 238, 238),
                 appBarColor: Color(0xff97f0ff),
                 error: Color(0xffb00020),
               ),
+              applyElevationOverlayColor: false,
               surfaceMode: FlexSurfaceMode.highScaffoldLowSurface,
               blendLevel: 22,
               appBarStyle: FlexAppBarStyle.background,
@@ -294,7 +313,7 @@ class _MyAppState extends State<MyApp> {
                     SchemeColor.primaryContainer,
                 segmentedButtonSchemeColor: SchemeColor.primary,
                 inputDecoratorUnfocusedHasBorder: false,
-                fabSchemeColor: SchemeColor.tertiary,
+                fabSchemeColor: SchemeColor.primary,
                 popupMenuRadius: 6.0,
                 popupMenuElevation: 4.0,
                 dialogElevation: 3.0,
@@ -328,11 +347,11 @@ class _MyAppState extends State<MyApp> {
                 navigationRailIndicatorOpacity: 1.00,
               ),
               keyColors: const FlexKeyColors(
-                useTertiary: true,
-                keepPrimary: true,
-                keepSecondary: true,
-                keepTertiary: true,
-              ),
+                  useTertiary: true,
+                  keepPrimary: true,
+                  keepSecondary: true,
+                  keepTertiary: true,
+                  keepTertiaryContainer: true),
               tones: FlexTones.highContrast(Brightness.light)
                   .onMainsUseBW()
                   .onSurfacesUseBW()
