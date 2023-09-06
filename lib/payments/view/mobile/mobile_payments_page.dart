@@ -1,5 +1,3 @@
-import 'dart:math';
-
 import 'package:outsourcedx/core/presentation/drawers/main_drawer.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -481,27 +479,19 @@ class _MobilePaymentsPageState extends State<MobilePaymentsPage>
                               transactionType = 'Payment';
                             }
 
-                            return FreelancerBalanceTransactionTile(
-                                balanceTransaction: index == 0
-                                    ? paymentsState.balanceTransactions![0]
-                                    : BalanceTransaction(
-                                        id: '123456789',
-                                        net: Random().nextInt(100000),
-                                        amount: Random().nextInt(100000),
-                                        availableOn: Random().nextInt(100000),
-                                        created: DateTime.now()
-                                                .subtract(Duration(
-                                                    days:
-                                                        Random().nextInt(100)))
-                                                .millisecondsSinceEpoch ~/
-                                            1000,
-                                        currency: 'usd',
-                                        status: 'available',
-                                      ),
-                                transactionType: transactionType,
-                                availableDate: availableDate);
+                            return Column(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                if (index == 0) const Divider(),
+                                FreelancerBalanceTransactionTile(
+                                    balanceTransaction: paymentsState
+                                        .balanceTransactions![index],
+                                    transactionType: transactionType,
+                                    availableDate: availableDate),
+                              ],
+                            );
                           },
-                          childCount: 10,
+                          childCount: paymentsState.balanceTransactions!.length,
                         ),
                       ),
                     );

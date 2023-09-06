@@ -161,6 +161,18 @@ class _MobileClientPaymentsPageState extends State<MobileClientPaymentsPage>
                 if (paymentsState is PaymentsLoaded) {
                   if (paymentsState.charges == null ||
                       paymentsState.charges!.isEmpty) {
+                    List<String> sampleNames = [
+                      'John Smith',
+                      'James Johnson',
+                      'Amanda Miller',
+                      'Robert Jones',
+                      'Rita Davis',
+                      'Sarah Brown',
+                      'James Taylor',
+                      'Michael Williams',
+                      'David Miller',
+                      'Mary Wilson',
+                    ];
                     return SliverList(
                         delegate: SliverChildListDelegate([
                       Stack(
@@ -171,93 +183,102 @@ class _MobileClientPaymentsPageState extends State<MobileClientPaymentsPage>
                               const Divider(),
                               // index == 0 ? const Divider() : const SizedBox(),
                               for (int index = 0; index < 7; index++)
-                                Padding(
-                                  padding: const EdgeInsets.only(bottom: 4.0),
-                                  child: Padding(
-                                    padding: const EdgeInsets.symmetric(
-                                        vertical: 16.0),
-                                    child: Opacity(
-                                      opacity: 0.6,
-                                      child: ListTile(
-                                        onTap: () {
-                                          // context.go(
-                                          //     '/payments/details/${paymentsState.charges![index].id}',
-                                          //     extra:
-                                          //         paymentsState.charges![index]);
-                                          //  TODO: Reenable this
-                                          showBottomSheet(
-                                              enableDrag: true,
-                                              context: context,
-                                              builder: (context) =>
-                                                  DraggableScrollableSheet(
-                                                    expand: false,
-                                                    initialChildSize:
-                                                        index / 2 == 0 ||
-                                                                index / 3 == 0
-                                                            ? 0.28
-                                                            : .26,
-                                                    minChildSize: 0.18,
-                                                    builder: (context,
-                                                            scrollController) =>
-                                                        ChargeDetailsSheet(
-                                                            charge: paymentsState
-                                                                    .charges![
-                                                                index]),
-                                                  ));
-                                        },
-                                        leading: Icon(
-                                          MdiIcons.checkBold,
-                                          size: 20.0,
-                                          color: Colors.green,
-                                        ),
+                                Column(
+                                  children: [
+                                    Padding(
+                                      padding:
+                                          const EdgeInsets.only(bottom: 4.0),
+                                      child: Padding(
+                                        padding: const EdgeInsets.symmetric(
+                                            vertical: 8.0),
+                                        child: Opacity(
+                                          opacity: 0.6,
+                                          child: ListTile(
+                                            onTap: () {
+                                              // context.go(
+                                              //     '/payments/details/${paymentsState.charges![index].id}',
+                                              //     extra:
+                                              //         paymentsState.charges![index]);
+                                              //  TODO: Reenable this
+                                              showBottomSheet(
+                                                  enableDrag: true,
+                                                  context: context,
+                                                  builder: (context) =>
+                                                      DraggableScrollableSheet(
+                                                        expand: false,
+                                                        initialChildSize:
+                                                            index / 2 == 0 ||
+                                                                    index / 3 ==
+                                                                        0
+                                                                ? 0.28
+                                                                : .26,
+                                                        minChildSize: 0.18,
+                                                        builder: (context,
+                                                                scrollController) =>
+                                                            ChargeDetailsSheet(
+                                                                charge: paymentsState
+                                                                        .charges![
+                                                                    index]),
+                                                      ));
+                                            },
+                                            leading: Icon(
+                                              MdiIcons.checkBold,
+                                              size: 20.0,
+                                              color: Colors.green,
+                                            ),
 
-                                        title: const Text(
-                                          'Payment for Milestone',
-                                          maxLines: 1,
-                                          overflow: TextOverflow.ellipsis,
-                                        ),
-                                        // TODO: Add payment status widge
-                                        trailing: Column(
-                                          crossAxisAlignment:
-                                              CrossAxisAlignment.end,
-                                          mainAxisSize: MainAxisSize.min,
-                                          children: [
-                                            Text(
-                                              convertCentsToCurrency(
-                                                  ((Random().nextInt(100000) +
-                                                      50000))),
-                                              style: Theme.of(context)
-                                                  .textTheme
-                                                  .titleMedium
-                                                  ?.copyWith(),
+                                            title: Text(
+                                              'Payment to ${sampleNames[index]}',
+                                              maxLines: 1,
+                                              overflow: TextOverflow.ellipsis,
                                             ),
-                                            const GutterTiny(),
-                                            Text(
-                                              Jiffy.parseFromMillisecondsSinceEpoch(
-                                                      DateTime.now()
-                                                          .subtract(Duration(
-                                                              days: Random()
-                                                                  .nextInt(
-                                                                      365)))
-                                                          .millisecondsSinceEpoch)
-                                                  .fromNow(),
-                                              style: Theme.of(context)
-                                                  .textTheme
-                                                  .bodySmall
-                                                  ?.copyWith(
-                                                      color: Theme.of(context)
-                                                                  .brightness ==
-                                                              Brightness.light
-                                                          ? Colors.grey[500]
-                                                          : Colors.grey[600]),
+                                            // TODO: Add payment status widge
+                                            trailing: Column(
+                                              crossAxisAlignment:
+                                                  CrossAxisAlignment.end,
+                                              mainAxisSize: MainAxisSize.min,
+                                              children: [
+                                                Text(
+                                                  convertCentsToCurrency(
+                                                      ((Random()
+                                                              .nextInt(100000) +
+                                                          50000))),
+                                                  style: Theme.of(context)
+                                                      .textTheme
+                                                      .titleMedium
+                                                      ?.copyWith(),
+                                                ),
+                                                const GutterTiny(),
+                                                Text(
+                                                  Jiffy.parseFromMillisecondsSinceEpoch(
+                                                          DateTime.now()
+                                                              .subtract(Duration(
+                                                                  days: Random()
+                                                                      .nextInt(
+                                                                          365)))
+                                                              .millisecondsSinceEpoch)
+                                                      .fromNow(),
+                                                  style: Theme.of(context)
+                                                      .textTheme
+                                                      .bodySmall
+                                                      ?.copyWith(
+                                                          color: Theme.of(context)
+                                                                      .brightness ==
+                                                                  Brightness
+                                                                      .light
+                                                              ? Colors.grey[500]
+                                                              : Colors
+                                                                  .grey[600]),
+                                                ),
+                                              ],
                                             ),
-                                          ],
+                                          ),
                                         ),
                                       ),
                                     ),
-                                  ),
+                                    const Divider(),
+                                  ],
                                 ),
-                              const Divider(),
                             ],
                           ),
                           Padding(
