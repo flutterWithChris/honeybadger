@@ -62,5 +62,4 @@ String convertCentsToCurrency(int cents) {
   return formatter.format(cents / 100);
 }
 
-bool get inProduction =>
-    kReleaseMode && !kProfileMode && !kDebugMode && !kIsWeb;
+bool get inProduction => !kDebugMode;
