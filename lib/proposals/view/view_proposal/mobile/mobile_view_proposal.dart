@@ -8,6 +8,7 @@ import 'package:outsourcedx/core/presentation/system/mobile_sliver_app_bar.dart'
 import 'package:outsourcedx/payments/bloc/payments_bloc.dart';
 import 'package:outsourcedx/profile/bloc/profile_bloc.dart';
 import 'package:outsourcedx/proposals/bloc/proposal_bloc.dart';
+import 'package:outsourcedx/proposals/model/milestone.dart';
 import 'package:outsourcedx/proposals/model/proposal.dart';
 import 'package:jiffy/jiffy.dart';
 import 'package:list_ext/list_ext.dart';
@@ -246,6 +247,10 @@ class MobileViewProposalPage extends StatelessWidget {
                             .any((element) =>
                                 element.funded == true &&
                                 element.isPaid != true);
+                        Milestone milestone = proposal.milestones!.firstWhere(
+                            (element) =>
+                                element.funded == true &&
+                                element.isPaid != true);
                         if (milestoneWaitingForPayment) {
                           return Column(
                             mainAxisSize: MainAxisSize.min,
@@ -266,21 +271,28 @@ class MobileViewProposalPage extends StatelessWidget {
                                         style: TextStyle(color: Colors.white),
                                       ),
                                       onPressed: () {
-                                        context.read<PaymentsBloc>().add(SendPayment(
-                                            amount: proposal
-                                                .milestones!.first.amount!,
-                                            description:
-                                                'Milestone: ${proposal.title}',
-                                            client: context
-                                                .read<ProfileBloc>()
-                                                .state
-                                                .user!,
-                                            freelancerId:
-                                                proposal.freelancerId!,
-                                            freelancerStripeAccountId: proposal
-                                                .freelancerStripeAccountId!,
-                                            proposal: proposal,
-                                            context: context));
+                                        context.read<PaymentsBloc>().add(
+                                            SendPayment(
+                                                amount: milestone.amount!,
+                                                description: '',
+                                                client: context
+                                                    .read<ProfileBloc>()
+                                                    .state
+                                                    .user!,
+                                                freelancerId:
+                                                    proposal.freelancerId!,
+                                                freelancerName:
+                                                    proposal.freelancerName!,
+                                                freelancerStripeAccountId: proposal
+                                                    .freelancerStripeAccountId!,
+                                                milestoneId: milestone.id,
+                                                milestoneName: milestone.title,
+                                                paymentType: proposal.milestones
+                                                        .isNotNullOrEmpty
+                                                    ? 'fixed'
+                                                    : 'hourly',
+                                                proposal: proposal,
+                                                context: context));
                                       },
                                     ),
                                   ),
@@ -299,6 +311,10 @@ class MobileViewProposalPage extends StatelessWidget {
                             ],
                           );
                         } else {
+                          Milestone milestone = proposal.milestones!.firstWhere(
+                              (element) =>
+                                  element.funded == false &&
+                                  element.isPaid != true);
                           return Column(
                             mainAxisSize: MainAxisSize.min,
                             children: [
@@ -311,16 +327,23 @@ class MobileViewProposalPage extends StatelessWidget {
                                           'Accept & Fund First Milestone'),
                                       onPressed: () {
                                         context.read<PaymentsBloc>().add(SendPayment(
-                                            amount: proposal
-                                                .milestones!.first.amount!,
+                                            amount: milestone.amount!,
                                             description:
-                                                'Milestone: ${proposal.title}',
+                                                'Payment to ${proposal.freelancerName}',
                                             client: context
                                                 .read<ProfileBloc>()
                                                 .state
                                                 .user!,
                                             freelancerId:
                                                 proposal.freelancerId!,
+                                            freelancerName:
+                                                proposal.freelancerName!,
+                                            milestoneId: milestone.id,
+                                            milestoneName: milestone.title,
+                                            paymentType: proposal
+                                                    .milestones.isNotNullOrEmpty
+                                                ? 'fixed'
+                                                : 'hourly',
                                             freelancerStripeAccountId: proposal
                                                 .freelancerStripeAccountId!,
                                             proposal: proposal,

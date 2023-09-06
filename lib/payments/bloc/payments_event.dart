@@ -60,6 +60,10 @@ class SendPayment extends PaymentsEvent {
   User client;
   String freelancerStripeAccountId;
   String freelancerId;
+  String freelancerName;
+  String? milestoneName;
+  String? milestoneId;
+  String paymentType;
 
   BuildContext context;
   SendPayment(
@@ -67,6 +71,10 @@ class SendPayment extends PaymentsEvent {
       required this.client,
       required this.freelancerStripeAccountId,
       required this.freelancerId,
+      required this.freelancerName,
+      this.milestoneName,
+      this.milestoneId,
+      required this.paymentType,
       required this.proposal,
       required this.description,
       required this.context});
@@ -78,6 +86,10 @@ class SendPayment extends PaymentsEvent {
         client,
         freelancerStripeAccountId,
         freelancerId,
+        freelancerName,
+        milestoneName,
+        milestoneId,
+        paymentType,
         description,
         amount
       ];

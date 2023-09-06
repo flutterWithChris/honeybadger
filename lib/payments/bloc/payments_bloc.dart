@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:flutter/material.dart';
+import 'package:outsourcedx/core/constants.dart';
 import 'package:outsourcedx/payments/model/balance.dart';
 import 'package:outsourcedx/payments/model/balance_transaction.dart';
 import 'package:outsourcedx/payments/model/charge.dart';
@@ -92,15 +93,22 @@ class PaymentsBloc extends Bloc<PaymentsEvent, PaymentsState>
       String? customerId = await _paymentsRepository.initPaymentSheet(
         event.context,
         email: event.client.email!,
+        name: '${event.client.firstName} ${event.client.lastName}',
         amount: (event.amount * 1.05).round(),
         applicationFeeAmount: (event.amount * 0.10).round(),
         freelancerStripeAccountId: event.freelancerStripeAccountId,
-        description: 'Payment for ${event.proposal.projectName}',
+        description: 'Payment to ${event.proposal.freelancerName}',
         metadata: {
           'proposalId': event.proposal.id,
           'clientId': event.client.id,
           'clientName': '${event.client.firstName} ${event.client.lastName}',
+          'clientProfilePicture': event.client.photoUrl,
           'freelancerId': event.freelancerId,
+          'freelancerName': event.freelancerName,
+          'freelancerProfilePicture': event.proposal.freelancerAvatar,
+          'projectName': event.proposal.projectName,
+          'milestoneName': event.milestoneName,
+          'paymentType': event.paymentType,
         },
       );
       if (_profileBloc.state.user!.stripeAccountId == null ||
@@ -125,8 +133,11 @@ class PaymentsBloc extends Bloc<PaymentsEvent, PaymentsState>
       if (_profileBloc.state.user!.userType! == UserType.freelancer) {
         if (event.user.stripeAccountId != null &&
             event.user.stripeAccountId!.isNotEmpty) {
-          stripeAccount = await _paymentsRepository
-              .fetchStripeAccount(event.user.stripeAccountId!);
+          stripeAccount = inProduction == true
+              ? await _paymentsRepository
+                  .fetchStripeAccount(event.user.stripeAccountId!)
+              : await _paymentsRepository
+                  .fetchTestStripeAccount(event.user.stripeAccountId!);
           // bool stripeSetupComplete =
           //     (stripeAccount?.requirements?['currently_due'] as List?)?.isEmpty ??
           //         true;
@@ -134,13 +145,24 @@ class PaymentsBloc extends Bloc<PaymentsEvent, PaymentsState>
           bool? stripeSetupComplete =
               (stripeAccount?.requirements?['currently_due'] as List?)?.isEmpty;
           if (stripeSetupComplete == true) {
-            var futures = [
-              _paymentsRepository.getLoginLink(event.user.stripeAccountId!),
-              _paymentsRepository.getBalance(event.user.stripeAccountId!),
-              _paymentsRepository.getBalanceTransactions(
-                event.user.stripeAccountId!,
-              ),
-            ];
+            var futures = inProduction == true
+                ? [
+                    _paymentsRepository
+                        .getLoginLink(event.user.stripeAccountId!),
+                    _paymentsRepository.getBalance(event.user.stripeAccountId!),
+                    _paymentsRepository.getBalanceTransactions(
+                      event.user.stripeAccountId!,
+                    ),
+                  ]
+                : [
+                    _paymentsRepository
+                        .getTestLoginLink(event.user.stripeAccountId!),
+                    _paymentsRepository
+                        .getTestBalance(event.user.stripeAccountId!),
+                    _paymentsRepository.getTestBalanceTransactions(
+                      event.user.stripeAccountId!,
+                    ),
+                  ];
             var results = await Future.wait(futures);
             loginLink = results[0] as String;
             balance = results[1] as Balance;
@@ -163,8 +185,11 @@ class PaymentsBloc extends Bloc<PaymentsEvent, PaymentsState>
       } else {
         // TODO: Load Client Charges
         if (event.user.stripeAccountId != null) {
-          List<Charge> charges = await _paymentsRepository.getCharges(
-              stripeAccountId: event.user.stripeAccountId!);
+          List<Charge> charges = inProduction == true
+              ? await _paymentsRepository.getCharges(
+                  stripeAccountId: event.user.stripeAccountId!)
+              : await _paymentsRepository.getTestCharges(
+                  stripeAccountId: event.user.stripeAccountId!);
           emit(PaymentsLoaded(
               stripeAccountStatus: StripeAccountStatus.complete,
               charges: charges));
@@ -189,12 +214,19 @@ class PaymentsBloc extends Bloc<PaymentsEvent, PaymentsState>
     List<BalanceTransaction>? balanceTransactions;
     if (event.user.stripeAccountId != null &&
         event.user.stripeAccountId!.isNotEmpty) {
-      var futures = [
-        _paymentsRepository.getBalance(event.user.stripeAccountId!),
-        _paymentsRepository.getBalanceTransactions(
-          event.user.stripeAccountId!,
-        ),
-      ];
+      var futures = inProduction == true
+          ? [
+              _paymentsRepository.getBalance(event.user.stripeAccountId!),
+              _paymentsRepository.getBalanceTransactions(
+                event.user.stripeAccountId!,
+              ),
+            ]
+          : [
+              _paymentsRepository.getTestBalance(event.user.stripeAccountId!),
+              _paymentsRepository.getTestBalanceTransactions(
+                event.user.stripeAccountId!,
+              ),
+            ];
       var results = await Future.wait(futures);
       balance = results[0] as Balance;
       balanceTransactions = results[1] as List<BalanceTransaction>;
@@ -215,8 +247,11 @@ class PaymentsBloc extends Bloc<PaymentsEvent, PaymentsState>
   void _onLoadCharges(LoadCharges event, Emitter<PaymentsState> emit) async {
     try {
       emit(PaymentsLoading());
-      List<Charge> charges = await _paymentsRepository.getCharges(
-          stripeAccountId: event.user.stripeAccountId!);
+      List<Charge> charges = inProduction == true
+          ? await _paymentsRepository.getCharges(
+              stripeAccountId: event.user.stripeAccountId!)
+          : await _paymentsRepository.getTestCharges(
+              stripeAccountId: event.user.stripeAccountId!);
       emit(PaymentsLoaded(
           stripeAccountStatus: StripeAccountStatus.notCreated,
           charges: charges));

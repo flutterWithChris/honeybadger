@@ -53,6 +53,25 @@ class PaymentsRepository {
     }
   }
 
+  /// Fetch stripe account
+  Future<StripeAccount?> fetchTestStripeAccount(String stripeAccountId) async {
+    try {
+      final response = await http.post(
+          Uri.parse(
+              'https://us-central1-honeybadger-817ee.cloudfunctions.net/getTestStripeAccount'),
+          body: {
+            'accountId': stripeAccountId,
+          });
+      print(response.body);
+      final jsonResponse = jsonDecode(response.body);
+      log(jsonResponse['account'].toString());
+      return StripeAccount.fromJson(jsonResponse['account']);
+    } catch (e) {
+      log('**Error fetching stripe account: ${e.toString()}**');
+      return null;
+    }
+  }
+
   Future<void> finishStripeConnectOnboarding(String stripeAccountId) async {
     try {
       final response = await http.post(
@@ -95,6 +114,25 @@ class PaymentsRepository {
       final response = await http.post(
           Uri.parse(
               'https://us-central1-honeybadger-817ee.cloudfunctions.net/createStripeLoginLink'),
+          body: {
+            'accountId': stripeAccountId,
+          });
+      print(response.body);
+      final jsonResponse = jsonDecode(response.body);
+      log(jsonResponse.toString());
+      print(jsonResponse.toString());
+      return jsonResponse['url'];
+    } catch (e) {
+      log(e.toString());
+      rethrow;
+    }
+  }
+
+  Future<String> getTestLoginLink(String stripeAccountId) async {
+    try {
+      final response = await http.post(
+          Uri.parse(
+              'https://us-central1-honeybadger-817ee.cloudfunctions.net/createTestStripeLoginLink'),
           body: {
             'accountId': stripeAccountId,
           });
@@ -157,6 +195,7 @@ class PaymentsRepository {
   /// Initialize payment sheet
   Future<String?> initPaymentSheet(context,
       {required String email,
+      required String name,
       required int amount,
       required int applicationFeeAmount,
       required String freelancerStripeAccountId,
@@ -167,6 +206,91 @@ class PaymentsRepository {
       final response = await http.post(
           Uri.parse(
               'https://us-central1-honeybadger-817ee.cloudfunctions.net/stripePaymentIntentRequest'),
+          body: {
+            'amount': (amount * 100).toString(),
+            'email': email,
+            'name': name,
+            'description': description,
+            'freelancerStripeAccountId': freelancerStripeAccountId,
+            'applicationFeeAmount': (applicationFeeAmount * 100).toString(),
+            // 'metadata': jsonEncode(metadata),
+          });
+
+      final jsonResponse = jsonDecode(response.body);
+      log(jsonResponse.toString());
+      print(jsonResponse.toString());
+
+      await Stripe.instance.initPaymentSheet(
+          paymentSheetParameters: SetupPaymentSheetParameters(
+        googlePay: const PaymentSheetGooglePay(
+            merchantCountryCode: 'US', testEnv: true),
+        paymentIntentClientSecret: jsonResponse['paymentIntent'],
+        merchantDisplayName: 'Honeybadger',
+        customerId: jsonResponse['customer'],
+        customerEphemeralKeySecret: jsonResponse['ephemeralKey'],
+        style: Theme.of(context).brightness == Brightness.dark
+            ? ThemeMode.dark
+            : ThemeMode.light,
+      ));
+
+      await Stripe.instance.presentPaymentSheet();
+
+      scaffoldKey.currentState!.showSnackBar(
+        const SnackBar(
+          backgroundColor: Colors.green,
+          behavior: SnackBarBehavior.floating,
+          content: Text('Payment Successful!',
+              style: TextStyle(color: Colors.white)),
+          duration: Duration(seconds: 2),
+        ),
+      );
+
+      // return customer
+      return jsonResponse['customer'];
+    } catch (e) {
+      log(e.toString());
+      FirebaseCrashlytics.instance.recordError(e, StackTrace.current);
+
+      if (e is StripeException) {
+        scaffoldKey.currentState!.showSnackBar(
+          SnackBar(
+            backgroundColor: Colors.red,
+            behavior: SnackBarBehavior.floating,
+            content: Text(
+              e.error.localizedMessage!,
+              style: const TextStyle(color: Colors.white),
+            ),
+            duration: const Duration(seconds: 2),
+          ),
+        );
+      } else {
+        scaffoldKey.currentState!.showSnackBar(
+          SnackBar(
+            backgroundColor: Colors.red,
+            behavior: SnackBarBehavior.floating,
+            content: Text('Error: ${e.toString()}',
+                style: const TextStyle(color: Colors.white)),
+            duration: const Duration(seconds: 2),
+          ),
+        );
+      }
+      rethrow;
+    }
+  }
+
+  /// Initialize payment sheet
+  Future<String?> initTestPaymentSheet(context,
+      {required String email,
+      required int amount,
+      required int applicationFeeAmount,
+      required String freelancerStripeAccountId,
+      required String description,
+      required Map<String, dynamic> metadata}) async {
+    print('Metadata: ${jsonEncode(metadata)}');
+    try {
+      final response = await http.post(
+          Uri.parse(
+              'https://us-central1-honeybadger-817ee.cloudfunctions.net/stripeTestPaymentIntentRequest'),
           body: {
             'amount': (amount * 100).toString(),
             'email': email,
@@ -259,12 +383,58 @@ class PaymentsRepository {
     }
   }
 
+  Future<Balance> getTestBalance(String stripeAccountId) async {
+    try {
+      final response = await http.post(
+          Uri.parse(
+              'https://us-central1-honeybadger-817ee.cloudfunctions.net/getTestStripeBalance'),
+          body: {
+            'accountId': stripeAccountId,
+          });
+      print(response.body);
+      final jsonResponse = jsonDecode(response.body);
+      log(jsonResponse.toString());
+      print(jsonResponse.toString());
+      return Balance.fromJson(jsonResponse['balance']);
+    } catch (e) {
+      FirebaseCrashlytics.instance.recordError(e, StackTrace.current);
+
+      log(e.toString());
+      rethrow;
+    }
+  }
+
   Future<List<BalanceTransaction>> getBalanceTransactions(
       String stripeAccountId) async {
     try {
       final response = await http.post(
           Uri.parse(
               'https://us-central1-honeybadger-817ee.cloudfunctions.net/getStripeBalanceTransactions'),
+          body: {
+            'accountId': stripeAccountId,
+          });
+      print(response.body);
+      final jsonResponse = jsonDecode(response.body);
+      log(jsonResponse.toString());
+      print(jsonResponse.toString());
+      var transactions = jsonResponse['balance_transactions']['data'] as List;
+      List<BalanceTransaction> transactionsList =
+          transactions.map((i) => BalanceTransaction.fromJson(i)).toList();
+      return transactionsList;
+    } catch (e) {
+      FirebaseCrashlytics.instance.recordError(e, StackTrace.current);
+
+      log(e.toString());
+      rethrow;
+    }
+  }
+
+  Future<List<BalanceTransaction>> getTestBalanceTransactions(
+      String stripeAccountId) async {
+    try {
+      final response = await http.post(
+          Uri.parse(
+              'https://us-central1-honeybadger-817ee.cloudfunctions.net/getTestStripeBalanceTransactions'),
           body: {
             'accountId': stripeAccountId,
           });
@@ -315,6 +485,30 @@ class PaymentsRepository {
       final response = await http.post(
           Uri.parse(
               'https://us-central1-honeybadger-817ee.cloudfunctions.net/getStripeCharges'),
+          body: {
+            'accountId': stripeAccountId,
+          });
+      print(response.body);
+      final jsonResponse = jsonDecode(response.body);
+      log(jsonResponse.toString());
+      print(jsonResponse.toString());
+      var charges = jsonResponse['charges']['data'] as List;
+      List<Charge> chargesList =
+          charges.map((i) => Charge.fromJson(i)).toList();
+      return chargesList;
+    } catch (e) {
+      FirebaseCrashlytics.instance.recordError(e, StackTrace.current);
+
+      log(e.toString());
+      rethrow;
+    }
+  }
+
+  Future<List<Charge>> getTestCharges({required String stripeAccountId}) async {
+    try {
+      final response = await http.post(
+          Uri.parse(
+              'https://us-central1-honeybadger-817ee.cloudfunctions.net/getTestStripeCharges'),
           body: {
             'accountId': stripeAccountId,
           });

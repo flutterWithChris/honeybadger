@@ -1,5 +1,6 @@
 import 'dart:math';
 
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -135,7 +136,7 @@ class _MobileClientPaymentsPageState extends State<MobileClientPaymentsPage>
                           const Gutter(),
                           Text(paymentsState.message),
                           const Gutter(),
-                          ElevatedButton(
+                          FilledButton(
                             onPressed: () => context.read<PaymentsBloc>().add(
                                 LoadPayments(
                                     user: context
@@ -259,36 +260,45 @@ class _MobileClientPaymentsPageState extends State<MobileClientPaymentsPage>
                               const Divider(),
                             ],
                           ),
-                          Container(
-                            width: double.infinity,
-                            decoration: BoxDecoration(
-                              shape: BoxShape.circle,
-                              gradient: RadialGradient(radius: 1.618, colors: [
-                                Theme.of(context).scaffoldBackgroundColor,
-                                Colors.black.withAlpha(10)
-                              ]),
-                            ),
-                            child: Padding(
-                              padding:
-                                  const EdgeInsets.symmetric(vertical: 48.0),
-                              child: Column(
-                                mainAxisSize: MainAxisSize.min,
-                                children: [
-                                  const Icon(Icons.payment_rounded, size: 60.0),
-                                  const GutterTiny(),
-                                  Text(
-                                    'No Payments Yet',
-                                    style: Theme.of(context)
-                                        .textTheme
-                                        .headlineSmall,
-                                  ),
-                                  const GutterSmall(),
-                                  Text(
-                                    'Transactions will show up here!',
-                                    style:
-                                        Theme.of(context).textTheme.bodyMedium,
-                                  ),
-                                ],
+                          Padding(
+                            padding: const EdgeInsets.only(bottom: 65),
+                            child: Container(
+                              width: double.infinity,
+                              decoration: BoxDecoration(
+                                shape: BoxShape.circle,
+                                gradient:
+                                    RadialGradient(radius: 1.618, colors: [
+                                  Theme.of(context).scaffoldBackgroundColor,
+                                  Theme.of(context).brightness ==
+                                          Brightness.light
+                                      ? Colors.white.withOpacity(0.7)
+                                      : Colors.black.withAlpha(10)
+                                ]),
+                              ),
+                              child: Padding(
+                                padding: const EdgeInsets.symmetric(
+                                    vertical: 48.0, horizontal: 24.0),
+                                child: Column(
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
+                                    const Icon(Icons.payment_rounded,
+                                        size: 60.0),
+                                    const GutterTiny(),
+                                    Text(
+                                      'No Payments Yet',
+                                      style: Theme.of(context)
+                                          .textTheme
+                                          .headlineSmall,
+                                    ),
+                                    const GutterSmall(),
+                                    Text(
+                                      'Transactions will show up here!',
+                                      style: Theme.of(context)
+                                          .textTheme
+                                          .bodyMedium,
+                                    ),
+                                  ],
+                                ),
                               ),
                             ),
                           )
@@ -811,6 +821,42 @@ class _ChargeDetailsSheetState extends State<ChargeDetailsSheet> {
                 ),
               ],
             ),
+          const GutterSmall(),
+
+          Row(
+            children: [
+              // Flexible(
+              //   child: PopupMenuButton(
+              //     offset: const Offset(20.0, 0),
+              //     position: PopupMenuPosition.under,
+              //     icon: const Icon(Icons.more_vert),
+              //     itemBuilder: (context) => [
+              //       const PopupMenuItem(
+              //         value: 'Refund',
+              //         child: Row(
+              //           children: [
+              //             Icon(Icons.money_off, size: 16.0),
+              //             GutterSmall(),
+              //             Text('Refund'),
+              //           ],
+              //         ),
+              //       ),
+              //     ],
+              //     onSelected: (value) {},
+              //   ),
+              // ),
+              //const Gutter(),
+              Expanded(
+                child: FilledButton.icon(
+                    onPressed: () async {
+                      await launchUrlString(widget.charge.receiptUrl!,
+                          mode: LaunchMode.externalApplication);
+                    },
+                    icon: Icon(MdiIcons.archiveEye, size: 16.0),
+                    label: const Text('View Transaction')),
+              ),
+            ],
+          ),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
@@ -825,16 +871,30 @@ class _ChargeDetailsSheetState extends State<ChargeDetailsSheet> {
               widget.charge.description == null
                   ? Container()
                   : Flexible(
-                      child: Text(widget.charge.description!,
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
-                          style:
-                              Theme.of(context).textTheme.bodyMedium?.copyWith(
+                      child: Wrap(
+                        children: [
+                          widget.charge.metadata?['freelancerProfilePicture'] ==
+                                  null
+                              ? Container()
+                              : CircleAvatar(
+                                  child: CachedNetworkImage(
+                                      imageUrl: widget.charge.metadata?[
+                                          'freelancerProfilePicture']),
+                                ),
+                          Text(widget.charge.description!,
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                              style: Theme.of(context)
+                                  .textTheme
+                                  .bodyMedium
+                                  ?.copyWith(
                                     color: Theme.of(context).brightness ==
                                             Brightness.light
                                         ? Colors.grey[700]
                                         : Colors.grey[300],
                                   )),
+                        ],
+                      ),
                     ),
               Row(
                 mainAxisSize: MainAxisSize.min,
@@ -910,41 +970,6 @@ class _ChargeDetailsSheetState extends State<ChargeDetailsSheet> {
                     ),
                   ),
                 ],
-              ),
-            ],
-          ),
-          const GutterTiny(),
-          Row(
-            children: [
-              // Flexible(
-              //   child: PopupMenuButton(
-              //     offset: const Offset(20.0, 0),
-              //     position: PopupMenuPosition.under,
-              //     icon: const Icon(Icons.more_vert),
-              //     itemBuilder: (context) => [
-              //       const PopupMenuItem(
-              //         value: 'Refund',
-              //         child: Row(
-              //           children: [
-              //             Icon(Icons.money_off, size: 16.0),
-              //             GutterSmall(),
-              //             Text('Refund'),
-              //           ],
-              //         ),
-              //       ),
-              //     ],
-              //     onSelected: (value) {},
-              //   ),
-              // ),
-              //const Gutter(),
-              Expanded(
-                child: FilledButton.icon(
-                    onPressed: () async {
-                      await launchUrlString(widget.charge.receiptUrl!,
-                          mode: LaunchMode.externalApplication);
-                    },
-                    icon: Icon(MdiIcons.archiveEye, size: 16.0),
-                    label: const Text('View Transaction')),
               ),
             ],
           ),

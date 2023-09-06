@@ -6,6 +6,7 @@ import 'package:outsourcedx/core/constants.dart';
 import 'package:outsourcedx/payments/bloc/payments_bloc.dart';
 import 'package:outsourcedx/profile/bloc/profile_bloc.dart';
 import 'package:outsourcedx/proposals/bloc/proposal_bloc.dart';
+import 'package:outsourcedx/proposals/model/milestone.dart';
 import 'package:outsourcedx/proposals/model/proposal.dart';
 import 'package:jiffy/jiffy.dart';
 import 'package:list_ext/list_ext.dart';
@@ -88,6 +89,8 @@ class ActiveProposalTab extends StatelessWidget {
               bool milestoneWaitingForPayment = proposal.milestones!.any(
                   (element) =>
                       element.funded == true && element.isPaid != true);
+              Milestone milestone = proposal.milestones!.firstWhere((element) =>
+                  element.funded == true && element.isPaid != true);
               if (milestoneWaitingForPayment) {
                 return Column(
                   mainAxisSize: MainAxisSize.min,
@@ -109,11 +112,19 @@ class ActiveProposalTab extends StatelessWidget {
                             ),
                             onPressed: () {
                               context.read<PaymentsBloc>().add(SendPayment(
-                                  amount: proposal.milestones!.first.amount!,
-                                  description: 'Milestone: ${proposal.title}',
+                                  amount: milestone.amount!,
+                                  description:
+                                      'Payment to ${proposal.freelancerName}',
                                   client:
                                       context.read<ProfileBloc>().state.user!,
                                   freelancerId: proposal.freelancerId!,
+                                  freelancerName: proposal.freelancerName!,
+                                  milestoneName: milestone.title,
+                                  milestoneId: milestone.id,
+                                  paymentType:
+                                      proposal.milestones.isNotNullOrEmpty
+                                          ? 'fixed'
+                                          : 'hourly',
                                   freelancerStripeAccountId:
                                       proposal.freelancerStripeAccountId!,
                                   proposal: proposal,
@@ -136,6 +147,9 @@ class ActiveProposalTab extends StatelessWidget {
                   ],
                 );
               } else {
+                Milestone milestone = proposal.milestones!.firstWhere(
+                    (element) =>
+                        element.funded == true && element.isPaid != true);
                 return Column(
                   mainAxisSize: MainAxisSize.min,
                   children: [
@@ -148,10 +162,17 @@ class ActiveProposalTab extends StatelessWidget {
                             onPressed: () {
                               context.read<PaymentsBloc>().add(SendPayment(
                                   amount: proposal.milestones!.first.amount!,
-                                  description: 'Milestone: ${proposal.title}',
+                                  description:
+                                      'Payment to ${proposal.freelancerName}',
                                   client:
                                       context.read<ProfileBloc>().state.user!,
                                   freelancerId: proposal.freelancerId!,
+                                  freelancerName: proposal.freelancerName!,
+                                  milestoneName: milestone.title,
+                                  paymentType:
+                                      proposal.milestones.isNotNullOrEmpty
+                                          ? 'fixed'
+                                          : 'hourly',
                                   freelancerStripeAccountId:
                                       proposal.freelancerStripeAccountId!,
                                   proposal: proposal,
