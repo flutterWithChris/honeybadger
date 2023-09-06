@@ -28,7 +28,6 @@ class CategorySearchBloc
           for (var hit in value.hits) {
             categories.add(Category.fromAlgoliaSearch(hit));
           }
-          print('Categories: $categories');
           return CategorySearchLoaded(categories: categories);
         });
       } catch (e) {

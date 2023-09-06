@@ -13,7 +13,6 @@ class UserRepository extends BaseUserRepository {
   final FirebaseFirestore _firebaseFirestore = FirebaseFirestore.instance;
   final FirebaseStorage _firebaseStorage = FirebaseStorage.instance;
   String getUserPath(User user) {
-    print('Getting User for User Type: ${user.userType}');
     if (user.userType == UserType.freelancer) {
       return 'freelancers';
     } else {
@@ -88,7 +87,6 @@ class UserRepository extends BaseUserRepository {
           .doc(user.id)
           .snapshots()
           .map((doc) {
-        print('Stream User: ${User.fromDocument(doc)}}');
         return User.fromDocument(doc);
       }).onErrorResume((error, stackTrace) {
         if (getUserPath(user) == 'freelancers') {
@@ -97,7 +95,6 @@ class UserRepository extends BaseUserRepository {
               .doc(user.id)
               .snapshots()
               .map((doc) {
-            print('Stream User: ${User.fromDocument(doc)}}');
             return User.fromDocument(doc);
           });
         } else {
@@ -106,13 +103,11 @@ class UserRepository extends BaseUserRepository {
               .doc(user.id)
               .snapshots()
               .map((doc) {
-            print('Stream User: ${User.fromDocument(doc)}}');
             return User.fromDocument(doc);
           });
         }
       });
     } catch (e) {
-      print(e);
       scaffoldKey.currentState!.showSnackBar(const SnackBar(
         backgroundColor: Colors.red,
         content: Text(

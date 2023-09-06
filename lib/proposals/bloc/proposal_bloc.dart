@@ -34,7 +34,6 @@ class ProposalBloc extends Bloc<ProposalsEvent, ProposalState> {
         _projectsRepository = projectsRepository,
         _profileBloc = profileBloc,
         super(const ProposalLoading()) {
-    print('Proposal state: $state');
     on<LoadProposal>((event, emit) async {
       if (state is ProposalLoading == false) emit(const ProposalLoading());
       Proposal? currentProposal;
@@ -42,14 +41,12 @@ class ProposalBloc extends Bloc<ProposalsEvent, ProposalState> {
         _proposalRepository.fetchProposal(event.projectId, event.userId),
         onData: (data) {
           if (data != null) {
-            print('Found proposal: ${data.id}');
             if (data.status == ProposalStatus.draft) {
               return ProposalStarted(proposal: data);
             } else {
               return ProposalLoaded(data);
             }
           } else {
-            print('No proposal found');
             return ProposalLoaded(data);
           }
         },
@@ -231,7 +228,6 @@ class ProposalBloc extends Bloc<ProposalsEvent, ProposalState> {
           milestones: [...(state.proposal?.milestones ?? []), event.milestone],
         );
         emit(const ProposalLoading());
-        print('PRoposal Milestones: ${proposal?.milestones?.toString()}');
         emit(ProposalStarted(proposal: proposal));
         scaffoldKey.currentState!.showSnackBar(
           const SnackBar(
@@ -251,7 +247,6 @@ class ProposalBloc extends Bloc<ProposalsEvent, ProposalState> {
         Milestone? milestone = milestones.firstWhereOrNull(
             (milestone) => milestone.id == event.milestone.id);
         int? lastMilestoneAmount = milestone?.amount;
-        print('Last Milestone Amount: $lastMilestoneAmount');
         milestones.remove(milestone); // remove the old milestone from the list
         milestones.add(event.milestone);
         // Update the budget, if the milestone has an amount

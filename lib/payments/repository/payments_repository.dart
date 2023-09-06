@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'dart:developer';
 
+import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
@@ -122,7 +123,6 @@ class PaymentsRepository {
           });
 
       final jsonResponse = jsonDecode(response.body);
-      print('Response: $jsonResponse');
       String accountLinkUrl = jsonResponse['url'];
 
       String accountId =
@@ -149,6 +149,7 @@ class PaymentsRepository {
       return accountId;
     } catch (e) {
       log(e.toString());
+      FirebaseCrashlytics.instance.recordError(e, StackTrace.current);
       rethrow;
     }
   }
@@ -208,6 +209,8 @@ class PaymentsRepository {
       return jsonResponse['customer'];
     } catch (e) {
       log(e.toString());
+      FirebaseCrashlytics.instance.recordError(e, StackTrace.current);
+
       if (e is StripeException) {
         scaffoldKey.currentState!.showSnackBar(
           SnackBar(
@@ -249,6 +252,8 @@ class PaymentsRepository {
       print(jsonResponse.toString());
       return Balance.fromJson(jsonResponse['balance']);
     } catch (e) {
+      FirebaseCrashlytics.instance.recordError(e, StackTrace.current);
+
       log(e.toString());
       rethrow;
     }
@@ -272,6 +277,8 @@ class PaymentsRepository {
           transactions.map((i) => BalanceTransaction.fromJson(i)).toList();
       return transactionsList;
     } catch (e) {
+      FirebaseCrashlytics.instance.recordError(e, StackTrace.current);
+
       log(e.toString());
       rethrow;
     }
@@ -296,6 +303,8 @@ class PaymentsRepository {
           transactions.map((i) => BalanceTransaction.fromJson(i)).toList();
       return transactionsList;
     } catch (e) {
+      FirebaseCrashlytics.instance.recordError(e, StackTrace.current);
+
       log(e.toString());
       rethrow;
     }
@@ -318,6 +327,8 @@ class PaymentsRepository {
           charges.map((i) => Charge.fromJson(i)).toList();
       return chargesList;
     } catch (e) {
+      FirebaseCrashlytics.instance.recordError(e, StackTrace.current);
+
       log(e.toString());
       rethrow;
     }
@@ -343,6 +354,8 @@ class PaymentsRepository {
           charges.map((i) => Charge.fromJson(i)).toList();
       return chargesList;
     } catch (e) {
+      FirebaseCrashlytics.instance.recordError(e, StackTrace.current);
+
       log(e.toString());
       rethrow;
     }
@@ -368,6 +381,8 @@ class PaymentsRepository {
       print(jsonResponse.toString());
       return Payout.fromJson(jsonResponse);
     } catch (e) {
+      FirebaseCrashlytics.instance.recordError(e, StackTrace.current);
+
       log(e.toString());
       rethrow;
     }

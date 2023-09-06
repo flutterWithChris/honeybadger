@@ -839,10 +839,8 @@ class _MobileClientProfileSetupState extends State<MobileClientProfileSetup> {
 }
 
 Future<List<Category>> _searchCategories(String query) async {
-  print('Searching categories for $query');
   var hits = await SearchRepository().searchCategories(query).then((value) =>
       value.hits.map((hit) => Category.fromAlgoliaSearch(hit)).toList());
-  print('Found ${hits.length} categories for $query');
   return hits;
 }
 

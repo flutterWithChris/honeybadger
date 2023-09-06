@@ -29,7 +29,6 @@ class _OnboardingPageState extends State<OnboardingPage> {
     _pageController.addListener(() {
       setState(() {
         _currentPage = _pageController.page!.round();
-        print('Setting current page to $_currentPage');
       });
     });
     super.initState();
@@ -53,14 +52,11 @@ class _OnboardingPageState extends State<OnboardingPage> {
           Expanded(
             child: BlocConsumer<OnboardingBloc, OnboardingState>(
               listenWhen: (previous, current) {
-                print('Previous: ${previous.user?.userType}');
-                print('Current: ${current.user?.userType}');
                 return previous.user != null &&
                     previous.user!.userType.toString().trim() ==
                         current.user?.userType.toString().trim();
               },
               listener: (context, state) {
-                print('Jumping to page $_currentPage');
                 _pageController.jumpToPage(_currentPage);
               },
               builder: (context, state) {

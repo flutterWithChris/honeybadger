@@ -30,7 +30,11 @@ class Bug {
       description: document['description'],
       images: document['images'],
       date: document['date'],
-      status: document['status'],
+      status: document['status'] == 'BugStatus.pending'
+          ? BugStatus.pending
+          : document['status'] == 'BugStatus.inProgress'
+              ? BugStatus.inProgress
+              : BugStatus.solved,
     );
   }
 
@@ -43,7 +47,7 @@ class Bug {
       'description': description,
       'images': images,
       'date': date,
-      'status': status,
+      'status': status.toString(),
     };
   }
 }

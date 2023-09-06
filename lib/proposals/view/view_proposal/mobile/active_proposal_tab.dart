@@ -20,14 +20,11 @@ class ActiveProposalTab extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     proposal.milestones!.sort((a, b) => a.dueDate!.compareTo(b.dueDate!));
-    print('Proposal: ${proposal.id}');
-    print(context.watch<ProposalBloc>().state.proposals.toString());
     Proposal? currentProposal = context
         .watch<ProposalBloc>()
         .state
         .proposals
         ?.firstWhereOrNull((element) => element.id == proposal.id);
-    print('Current proposal: $currentProposal');
     return Padding(
       padding: const EdgeInsets.all(16.0),
       child: ListView(

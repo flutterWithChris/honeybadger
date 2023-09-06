@@ -2,12 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_gutter/flutter_gutter.dart';
 import 'package:go_router/go_router.dart';
-import 'package:outsourcedx/core/constants.dart';
+import 'package:outsourcedx/core/extensions.dart';
 import 'package:outsourcedx/profile/bloc/profile_bloc.dart';
 import 'package:outsourcedx/projects/model/project.dart';
 import 'package:outsourcedx/proposals/bloc/proposal_bloc.dart';
 import 'package:intl/intl.dart';
-import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 
 class ProjectCard extends StatelessWidget {
   final Project project;
@@ -103,35 +102,36 @@ class ProjectCard extends StatelessWidget {
               ],
             ),
             const GutterSmall(),
-            Wrap(
-              spacing: 16.0,
-              children: [
-                Text(
-                  project.skills!.join(', '),
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                  style: Theme.of(context).textTheme.bodySmall,
-                ),
-                Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Icon(MdiIcons.clockOutline, size: 14.0),
-                    const GutterTiny(),
-                    Text('${parseEnumName(project.projectType.toString())} ',
-                        style: Theme.of(context).textTheme.bodySmall),
-                  ],
-                ),
+            SizedBox(
+              height: 40,
+              child: ListView(
+                scrollDirection: Axis.horizontal,
+                children: [
+                  Wrap(
+                    spacing: 8.0,
+                    crossAxisAlignment: WrapCrossAlignment.center,
+                    children: [
+                      for (String skill in project.skills ?? [])
+                        Chip(
+                            padding:
+                                const EdgeInsets.symmetric(horizontal: 4.0),
+                            label: Text(titleCase(skill),
+                                style: Theme.of(context).textTheme.bodySmall),
+                            visualDensity: VisualDensity.compact),
 
-                // Row(
-                //   mainAxisSize: MainAxisSize.min,
-                //   children: [
-                //     Icon(MdiIcons.calendarClock, size: 14.0),
-                //     const GutterTiny(),
-                //     Text('${project.weekEstimate! / 4} Months ',
-                //         style: Theme.of(context).textTheme.bodySmall),
-                //   ],
-                // )
-              ],
+                      // Row(
+                      //   mainAxisSize: MainAxisSize.min,
+                      //   children: [
+                      //     Icon(MdiIcons.calendarClock, size: 14.0),
+                      //     const GutterTiny(),
+                      //     Text('${project.weekEstimate! / 4} Months ',
+                      //         style: Theme.of(context).textTheme.bodySmall),
+                      //   ],
+                      // )
+                    ],
+                  ),
+                ],
+              ),
             ),
             // Hero(
             //   tag: '${project.id}-category',

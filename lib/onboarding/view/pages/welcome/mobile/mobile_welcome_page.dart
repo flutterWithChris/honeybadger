@@ -92,8 +92,6 @@ class _MobileWelcomePageState extends State<MobileWelcomePage> {
                             : null,
                         child: ListTile(
                           onTap: () {
-                            print('Freelancer Card Tapped');
-
                             setState(() {
                               context
                                   .read<OnboardingBloc>()
@@ -123,15 +121,11 @@ class _MobileWelcomePageState extends State<MobileWelcomePage> {
                             : null,
                         child: ListTile(
                           onTap: () {
-                            print('Client Card Tapped');
-
                             setState(() {
                               context
                                   .read<OnboardingBloc>()
                                   .add(SetUserType(UserType.client));
                             });
-                            print(
-                                'User type is ${context.read<OnboardingBloc>().state.userType}');
                           },
                           leading: Icon(MdiIcons.accountGroup),
                           title: const Text('I\'m a Client.'),

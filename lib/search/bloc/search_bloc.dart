@@ -33,7 +33,6 @@ class SearchBloc extends Bloc<SearchEvent, SearchState> {
         _profileBloc = profileBloc,
         super(SearchLoading()) {
     _profileSubscription = _profileBloc.stream.listen((profileState) {
-      print('Search Bloc received Profile State: $state');
       if (profileState is ProfileLoaded && state is! SearchLoaded) {
         add(LoadSearch(profileState.user));
       }
@@ -47,7 +46,6 @@ class SearchBloc extends Bloc<SearchEvent, SearchState> {
           : _searchRepository.reload('projects');
     });
     on<LoadSearch>((event, emit) async {
-      print('State query: $_query');
       try {
         emit(SearchLoading());
 
@@ -103,7 +101,6 @@ class SearchBloc extends Bloc<SearchEvent, SearchState> {
             onData: (value) {
               List<User> freelancers = [];
               for (Hit hit in value.hits) {
-                print('Hit found: ${hit.toString()}');
                 // Check if hit contains null values for fields used in freelancer card
                 if (hit['firstName'] == null ||
                     hit['lastName'] == null ||
@@ -112,13 +109,11 @@ class SearchBloc extends Bloc<SearchEvent, SearchState> {
                 }
                 freelancers.add(User.fromAlgoliaSearch(hit));
               }
-              print('Search Bloc received Freelancer Ids: $freelancers');
               return SearchLoaded(freelancers: freelancers);
             },
           );
         }
       } catch (e) {
-        print('Search Bloc received Error: $e');
         emit(SearchError());
       }
     });

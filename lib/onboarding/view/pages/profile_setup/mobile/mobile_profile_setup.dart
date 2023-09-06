@@ -508,7 +508,6 @@ class _MobileProfileSetupState extends State<MobileProfileSetup> {
                               Text('You can only select up to 3 categories.')));
                       return;
                     }
-                    print('Categories: $categories');
                     setState(() {
                       selectedCategories.add(category);
                     });
@@ -752,10 +751,8 @@ class _MobileProfileSetupState extends State<MobileProfileSetup> {
 }
 
 Future<List<Category>> _searchCategories(String query) async {
-  print('Searching categories for $query');
   var hits = await SearchRepository().searchCategories(query).then((value) =>
       value.hits.map((hit) => Category.fromAlgoliaSearch(hit)).toList());
-  print('Found ${hits.length} categories for $query');
   return hits;
 }
 

@@ -78,7 +78,6 @@ class _MobileProjectDetailsPageState extends State<MobileProjectDetailsPage> {
   @override
   Widget build(BuildContext context) {
     _proposal = context.watch<ProposalBloc>().state.proposal;
-    print('Proposal: ${_proposal?.status}');
 
     final NumberFormat numberFormat = NumberFormat.simpleCurrency(
       decimalDigits: 0,
@@ -646,7 +645,7 @@ class _ProjectDetailsViewState extends State<ProjectDetailsView> {
                     ? null
                     : const SizedBox(),
                 tilePadding: EdgeInsets.zero,
-                backgroundColor: Theme.of(context).colorScheme.surface,
+                backgroundColor: Theme.of(context).scaffoldBackgroundColor,
                 leading: widget.project.clientProfilePicture != null
                     ? CircleAvatar(
                         radius: 20,
@@ -714,7 +713,9 @@ class _ProjectDetailsViewState extends State<ProjectDetailsView> {
                           children: [
                             Icon(MdiIcons.mapMarkerOutline, size: 14.0),
                             const GutterTiny(),
-                            Text('${widget.project.clientLocation}',
+                            Text(
+                                widget.project.clientLocation!
+                                    .split(RegExp(r'\d+'))[0],
                                 style: Theme.of(context).textTheme.bodyMedium),
                           ],
                         ),
@@ -769,7 +770,7 @@ class _ProjectDetailsViewState extends State<ProjectDetailsView> {
             ExpansionTile(
               tilePadding: EdgeInsets.zero,
               expandedAlignment: Alignment.center,
-              backgroundColor: Theme.of(context).colorScheme.surface,
+              backgroundColor: Theme.of(context).scaffoldBackgroundColor,
               leading: Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 8.0),
                 child: Icon(MdiIcons.tools, size: 24.0),
@@ -1032,7 +1033,6 @@ class _SubmitWorkDialogState extends State<SubmitWorkDialog> {
           );
         }
         if (state is ProposalLoaded && project != null) {
-          print('Project: $project');
           return Form(
             key: _formKey,
             child: ListView(

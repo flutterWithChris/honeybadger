@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -158,31 +160,141 @@ class _MobileClientPaymentsPageState extends State<MobileClientPaymentsPage>
                 if (paymentsState is PaymentsLoaded) {
                   if (paymentsState.charges == null ||
                       paymentsState.charges!.isEmpty) {
-                    return SliverFillRemaining(
-                      child: Center(
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Icon(MdiIcons.creditCardOutline,
-                                size: 72.0,
-                                color: Theme.of(context).brightness ==
-                                        Brightness.light
-                                    ? Colors.grey[500]
-                                    : Colors.grey[600]),
-                            const Gutter(),
-                            Text('No payments yet!',
-                                style: Theme.of(context)
-                                    .textTheme
-                                    .bodyLarge
-                                    ?.copyWith(
-                                        color: Theme.of(context).brightness ==
-                                                Brightness.light
-                                            ? Colors.grey[500]
-                                            : Colors.grey[600])),
-                          ],
-                        ),
+                    return SliverList(
+                        delegate: SliverChildListDelegate([
+                      Stack(
+                        alignment: Alignment.center,
+                        children: [
+                          Column(
+                            children: [
+                              const Divider(),
+                              // index == 0 ? const Divider() : const SizedBox(),
+                              for (int index = 0; index < 7; index++)
+                                Padding(
+                                  padding: const EdgeInsets.only(bottom: 4.0),
+                                  child: Padding(
+                                    padding: const EdgeInsets.symmetric(
+                                        vertical: 16.0),
+                                    child: Opacity(
+                                      opacity: 0.6,
+                                      child: ListTile(
+                                        onTap: () {
+                                          // context.go(
+                                          //     '/payments/details/${paymentsState.charges![index].id}',
+                                          //     extra:
+                                          //         paymentsState.charges![index]);
+                                          //  TODO: Reenable this
+                                          showBottomSheet(
+                                              enableDrag: true,
+                                              context: context,
+                                              builder: (context) =>
+                                                  DraggableScrollableSheet(
+                                                    expand: false,
+                                                    initialChildSize:
+                                                        index / 2 == 0 ||
+                                                                index / 3 == 0
+                                                            ? 0.28
+                                                            : .26,
+                                                    minChildSize: 0.18,
+                                                    builder: (context,
+                                                            scrollController) =>
+                                                        ChargeDetailsSheet(
+                                                            charge: paymentsState
+                                                                    .charges![
+                                                                index]),
+                                                  ));
+                                        },
+                                        leading: Icon(
+                                          MdiIcons.checkBold,
+                                          size: 20.0,
+                                          color: Colors.green,
+                                        ),
+
+                                        title: const Text(
+                                          'Payment for Milestone',
+                                          maxLines: 1,
+                                          overflow: TextOverflow.ellipsis,
+                                        ),
+                                        // TODO: Add payment status widge
+                                        trailing: Column(
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.end,
+                                          mainAxisSize: MainAxisSize.min,
+                                          children: [
+                                            Text(
+                                              convertCentsToCurrency(
+                                                  ((Random().nextInt(100000) +
+                                                      50000))),
+                                              style: Theme.of(context)
+                                                  .textTheme
+                                                  .titleMedium
+                                                  ?.copyWith(),
+                                            ),
+                                            const GutterTiny(),
+                                            Text(
+                                              Jiffy.parseFromMillisecondsSinceEpoch(
+                                                      DateTime.now()
+                                                          .subtract(Duration(
+                                                              days: Random()
+                                                                  .nextInt(
+                                                                      365)))
+                                                          .millisecondsSinceEpoch)
+                                                  .fromNow(),
+                                              style: Theme.of(context)
+                                                  .textTheme
+                                                  .bodySmall
+                                                  ?.copyWith(
+                                                      color: Theme.of(context)
+                                                                  .brightness ==
+                                                              Brightness.light
+                                                          ? Colors.grey[500]
+                                                          : Colors.grey[600]),
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              const Divider(),
+                            ],
+                          ),
+                          Container(
+                            width: double.infinity,
+                            decoration: BoxDecoration(
+                              shape: BoxShape.circle,
+                              gradient: RadialGradient(radius: 1.618, colors: [
+                                Theme.of(context).scaffoldBackgroundColor,
+                                Colors.black.withAlpha(10)
+                              ]),
+                            ),
+                            child: Padding(
+                              padding:
+                                  const EdgeInsets.symmetric(vertical: 48.0),
+                              child: Column(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  const Icon(Icons.payment_rounded, size: 60.0),
+                                  const GutterTiny(),
+                                  Text(
+                                    'No Payments Yet',
+                                    style: Theme.of(context)
+                                        .textTheme
+                                        .headlineSmall,
+                                  ),
+                                  const GutterSmall(),
+                                  Text(
+                                    'Transactions will show up here!',
+                                    style:
+                                        Theme.of(context).textTheme.bodyMedium,
+                                  ),
+                                ],
+                              ),
+                            ),
+                          )
+                        ],
                       ),
-                    );
+                    ]));
                   }
                   if (paymentsState.charges != null &&
                       paymentsState.charges!.isNotEmpty) {

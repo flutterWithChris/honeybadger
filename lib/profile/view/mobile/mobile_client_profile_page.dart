@@ -10,7 +10,6 @@ import 'package:outsourcedx/core/presentation/system/mobile_sliver_app_bar.dart'
 import 'package:outsourcedx/profile/bloc/profile_bloc.dart';
 import 'package:jiffy/jiffy.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
-import 'package:outsourcedx/profile/view/mobile/mobile_profile_page.dart';
 
 class MobileClientProfilePage extends StatelessWidget {
   const MobileClientProfilePage({super.key});
@@ -159,16 +158,6 @@ class MobileClientProfilePage extends StatelessWidget {
                               ],
                             ),
                           ),
-                          Flexible(
-                            child: IconButton(
-                                onPressed: () async {
-                                  await showDialog(
-                                      context: context,
-                                      builder: (context) =>
-                                          const EditNameAndTitleDialog());
-                                },
-                                icon: const Icon(Icons.edit_rounded)),
-                          ),
                         ],
                       ),
                     ),
@@ -246,15 +235,6 @@ class MobileClientProfilePage extends StatelessWidget {
                             'About Me',
                             style: Theme.of(context).textTheme.titleLarge,
                           ),
-                          const GutterTiny(),
-                          IconButton(
-                              onPressed: () async {
-                                await showDialog(
-                                    context: context,
-                                    builder: (context) =>
-                                        const EditBioDialog());
-                              },
-                              icon: const Icon(Icons.edit_rounded))
                         ],
                       ),
                     ),

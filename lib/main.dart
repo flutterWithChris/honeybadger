@@ -4,8 +4,6 @@ import 'package:outsourcedx/login/view/cubit/login_cubit.dart';
 import 'package:outsourcedx/profile/public/bloc/bloc/freelancer_public_profile_bloc.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_crashlytics/firebase_crashlytics.dart';
-import 'package:firebase_ui_auth/firebase_ui_auth.dart';
-import 'package:firebase_ui_oauth_apple/firebase_ui_oauth_apple.dart';
 import 'package:flex_color_scheme/flex_color_scheme.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -51,21 +49,6 @@ void main() async {
     await dotenv.load(fileName: ".env");
   }
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
-
-// Clear firebase cache
-  // await FirebaseFirestore.instance.clearPersistence();
-  //await FirebaseAuth.instance.signOut();
-
-// Clear  Shared Preferences
-  // SharedPreferences prefs = await SharedPreferences.getInstance();
-  // prefs.setBool('onboarded', true);
-  //await prefs.clear();
-  // await prefs.setString('userType', 'freelancer');
-  // await prefs.setBool('onboarded', true);
-  // await prefs.setBool('paymentSetupComplete', true);
-  FirebaseUIAuth.configureProviders([
-    AppleProvider(),
-  ]);
 
   FlutterError.onError = FirebaseCrashlytics.instance.recordFlutterError;
 
@@ -114,12 +97,10 @@ class _MyAppState extends State<MyApp> {
   void handleLink(String link) async {
     // Parse the link
     var uri = Uri.parse(link);
-    print('Link: $link');
     SharedPreferences prefs = await SharedPreferences.getInstance();
     bool paymentSetupComplete = prefs.getBool('paymentSetupComplete') ?? false;
     // Use GoRouter to navigate to the path in the deep link
     if (link.contains('redirect') && paymentSetupComplete == false) {
-      print('Redirecting to stripe confirmation');
       goRouter.go('/stripe-confirmation?${uri.query}');
     }
   }
@@ -251,6 +232,7 @@ class _MyAppState extends State<MyApp> {
           ),
           BlocProvider(
             create: (context) => SettingsCubit(
+              userRepository: context.read<UserRepository>(),
               authRepository: context.read<AuthRepository>(),
               bugRepository: context.read<BugRepository>(),
             ),

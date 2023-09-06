@@ -43,3 +43,23 @@ extension StringExtensions on String {
         .join(' ');
   }
 }
+
+String titleCase(String input) {
+  if (input.isEmpty) {
+    return input;
+  }
+
+  List<String> words = input.split(' ');
+  List<String> titleCaseWords = [];
+
+  for (String word in words) {
+    if (word.isNotEmpty) {
+      titleCaseWords
+          .add(word[0].toUpperCase() + word.substring(1).toLowerCase());
+    } else {
+      titleCaseWords.add('');
+    }
+  }
+
+  return titleCaseWords.join(' ');
+}

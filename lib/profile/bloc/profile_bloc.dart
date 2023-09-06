@@ -28,7 +28,6 @@ class ProfileBloc extends Bloc<ProfileEvent, ProfileState> {
     on<SetUserProfilePicture>(_onSetUserProfilePicture);
 
     _authSubscription = _authBloc.stream.listen((state) async {
-      print('Profile Bloc received Auth State: $state');
       if (state.status == AuthStatus.authenticated) {
         SharedPreferences prefs = await SharedPreferences.getInstance();
         bool? onboarded = prefs.getBool('onboarded');
@@ -50,12 +49,10 @@ class ProfileBloc extends Bloc<ProfileEvent, ProfileState> {
             User(id: _authBloc.state.user!.uid, userType: userType)),
         onData: (data) {
           //   _paymentsBloc.add(LoadPayments(user: data));
-          print('Profile Loaded: ${data.userType}');
-          print('Profile stripe id Loaded: ${data.stripeAccountId}');
+
           return ProfileLoaded(data);
         },
         onError: (error, stackTrace) {
-          print(stackTrace);
           return ProfileError(error.toString());
         },
       );

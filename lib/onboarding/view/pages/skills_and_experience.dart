@@ -31,7 +31,6 @@ class _SkillsAndExperiencePageState extends State<SkillsAndExperiencePage> {
   @override
   void initState() {
     selectedSkills = context.read<OnboardingBloc>().state.user?.skills ?? [];
-    print('Selected Skills: ${selectedSkills.length}');
     super.initState();
   }
 
@@ -41,7 +40,6 @@ class _SkillsAndExperiencePageState extends State<SkillsAndExperiencePage> {
     if (selectedSkills.isEmpty && currentUser?.skills != null) {
       selectedSkills = currentUser!.skills!;
     }
-    print('Current User: ${currentUser?.skills?.length}');
     return Scaffold(body: SafeArea(
       child: LayoutBuilder(builder: (context, constraints) {
         if (constraints.maxWidth > desktopWidthConstraint) {
@@ -205,9 +203,6 @@ class _SkillsAndExperiencePageState extends State<SkillsAndExperiencePage> {
                         List<Skill> matchingSkills = [];
                         if (state.skills != null && state.skills!.isNotEmpty) {
                           matchingSkills = state.skills?.toList() ?? [];
-                          for (Skill skill in matchingSkills) {
-                            print('Found Skill: ${skill.name}');
-                          }
                         }
                         if (matchingSkills.isEmpty) {
                           newSkill = Skill(

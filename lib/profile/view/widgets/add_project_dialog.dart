@@ -89,7 +89,6 @@ class _AddProjectDialogState extends State<AddProjectDialog> {
                   onChanged: (value) {
                     setState(() {
                       projectLink = value;
-                      print('Project Link: $projectLink');
                     });
                   },
                   onTapOutside: (event) {
@@ -415,7 +414,6 @@ class _AddProjectDialogState extends State<AddProjectDialog> {
                                   List<XFile> selectedImages =
                                       await picker.pickMultiImage();
                                   if (selectedImages.isNotEmpty) {
-                                    print('images selected');
                                     setState(() {
                                       _images += selectedImages;
                                     });
@@ -558,7 +556,6 @@ class _AddProjectDialogState extends State<AddProjectDialog> {
                                       List<XFile> selectedImages =
                                           await picker.pickMultiImage();
                                       if (selectedImages.isNotEmpty) {
-                                        print('images selected');
                                         setState(() {
                                           _images = selectedImages;
                                         });

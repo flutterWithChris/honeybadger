@@ -8,7 +8,7 @@ class BugRepository {
 
   Future<void> reportBug(Bug bug) async {
     try {
-      await _firestore.collection('bug-reports').add(bug.toDocument());
+      await _firestore.collection('bug-reports').doc().set(bug.toDocument());
     } on FirebaseException catch (e) {
       print(e);
       // Show an error message in snackbar

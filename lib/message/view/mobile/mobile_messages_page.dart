@@ -71,7 +71,6 @@ class _MobileMessagesPageState extends State<MobileMessagesPage> {
               ),
               BlocBuilder<MessagesBloc, MessagesState>(
                 builder: (context, state) {
-                  print('Messages State: $state');
                   if (state is MessagesError) {
                     return SliverFillRemaining(
                         child: Center(

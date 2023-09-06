@@ -125,7 +125,6 @@ class _ClientIndustryPageState extends State<ClientIndustryPage> {
                                     'You can only select up to 3 categories.')));
                         return;
                       }
-                      print('Categories: $categories');
                       setState(() {
                         selectedCategories.add(category);
                       });

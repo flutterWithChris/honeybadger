@@ -28,7 +28,6 @@ class SkillSearchBloc extends Bloc<SkillSearchEvent, SkillSearchState> {
           for (var hit in value.hits) {
             skills.add(Skill.fromAlgoliaSearch(algoliaSearch: hit));
           }
-          print('Skills: $skills');
 
           return SkillSearchSuccess(skills: skills);
         });

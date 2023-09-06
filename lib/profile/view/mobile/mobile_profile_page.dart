@@ -168,16 +168,6 @@ class MobileProfilePage extends StatelessWidget {
                               ],
                             ),
                           ),
-                          Flexible(
-                            child: IconButton(
-                                onPressed: () async {
-                                  await showDialog(
-                                      context: context,
-                                      builder: (context) =>
-                                          const EditNameAndTitleDialog());
-                                },
-                                icon: const Icon(Icons.edit_rounded)),
-                          )
                         ],
                       ),
                     ),
@@ -377,7 +367,7 @@ class MobileProfilePage extends StatelessWidget {
                         },
                       ),
                     ),
-                    const GutterSmall(),
+                    const Gutter(),
                     Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 16.0),
                       child: Row(
@@ -392,17 +382,10 @@ class MobileProfilePage extends StatelessWidget {
                             style: Theme.of(context).textTheme.titleLarge,
                           ),
                           const GutterTiny(),
-                          IconButton(
-                              onPressed: () async {
-                                await showDialog(
-                                    context: context,
-                                    builder: (context) =>
-                                        const EditBioDialog());
-                              },
-                              icon: const Icon(Icons.edit_rounded))
                         ],
                       ),
                     ),
+                    const GutterSmall(),
                     Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 16.0),
                       child: Text(
@@ -496,14 +479,14 @@ class MobileProfilePage extends StatelessWidget {
   }
 }
 
-class EditNameAndTitleDialog extends StatefulWidget {
-  const EditNameAndTitleDialog({super.key});
+class EditNameDialog extends StatefulWidget {
+  const EditNameDialog({super.key});
 
   @override
-  State<EditNameAndTitleDialog> createState() => _EditNameAndTitleDialogState();
+  State<EditNameDialog> createState() => _EditNameDialogState();
 }
 
-class _EditNameAndTitleDialogState extends State<EditNameAndTitleDialog> {
+class _EditNameDialogState extends State<EditNameDialog> {
   final TextEditingController firstNameController = TextEditingController();
   final TextEditingController lastNameController = TextEditingController();
   final TextEditingController titleController = TextEditingController();
@@ -514,7 +497,6 @@ class _EditNameAndTitleDialogState extends State<EditNameAndTitleDialog> {
         context.read<ProfileBloc>().state.user?.firstName ?? '';
     lastNameController.text =
         context.read<ProfileBloc>().state.user?.lastName ?? '';
-    titleController.text = context.read<ProfileBloc>().state.user?.title ?? '';
     super.initState();
   }
 
@@ -541,6 +523,72 @@ class _EditNameAndTitleDialogState extends State<EditNameAndTitleDialog> {
               decoration: const InputDecoration(label: Text('Last Name')),
             ),
             const Gutter(),
+            Column(
+              mainAxisAlignment: MainAxisAlignment.end,
+              children: [
+                Row(
+                  children: [
+                    Expanded(
+                      child: FilledButton(
+                          onPressed: () {
+                            context.read<ProfileBloc>().add(UpdateProfile(
+                                user: context
+                                    .read<ProfileBloc>()
+                                    .state
+                                    .user!
+                                    .copyWith(
+                                      firstName: firstNameController.value.text,
+                                      lastName: lastNameController.value.text,
+                                    )));
+                            Navigator.of(context).pop();
+                          },
+                          child: const Text('Save')),
+                    ),
+                  ],
+                ),
+                TextButton(
+                    onPressed: () {
+                      Navigator.of(context).pop();
+                    },
+                    child: const Text('Cancel')),
+              ],
+            )
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class EditTitleDialog extends StatefulWidget {
+  const EditTitleDialog({super.key});
+
+  @override
+  State<EditTitleDialog> createState() => _EditTitleDialogState();
+}
+
+class _EditTitleDialogState extends State<EditTitleDialog> {
+  final TextEditingController firstNameController = TextEditingController();
+  final TextEditingController lastNameController = TextEditingController();
+  final TextEditingController titleController = TextEditingController();
+
+  @override
+  void initState() {
+    titleController.text = context.read<ProfileBloc>().state.user?.title ?? '';
+    super.initState();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Dialog(
+      child: Padding(
+        padding: const EdgeInsets.symmetric(
+          horizontal: 16.0,
+          vertical: 16.0,
+        ),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
             TextFormField(
               controller: titleController,
               textCapitalization: TextCapitalization.words,
@@ -561,9 +609,6 @@ class _EditNameAndTitleDialogState extends State<EditNameAndTitleDialog> {
                                     .state
                                     .user!
                                     .copyWith(
-                                        firstName:
-                                            firstNameController.value.text,
-                                        lastName: lastNameController.value.text,
                                         title: titleController.value.text)));
                             Navigator.of(context).pop();
                           },
@@ -690,9 +735,6 @@ class _AddSkillsDialogState extends State<AddSkillsDialog> {
                     List<Skill> matchingSkills = [];
                     if (state.skills != null && state.skills!.isNotEmpty) {
                       matchingSkills = state.skills?.toList() ?? [];
-                      for (Skill skill in matchingSkills) {
-                        print('Found Skill: ${skill.name}');
-                      }
                     }
                     if (matchingSkills.isEmpty) {
                       newSkill = Skill(

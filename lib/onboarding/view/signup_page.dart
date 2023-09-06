@@ -385,7 +385,6 @@ class _UserTypeInputChipState extends State<UserTypeInputChip> {
                     .add(UpdateUser(user.copyWith(userType: value)));
               }
 
-              print('Setting user type to $value');
               context.read<OnboardingBloc>().add(SetUserType(value));
             },
             itemBuilder: (context) => [

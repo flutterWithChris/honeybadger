@@ -2,6 +2,8 @@ import 'package:outsourcedx/login/view/login_page.dart';
 import 'package:outsourcedx/message/bloc/messages_bloc.dart';
 import 'package:outsourcedx/message/view/new_chat_screen.dart';
 import 'package:outsourcedx/profile/public/view/freelancer_public_profile_page.dart';
+import 'package:outsourcedx/settings/pages/privacy_policy.dart';
+import 'package:outsourcedx/settings/pages/terms_of_service.dart';
 import 'package:outsourcedx/settings/view/settings_page.dart';
 import 'package:animations/animations.dart';
 import 'package:flutter/material.dart';
@@ -42,11 +44,9 @@ GoRouter goRouter = GoRouter(
         context.read<AuthBloc>().state.status == AuthStatus.authenticated;
     bool isOnboarding = state.matchedLocation.contains('/onboarding');
     bool isLoggingIn = state.matchedLocation == '/login';
-    print('Logged in: $loggedIn');
     SharedPreferences prefs = await SharedPreferences.getInstance();
     // TODO: **IMPORTANT** Change this back
     bool onboarded = prefs.getBool('onboarded') ?? false;
-    print('Onboarded: $onboarded');
     //bool onboarded = false;
     if (state.matchedLocation == '/') {
       return '/search';
@@ -210,7 +210,6 @@ GoRouter goRouter = GoRouter(
         builder: (context, state) {
           context.read<ProfileBloc>().add(LoadProfile());
 
-          print('State path params: ${state.uri.queryParameters}');
           return StripeConfirmationPage(
             stripeAccountId: state.uri.queryParameters['account_id']!,
           );
@@ -221,9 +220,22 @@ GoRouter goRouter = GoRouter(
       builder: (context, state) => const CreateProjectPage(),
     ),
     GoRoute(
-      path: '/settings',
-      name: 'settings',
-      builder: (context, state) => const SettingsPage(),
-    )
+        path: '/settings',
+        name: 'settings',
+        builder: (context, state) => const SettingsPage(),
+        routes: [
+          GoRoute(
+              path: 'privacy-policy',
+              name: 'privacy-policy',
+              builder: (context, state) {
+                return const PrivacyPolicy();
+              }),
+          GoRoute(
+              path: 'terms-of-service',
+              name: 'terms-of-service',
+              builder: (context, state) {
+                return const TermsOfService();
+              })
+        ])
   ],
 );

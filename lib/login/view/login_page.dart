@@ -34,7 +34,6 @@ class _LoginPageState extends State<LoginPage> {
         }
       },
       builder: (context, state) {
-        print('Login Status: ${state.status}');
         if (state.status == LoginStatus.submitting) {
           return const Center(child: CircularProgressIndicator());
         }

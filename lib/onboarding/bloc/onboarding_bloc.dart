@@ -23,13 +23,11 @@ class OnboardingBloc extends Bloc<OnboardingEvent, OnboardingState> {
         // Check if user exists
         User? user = await _userRepository.getUser(event.user);
         if (user != null) {
-          print('User exists');
           emit(OnboardingState.loaded(user));
 
           await prefs.setString(
               'userType', event.user.userType.toString().split('.').last);
         } else {
-          print('User does not exist');
           //  TODO: ***Reenable this***
           await _userRepository.createUser(event.user);
 

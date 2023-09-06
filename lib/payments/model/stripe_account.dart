@@ -52,7 +52,6 @@ class StripeAccount {
     var availablePayoutMethodsList = externalAccountsData
         ?.map((data) => data['available_payout_methods'] as List<dynamic>?)
         .toList();
-    print('External accounts data: $externalAccountsData');
     return StripeAccount(
       id: json['id'],
       businessType: json['business_type'],

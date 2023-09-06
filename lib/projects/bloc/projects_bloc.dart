@@ -22,7 +22,6 @@ class ProjectsBloc extends Bloc<ProjectsEvent, ProjectsState> {
         _profileBloc = profileBloc,
         super(ProjectsInitial()) {
     _profileSubscription = _profileBloc.stream.listen((state) {
-      print('Projects Bloc received Profile State: $state');
       if (state is ProfileLoaded) {
         add(LoadProjects(user: state.user));
       }
@@ -36,7 +35,6 @@ class ProjectsBloc extends Bloc<ProjectsEvent, ProjectsState> {
     emit(ProjectsLoading(projects: state.projects));
     await emit.forEach(_projectsRepository.getProjects(event.user),
         onData: (data) {
-      print('Projects Bloc received Projects State: $data');
       return ProjectsLoaded(data);
     }, onError: (error, stackTrace) {
       return ProjectsError(error.toString());

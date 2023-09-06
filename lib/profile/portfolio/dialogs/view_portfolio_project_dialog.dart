@@ -198,7 +198,6 @@ class _ViewPortfolioProjectDialogState
                                   List<XFile> selectedImages =
                                       await picker.pickMultiImage();
                                   if (selectedImages.isNotEmpty) {
-                                    print('images selected');
                                     setState(() {
                                       _newImages = selectedImages;
                                     });

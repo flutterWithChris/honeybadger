@@ -420,9 +420,6 @@ class _CreateProjectPageState extends State<CreateProjectPage> {
                                       state.skills!.isNotEmpty) {
                                     matchingSkills =
                                         state.skills?.toList() ?? [];
-                                    for (Skill skill in matchingSkills) {
-                                      print('Found Skill: ${skill.name}');
-                                    }
                                   }
                                   if (matchingSkills.isEmpty) {
                                     newSkill = Skill(
@@ -777,12 +774,14 @@ class _CreateProjectPageState extends State<CreateProjectPage> {
                                                       '${currentUser.firstName} ${currentUser.lastName}',
                                                   clientIndustry:
                                                       currentUser.industry,
-                                                  clientLocation:
-                                                      currentUser.address !=
-                                                              null
-                                                          ? currentUser.address
-                                                              ?.split(',')[2]
-                                                          : null,
+                                                  clientLocation: currentUser
+                                                              .address !=
+                                                          null
+                                                      ? currentUser.address
+                                                          ?.split(',')[2]
+                                                          .split(
+                                                              RegExp(r'\d+'))[0]
+                                                      : null,
                                                   clientProfilePicture:
                                                       currentUser.photoUrl,
                                                   clientRating:

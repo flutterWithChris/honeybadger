@@ -446,7 +446,7 @@ class _DetailsTabState extends State<DetailsTab> {
             ExpansionTile(
               tilePadding: EdgeInsets.zero,
               expandedAlignment: Alignment.center,
-              backgroundColor: Theme.of(context).colorScheme.surface,
+              backgroundColor: Theme.of(context).scaffoldBackgroundColor,
               title: Row(
                 mainAxisSize: MainAxisSize.min,
                 children: [
@@ -482,7 +482,7 @@ class _DetailsTabState extends State<DetailsTab> {
               ExpansionTile(
                 tilePadding: EdgeInsets.zero,
                 expandedAlignment: Alignment.center,
-                backgroundColor: Theme.of(context).colorScheme.surface,
+                backgroundColor: Theme.of(context).scaffoldBackgroundColor,
                 title: Row(
                   mainAxisSize: MainAxisSize.min,
                   children: [
@@ -574,10 +574,8 @@ class CreateProposalSection extends StatelessWidget {
                                   child: ExpansionTile(
                                     tilePadding: EdgeInsets.zero,
                                     expandedAlignment: Alignment.center,
-                                    // backgroundColor:
-                                    //     Theme.of(context)
-                                    //         .colorScheme
-                                    //         .surface,
+                                    backgroundColor: Theme.of(context)
+                                        .scaffoldBackgroundColor,
                                     title: Row(
                                       mainAxisSize: MainAxisSize.min,
                                       children: [
