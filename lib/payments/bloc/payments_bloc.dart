@@ -74,6 +74,7 @@ class PaymentsBloc extends Bloc<PaymentsEvent, PaymentsState>
       event.context,
       email: event.user.email!,
       userId: event.user.id!,
+      countryCode: event.user.country,
     );
     User updatedUser = event.user.copyWith(stripeAccountId: stripeAccountId);
     // TODO: Update user with stripe account id
@@ -90,27 +91,51 @@ class PaymentsBloc extends Bloc<PaymentsEvent, PaymentsState>
   void _onSendPayment(SendPayment event, Emitter<PaymentsState> emit) async {
     emit(PaymentsLoading());
     try {
-      String? customerId = await _paymentsRepository.initPaymentSheet(
-        event.context,
-        email: event.client.email!,
-        name: '${event.client.firstName} ${event.client.lastName}',
-        amount: (event.amount * 1.05).round(),
-        applicationFeeAmount: (event.amount * 0.10).round(),
-        freelancerStripeAccountId: event.freelancerStripeAccountId,
-        description: 'Payment to ${event.proposal.freelancerName}',
-        metadata: {
-          'proposalId': event.proposal.id,
-          'clientId': event.client.id,
-          'clientName': '${event.client.firstName} ${event.client.lastName}',
-          'clientProfilePicture': event.client.photoUrl,
-          'freelancerId': event.freelancerId,
-          'freelancerName': event.freelancerName,
-          'freelancerProfilePicture': event.proposal.freelancerAvatar,
-          'projectName': event.proposal.projectName,
-          'milestoneName': event.milestoneName,
-          'paymentType': event.paymentType,
-        },
-      );
+      String? customerId = inProduction == true
+          ? await _paymentsRepository.initPaymentSheet(
+              event.context,
+              email: event.client.email!,
+              name: '${event.client.firstName} ${event.client.lastName}',
+              amount: (event.amount * 1.05).round(),
+              applicationFeeAmount: (event.amount * 0.10).round(),
+              freelancerStripeAccountId: event.freelancerStripeAccountId,
+              description: 'Payment to ${event.proposal.freelancerName}',
+              metadata: {
+                'proposalId': event.proposal.id,
+                'clientId': event.client.id,
+                'clientName':
+                    '${event.client.firstName} ${event.client.lastName}',
+                'clientProfilePicture': event.client.photoUrl,
+                'freelancerId': event.freelancerId,
+                'freelancerName': event.freelancerName,
+                'freelancerProfilePicture': event.proposal.freelancerAvatar,
+                'projectName': event.proposal.projectName,
+                'milestoneName': event.milestoneName,
+                'paymentType': event.paymentType,
+              },
+            )
+          : await _paymentsRepository.initTestPaymentSheet(
+              event.context,
+              email: event.client.email!,
+              name: '${event.client.firstName} ${event.client.lastName}',
+              amount: (event.amount * 1.05).round(),
+              applicationFeeAmount: (event.amount * 0.10).round(),
+              freelancerStripeAccountId: event.freelancerStripeAccountId,
+              description: 'Payment to ${event.proposal.freelancerName}',
+              metadata: {
+                'proposalId': event.proposal.id,
+                'clientId': event.client.id,
+                'clientName':
+                    '${event.client.firstName} ${event.client.lastName}',
+                'clientProfilePicture': event.client.photoUrl,
+                'freelancerId': event.freelancerId,
+                'freelancerName': event.freelancerName,
+                'freelancerProfilePicture': event.proposal.freelancerAvatar,
+                'projectName': event.proposal.projectName,
+                'milestoneName': event.milestoneName,
+                'paymentType': event.paymentType,
+              },
+            );
       if (_profileBloc.state.user!.stripeAccountId == null ||
           _profileBloc.state.user!.stripeAccountId!.isEmpty) {
         _profileBloc.add(UpdateProfile(

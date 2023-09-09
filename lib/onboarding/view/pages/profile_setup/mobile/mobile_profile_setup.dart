@@ -15,6 +15,7 @@ import '../../../../../profile/model/category.dart';
 import '../../../../../profile/model/user.dart';
 import '../../../../bloc/onboarding_bloc.dart';
 import '../../../signup_page.dart';
+import 'package:list_ext/list_ext.dart';
 
 late OverlayEntry _overlayEntry;
 
@@ -699,8 +700,19 @@ class _MobileProfileSetupState extends State<MobileProfileSetup> {
                                       ''
                               ? selectedPlace?.placeName ?? ''
                               : null,
-                          city: cityController.value.text.trim(),
-                          state: stateController.value.text.trim(),
+                          city: selectedPlace?.context
+                              ?.firstWhereOrNull(
+                                  (element) => element.id!.contains('place'))
+                              ?.text,
+                          state: selectedPlace?.context
+                              ?.firstWhereOrNull(
+                                  (element) => element.id!.contains('region'))
+                              ?.text,
+                          country: selectedPlace?.context
+                              ?.firstWhereOrNull(
+                                  (element) => element.id!.contains('country'))
+                              ?.shortCode
+                              ?.toUpperCase(),
                           bio: bioController.value.text.trim(),
                           categories: selectedCategories,
                         )));

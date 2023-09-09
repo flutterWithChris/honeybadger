@@ -49,9 +49,10 @@ void main() async {
     await dotenv.load(fileName: ".env");
   }
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
-
-  FlutterError.onError = FirebaseCrashlytics.instance.recordFlutterError;
-
+  //await FirebaseAuth.instance.signOut();
+  if (kIsWeb == false) {
+    FlutterError.onError = FirebaseCrashlytics.instance.recordFlutterError;
+  }
   runApp(const MyApp());
 }
 

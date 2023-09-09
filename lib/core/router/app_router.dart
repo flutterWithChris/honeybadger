@@ -48,6 +48,10 @@ GoRouter goRouter = GoRouter(
     // TODO: **IMPORTANT** Change this back
     bool onboarded = prefs.getBool('onboarded') ?? false;
     //bool onboarded = false;
+    if (state.matchedLocation.contains('privacy-policy') ||
+        state.matchedLocation.contains('terms-of-service')) {
+      return null;
+    }
     if (state.matchedLocation == '/') {
       return '/search';
     }

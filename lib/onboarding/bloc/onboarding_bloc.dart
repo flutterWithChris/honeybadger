@@ -28,11 +28,12 @@ class OnboardingBloc extends Bloc<OnboardingEvent, OnboardingState> {
           await prefs.setString(
               'userType', event.user.userType.toString().split('.').last);
         } else {
-          //  TODO: ***Reenable this***
-          await _userRepository.createUser(event.user);
+       
 
           await prefs.setString(
               'userType', event.user.userType.toString().split('.').last);
+                 //  TODO: ***Reenable this***
+          await _userRepository.createUser(event.user);
           emit(OnboardingState.loaded(event.user));
         }
       } catch (e) {

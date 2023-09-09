@@ -8,6 +8,7 @@ import 'package:flutter_gutter/flutter_gutter.dart';
 import 'package:outsourcedx/search/repository/search_repository.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:mapbox_search/mapbox_search.dart';
+import 'package:list_ext/list_ext.dart';
 
 import '../../../../../profile/model/category.dart';
 import '../../../../../profile/model/user.dart';
@@ -778,20 +779,34 @@ class _MobileClientProfileSetupState extends State<MobileClientProfileSetup> {
                   if (_profileFormKey.currentState!.validate() &&
                       communicationPreferenceError == false &&
                       imageSelected == true) {
-                    context.read<OnboardingBloc>().add(UpdateUser(
-                        context.read<OnboardingBloc>().state.user!.copyWith(
-                              firstName: firstNameController.value.text.trim(),
-                              lastName: lastNameController.value.text.trim(),
-                              email: emailController.value.text.trim(),
-                              company: companyController.value.text.trim(),
-                              title: titleController.value.text.trim(),
-                              address: selectedPlace?.placeName ?? '',
-                              city: cityController.value.text.trim(),
-                              state: stateController.value.text.trim(),
-                              bio: bioController.value.text.trim(),
-                              categories: selectedCategories,
-                              communicationPreference: communicationPreference,
-                            )));
+                    context.read<OnboardingBloc>().add(UpdateUser(context
+                        .read<OnboardingBloc>()
+                        .state
+                        .user!
+                        .copyWith(
+                          firstName: firstNameController.value.text.trim(),
+                          lastName: lastNameController.value.text.trim(),
+                          email: emailController.value.text.trim(),
+                          company: companyController.value.text.trim(),
+                          title: titleController.value.text.trim(),
+                          address: selectedPlace?.placeName ?? '',
+                          city: selectedPlace?.context
+                              ?.firstWhereOrNull(
+                                  (element) => element.id!.contains('place'))
+                              ?.text,
+                          state: selectedPlace?.context
+                              ?.firstWhereOrNull(
+                                  (element) => element.id!.contains('region'))
+                              ?.text,
+                          country: selectedPlace?.context
+                              ?.firstWhereOrNull(
+                                  (element) => element.id!.contains('country'))
+                              ?.shortCode
+                              ?.toUpperCase(),
+                          bio: bioController.value.text.trim(),
+                          categories: selectedCategories,
+                          communicationPreference: communicationPreference,
+                        )));
                     await widget.pageController.nextPage(
                         duration: const Duration(milliseconds: 500),
                         curve: Curves.ease);

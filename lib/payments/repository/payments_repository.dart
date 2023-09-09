@@ -149,13 +149,15 @@ class PaymentsRepository {
 
   /// Setup payemnt account for the user
   Future<String> setupPaymentAccount(BuildContext context,
-      {required String email, required String userId}) async {
+      {required String email,
+      required String userId,
+      String? countryCode}) async {
     try {
       final response = await http.post(
           Uri.parse(
               'https://us-central1-honeybadger-817ee.cloudfunctions.net/createStripeConnectAccount'),
           body: {
-            'country': 'US',
+            'country': countryCode ?? 'US',
             'email': email,
             'userId': userId,
           });
@@ -281,6 +283,7 @@ class PaymentsRepository {
   /// Initialize payment sheet
   Future<String?> initTestPaymentSheet(context,
       {required String email,
+      required String name,
       required int amount,
       required int applicationFeeAmount,
       required String freelancerStripeAccountId,
@@ -290,10 +293,11 @@ class PaymentsRepository {
     try {
       final response = await http.post(
           Uri.parse(
-              'https://us-central1-honeybadger-817ee.cloudfunctions.net/stripeTestPaymentIntentRequest'),
+              'https://us-central1-honeybadger-817ee.cloudfunctions.net/stripTestPaymentIntentRequest'),
           body: {
             'amount': (amount * 100).toString(),
             'email': email,
+            'name': name,
             'description': description,
             'freelancerStripeAccountId': freelancerStripeAccountId,
             'applicationFeeAmount': (applicationFeeAmount * 100).toString(),
